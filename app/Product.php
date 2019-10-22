@@ -1,0 +1,17 @@
+<?php
+
+namespace App;
+
+use App\Traits\UsesSynch;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\UsesUuid;
+
+class Product extends Model
+{
+    use SoftDeletes, UsesUuid, UsesSynch;
+
+    protected $fillable = [
+        'name', 'description', 'minimum_stock', 'initial_stock', 'img_path', 'selling_price',
+    ];
+}
