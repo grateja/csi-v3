@@ -4,12 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
-use App\Barangay;
-use App\CityMunicipality;
-use App\Client;
 use DB;
 use App\Rules\VerifyPassword;
-use App\SelfAuth;
 
 class AccountsController extends Controller
 {

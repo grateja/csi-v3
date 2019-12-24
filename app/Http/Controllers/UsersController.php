@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use DB;
-use App\Barangay;
-use App\CityMunicipality;
-use App\SelfAuth;
 use App\Rules\VerifyPassword;
 use App\Role;
 

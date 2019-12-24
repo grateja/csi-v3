@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Transaction;
-use App\ServiceTransaction;
-use App\ProductTransaction;
 use Illuminate\Support\Facades\DB;
 use App\CompletedServiceTransaction;
 use App\CompletedProductTransaction;

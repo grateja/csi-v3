@@ -13,8 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/sync', 'LiveHostController@test');
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -25,13 +23,11 @@ Route::group(['prefix' => 'daily-reports', 'middleware' => 'auth:api'], function
     Route::get('opening-inventories', 'DailyReportsController@openingInventories');
 });
 
-
 // /api/tap
 Route::group(['prefix' => 'tap'], function() {
     // /api/tap/{machineIp}/{rfid}
     Route::get('{machineIp}/{rfid}', 'TapCardController@tap');
 });
-
 
 // /api/account
 Route::group(['prefix' => 'account', 'middleware' => 'auth:api'], function() {
@@ -50,8 +46,8 @@ Route::group(['prefix' => 'account', 'middleware' => 'auth:api'], function() {
 
 // /api/users
 Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
-    // /api/users/{clientId}|self
-    Route::post('{clientId}/create', 'UsersController@create')->middleware('self:clientId');
+    // /api/users
+    Route::post('create', 'UsersController@create');
 
     // /api/users/{userId}/assign-role
     Route::post('{userId}/assign-role', 'UsersController@assignRole');
@@ -72,22 +68,10 @@ Route::group(['prefix' => 'clients', 'middleware' => ['auth:api', 'role:develope
     Route::post('{clientId}/delete-client', 'ClientsController@deleteClient');
 });
 
-// /api/branches[auth,role:developer,admin]
-Route::group(['prefix' => 'branches', 'middleware' => ['auth:api', 'role:admin,developer']], function() {
-    // /api/branches/{id}
-    Route::get('{id}', 'BranchesController@show');
-
-    // /api/branches/create/{clientId}
-    Route::post('create/{clientId}', 'BranchesController@store')->middleware('self:clientId');
-
-    // /api/branches/{id}/update
-    Route::post('{id}/update', 'BranchesController@update');
-});
-
 // /api/customers
 Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
-    // /api/customers/{clientId}|self
-    Route::post('{clientId}/create', 'CustomersController@store');
+    // /api/customers
+    Route::post('create', 'CustomersController@store');
 
     // /api/customers/{customerId}/loyalty-services
     Route::get('{customerId}/loyalty-services', 'PaymentsController@loyaltyServices');
@@ -104,8 +88,8 @@ Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
 
 // /api/products
 Route::group(['prefix' => 'products', 'middleware' => 'auth:api'], function() {
-    // /api/products/{userId}|self/create
-    Route::post('{userId}/create', 'ProductsController@store');
+    // /api/products/create
+    Route::post('create', 'ProductsController@store');
 
     // /api/products/{id}
     Route::get('{id}', 'ProductsController@show');
@@ -117,25 +101,10 @@ Route::group(['prefix' => 'products', 'middleware' => 'auth:api'], function() {
     Route::post('{productId}/add-stock', 'ProductsController@addStock');
 });
 
-// /api/branch-products
-Route::group(['prefix' => 'branch-products', 'middleware' => ['auth:api', 'role:admin']], function() {
-    // /api/branch-products/{id}/update-price
-    Route::post('{id}/update-price', 'ProductsController@updatePrice');
-});
-
-// /api/branch-services
-Route::group(['prefix' => 'branch-services', 'middleware' => ['auth:api', 'role:admin']], function() {
-    // /api/branch-services/{id}/update-price
-    Route::post('{id}/update-price', 'ServicesController@updatePrice');
-
-    // /api/branch-services/{id}/update-branch-service
-    Route::post('{id}/update-branch-service', 'ServicesController@updateBranchService');
-});
-
 // /api/services
 Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
-    // /api/services/{clientId}|self/create
-    Route::post('{clientId}/create', 'ServicesController@store');
+    // /api/services/create
+    Route::post('create', 'ServicesController@store');
 
     // /api/services/{id}
     Route::get('{id}', 'ServicesController@show');
@@ -184,7 +153,7 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
         // /api/machines/{branchId}/store
     });
 
-    // /api/machines/{branchId}/view-all
+    // /api/machines/view-all
     Route::get('{branchId}/view-all', 'MachinesController@index');
 
     // /api/machines/last-activated
@@ -199,45 +168,36 @@ Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
 
 // /api/expenses
 Route::group(['prefix' => 'expenses', 'middleware' => 'auth:api'], function() {
-    // /api/expenses/{branchId}|self/store
-    Route::post('{branchId}/store', 'ExpensesController@store');
+    // /api/expenses/store
+    Route::post('store', 'ExpensesController@store');
 });
 
 
 // /api/search
 Route::group(['prefix' => 'search', 'middleware' => 'auth:api'], function() {
-    // /api/search/clients/by-branches
-    Route::get('clients/by-branches', 'ClientsController@getAllByBranch');
+    // /api/search/users
+    Route::get('users', 'UsersController@index')->middleware('self:userId');
 
-    // /api/search/clients/by-clients
-    Route::get('clients/by-clients', 'ClientsController@getAllByClients');
+    // /api/search/products
+    Route::get('products', 'ProductsController@index');
 
-    // /api/search/branches/{userId}|self
-    Route::get('branches/{userId}', 'BranchesController@index');
+    // /api/search/pos-services
+    Route::get('pos-services', 'ServicesController@posIndex');
 
-    // /api/search/users/{userId}|self
-    Route::get('users/{userId}', 'UsersController@index')->middleware('self:userId');
+    // /api/search/services
+    Route::get('services', 'ServicesController@index');
 
-    // /api/search/products/{userId}|self
-    Route::get('products/{userId}', 'ProductsController@index');
+    // /api/search/customers
+    Route::get('customers', 'CustomersController@index');
 
-    // /api/search/pos-services/{userId}|self
-    Route::get('pos-services/{userId}', 'ServicesController@posIndex');
+    // /api/search/rfid-cards/{master|customer}
+    Route::get('rfid-cards/{rfidType}', 'RfidCardsController@index');
 
-    // /api/search/services/{userId}|self
-    Route::get('services/{userId}', 'ServicesController@index');
+    // /api/search/product-purchases
+    Route::get('product-purchases', 'ProductPurchasesController@index');
 
-    // /api/search/customers/{userId}|self
-    Route::get('customers/{clientId}', 'CustomersController@index');
-
-    // /api/search/rfid-cards/{master|customer}/{branchId}|self
-    Route::get('rfid-cards/{rfidType}/{branchId}', 'RfidCardsController@index');
-
-    // /api/search/product-purchases/{branchId}|self
-    Route::get('product-purchases/{branchId}', 'ProductPurchasesController@index');
-
-    // /api/search/expenses/{branchId}|self
-    Route::get('expenses/{branchId}', 'ExpensesController@index');
+    // /api/search/expenses
+    Route::get('expenses', 'ExpensesController@index');
 
     // /api/search/discounts
     Route::get('discounts', 'DiscountsController@index');
@@ -254,26 +214,25 @@ Route::group(['prefix' => 'search', 'middleware' => 'auth:api'], function() {
         Route::get('transaction-products', 'TrashedController@products');
     });
 
-
     // /api/search/transactions
     Route::group(['prefix' => 'transactions'], function() {
-        // /api/search/transactions/rfid-services/{branchId}|self
-        Route::get('rfid-services/{branchId}', 'RfidTransactionsController@rfidServiceIndex');
+        // /api/search/transactions/rfid-services
+        Route::get('rfid-services', 'RfidTransactionsController@rfidServiceIndex');
 
-        // /api/search/transactions/rfid-top-up/{branchId}|self
-        Route::get('rfid-top-up/{branchId}', 'RfidTransactionsController@topUpIndex');
+        // /api/search/transactions/rfid-top-up
+        Route::get('rfid-top-up', 'RfidTransactionsController@topUpIndex');
 
-        // /api/search/transactions/pos/by-customers/{clientId}|self/{branchId?}|self
-        Route::get('pos/by-customers/{clientId}/{branchId?}', 'ReportsController@posTransactionsByCustomers');
+        // /api/search/transactions/pos/by-customers
+        Route::get('pos/by-customers', 'ReportsController@posTransactionsByCustomers');
 
-        // /api/search/transactions/pos/by-items/{clientId}|self/{branchId?}|self
-        Route::get('pos/by-items/{clientId}/{branchId?}', 'ReportsController@posTransactionsByItems');
+        // /api/search/transactions/pos/by-items
+        Route::get('pos/by-items', 'ReportsController@posTransactionsByItems');
 
-        // /api/search/transactions/pos/services/{clientId}|self/{branchId?}|self
-        Route::get('pos/services/{clientId}/{branchId?}', 'ReportsController@posServices');
+        // /api/search/transactions/pos/services
+        Route::get('pos/services', 'ReportsController@posServices');
 
-        // /api/search/transactions/pos/products/{clientId}|self/{branchId?}|self
-        Route::get('pos/products/{clientId}/{branchId?}', 'ReportsController@posProducts');
+        // /api/search/transactions/pos/products
+        Route::get('pos/products', 'ReportsController@posProducts');
 
     });
 });
@@ -329,37 +288,6 @@ Route::group(['prefix' => 'job-order', 'middleware' => ['auth:api', 'role:admin'
     Route::post('update', 'JobOrdersController@update');
 });
 
-// /api/dashboard
-Route::group(['prefix' => 'dashboard', 'middleware' => ['auth:api', 'role:admin']], function () {
-    // /api/dashboard/{branchId}|self
-    Route::get('{branchId}', 'DashboardController@index');
-
-    // /api/dashboard/{branchId}|self/expenses
-    Route::get('{branchId}/expenses', 'DashboardController@expenses');
-
-    // /api/dashboard/{branchId}|self/income
-    Route::get('{branchId}/income', 'DashboardController@income');
-
-    // /api/dashboard/{branchId}|self/liquidate/expenses
-    Route::get('{branchId}/liquidate/expenses', 'DashboardController@liquidateExpenses');
-
-    // /api/dashboard/{branchId}|self/liquidate/purchases
-    Route::get('{branchId}/liquidate/purchases', 'DashboardController@liquidatePurchases');
-
-    // /api/dashboard/{branchId}|self/liquidate/services
-    Route::get('{branchId}/liquidate/services', 'DashboardController@liquidateServices');
-
-    // /api/dashboard/{branchId}|self/liquidate/products
-    Route::get('{branchId}/liquidate/products', 'DashboardController@liquidateProducts');
-
-    // /api/dashboard/{branchId}|self/liquidate/rfidTopUps
-    Route::get('{branchId}/liquidate/rfidTopUps', 'DashboardController@liquidateRfidTopUps');
-
-    // /api/dashboard/{branchId}|self/liquidate/rfidTransactions
-    Route::get('{branchId}/liquidate/rfidTransactions', 'DashboardController@liquidateRfidTransactions');
-});
-
-
 // /api/void-transaction
 Route::group(['prefix' => 'void-transaction', 'middleware' => 'auth:api'], function() {
     // /api/void-transaction/{completedServiceTransactionId}/void-service
@@ -375,20 +303,13 @@ Route::group(['prefix' => 'void-transaction', 'middleware' => 'auth:api'], funct
     Route::get('{transactionId}', 'VoidTransactionsController@getTransaction');
 });
 
-
 // /api/autocomplete
 Route::group(['prefix' => 'autocomplete'], function() {
-    // /api/search/city-municipalities
-    Route::get('city-municipalities', 'CityMunicipalitiesController@autocomplete');
+    // /api/autocomplete/customers
+    Route::get('customers', 'CustomersController@autocomplete');
 
-    // /api/autocomplete/barangays
-    Route::get('barangays', 'BarangaysController@autocomplete');
-
-    // /api/autocomplete/customers/{clientId|self}
-    Route::get('customers/{clientId}', 'CustomersController@autocomplete');
-
-    // /api/autocomplete/usres/{clientId}|self
-    Route::get('users/{clientId}', 'UsersController@autocomplete');
+    // /api/autocomplete/usres
+    Route::get('users', 'UsersController@autocomplete');
 
     // /api/autocomplete/expense-types
     Route::get('expense-types', 'ExpensesController@autocomplete');
@@ -398,15 +319,11 @@ Route::group(['prefix' => 'autocomplete'], function() {
 Route::group(['prefix' => 'all', 'middleware' => 'auth:api'], function() {
     // /api/all/roles
     Route::get('roles', 'RolesController@all');
-
-    // /api/all/branches/{userId}|self
-    Route::get('branches/{userId}', 'BranchesController@all');
-
     // /api/all/service-types
     Route::get('service-types', 'ServiceTypesController@all');
 
-    // /api/all/rfid/service-prices/{branchId}|self
-    Route::get('rfid/service-prices/{branchId}', 'RfidServicePricesController@index');
+    // /api/all/rfid/service-prices
+    Route::get('rfid/service-prices', 'RfidServicePricesController@index');
 
     // /api/all/discounts
     Route::get('discounts', 'DiscountsController@all');
@@ -414,20 +331,20 @@ Route::group(['prefix' => 'all', 'middleware' => 'auth:api'], function() {
 
 // /api/exports/pos-services
 Route::group(['prefix' => 'exports', 'middleware' => 'auth:api'], function () {
-    // /api/exports/pos-services/{clientId}/{branchId?}
-    Route::get('pos-services/{clientId}/{branchId?}', 'ExcelReportsController@posServices');
+    // /api/exports/pos-services
+    Route::get('pos-services', 'ExcelReportsController@posServices');
 
-    // /api/exports/pos-products/{clientId}/{branchId?}
-    Route::get('pos-products/{clientId}/{branchId?}', 'ExcelReportsController@posProducts');
+    // /api/exports/pos-products
+    Route::get('pos-products', 'ExcelReportsController@posProducts');
 
-    // /api/exports/pos-job-order/{clientId}/{branchId?}
-    Route::get('pos-job-order/{clientId}/{branchId?}', 'ExcelReportsController@posJobOrder');
+    // /api/exports/pos-job-order
+    Route::get('pos-job-order', 'ExcelReportsController@posJobOrder');
 
-    // /api/exports/rfid-transactions/{clientId}/{branchId?}
-    Route::get('rfid-transactions/{clientId}/{branchId?}', 'ExcelReportsController@rfidServices');
+    // /api/exports/rfid-transactions
+    Route::get('rfid-transactions', 'ExcelReportsController@rfidServices');
 
-    // /api/exports/rfid-topups/{clientId}/{branchId?}
-    Route::get('rfid-topups/{clientId}/{branchId?}', 'ExcelReportsController@rfidTopups');
+    // /api/exports/rfid-topups
+    Route::get('rfid-topups', 'ExcelReportsController@rfidTopups');
 });
 
 // /api/print
@@ -436,17 +353,10 @@ Route::group(['prefix' => 'print'], function() {
     Route::get('receipt/{transactionId}', 'PrinterController@printReceipt');
 });
 
-
 // /clients
 Route::group(['prefix' => 'clients', 'middleware' => 'auth:api', 'role:developer'], function() {
     // /clients/
     Route::get('/', 'ClientsController@index');
-});
-
-// /api/sys-defaults
-Route::group(['prefix' => 'sys-defaults', 'middleware' => 'auth:api'], function() {
-    // /api/sys-defaults/set-branch/{userId}|self
-    Route::post('set-branch/{userId}', 'BranchesController@setDefaultBranch');
 });
 
 // oauth
@@ -470,30 +380,6 @@ Route::group(['prefix' => 'mail'], function () {
 Route::group(['prefix' => 'live'], function() {
     // /api/live/register-owner
     Route::get('register-owner', 'LiveHostController@registerOwner');
-
-    // /api/live/upload
-    Route::group(['prefix' => 'upload'], function() {
-        // /api/live/upload/users/{ownerEmail}
-        Route::get('users/{ownerEmail}', 'LiveHostController@uploadUsers');
-
-        // /api/live/upload/products/{ownerEmail}
-        Route::get('products/{ownerEmail}', 'LiveHostController@uploadProducts');
-
-        // /api/live/upload/services/{ownerEmail}
-        Route::get('services/{ownerEmail}', 'LiveHostController@uploadServices');
-
-        // /api/live/upload/branch-setup/{ownerEmail}
-        Route::get('branch-setup/{ownerEmail}', 'LiveHostController@uploadBranchSetup');
-
-        // /api/live/upload/transactions/{ownerEmail}
-        Route::get('transactions/{ownerEmail}', 'LiveHostController@uploadTransactions');
-
-        // /api/live/upload/rfid/{ownerEmail}
-        Route::get('rfid/{ownerEmail}', 'LiveHostController@uploadRfid');
-
-        // /api/live/upload/{ownerEmail}
-        Route::get('{ownerEmail}', 'LiveHostController@upload');
-    });
 });
 
 

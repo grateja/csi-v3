@@ -25,7 +25,7 @@ class CreateServiceTransactionsTable extends Migration
 
             $table->timestamps();
 
-            $table->foreign('added_by')->references('id')->on('users')->onDelete('CASCADE');
+            $table->foreign('added_by')->references('id')->on('users')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE');
             $table->foreign('service_id')->references('id')->on('services')->onDelete('CASCADE');
         });

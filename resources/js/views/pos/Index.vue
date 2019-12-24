@@ -25,12 +25,10 @@
 
 <script>
 
-import BranchBrowser from '../shared/BranchBrowser.vue';
 import CustomerTransaction from './CustomerTransaction.vue';
 
 export default {
     components: {
-        BranchBrowser,
         CustomerTransaction
     },
     data() {

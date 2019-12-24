@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Transaction;
-use App\ServiceTransaction;
 use App\CompletedServiceTransaction;
-use App\ClientAuth;
-use App\BranchAuth;
 use Illuminate\Support\Facades\DB;
 use App\CompletedProductTransaction;
 use App\Customer;

@@ -5,12 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Product;
-use App\User;
-use App\SelfAuth;
-use App\Branch;
-use App\BranchProduct;
-use App\ClientAuth;
-use App\BranchAuth;
 use App\ProductPurchase;
 
 class ProductsController extends Controller

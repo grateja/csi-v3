@@ -228,25 +228,25 @@ export default {
                         }
                     ]
                 },
-                {
-                    to: '/developer',
-                    icon: 'face',
-                    text: 'developer',
-                    roles: ['developer'],
-                    children: [
-                        {
-                            to: '/developer/clients',
-                            icon: 'recent_actors',
-                            text: 'Clients',
-                            roles: ['developer'],
-                            btn: {
-                                to: '/developer/clients/add',
-                                text: 'Add new client',
-                                icon: 'add'
-                            }
-                        }
-                    ]
-                },
+                // {
+                //     to: '/developer',
+                //     icon: 'face',
+                //     text: 'developer',
+                //     roles: ['developer'],
+                //     children: [
+                //         {
+                //             to: '/developer/clients',
+                //             icon: 'recent_actors',
+                //             text: 'Clients',
+                //             roles: ['developer'],
+                //             btn: {
+                //                 to: '/developer/clients/add',
+                //                 text: 'Add new client',
+                //                 icon: 'add'
+                //             }
+                //         }
+                //     ]
+                // },
                 {
                     to: '/rfid',
                     icon: 'credit_card',

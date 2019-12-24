@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\RfidCard;
 use Illuminate\Support\Facades\DB;
-use App\Customer;
-use App\ClientAuth;
-use App\BranchAuth;
 
 class RfidCardsController extends Controller
 {

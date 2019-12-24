@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Machine;
-use App\Branch;
-use App\Customer;
 
 class MachinesController extends Controller
 {

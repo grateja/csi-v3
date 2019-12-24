@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\ServiceTransaction;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ReportTemplate;
 use App\CompletedServiceTransaction;

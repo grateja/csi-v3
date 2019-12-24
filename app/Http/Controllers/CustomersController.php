@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Customer;
-use App\ClientAuth;
 use Illuminate\Support\Facades\DB;
-use App\CompletedServiceTransaction;
 
 class CustomersController extends Controller
 {
