@@ -49,12 +49,6 @@ export default {
         login() {
             this.$store.dispatch('auth/loginAttempt', this.$data).then((res, rej) => {
                 this.$router.push('/');
-                if(res.data.activeBranch == null) {
-                    this.$router.push('/sys-defaults/branch');
-                    return;
-                } else {
-                    this.$store.commit('setDefaultBranch', res.data.activeBranch);
-                }
             }).catch(err => {});
         }
     },

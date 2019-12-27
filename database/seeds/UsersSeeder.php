@@ -27,8 +27,15 @@ class UsersSeeder extends Seeder
                 'email' => 'admin@csi.com',
                 'password' => bcrypt('admin'),
             ],
+            [
+                'id' => Str::uuid(),
+                'name' => 'Staff',
+                'email' => 'staff@csi.com',
+                'password' => bcrypt('admin'),
+            ],
         ];
         \App\User::insert($users);
         User::where('email', 'admin@csi.com')->first()->assignRole(2);
+        User::where('email', 'staff@csi.com')->first()->assignRole(3);
     }
 }

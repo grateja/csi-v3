@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>CSI V3</title>
 
         <!-- Fonts -->
         <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet"> -->
@@ -18,7 +18,7 @@
         } */
     </style>
     <body>
-        <v-app id="app" class="grey lighten-4">
+        <v-app id="app" color="#f23">
             <main-body />
         </v-app>
         <script src="{{ asset('js/app.js') }}"></script>

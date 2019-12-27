@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="breadcrumbs.length" class="cyan darken-1" flat>
+    <v-card v-if="breadcrumbs.length" color="#7ea923" flat>
         <v-breadcrumbs :items="breadcrumbs">
             <li slot="item" slot-scope="props">
                 <router-link exact :to="props.item.path" active-class="white--text">{{props.item.meta.breadcrumb}}</router-link>

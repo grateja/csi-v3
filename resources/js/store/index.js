@@ -28,15 +28,11 @@ import serviceprice from './modules/serviceprice.js';
 export default new  Vuex.Store({
     state: {
         currentUser: null,
-        activeBranch: null,
         flashMessage: null
     },
     getters: {
         getCurrentUser(state) {
             return state.currentUser;
-        },
-        getActiveBranch(state) {
-            return state.activeBranch;
         },
         getFlashMessage(state) {
             return state.flashMessage;
@@ -70,14 +66,6 @@ export default new  Vuex.Store({
         },
         updateName(state, user) {
             state.currentUser.fullname = user.fullname;
-        },
-        setDefaultBranch(state, branch) {
-            state.activeBranch = branch;
-            state.currentUser.branch = branch;
-            state.currentUser.active_branch_id = branch.id;
-        },
-        clearActiveBranch(state) {
-            state.activeBranch = null;
         },
         setFlash(state, config) {
             state.flashMessage = config;

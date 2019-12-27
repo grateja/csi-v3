@@ -46,6 +46,20 @@ const routes = [
         ]
     },
     {
+        path: '/new-transaction',
+        component: require('./views/transactions/Index.vue').default,
+        meta: {
+            breadcrumb: 'Transaction'
+        }
+    },
+    {
+        path: '/products',
+        component: require('./views/products/Index.vue').default,
+        meta: {
+            breadcrumb: 'Products'
+        }
+    },
+    {
         path: '/people',
         component: require('./views/people/Index.vue').default,
         meta: {
@@ -159,6 +173,14 @@ const routes = [
                 }
             }
         ]
+    },
+    {
+        path: '/',
+        component: require('./views/layout/TileMenu.vue').default
+    },
+    {
+        path: '*',
+        component: require('./views/layout/404.vue').default
     }
 ];
 

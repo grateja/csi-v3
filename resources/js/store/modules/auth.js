@@ -43,8 +43,6 @@ const actions = {
     loginAttempt(context, request) {
         context.commit('setLoggingIn', true);
         context.commit('clearErrors');
-        context.commit('clearActiveBranch', null, {root: true});
-        context.commit('branch/clearBranches', null, {root: true});
         return axios.post('/api/oauth/login', request).then((res, rej) => {
             context.dispatch('setAuth', res.data, {root: true});
             context.commit('setLoggingIn', false);
@@ -64,8 +62,6 @@ const actions = {
             context.commit('clearUser', null, {root: true});
             context.commit('clearToken', null, {root: true});
             context.commit('setLoggingOut', false);
-            context.commit('clearActiveBranch', null, {root: true});
-            context.commit('branch/clearBranches', null, {root: true});
         }).catch(err => {
             context.commit('setLoggingOut', false);
             return Promise.reject(err);
@@ -79,7 +75,6 @@ const actions = {
         return axios.get('/api/oauth/check').then((res, rej) => {
             context.commit('setUser', res.data, {root: true});
             context.commit('setLoadingStatus', false);
-            context.commit('setDefaultBranch', res.data.activeBranch, {root: true});
             return res;
         }).catch(err => {
             context.commit('setLoadingStatus', false);

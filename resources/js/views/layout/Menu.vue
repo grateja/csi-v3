@@ -1,7 +1,7 @@
 <template>
     <div>
         <flash-message />
-        <v-toolbar flat dark app class="green lighten-1">
+        <v-toolbar flat dark app color="red">
             <v-toolbar-side-icon v-if="!!user" @click="drawer = !drawer"></v-toolbar-side-icon>
 
             <v-toolbar-title v-if="!!user">
