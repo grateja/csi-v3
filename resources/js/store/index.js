@@ -24,6 +24,7 @@ import joborder from './modules/joborder.js';
 import exportdownload from './modules/exportdownload.js';
 import printer from './modules/printer.js';
 import serviceprice from './modules/serviceprice.js';
+import washingservice from './modules/washingservice.js';
 
 export default new  Vuex.Store({
     state: {
@@ -93,6 +94,7 @@ export default new  Vuex.Store({
         joborder,
         exportdownload,
         printer,
-        serviceprice
+        serviceprice,
+        washingservice
     }
 });

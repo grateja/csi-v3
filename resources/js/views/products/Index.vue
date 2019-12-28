@@ -103,7 +103,7 @@ export default {
             }
         },
         load() {
-            this.loading = false;
+            this.loading = true;
             axios.get('/api/products').then((res, rej) => {
                 this.items = res.data.result;
             }).finally(() => {

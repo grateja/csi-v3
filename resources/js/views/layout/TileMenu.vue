@@ -97,7 +97,7 @@ export default {
                     icon: '',
                     roles: ['admin', 'staff'],
                     color: '#fbf783',
-                    route: '/keme'
+                    route: '/services/washing-services'
                 },
                 {
                     text: 'Products',

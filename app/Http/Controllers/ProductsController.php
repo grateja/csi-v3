@@ -11,7 +11,7 @@ use App\ProductPurchase;
 class ProductsController extends Controller
 {
     public function index(Request $request) {
-        $products = Product::where('name', 'like', "%$request->keyword%")->get();
+        $products = Product::where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
 
         return response()->json([
             'result' => $products

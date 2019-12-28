@@ -100,14 +100,28 @@ Route::group(['prefix' => 'products', 'middleware' => 'auth:api'], function() {
 
 // /api/services
 Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
-    // /api/services/create
-    Route::post('create', 'ServicesController@store');
+    // /api/services/washing-services
+    Route::group(['prefix' => 'washing-services'], function() {
+        // /api/services/washing-services
+        Route::get('/', 'WashingServicesController@index');
 
-    // /api/services/{id}
-    Route::get('{id}', 'ServicesController@show');
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/washing-services/create
+            Route::post('create', 'WashingServicesController@store');
 
-    // /api/services/{id}
-    Route::post('{id}/update', 'ServicesController@update');
+            // /api/services/washing-services/{id}/update
+            Route::post('{id}/update', 'WashingServicesController@update');
+
+            // /api/services/washing-services/{id}/set-picture
+            Route::post('{id}/set-picture', 'WashingServicesController@setPicture');
+
+            // /api/services/washing-services/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'WashingServicesController@removePicture');
+
+            // /api/services/washing-services/{id}/delete-service
+            Route::post('{id}/delete-service', 'WashingServicesController@deleteService');
+        });
+    });
 });
 
 // /api/transactions

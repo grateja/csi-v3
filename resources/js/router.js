@@ -60,6 +60,24 @@ const routes = [
         }
     },
     {
+        path: '/services',
+        component: require('./views/services/Index.vue').default,
+        children: [
+            {
+                path: 'washing-services',
+                component: require('./views/services/washing-services/Index.vue').default
+            },
+            {
+                path: 'drying-services',
+                component: require('./views/services/drying-services/Index.vue').default
+            },
+            {
+                path: 'other-services',
+                component: require('./views/services/other-services/Index.vue').default
+            }
+        ]
+    },
+    {
         path: '/people',
         component: require('./views/people/Index.vue').default,
         meta: {
