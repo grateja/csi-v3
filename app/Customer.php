@@ -11,7 +11,7 @@ class Customer extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'name', 'address', 'contact_number', 'email', 'rfid', 'birthday', 'earned_points',
+        'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points',
     ];
 
     public function transactions() {

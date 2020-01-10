@@ -2,8 +2,10 @@ require('./bootstrap');
 
 import router from './router.js';
 import store from './store/index.js';
+import moment from 'moment';
 
 window.Vue = require('vue');
+Vue.prototype.moment = moment;
 
 import Vuetify from 'vuetify';
 import Breadcrumbs from 'vue-2-breadcrumbs';

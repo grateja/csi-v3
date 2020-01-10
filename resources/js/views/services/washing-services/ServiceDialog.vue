@@ -20,7 +20,7 @@
                     <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" v-model="formData.machineType" outline></v-combobox>
                     <v-text-field type="number" label="Regular minutes" v-model="formData.regularMinutes" :error-messages="errors.get('regularMinutes')" outline></v-text-field>
                     <v-text-field type="number" label="Additional minutes" v-model="formData.additionalMinutes" :error-messages="errors.get('additionalMinutes')" outline hint="For add super wash. Set to 0 to disable."></v-text-field>
-                    <v-text-field label="Points" v-model="formData.points" :error-messages="errors.get('additionalMinutes')" outline></v-text-field>
+                    <v-text-field label="Points" v-model="formData.points" :error-messages="errors.get('points')" outline></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn class="primary" round :loading="saving" type="submit">save</v-btn>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-btn class="ml-0 primary" @click="addService" round>
+        <v-btn class="ml-0 primary" @click="addService" round v-if="isOwner">
             <v-icon left>add</v-icon> add service
         </v-btn>
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
@@ -22,12 +22,14 @@
                     <td>{{props.item.additional_minutes}}</td>
                     <td>{{props.item.points}}</td>
                     <td>
-                        <v-btn small @click="edit(props.item)" class="mx-0" v-if="isOwner" round>
-                            <v-icon left small>edit</v-icon> edit
-                        </v-btn>
-                        <v-btn small @click="deleteService(props.item)" class="mx-0" :loading="props.item.isDeleting" round>
-                            <v-icon left small>delete</v-icon> delete
-                        </v-btn>
+                        <template v-if="isOwner">
+                            <v-btn small @click="edit(props.item)" class="mx-0" round>
+                                <v-icon left small>edit</v-icon> edit
+                            </v-btn>
+                            <v-btn small @click="deleteService(props.item)" class="mx-0" :loading="props.item.isDeleting" round>
+                                <v-icon left small>delete</v-icon> delete
+                            </v-btn>
+                        </template>
                     </td>
                 </tr>
             </template>

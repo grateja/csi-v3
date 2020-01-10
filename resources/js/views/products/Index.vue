@@ -21,12 +21,14 @@
                     <td v-else>P {{ parseFloat(props.item.selling_price).toFixed(2) }}</td>
                     <td>{{props.item.current_stock}}</td>
                     <td>
-                        <v-btn small @click="edit(props.item)" class="mx-0" v-if="isOwner" round>
-                            <v-icon left small>edit</v-icon> edit
-                        </v-btn>
-                        <v-btn small @click="deleteProduct(props.item)" class="mx-0" :loading="props.item.isDeleting" round>
-                            <v-icon left small>delete</v-icon> delete
-                        </v-btn>
+                        <template v-if="isOwner">
+                            <v-btn small @click="edit(props.item)" class="mx-0" round>
+                                <v-icon left small>edit</v-icon> edit
+                            </v-btn>
+                            <v-btn small @click="deleteProduct(props.item)" class="mx-0" :loading="props.item.isDeleting" round>
+                                <v-icon left small>delete</v-icon> delete
+                            </v-btn>
+                        </template>
                     </td>
                 </tr>
             </template>

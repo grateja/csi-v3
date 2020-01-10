@@ -21,7 +21,7 @@ class CreateCustomersTable extends Migration
             $table->string('contact_number')->nullable();
             $table->string('email')->nullable();
             $table->double('earned_points')->default(0)->nullable();
-            $table->date('birthday')->nullable();
+            $table->date('first_visit')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

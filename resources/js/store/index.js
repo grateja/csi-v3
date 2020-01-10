@@ -25,6 +25,11 @@ import exportdownload from './modules/exportdownload.js';
 import printer from './modules/printer.js';
 import serviceprice from './modules/serviceprice.js';
 import washingservice from './modules/washingservice.js';
+import dryingservice from './modules/dryingservice.js';
+import otherservice from './modules/otherservice.js';
+import fullservice from './modules/fullservice.js';
+import postransaction from './modules/postransaction.js';
+import fullserviceitem from './modules/fullserviceitem.js';
 
 export default new  Vuex.Store({
     state: {
@@ -95,6 +100,11 @@ export default new  Vuex.Store({
         exportdownload,
         printer,
         serviceprice,
-        washingservice
+        washingservice,
+        dryingservice,
+        otherservice,
+        postransaction,
+        fullservice,
+        fullserviceitem
     }
 });

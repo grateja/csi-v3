@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DryingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class DryingServicesController extends Controller
 {
@@ -19,6 +20,55 @@ class DryingServicesController extends Controller
         return response()->json([
             'result' => $dryingServices,
         ]);
+    }
+
+    public function setPicture($id, Request $request) {
+        if($request->hasFile('file')) {
+
+            $service = DryingService::findOrFail($id);
+            File::delete(public_path() . $service->img_path);
+
+            $extension = $request->file('file')->getClientOriginalExtension();
+            $name = str_random() . '.' . $extension;
+
+            $path = '/img/services/';
+            $source = $path . $name;
+            $request->file('file')->move(public_path() . $path, $name);
+
+            $service->update([
+                'img_path' => $source
+            ]);
+
+            return response()->json([
+                'img_path' => $source
+            ]);
+        }
+        return response()->json([
+            'errors' => [
+                'message' => ['No File selected']
+            ]
+        ], 422);
+    }
+
+    public function removePicture($id) {
+        $product = DryingService::findOrFail($id);
+        File::delete(public_path() . $product->img_path);
+        $product->update([
+            'img_path' => ''
+        ]);
+        return response()->json([
+            'message' => ['Picture removed']
+        ]);
+    }
+
+    public function deleteService($id) {
+        $service = DryingService::findOrFail($id);
+        if($service->delete()) {
+            File::delete(public_path() . $service->img_path);
+            return response()->json([
+                'service' => $service,
+            ]);
+        }
     }
 
     /**
@@ -39,7 +89,28 @@ class DryingServicesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'name' => 'required',
+            'price' => 'numeric',
+            'minutes' => 'numeric',
+            'points' => 'numeric',
+        ];
+
+        if($request->validate($rules)) {
+            $service = DryingService::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'machine_type' => $request->machineType,
+                'minutes' => $request->minutes,
+                'price' => $request->price,
+                'points' => $request->points,
+                'img_path' => null,
+            ]);
+
+            return response()->json([
+                'service' => $service,
+            ]);
+        }
     }
 
     /**
@@ -73,7 +144,28 @@ class DryingServicesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name' => 'required',
+            'price' => 'numeric',
+            'minutes' => 'numeric',
+            'points' => 'numeric',
+        ];
+
+        if($request->validate($rules)) {
+            $service = DryingService::findOrFail($id);
+            $service->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'machine_type' => $request->machineType,
+                'minutes' => $request->minutes,
+                'price' => $request->price,
+                'points' => $request->points,
+            ]);
+
+            return response()->json([
+                'service' => $service,
+            ]);
+        }
     }
 
     /**

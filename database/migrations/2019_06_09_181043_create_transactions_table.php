@@ -20,6 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->uuid('customer_id')->nullable();
             $table->uuid('user_id')->nullable()->comment('user who saved the transaction');
             $table->string('job_order')->nullable();
+            $table->dateTime('saved')->nullable();
 
             $table->softDeletes();
             $table->timestamp('synched')->nullable();

@@ -57,6 +57,9 @@ Route::group(['prefix' => 'products'], function() {
 // /api/customers
 Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
     // /api/customers
+    Route::get('/', 'CustomersController@index');
+
+    // /api/customers/create
     Route::post('create', 'CustomersController@store');
 
     // /api/customers/{customerId}/loyalty-services
@@ -100,6 +103,9 @@ Route::group(['prefix' => 'products', 'middleware' => 'auth:api'], function() {
 
 // /api/services
 Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
+    // /api/services/all
+    Route::get('all', 'ServicesController@index');
+
     // /api/services/washing-services
     Route::group(['prefix' => 'washing-services'], function() {
         // /api/services/washing-services
@@ -122,30 +128,128 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             Route::post('{id}/delete-service', 'WashingServicesController@deleteService');
         });
     });
+
+    // /api/services/drying-services
+    Route::group(['prefix' => 'drying-services'], function() {
+        // /api/services/drying-services
+        Route::get('/', 'DryingServicesController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/drying-services/create
+            Route::post('create', 'DryingServicesController@store');
+
+            // /api/services/drying-services/{id}/update
+            Route::post('{id}/update', 'DryingServicesController@update');
+
+            // /api/services/drying-services/{id}/set-picture
+            Route::post('{id}/set-picture', 'DryingServicesController@setPicture');
+
+            // /api/services/drying-services/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'DryingServicesController@removePicture');
+
+            // /api/services/drying-services/{id}/delete-service
+            Route::post('{id}/delete-service', 'DryingServicesController@deleteService');
+        });
+    });
+
+    // /api/services/other-services
+    Route::group(['prefix' => 'other-services'], function() {
+        // /api/services/other-services
+        Route::get('/', 'OtherServicesController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/other-services/create
+            Route::post('create', 'OtherServicesController@store');
+
+            // /api/services/other-services/{id}/update
+            Route::post('{id}/update', 'OtherServicesController@update');
+
+            // /api/services/other-services/{id}/set-picture
+            Route::post('{id}/set-picture', 'OtherServicesController@setPicture');
+
+            // /api/services/other-services/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'OtherServicesController@removePicture');
+
+            // /api/services/other-services/{id}/delete-service
+            Route::post('{id}/delete-service', 'OtherServicesController@deleteService');
+        });
+    });
+
+    // /api/services/full-services
+    Route::group(['prefix' => 'full-services'], function() {
+        // /api/services/full-services
+        Route::get('/', 'FullServicesController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/full-services/create
+            Route::post('create', 'FullServicesController@store');
+
+            // /api/services/full-services/{id}/update
+            Route::post('{id}/update', 'FullServicesController@update');
+
+            // /api/services/full-services/{id}/set-picture
+            Route::post('{id}/set-picture', 'FullServicesController@setPicture');
+
+            // /api/services/full-services/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'FullServicesController@removePicture');
+
+            // /api/services/full-services/{id}/delete-service
+            Route::post('{id}/delete-service', 'FullServicesController@deleteService');
+        });
+    });
+
+    // /api/services/full-service-items
+    Route::group(['prefix' => 'full-service-items'], function() {
+
+        // /api/services/full-service-items
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/full-service-items/create
+            Route::post('create', 'FullServiceItemsController@store');
+
+            // /api/services/full-service-items/{id}/update
+            Route::post('{id}/update', 'FullServiceItemsController@update');
+
+            // /api/services/full-service-items/{id}/set-picture
+            Route::post('{id}/set-picture', 'FullServiceItemsController@setPicture');
+
+            // /api/services/full-service-items/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'FullServiceItemsController@removePicture');
+
+            // /api/services/full-service-items/{id}/delete-service
+            Route::post('{id}/delete-service', 'FullServiceItemsController@deleteService');
+        });
+    });
+});
+
+// /apo/pos-transactions
+Route::group(['prefix' => 'pos-transactions'], function () {
+    // /api/pos-transactions/current-transaction/{customerId}
+    Route::get('current-transaction/{customerId}', 'PosTransactionController@currentTransaction');
+
+    // /api/pos-transactions/services
+    Route::get('services', 'PosTransactionController@services');
+
+    // /api/pos-transactions/add-service/{category}
+    Route::post('add-service/{category}', 'PosTransactionController@addService');
+
+    // /api/pos-transactions/save-transaction/{transactionId}
+    Route::post('save-transaction/{transactionId}', 'PosTransactionController@saveTransaction');
 });
 
 // /api/transactions
 Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function() {
-    // /api/transactions/rfid-card/{rfidCardId}/top-up
-    Route::post('rfid-card/{rfidCardId}/top-up', 'RfidTransactionsController@topUp');
+    // /api/transactions/{transactionId}
+    Route::get('{transactionId}', 'TransactionsController@show');
 
-    // /api/transactions/unpaid/{customerId}
-    Route::get('unpaid/{customerId}', 'TransactionsController@customerTransaction');
+    // /api/transactions/{transactionId}/view-service-items
+    Route::get('{transactionId}/view-service-items', 'TransactionsController@viewServiceItems');
 
-    // /api/transaction/service-item/{serviceItemId}/remove
-    Route::post('service-item/{serviceItemId}/remove', 'TransactionsController@removeServiceItem');
+    // /api/transaction/service-items
+    Route::group(['prefix' => 'service-items'], function() {
+        // /api/transaction/service-items/{serviceTransactionItemId}/delete
+        Route::post('{serviceTransactionItemId}/delete', 'ServiceTransactionsController@deleteItem');
+    });
 
-    // /api/transaction/product-item/{productItemId}/remove
-    Route::post('product-item/{productItemId}/remove', 'TransactionsController@removeProductItem');
-
-    // /api/transactions/{id}/add-order
-    Route::post('{id}/add-order', 'TransactionsController@addOrder');
-
-    // /api/transactions/{id}/add-service
-    Route::post('{id}/add-service', 'TransactionsController@addService');
-
-    // /api/transactions/{transactionId}/save-current-transaction
-    Route::post('{transactionId}/save-current-transaction', 'TransactionsController@saveCurrentTransaction');
 });
 
 // /api/payments

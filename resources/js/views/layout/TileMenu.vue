@@ -27,7 +27,7 @@ export default {
                     icon: '',
                     roles: ['staff'],
                     color: '#33cbff',
-                    route: '/new-transaction'
+                    route: '/new-transaction/services'
                 },
                 {
                     text: 'Remote panel',
@@ -69,7 +69,7 @@ export default {
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#a1e6d9',
-                    route: '/keme'
+                    route: '/customers'
                 },
                 {
                     text: 'Users',

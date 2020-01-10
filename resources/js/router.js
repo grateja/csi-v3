@@ -50,7 +50,17 @@ const routes = [
         component: require('./views/transactions/Index.vue').default,
         meta: {
             breadcrumb: 'Transaction'
-        }
+        },
+        children: [
+            {
+                path: 'services',
+                component: require('./views/transactions/Services.vue').default
+            },
+            {
+                path: 'products',
+                component: require('./views/transactions/Products.vue').default
+            }
+        ]
     },
     {
         path: '/products',
@@ -74,8 +84,16 @@ const routes = [
             {
                 path: 'other-services',
                 component: require('./views/services/other-services/Index.vue').default
+            },
+            {
+                path: 'full-services',
+                component: require('./views/services/full-services/Index.vue').default
             }
         ]
+    },
+    {
+        path: '/customers',
+        component: require('./views/customers/Index.vue').default
     },
     {
         path: '/people',

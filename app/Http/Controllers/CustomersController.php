@@ -15,7 +15,7 @@ class CustomersController extends Controller
         });
 
         return response()->json([
-            'result' => $customers->paginate(10)
+            'result' => $customers->paginate(20)
         ], 200);
     }
 

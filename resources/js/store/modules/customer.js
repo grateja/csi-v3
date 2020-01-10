@@ -33,7 +33,7 @@ const actions = {
     insertCustomer(context, data) {
         context.commit('setSavingStatus', true);
         context.commit('clearErrors');
-        return axios.post('/api/customers/self/create', data.formData).then((res, rej) => {
+        return axios.post('/api/customers/create', data.formData).then((res, rej) => {
             context.commit('setSavingStatus', false);
             context.commit('setCustomer', res.data.customer);
             return res;

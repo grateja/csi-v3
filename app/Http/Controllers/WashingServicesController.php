@@ -162,6 +162,7 @@ class WashingServicesController extends Controller
                 'machine_type' => $request->machineType,
                 'regular_minutes' => $request->regularMinutes,
                 'additional_minutes' => $request->additionalMinutes,
+                'price' => $request->price,
                 'points' => $request->points,
             ]);
 
