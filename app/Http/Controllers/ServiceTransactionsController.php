@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\CustomerDry;
+use App\CustomerWash;
 use App\ServiceTransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,35 +15,37 @@ class ServiceTransactionsController extends Controller
         return DB::transaction(function () use ($serviceTransactionItemId) {
             $serviceTransactionItem = ServiceTransactionItem::find($serviceTransactionItemId);
 
-            if($serviceTransactionItem->delete()) {
+            if($serviceTransactionItem->forceDelete()) {
 
-                if($customerWash = $serviceTransactionItem->customerWash) {
+                $customerDries = CustomerDry::where('service_transaction_item_id', $serviceTransactionItemId)->get();
+                $customerWashes = CustomerWash::where('service_transaction_item_id', $serviceTransactionItemId)->get();
 
-                    if($customerWash->used) {
+                foreach ($customerDries as $customerDry) {
+                    if($customerDry->used != null) {
                         DB::rollback();
                         return response()->json([
                             'errors' => [
-                                'message' => ['Cannot remove item. Service is already used']
+                                'message' => ['Cannot remove item. "' . $customerDry->service_name . '" is already used']
                             ]
                         ], 422);
+                    } else {
+                        $customerDry->forceDelete();
                     }
-
-                    $customerWash->delete();
                 }
 
-                if($customerDry = $serviceTransactionItem->customerDry) {
-
-                    if($customerDry->used) {
+                foreach ($customerWashes as $customerWash) {
+                    if($customerWash->used != null) {
                         DB::rollback();
                         return response()->json([
                             'errors' => [
-                                'message' => ['Cannot remove item. Service is already used']
+                                'message' => ['Cannot remove item. "' . $customerDry->service_name . '" is already used']
                             ]
                         ], 422);
+                    } else {
+                        $customerWash->forceDelete();
                     }
-
-                    $customerDry->delete();
                 }
+
                 return response()->json([
                     'message' => 'Item deleted successfully',
                     'serviceTransactionItem' => $serviceTransactionItem,

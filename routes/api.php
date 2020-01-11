@@ -56,6 +56,9 @@ Route::group(['prefix' => 'products'], function() {
 
 // /api/customers
 Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
+    // /api/customers/{customerId}/check-points
+    Route::get('{customerId}/check-points', 'CustomersController@checkPoints');
+
     // /api/customers
     Route::get('/', 'CustomersController@index');
 
@@ -77,6 +80,9 @@ Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
 
 // /api/products
 Route::group(['prefix' => 'products', 'middleware' => 'auth:api'], function() {
+    // /api/products/all
+    Route::get('/all', 'ProductsController@index');
+
     // /api/products/{id}
     Route::get('{id}', 'ProductsController@show');
 
@@ -219,6 +225,28 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             Route::post('{id}/delete-service', 'FullServiceItemsController@deleteService');
         });
     });
+
+    // /api/services/full-service-products
+    Route::group(['prefix' => 'full-service-products'], function() {
+
+        // /api/services/full-service-products
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/full-service-products/create
+            Route::post('create', 'FullServiceProductsController@store');
+
+            // /api/services/full-service-products/{id}/update
+            Route::post('{id}/update', 'FullServiceProductsController@update');
+
+            // /api/services/full-service-products/{id}/set-picture
+            Route::post('{id}/set-picture', 'FullServiceProductsController@setPicture');
+
+            // /api/services/full-service-products/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'FullServiceProductsController@removePicture');
+
+            // /api/services/full-service-products/{id}/delete-product
+            Route::post('{id}/delete-product', 'FullServiceProductsController@deleteProduct');
+        });
+    });
 });
 
 // /apo/pos-transactions
@@ -234,6 +262,15 @@ Route::group(['prefix' => 'pos-transactions'], function () {
 
     // /api/pos-transactions/save-transaction/{transactionId}
     Route::post('save-transaction/{transactionId}', 'PosTransactionController@saveTransaction');
+
+    // /api/pos-transactions/products
+    Route::get('products', 'PosTransactionController@products');
+
+    // /api/pos-transactions/add-product
+    Route::post('add-product', 'PosTransactionController@addProduct');
+
+    // /api/pos-transactions/reduce-products
+    Route::post('reduce-products', 'PosTransactionController@reduceProducts');
 });
 
 // /api/transactions
@@ -352,16 +389,10 @@ Route::group(['prefix' => 'search', 'middleware' => 'auth:api'], function() {
     });
 });
 
-// /api/rfid
-Route::group(['prefix' => 'rfid', 'middleware' => 'auth:api'], function() {
-    // /api/rfid/cards
-    Route::group(['prefix' => 'cards'], function() {
-        // /api/rfid/card/create
-        Route::post('create', 'RfidCardsController@store');
-
-        // /api/rfid/card/{id}/update
-        Route::post('{id}/update', 'RfidCardsController@update');
-    });
+// /api/rfid-cards
+Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() {
+    // /api/rfid-cards/customer-cards
+    Route::get('customer-cards', 'RfidCardsController@customerCards');
 });
 
 // /api/service-prices
@@ -371,7 +402,10 @@ Route::group(['prefix' => 'service-prices', 'middleware' => 'auth:api'], functio
 });
 
 // /api/discounts
-Route::group(['prefix' => 'discounts', 'middleware' => ['auth:api', 'role:admin']], function() {
+Route::group(['prefix' => 'discounts', 'middleware' => ['auth:api']], function() {
+    // /api/discounts
+    Route::get('/', 'DiscountsController@index');
+
     // /api/discounts/create
     Route::post('create', 'DiscountsController@store');
 

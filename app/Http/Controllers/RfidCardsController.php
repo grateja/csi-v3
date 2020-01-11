@@ -35,6 +35,13 @@ class RfidCardsController extends Controller
         ], 200);
     }
 
+    public function customerCards(Request $request) {
+        $result = RfidCard::where('customer_id', $request->customerId)->get();
+        return response()->json([
+            'result' => $result
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

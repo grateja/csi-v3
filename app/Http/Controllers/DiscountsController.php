@@ -17,7 +17,7 @@ class DiscountsController extends Controller
     {
         $result = Discount::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
-        })->paginate(10);
+        })->get();
 
         return response()->json([
             'result' => $result,

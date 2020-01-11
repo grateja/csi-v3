@@ -22,6 +22,10 @@ class Transaction extends Model
         return $this->hasMany('App\ServiceTransactionItem')->orderBy('name');
     }
 
+    public function productTransactionItems() {
+        return $this->hasMany('App\ProductTransactionitem')->orderBy('name');
+    }
+
     public function customer() {
         return $this->belongsTo('App\Customer');
     }
@@ -34,11 +38,22 @@ class Transaction extends Model
         return $this->serviceTransactionItems()->groupBy('name', 'price')->selectRaw('name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
     }
 
+    public function posProductItems() {
+        return $this->productTransactionItems()->groupBy('name', 'price', 'product_id')->selectRaw('product_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
+    }
+
     public function posServiceSummary() {
         // total quantity, total price
         return [
-            'total_price' => $this->posServiceItems->sum('total_price'),
-            'total_quantity' => $this->posServiceItems->sum('quantity'),
+            'total_price' => $this->posServiceItems()->sum('total_price'),
+            'total_quantity' => $this->posServiceItems()->sum('quantity'),
+        ];
+    }
+
+    public function posProductSummary() {
+        return [
+            'total_price' => $this->posProductItems()->sum('total_price'),
+            'total_quantity' => $this->posProductItems()->sum('quantity'),
         ];
     }
 
@@ -48,6 +63,21 @@ class Transaction extends Model
             $this->job_order = sprintf($jobOrder->format, $jobOrder->start_number);
             $jobOrder->increment('start_number');
         }
+    }
+
+    public function refreshAll() {
+        $this['customer_name'] = $this->customer->name;
+        $this['posServiceItems'] = $this->posServiceItems();
+        $this['posProductItems'] = $this->posProductItems();
+        $this['posServiceSummary'] = $this->posServiceSummary();
+        $this['posProductSummary'] = $this->posProductSummary();
+        $this['total_amount'] = $this->posProductSummary()['total_price'] + $this->posServiceSummary()['total_price'];
+        $this['customer'] = $this->customer();
+    }
+
+    public function withPayment() {
+        $this['payment'] = $this->payment;
+        return $this;
     }
 
     protected static function boot()

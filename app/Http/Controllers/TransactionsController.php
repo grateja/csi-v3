@@ -33,12 +33,7 @@ class TransactionsController extends Controller
 
     public function show($transactionId) {
         $transaction = Transaction::findOrfail($transactionId);
-
-        if($transaction) {
-            $transaction['posServiceItems'] = $transaction->posServiceItems();
-            $transaction['posServiceSummary'] = $transaction->posServiceSummary();
-        }
-
+        $transaction->refreshAll();
 
         return response()->json([
             'transaction' => $transaction

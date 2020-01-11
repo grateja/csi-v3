@@ -14,4 +14,16 @@ class Product extends Model
     protected $fillable = [
         'name', 'description', 'minimum_stock', 'current_stock', 'img_path', 'selling_price',
     ];
+
+    public function fullServiceProducts() {
+        return $this->hasMany('App\FullServiceProduct');
+    }
+
+    protected static function boot() {
+        static::deleting(function($model) {
+            $model->fullServiceProducts()->delete();
+        });
+
+        parent::boot();
+    }
 }

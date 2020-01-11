@@ -92,12 +92,13 @@
                             <v-responsive v-if="item.img_path">
                                 <v-img height="100px" :src="item.img_path" max-height="100px" ></v-img>
                             </v-responsive>
-                            <div class="text-xs-center ma-1">
+                            <div class="ma-1">
                                 <div class="title">
                                     {{item.name}}
                                 </div>
                                 <ol class="font-italic">
                                     <li v-for="sItem in item.full_service_items" :key="sItem.id">{{sItem.name}}</li>
+                                    <li v-for="pItem in item.full_service_products" :key="pItem.id">{{pItem.name}}</li>
                                 </ol>
                                 <div class="font-italic grey--text">{{item.description}}</div>
                             </div>

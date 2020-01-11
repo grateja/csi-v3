@@ -11,7 +11,7 @@ class ServiceTransactionItem extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'transaction_id', 'name', 'price', 'category', 'washing_service_id', 'drying_service_id', 'other_service_id', 'full_service_id', 'saved',
+        'transaction_id', 'name', 'price', 'category', 'washing_service_id', 'drying_service_id', 'other_service_id', 'full_service_id', 'saved', 'earning_points',
     ];
 
     public function washingService() {
@@ -20,6 +20,10 @@ class ServiceTransactionItem extends Model
 
     public function dryingService() {
         return $this->belongsTo('App\DryingService');
+    }
+
+    public function fullService() {
+        return $this->belongsTo('App\FullService');
     }
 
     public function customerWash() {

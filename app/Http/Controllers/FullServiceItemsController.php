@@ -192,7 +192,7 @@ class FullServiceItemsController extends Controller
     public function deleteService($id)
     {
         $fullServiceItem = FullServiceItem::findOrFail($id);
-        if($fullServiceItem->delete()) {
+        if($fullServiceItem->forceDelete()) {
             return response()->json([
                 'fullServiceItem' => $fullServiceItem,
             ]);

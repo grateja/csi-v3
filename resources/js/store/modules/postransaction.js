@@ -71,6 +71,23 @@ const actions = {
             return Promise.reject(err);
         });
     },
+    addProduct(context, data) {
+        return axios.post(`/api/pos-transactions/add-product`, {
+            customerId: data.customerId,
+            transactionId: data.transactionId,
+            itemId: data.itemId
+        }).then((res, rej) => {
+            context.commit('setCurrentTransaction', res.data.transaction);
+            return res;
+        }).catch(err => {
+            return Promise.reject(err);
+        });
+    },
+    reduceProduct(context, data) {
+        return axios.post(`/api/pos-transactions/reduce-products`, data).then((res, rej) => {
+
+        });
+    },
     saveTransaction(context, transactionId) {
         context.commit('clearErrors');
         context.commit('setSavingStatus', true);

@@ -22,7 +22,25 @@ class FullService extends Model
         return $this->hasMany('App\FullServiceItem');
     }
 
+    public function fullServiceProducts() {
+        return $this->hasMany('App\FullServiceProduct');
+    }
+
     public function getPriceAttribute() {
-        return $this->fullServiceItems()->sum('price') + $this->additional_charge - $this->discount;
+        return $this->fullServiceItems()->sum('price') + $this->additional_charge - $this->discount + $this->fullServiceProducts()->sum('price');
+    }
+
+    public function serviceTransactionItems() {
+        return $this->hasMany('App\ServiceTransactionItem');
+    }
+
+    protected static function boot() {
+        static::deleting(function($model) {
+            $model->fullServiceItems()->delete();
+            $model->fullServiceProducts()->delete();
+            $model->serviceTransactionItems()->where('saved', false)->delete();
+        });
+
+        parent::boot();
     }
 }

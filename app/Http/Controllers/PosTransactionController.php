@@ -7,6 +7,8 @@ use App\CustomerWash;
 use App\DryingService;
 use App\FullService;
 use App\OtherService;
+use App\Product;
+use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
 use App\WashingService;
@@ -24,8 +26,7 @@ class PosTransactionController extends Controller
         })->first();
 
         if($transaction) {
-            $transaction['posServiceItems'] = $transaction->posServiceItems();
-            $transaction['posServiceSummary'] = $transaction->posServiceSummary();
+            $transaction->refreshAll();
         }
 
 
@@ -38,13 +39,21 @@ class PosTransactionController extends Controller
         $washingServices = WashingService::orderBy('name')->get();
         $dryingServices = DryingService::orderBy('name')->get();
         $otherServices = OtherService::orderBy('name')->get();
-        $fullServices = FullService::with('fullServiceItems')->orderBy('name')->get();
+        $fullServices = FullService::with('fullServiceItems', 'fullServiceProducts')->orderBy('name')->get();
 
         return response()->json([
             'washingServices' => $washingServices,
             'dryingServices' => $dryingServices,
             'otherServices' => $otherServices,
             'fullServices' => $fullServices,
+        ]);
+    }
+
+    public function products() {
+        $products = Product::orderBy('name')->get();
+
+        return response()->json([
+            'products' => $products,
         ]);
     }
 
@@ -77,6 +86,14 @@ class PosTransactionController extends Controller
                     break;
             }
 
+            if(!$item) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Item was not found or deleted.']
+                    ]
+                ], 422);
+            }
+
             $transactionItem = ServiceTransactionItem::create([
                 'transaction_id' => $transaction->id,
                 'name' => $item->name,
@@ -89,11 +106,69 @@ class PosTransactionController extends Controller
                 'full_service_id' => $category == 'full' ? $request->itemId : null,
             ]);
 
-            $transaction['posServiceItems'] = $transaction->posServiceItems();
-            $transaction['posServiceSummary'] = $transaction->posServiceSummary();
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
 
             return response()->json([
                 'transaction' => $transaction,
+            ]);
+        });
+    }
+
+    public function addProduct(Request $request) {
+        return DB::transaction(function () use ($request) {
+
+            $product = Product::findOrFail($request->itemId);
+
+            $transaction = Transaction::find($request->transactionId);
+            if($transaction == null) {
+                $transaction = Transaction::create([
+                    'customer_id' => $request->customerId,
+                    'user_id' => auth('api')->id(),
+                ]);
+            } else {
+                $transaction->update([
+                    'saved' => null,
+                ]);
+            }
+
+            $transactionItem = ProductTransactionItem::create([
+                'transaction_id' => $transaction->id,
+                'name' => $product->name,
+                'price' => $product->selling_price,
+                'product_id' => $product->id,
+            ]);
+
+            $product->decrement('current_stock');
+
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
+
+            return response()->json([
+                'transaction' => $transaction,
+                'product' => $product,
+            ]);
+        });
+    }
+
+    public function reduceProducts(Request $request) {
+        return DB::transaction(function () use ($request) {
+            $productItem = ProductTransactionItem::where([
+                'product_id' => $request->productId,
+                'transaction_id' => $request->transactionId,
+            ])->orderByDesc('created_at')->first();
+
+            if($productItem->forceDelete()) {
+                $product = Product::findOrFail($request->productId);
+                $product->increment('current_stock');
+            }
+
+            return response()->json([
+                'productItem' => $productItem
             ]);
         });
     }
@@ -122,6 +197,12 @@ class PosTransactionController extends Controller
                 'saved' => false,
             ])->get();
 
+            $fullServices = ServiceTransactionItem::with('fullService.fullServiceItems')->where([
+                'category' => 'full',
+                'transaction_id' => $transactionId,
+                'saved' => false,
+            ])->get();
+
             foreach ($washingServices as $item) {
                 CustomerWash::create([
                     'service_name' => $item->name,
@@ -134,6 +215,7 @@ class PosTransactionController extends Controller
 
                 $item->update([
                     'saved' => true,
+                    'earning_points' => $item->washingService['points'],
                 ]);
             }
 
@@ -149,11 +231,61 @@ class PosTransactionController extends Controller
 
                 $item->update([
                     'saved' => true,
+                    'earning_points' => $item->dryingService['points'],
                 ]);
             }
 
-            $transaction['posServiceItems'] = $transaction->posServiceItems();
-            $transaction['posServiceSummary'] = $transaction->posServiceSummary();
+            foreach ($fullServices as $item) {
+                foreach ($item->fullService->fullServiceItems as $fullServiceItem) {
+                    $earningPoints = 0;
+                    if($fullServiceItem->category == 'drying') {
+
+                        $dryingService = DryingService::find($fullServiceItem->drying_service_id);
+
+                        for ($i=0; $i < $fullServiceItem->quantity; $i++) {
+
+                            CustomerDry::create([
+                                'service_name' => $dryingService->name . ' (Full service)',
+                                'customer_id' => $transaction->customer_id,
+                                'service_transaction_item_id' => $item['id'],
+                                'machine_type' => $dryingService['machine_type'],
+                                'minutes' => $dryingService['minutes'],
+                                'pulse_count' => $dryingService['minutes'] / 10,
+                            ]);
+                            $earningPoints += $fullServiceItem->points;
+                        }
+
+                    }
+
+                    if($fullServiceItem->category == 'washing') {
+
+                        $washingService = WashingService::find($fullServiceItem->washing_service_id);
+
+                        for ($i=0; $i < $fullServiceItem->quantity; $i++) {
+
+                            CustomerWash::create([
+                                'service_name' => $washingService->name . '(Full service)',
+                                'customer_id' => $transaction->customer_id,
+                                'service_transaction_item_id' => $item['id'],
+                                'machine_type' => $washingService['machine_type'],
+                                'minutes' => $washingService['regular_minutes'] + $washingService['additional_minutes'],
+                                'pulse_count' => $washingService['additional_minutes'] ? 2 : 1,
+                            ]);
+                            $earningPoints += $fullServiceItem->points;
+                        }
+                    }
+                }
+
+                $item->update([
+                    'saved' => true,
+                    'earning_points' => $earningPoints,
+                ]);
+            }
+
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
 
             return response()->json([
                 'transaction' => $transaction,

@@ -54,7 +54,7 @@ export default {
             if(!!item && item.id) {
                 this.formData.name = item.name;
                 this.formData.quantity = 1;
-                this.formData.points = item.points;
+                this.formData.points = item.points || 0;
                 this.formData.price = item.price;
             }
         },

@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 class FullServicesController extends Controller
 {
     public function index(Request $request) {
-        $services = FullService::with(['fullServiceItems' => function($query) {
-            $query->with('washingService');
-        }])
+        $services = FullService::with('fullServiceItems', 'fullServiceProducts')
             ->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
         return response()->json([
             'result' => $services
@@ -42,7 +40,7 @@ class FullServicesController extends Controller
             ]);
 
             return response()->json([
-                'service' => $service->fresh('fullServiceItems.washingService'),
+                'service' => $service->fresh('fullServiceItems', 'fullServiceProducts'),
             ]);
         }
     }
@@ -64,7 +62,7 @@ class FullServicesController extends Controller
             ]);
 
             return response()->json([
-                'service' => $service->fresh('fullServiceItems.washingService'),
+                'service' => $service->fresh('fullServiceItems'),
             ]);
         }
     }

@@ -19,7 +19,12 @@
         <v-card v-if="items.length">
             <v-list dense>
                 <v-list-tile v-for="item in items" :key="item.id" @click="selectCustomer(item)">
-                    {{item.name}}
+                    <v-list-tile-content>
+                        <v-list-tile-title>
+                            <h3>{{item.name}}</h3>
+                        </v-list-tile-title>
+                        <span class="grey--text">{{item.address}}</span>
+                    </v-list-tile-content>
                 </v-list-tile>
             </v-list>
         </v-card>

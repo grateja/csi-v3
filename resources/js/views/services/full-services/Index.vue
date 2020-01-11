@@ -9,11 +9,12 @@
                     <v-card-title class="title grey--">{{service.name}}</v-card-title>
                     <v-divider></v-divider>
                     <v-card-text>
-                        <ul>
-                            <li v-for="item in service.full_service_items" :key="item.id">{{item.name}}</li>
+                        <ol>
+                            <li v-for="item in service.full_service_items" :key="item.id">{{item.name}} - <span class="font-weight-bold">P {{ parseFloat(item.price).toFixed(2)}}</span> </li>
+                            <li v-for="item in service.full_service_products" :key="item.id">{{item.name}} - <span class="font-weight-bold">P {{parseFloat(item.price).toFixed(2)}}</span></li>
                             <li class="font-italic grey--text" v-if="service.additional_charge > 0">Additional charge: P {{ parseFloat(service.additional_charge).toFixed(2)}}</li>
                             <li class="font-italic grey--text" v-if="service.discount > 0">Discount: P {{ parseFloat(service.discount).toFixed(2)}}</li>
-                        </ul>
+                        </ol>
                         <h3 class="font-weight-bold">Total price: P {{ parseFloat(service.price).toFixed(2)}}</h3>
                     </v-card-text>
                     <v-divider></v-divider>

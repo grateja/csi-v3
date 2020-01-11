@@ -21,6 +21,7 @@ class CreateServiceTransactionItemsTable extends Migration
             $table->string('name');
             $table->double('price')->default(0);
             $table->string('category')->comment('washing, drying, other, full');
+            $table->float('earning_points')->default(0);
 
             $table->uuid('washing_service_id')->nullable();
             $table->uuid('drying_service_id')->nullable();

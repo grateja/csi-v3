@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Customer;
+use App\LoyaltyPoint;
 use Illuminate\Support\Facades\DB;
 
 class CustomersController extends Controller
@@ -27,6 +28,16 @@ class CustomersController extends Controller
         return response()->json([
             'data' => $data
         ], 200);
+    }
+
+    public function checkPoints($customerId) {
+        $customer = Customer::findOrFail($customerId);
+        $pointsInPeso = LoyaltyPoint::first()->amount_in_peso;
+
+        return response()->json([
+            'customer' => $customer,
+            'pointsInPeso' => $customer->earned_points * $pointsInPeso,
+        ]);
     }
 
     public function store(Request $request) {

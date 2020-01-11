@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(\DryingServiceSeeder::class);
         $this->call(\WashingServiceSeeder::class);
         $this->call(\OtherServicesSeeder::class);
+        $this->call(\JobOrderSeeder::class);
 
         DB::table('role_users')->insert([
             [
