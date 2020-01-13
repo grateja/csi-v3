@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\ServiceTransactionItem;
 use App\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransactionsController extends Controller
 {
@@ -32,11 +33,33 @@ class TransactionsController extends Controller
     }
 
     public function show($transactionId) {
-        $transaction = Transaction::findOrfail($transactionId);
+        $transaction = Transaction::with('customer')->findOrfail($transactionId);
         $transaction->refreshAll();
 
         return response()->json([
             'transaction' => $transaction
+        ]);
+    }
+
+    public function unpaidTransactions(Request $request) {
+        // $result = DB::table('transactions')
+        //     ->where('customers.name', 'like', "%$request->keyword%")
+        //     ->whereNotNull('saved')
+        //     ->select('transactions.id','job_order', 'saved', 'total_price', 'customer_id', 'customers.id', 'customers.name')
+        //     ->join('customers', 'customers.id', '=', 'customer_id')
+        //     ->orderBy('name');
+
+        $result = Transaction::where('customer_name', 'like', "%$request->keyword%")
+            ->whereNotNull('saved')
+            ->whereDoesntHave('payment')
+            ->orderBy('customer_name');
+
+        if($request->date) {
+            $result = $result->whereDate('saved', $request->date);
+        }
+
+        return response()->json([
+            'result' => $result->paginate(),
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\CustomerDry;
 use App\CustomerWash;
 use App\DryingService;
@@ -60,10 +61,12 @@ class PosTransactionController extends Controller
     public function addService($category, Request $request) {
         return DB::transaction(function () use ($request, $category) {
             $transaction = Transaction::find($request->transactionId);
+            $customer = Customer::findOrFail($request->customerId);
             if($transaction == null) {
                 $transaction = Transaction::create([
                     'customer_id' => $request->customerId,
                     'user_id' => auth('api')->id(),
+                    'customer_name' => $customer->name,
                 ]);
             } else {
                 $transaction->update([
@@ -123,16 +126,19 @@ class PosTransactionController extends Controller
             $product = Product::findOrFail($request->itemId);
 
             $transaction = Transaction::find($request->transactionId);
+            $customer = Customer::findOrFail($request->customerId);
             if($transaction == null) {
                 $transaction = Transaction::create([
                     'customer_id' => $request->customerId,
                     'user_id' => auth('api')->id(),
+                    'customer_name' => $customer->name,
                 ]);
             } else {
                 $transaction->update([
                     'saved' => null,
                 ]);
             }
+
 
             $transactionItem = ProductTransactionItem::create([
                 'transaction_id' => $transaction->id,
@@ -182,8 +188,12 @@ class PosTransactionController extends Controller
                 $transaction->attachJobOrder();
                 $transaction->date = Carbon::now();
             }
-            $transaction->saved = Carbon::now();
-            $transaction->save();
+            $transaction->update([
+                'saved' => Carbon::now(),
+                'total_price' => $transaction->totalPrice(),
+            ]);
+            // $transaction->saved = Carbon::now();
+            // $transaction->save();
 
             $washingServices = ServiceTransactionItem::with('washingService')->where([
                 'category' => 'washing',

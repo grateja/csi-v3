@@ -1,7 +1,8 @@
 <template>
     <div>
         <h3 class="grey--text mt-5">Products</h3>
-        <v-divider></v-divider>
+        <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
+        <v-divider v-else></v-divider>
         <v-layout row wrap v-if="products.length">
             <v-flex v-for="item in products" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
@@ -27,7 +28,8 @@
                 </v-hover>
             </v-flex>
         </v-layout>
-        <span v-else>No data</span>
+        <span v-if="!loading && products.length == 0">No data</span>
+        <span v-else-if="loading">Loading...</span>
     </div>
 </template>
 <script>

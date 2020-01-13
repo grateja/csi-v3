@@ -1,7 +1,10 @@
 <template>
     <div>
         <h3 class="grey--text mt-5">Washing services</h3>
-        <v-divider></v-divider>
+
+        <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
+        <v-divider v-else></v-divider>
+
         <v-layout row wrap v-if="washingServices.length">
             <v-flex v-for="item in washingServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
@@ -26,10 +29,12 @@
                 </v-hover>
             </v-flex>
         </v-layout>
-        <span v-else>No data</span>
+        <span v-if="!loading && washingServices.length == 0">No data</span>
+        <span v-else-if="loading">Loading...</span>
 
         <h3 class="grey--text mt-5">Drying services</h3>
-        <v-divider></v-divider>
+        <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
+        <v-divider v-else></v-divider>
         <v-layout row wrap v-if="dryingServices.length">
             <v-flex v-for="item in dryingServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
@@ -54,9 +59,12 @@
                 </v-hover>
             </v-flex>
         </v-layout>
-        <span v-else>No data</span>
+        <span v-if="!loading && dryingServices.length == 0">No data</span>
+        <span v-else-if="loading">Loading...</span>
 
         <h3 class="grey--text mt-5">Other services</h3>
+        <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
+        <v-divider v-else></v-divider>
         <v-layout row wrap v-if="otherServices.length">
             <v-flex v-for="item in otherServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
@@ -81,9 +89,12 @@
                 </v-hover>
             </v-flex>
         </v-layout>
-        <span v-else>No data</span>
+        <span v-if="!loading && otherServices.length == 0">No data</span>
+        <span v-else-if="loading">Loading...</span>
 
         <h3 class="grey--text mt-5">Full services</h3>
+        <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
+        <v-divider v-else></v-divider>
         <v-layout row wrap v-if="fullServices.length">
             <v-flex v-for="item in fullServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
@@ -112,7 +123,8 @@
                 </v-hover>
             </v-flex>
         </v-layout>
-        <span v-else>No data</span>
+        <span v-if="!loading && fullServices.length == 0">No data</span>
+        <span v-else-if="loading">Loading...</span>
     </div>
 </template>
 
@@ -124,11 +136,13 @@ export default {
             washingServices: [],
             dryingServices: [],
             otherServices: [],
-            fullServices: []
+            fullServices: [],
+            loading: false
         }
     },
     methods: {
         load() {
+            this.loading = true;
             axios.get('/api/pos-transactions/services', {
 
             }).then((res, rej) => {
@@ -136,6 +150,8 @@ export default {
                 this.dryingServices = res.data.dryingServices;
                 this.otherServices = res.data.otherServices;
                 this.fullServices = res.data.fullServices;
+            }).finally(() => {
+                this.loading = false;
             });
         },
         addWashingService(item) {

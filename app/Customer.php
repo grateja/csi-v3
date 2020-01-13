@@ -21,4 +21,12 @@ class Customer extends Model
     public function rfidCards() {
         return $this->hasMany('App\RfidCard');
     }
+
+    public function customerDries() {
+        return $this->hasMany('App\CustomerDry');
+    }
+
+    public function customerWashes() {
+        return $this->hasMany('App\CustomerWash');
+    }
 }

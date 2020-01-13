@@ -1,0 +1,117 @@
+<template>
+    <v-dialog :value="value" max-width="420" persistent>
+        <v-card>
+            <v-card-title class="title grey--text">Select service</v-card-title>
+            <v-progress-linear v-if="loading" indeterminate height="1"></v-progress-linear>
+            <v-divider v-else></v-divider>
+            <v-card-text>
+                <dl v-if="machine && customer">
+                    <dt class="font-weight-bold grey--text">Customer name:</dt>
+                    <dd class="ml-2">{{customer.name}}</dd>
+
+                    <dt class="font-weight-bold grey--text">Machine name:</dt>
+                    <dd class="ml-2">
+                        <span class="red--text" v-if="errors.has('message')">{{errors.get('message')}}</span>
+                        <span class="green--text" v-else-if="activating">Connecting to {{machine.machine_name}}...
+                            <v-progress-circular indeterminate height="20px" />
+                        </span>
+                        <span v-else>
+                            {{machine.machine_name}}
+                        </span>
+                    </dd>
+                </dl>
+                <v-list>
+                    <v-list-tile v-for="service in services" :key="service.id" @click="selectService(service)">
+                        <v-list-tile-content>
+                            <v-list-tile-title>{{service.service_name}}</v-list-tile-title>
+                            <div>
+                                <span class="grey--text">{{service.total_available}} available</span>
+                                <span class="grey--text">({{service.minutes}} Min)</span>
+                            </div>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="close">Close</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+</template>
+
+<script>
+export default {
+    props: [
+        'value', 'customer', 'machine'
+    ],
+    data() {
+        return {
+            services: [],
+            loading: false,
+            activating: false
+        }
+    },
+    methods: {
+        loadServices() {
+            this.loading = true;
+            axios.get(`/api/pending-services/${this.serviceType}-services`, {
+                params: {
+                    customerId: this.customer.id,
+                    machineSize: this.machineSize
+                }
+            }).then((res, rej) => {
+                this.services = res.data.result;
+            }).finally(() => {
+                this.loading = false;
+            });
+        },
+        selectService(service) {
+            this.activating = true;
+            this.$store.dispatch('remote/activateMachine', {
+                formData: {
+                    customerId: this.customer.id,
+                    machineId: this.machine.id,
+                    machineSize: this.machineSize,
+                    serviceType: this.serviceType,
+                    serviceName: service.service_name
+                }
+            }).then((res, rej) => {
+                this.$emit('activated', res.data);
+                this.close();
+            }).finally(() => {
+                this.activating = false;
+            });
+        },
+        close() {
+            this.$emit('input', false);
+        }
+    },
+    computed: {
+        machineSize() {
+            if(!!this.machine) {
+                return this.machine.machine_type[0] == 'r' ? 'REGULAR' : 'TITAN';
+            }
+            return null;
+        },
+        serviceType() {
+            if(!!this.machine) {
+                console.log(this.machine);
+                return this.machine.machine_type[1] == 'w' ? 'washing' : 'drying';
+            }
+            return null;
+        },
+        errors() {
+            return this.$store.getters['remote/getErrors'];
+        }
+    },
+    watch: {
+        value(val) {
+            if(val && this.customer) {
+                this.loadServices();
+            } else {
+                this.services = [];
+            }
+        }
+    }
+}
+</script>

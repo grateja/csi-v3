@@ -23,6 +23,13 @@ Route::group(['prefix' => 'tap'], function() {
     Route::get('{machineIp}/{rfid}', 'TapCardController@tap');
 });
 
+// /api/reset
+Route::group(['prefix' => 'reset'], function() {
+    // /api/reset/machines
+    Route::get('machines', 'MachinesController@reset');
+});
+
+
 // /api/account
 Route::group(['prefix' => 'account', 'middleware' => 'auth:api'], function() {
     // /api/account/{id}|self/update-profile
@@ -275,6 +282,9 @@ Route::group(['prefix' => 'pos-transactions'], function () {
 
 // /api/transactions
 Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function() {
+    // /api/transactions/unpaid-transactionsansactions
+    Route::get('unpaid-transactions', 'TransactionsController@unpaidTransactions');
+
     // /api/transactions/{transactionId}
     Route::get('{transactionId}', 'TransactionsController@show');
 
@@ -301,6 +311,9 @@ Route::group(['prefix' => 'payments'], function() {
 
 // /api/machines
 Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() {
+    // /api/machines
+    Route::get('/', 'MachinesController@index');
+
     Route::group(['middleware' => 'role:developer'], function() {
         // /api/machines/{branchId}/store
     });
@@ -315,8 +328,22 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
 // /api/remote
 Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
     // /api/remote/machines/{machineId}/activate
-    Route::post('machines/{machineId}/activate', 'RemotesController@activate');
+    Route::post('machines/activate', 'MachinesController@activate');
 });
+
+// /api/pending-services
+
+Route::group(['prefix' => 'pending-services'], function() {
+    // /api/pending-services/customers
+    Route::get('customers', 'PendingServicesController@customers');
+
+    // /api/pending-services/washing-services
+    Route::get('washing-services', 'PendingServicesController@washingServices');
+
+    // /api/pending-services/drying-services
+    Route::get('drying-services', 'PendingServicesController@dryingServices');
+});
+
 
 // /api/expenses
 Route::group(['prefix' => 'expenses', 'middleware' => 'auth:api'], function() {

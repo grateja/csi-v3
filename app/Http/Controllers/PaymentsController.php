@@ -82,7 +82,7 @@ class PaymentsController extends Controller
                 ]);
 
                 return response()->json([
-                    'transaction' => $transaction->withPayment(),
+                    'transaction' => $transaction,
                 ]);
             });
         }

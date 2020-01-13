@@ -34,7 +34,7 @@ export default {
                     icon: '',
                     roles: ['staff'],
                     color: '#ff93ef',
-                    route: '/keme'
+                    route: '/remote-panel'
                 },
                 {
                     text: 'Daily sales',
@@ -55,7 +55,7 @@ export default {
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',
-                    route: '/keme'
+                    route: '/unpaid-transactions'
                 },
                 {
                     text: 'Pending services',

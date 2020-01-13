@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
         <form @submit.prevent="submit">
-            <v-card>
+            <v-card v-if="transaction">
                 <v-card-title>
                     <span class="title grey--text">Payment</span>
                     <v-spacer></v-spacer>
@@ -49,7 +49,7 @@
             </v-card>
         </form>
         <rfid-card-dialog v-model="openRfidCardDialog" :customerId="transaction.customer_id" v-if="transaction" @setCard="setCard" />
-        <points-dialog v-model="openPointsDialog" :customer="transaction.customer" @setPoints="setPoints" />
+        <points-dialog v-model="openPointsDialog" :customer="transaction.customer" @setPoints="setPoints"  v-if="transaction" />
         <discount-dialog v-model="openDiscountDialog" @setDiscount="selectDiscount" />
     </v-dialog>
 </template>
@@ -96,6 +96,7 @@ export default {
                 this.close();
                 this.$store.commit('postransaction/clearTransaction');
                 this.$store.commit('postransaction/removeCustomer');
+                this.$emit('save', res.data.transaction);
             });
         },
         selectCard() {

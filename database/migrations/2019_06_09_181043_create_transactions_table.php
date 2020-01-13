@@ -22,6 +22,9 @@ class CreateTransactionsTable extends Migration
             $table->string('job_order')->nullable();
             $table->dateTime('saved')->nullable();
 
+            $table->string('customer_name');
+            $table->float('total_price')->default(0);
+
             $table->softDeletes();
             $table->timestamp('synched')->nullable();
 

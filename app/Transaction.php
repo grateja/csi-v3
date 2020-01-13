@@ -15,7 +15,7 @@ class Transaction extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id', 'job_order', 'user_id', 'date', 'saved',
+        'customer_id', 'job_order', 'user_id', 'date', 'saved', 'customer_name', 'total_price',
     ];
 
     public function serviceTransactionItems() {
@@ -65,14 +65,20 @@ class Transaction extends Model
         }
     }
 
+    public function totalPrice() {
+        $pTotal = $this->posProductItems()->sum('total_price');
+        $sTotal = $this->posServiceItems()->sum('total_price');
+        return $pTotal + $sTotal;
+    }
+
     public function refreshAll() {
-        $this['customer_name'] = $this->customer->name;
+        // $this['customer_name'] = $this->customer->name;
         $this['posServiceItems'] = $this->posServiceItems();
         $this['posProductItems'] = $this->posProductItems();
         $this['posServiceSummary'] = $this->posServiceSummary();
         $this['posProductSummary'] = $this->posProductSummary();
         $this['total_amount'] = $this->posProductSummary()['total_price'] + $this->posServiceSummary()['total_price'];
-        $this['customer'] = $this->customer();
+        // $this['customer'] = $this->customer;
     }
 
     public function withPayment() {

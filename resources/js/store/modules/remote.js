@@ -18,10 +18,10 @@ const mutations = {
 };
 
 const actions = {
-    activate(context, data) {
+    activateMachine(context, data) {
         context.commit('setLoadingStatus', true);
         context.commit('clearErrors');
-        return axios.post(`/api/remote/machines/${data.machineId}/activate`, data.formData).then((res, rej) => {
+        return axios.post(`/api/remote/machines/activate`, data.formData).then((res, rej) => {
             context.commit('setLoadingStatus', false);
             return res;
         }).catch(err => {

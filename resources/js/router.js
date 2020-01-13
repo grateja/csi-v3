@@ -63,6 +63,14 @@ const routes = [
         ]
     },
     {
+        path: '/unpaid-transactions',
+        component: require('./views/unpaid-transactions/Index.vue').default
+    },
+    {
+        path: '/remote-panel',
+        component: require('./views/remote-panel/Index.vue').default
+    },
+    {
         path: '/products',
         component: require('./views/products/Index.vue').default,
         meta: {
