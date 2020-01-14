@@ -62,6 +62,16 @@ class Machine extends Model
         }
     }
 
+    public function remainingTime() {
+        if($this->isRunning) {
+            $t = new Carbon($this->time_activated);
+            $t->addMinutes($this->total_minutes + 1);
+            return $t->diffInMinutes();
+        } else {
+            return 0;
+        }
+    }
+
     public function remoteActivate($pulse) {
         $url = "$this->ip_address/activate?pulse=$pulse";
         $curl = curl_init();

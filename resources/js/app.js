@@ -5,7 +5,9 @@ import store from './store/index.js';
 import moment from 'moment';
 
 window.Vue = require('vue');
+window.moment = moment;
 Vue.prototype.moment = moment;
+
 
 import Vuetify from 'vuetify';
 import Breadcrumbs from 'vue-2-breadcrumbs';

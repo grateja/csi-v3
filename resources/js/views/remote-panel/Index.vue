@@ -7,80 +7,52 @@
         <h4 class="grey--text mt-4">Regular Dryers</h4>
         <v-divider class="my-2"></v-divider>
         <v-layout row wrap>
-            <v-flex xs4 sm3 md2 xl1 v-for="machine in machines.dryers" :key="machine.id">
-                <v-hover v-slot:default="{ hover }">
-                    <v-card :elevation="hover ? 12 : 2" class="ma-1 pointer" @click="open(machine)">
-                        <v-card-title><v-spacer />{{machine.machine_name}}<v-spacer /></v-card-title>
-                        <v-card-text>
-                            Ends in {{ moment(machine.time_ends_in).fromNow()}}
-                        </v-card-text>
-                    </v-card>
-                </v-hover>
-            </v-flex>
+            <machine-tile v-for="machine in machines.dryers" :key="machine.id" :machine="machine" @open="open" />
         </v-layout>
 
         <h4 class="grey--text mt-4">Regular Washers</h4>
         <v-divider class="my-2"></v-divider>
         <v-layout row wrap>
-            <v-flex xs4 sm3 md2 xl1 v-for="machine in machines.washers" :key="machine.id">
-                <v-hover v-slot:default="{ hover }">
-                    <v-card :elevation="hover ? 12 : 2" class="ma-1 pointer" @click="open(machine)">
-                        <v-card-title><v-spacer />{{machine.machine_name}}<v-spacer /></v-card-title>
-                        <v-card-text>
-                            Ends in {{ moment(machine.time_ends_in).fromNow()}}
-                        </v-card-text>
-                    </v-card>
-                </v-hover>
-            </v-flex>
+            <machine-tile v-for="machine in machines.washers" :key="machine.id" :machine="machine" @open="open" />
         </v-layout>
 
         <h4 class="grey--text mt-4">Titan Dryers</h4>
         <v-divider class="my-2"></v-divider>
         <v-layout row wrap>
-            <v-flex xs4 sm3 md2 xl1 v-for="machine in machines.titan_dryers" :key="machine.id">
-                <v-hover v-slot:default="{ hover }">
-                    <v-card :elevation="hover ? 12 : 2" class="ma-1 pointer" @click="open(machine)">
-                        <v-card-title><v-spacer />{{machine.machine_name}}<v-spacer /></v-card-title>
-                        <v-card-text>
-                            Ends in {{ moment(machine.time_ends_in).fromNow()}}
-                        </v-card-text>
-                    </v-card>
-                </v-hover>
-            </v-flex>
+            <machine-tile v-for="machine in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" />
         </v-layout>
 
         <h4 class="grey--text mt-4">Titan Washers</h4>
         <v-divider class="my-2"></v-divider>
         <v-layout row wrap>
-            <v-flex xs4 sm3 md2 xl1 v-for="machine in machines.titan_washers" :key="machine.id">
-                <v-hover v-slot:default="{ hover }">
-                    <v-card :elevation="hover ? 12 : 2" class="ma-1 pointer" @click="open(machine)">
-                        <v-card-title><v-spacer />{{machine.machine_name}}<v-spacer /></v-card-title>
-                        <v-card-text>
-                            Ends in {{ moment(machine.time_ends_in).fromNow()}}
-                        </v-card-text>
-                    </v-card>
-                </v-hover>
-            </v-flex>
+            <machine-tile v-for="machine in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" />
         </v-layout>
 
-        <customer-browser v-model="openCustomerBrowserDialog" :machine="activeMachine" @selectCustomer="selectCustomer" />
+        <customer-browser v-model="openCustomerBrowserDialog" :machine="activeMachine" @machineActivated="updateMachine" />
+        <machine-dialog :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" />
     </v-card>
 </template>
 
 
 <script>
 import CustomerBrowser from './CustomerBrowser.vue';
+import MachineTile from './MachineTile.vue';
+import MachineDialog from './MachineDialog.vue';
 
 export default {
     components: {
-        CustomerBrowser
+        CustomerBrowser,
+        MachineTile,
+        MachineDialog
     },
     data() {
         return {
             openCustomerBrowserDialog: false,
+            openMachineDialog: false,
             activeMachine: null,
-            machines: []
+            machines: [],
+            interval: null,
+            componentKey: 1
         }
     },
     methods: {
@@ -93,12 +65,17 @@ export default {
             this.activeMachine = machine;
             if(machine.is_running) {
                 // show options instead
+                this.openMachineDialog = true;
             } else {
                 // open customer browser
                 this.openCustomerBrowserDialog = true;
             }
         },
-        selectCustomer(customer) {
+        updateMachine(data) {
+            this.activeMachine.time_ends_in = data.machine.time_ends_in;
+            this.activeMachine.customer_name = data.machine.customer_name;
+            this.activeMachine.total_minutes = data.machine.total_minutes;
+            this.activeMachine.is_running = data.machine.is_running;
         }
     },
     created() {

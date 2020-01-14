@@ -78,7 +78,7 @@ class Transaction extends Model
         $this['posServiceSummary'] = $this->posServiceSummary();
         $this['posProductSummary'] = $this->posProductSummary();
         $this['total_amount'] = $this->posProductSummary()['total_price'] + $this->posServiceSummary()['total_price'];
-        // $this['customer'] = $this->customer;
+        $this['customer'] = $this->customer;
     }
 
     public function withPayment() {

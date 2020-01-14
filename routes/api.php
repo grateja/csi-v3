@@ -329,6 +329,9 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
 Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
     // /api/remote/machines/{machineId}/activate
     Route::post('machines/activate', 'MachinesController@activate');
+
+    // /api/machines/force-stop
+    Route::post('machines/force-stop', 'MachinesController@forceStop');
 });
 
 // /api/pending-services

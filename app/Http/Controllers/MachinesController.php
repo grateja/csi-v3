@@ -7,6 +7,8 @@ use App\CustomerDry;
 use App\CustomerWash;
 use Illuminate\Http\Request;
 use App\Machine;
+use App\MachineRemarks;
+use App\MachineUsage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -85,12 +87,17 @@ class MachinesController extends Controller
                 'customer_name' => $customer->name,
             ]);
 
+            MachineUsage::create([
+                'machine_id' => $machine->id,
+                'customer_name' => $customer->name,
+                'minutes' => $totalMinutes,
+            ]);
+
             $output = $machine->remoteActivate($pulse);
 
             if($output) {
                 return response()->json([
-                    'done',
-                    'output' => $output,
+                    'machine' => $machine,
                 ]);
             } else {
 
@@ -104,13 +111,35 @@ class MachinesController extends Controller
                     ]
                 ], 422);
             }
-
-            return response()->json([
-                'customerWash' => $customerWash,
-                'customerDry' => $customerDry,
-                'machine' => $machine,
-            ]);
         });
+    }
+
+    public function forceStop(Request $request) {
+        $rules = [
+            'remarks' => 'required',
+            'machineId' => 'required',
+        ];
+
+        if($request->validate($rules)) {
+            return DB::transaction(function () use ($request) {
+                $machine = Machine::findOrFail($request->machineId);
+                $machineRemarks = MachineRemarks::create([
+                    'remarks' => $request->remarks,
+                    'user_id' => auth('api')->id(),
+                    'remaining_time' => $machine->remainingTime(),
+                    'machine_id' => $machine->id,
+                ]);
+
+                $machine->update([
+                    'total_minutes' => 0,
+                    'customer_name' => $machine->customer_name . '(Force Stopped)'
+                ]);
+
+                return response()->json([
+                    'machine' => $machine,
+                ]);
+            });
+        }
     }
 
     public function reset() {

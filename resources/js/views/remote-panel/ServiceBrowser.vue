@@ -33,7 +33,7 @@
                 </v-list>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="close">Close</v-btn>
+                <v-btn @click="close" round>Close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -110,6 +110,7 @@ export default {
                 this.loadServices();
             } else {
                 this.services = [];
+                this.$store.commit('remote/clearErrors');
             }
         }
     }

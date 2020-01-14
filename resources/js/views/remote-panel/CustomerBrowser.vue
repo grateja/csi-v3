@@ -22,7 +22,7 @@
                 </v-list>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="close">close</v-btn>
+                <v-btn @click="close" round>close</v-btn>
             </v-card-actions>
         </v-card>
         <service-browser v-model="openServiceBrowser" :customer="activeCustomer" :machine="machine" @activated="machineActivated" />
@@ -70,6 +70,7 @@ export default {
             this.openServiceBrowser = true;
         },
         machineActivated(data) {
+            this.$emit('machineActivated', data);
             this.close();
         }
     },

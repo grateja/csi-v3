@@ -2,12 +2,12 @@ import FormHelper from '../../helpers/FormHelper.js';
 
 const state = {
     errors: FormHelper,
-    isLoading: false
+    isSaving: false
 };
 
 const mutations = {
-    setLoadingStatus(state, status) {
-        state.isLoading = status;
+    setSavingStatus(state, status) {
+        state.isSaving = status;
     },
     setErrors(state, errors) {
         state.errors.errors = errors;
@@ -19,14 +19,23 @@ const mutations = {
 
 const actions = {
     activateMachine(context, data) {
-        context.commit('setLoadingStatus', true);
         context.commit('clearErrors');
         return axios.post(`/api/remote/machines/activate`, data.formData).then((res, rej) => {
-            context.commit('setLoadingStatus', false);
             return res;
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);
-            context.commit('setLoadingStatus', false);
+            return Promise.reject(err);
+        });
+    },
+    forceStop(context, data) {
+        context.commit('setSavingStatus', true);
+        context.commit('clearErrors');
+        return axios.post(`/api/remote/machines/force-stop`, data.formData).then((res, rej) => {
+            context.commit('setSavingStatus', false);
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setSavingStatus', false);
             return Promise.reject(err);
         });
     }
@@ -36,8 +45,8 @@ const getters = {
     getErrors(state) {
         return state.errors;
     },
-    isLoading(state) {
-        return state.isLoading;
+    isSaving(state) {
+        return state.isSaving;
     }
 };
 

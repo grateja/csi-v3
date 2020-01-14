@@ -13,7 +13,7 @@ class CustomersController extends Controller
 
         $customers = Customer::withCount('rfidCards')->where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
-        });
+        })->orderBy('name');
 
         return response()->json([
             'result' => $customers->paginate(20)
@@ -23,7 +23,7 @@ class CustomersController extends Controller
     public function autocomplete(Request $request) {
         $data = Customer::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
-        })->limit(10)->get();
+        })->orderBy('name')->limit(10)->get();
 
         return response()->json([
             'data' => $data

@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 class PosTransactionController extends Controller
 {
     public function currentTransaction($customerId) {
-        $transaction = Transaction::where(function($query) use ($customerId) {
+        $transaction = Transaction::with('customer')->where(function($query) use ($customerId) {
             $query->whereDoesntHave('payment', function($query) {
 
             })->where('customer_id', $customerId);
@@ -183,7 +183,7 @@ class PosTransactionController extends Controller
 
         return DB::transaction(function () use ($transactionId) {
 
-            $transaction = Transaction::findOrFail($transactionId);
+            $transaction = Transaction::with('customer')->findOrFail($transactionId);
             if(!$transaction->job_order) {
                 $transaction->attachJobOrder();
                 $transaction->date = Carbon::now();
