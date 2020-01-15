@@ -48,7 +48,7 @@ export default {
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
-                    route: '/keme'
+                    route: '/transaction-reports/by-job-orders'
                 },
                 {
                     text: 'Unpaid Transactions',

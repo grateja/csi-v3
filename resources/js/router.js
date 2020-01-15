@@ -63,6 +63,24 @@ const routes = [
         ]
     },
     {
+        path: '/transaction-reports',
+        component: require('./views/transaction-reports/Index.vue').default,
+        children: [
+            {
+                path: 'by-job-orders',
+                component: require('./views/transaction-reports/ByJobOrders.vue').default
+            },
+            {
+                path: 'by-service-items',
+                component: require('./views/transaction-reports/ByServiceItems.vue').default
+            },
+            {
+                path: 'by-product-items',
+                component: require('./views/transaction-reports/ByProductItems.vue').default
+            }
+        ]
+    },
+    {
         path: '/unpaid-transactions',
         component: require('./views/unpaid-transactions/Index.vue').default
     },

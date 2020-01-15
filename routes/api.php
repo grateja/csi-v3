@@ -282,6 +282,15 @@ Route::group(['prefix' => 'pos-transactions'], function () {
 
 // /api/transactions
 Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function() {
+    // /api/transactions/by-job-orders
+    Route::get('by-job-orders', 'TransactionsController@byJobOrders');
+
+    // /api/transactions/by-service-items
+    Route::get('by-service-items', 'TransactionsController@byServiceItems');
+
+    // /api/transactions/by-product-items
+    Route::get('by-product-items', 'TransactionsController@byProductItems');
+
     // /api/transactions/unpaid-transactionsansactions
     Route::get('unpaid-transactions', 'TransactionsController@unpaidTransactions');
 

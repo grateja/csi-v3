@@ -1,7 +1,5 @@
 <template>
-    <v-container>
-        <h3 class="title grey--text">Unpaid transactions</h3>
-        <v-divider class="my-3"></v-divider>
+    <div>
         <v-card>
             <v-card-text>
                 <v-layout>
@@ -30,16 +28,18 @@
                     </v-btn>
                 </td>
                 <td>{{ props.item.customer_name }}</td>
-                <td>{{ props.item.saved }}</td>
+                <td>{{ props.item.date }}</td>
                 <td>{{ parseFloat(props.item.total_price).toFixed(2) }}</td>
+                <td>{{ datePaid(props.item) }}</td>
             </template>
         </v-data-table>
-        <transaction-dialog :transactionId="transactionId" v-model="openTransactionDialog" @savePayment="closePayment" />
-    </v-container>
+        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" />
+    </div>
 </template>
 
 <script>
-import TransactionDialog from '../transaction-reports/TransactionDialog.vue';
+import TransactionDialog from './TransactionDialog.vue';
 
 export default {
     components: {
@@ -47,13 +47,14 @@ export default {
     },
     data() {
         return {
-            items: [],
-            keyword: null,
-            date: null,
             cancelSource: null,
+            keyword: null,
             sortBy: 'job_order',
-            orderBy: 'asc',
+            orderBy: 'desc',
+            date: null,
             page: 1,
+            reset: false,
+            items: [],
             loading: false,
             transactionId: null,
             openTransactionDialog: false,
@@ -67,11 +68,15 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Date saved',
+                    text: 'Date created',
                     sortable: false
                 },
                 {
                     text: 'Price',
+                    sortable: false
+                },
+                {
+                    text: 'Date paid',
                     sortable: false
                 }
             ]
@@ -80,13 +85,14 @@ export default {
     methods: {
         filter() {
             this.page = 1;
+            this.reset = true;
             this.load();
         },
         load() {
             this.cancelSearch();
             this.cancelSource = axios.CancelToken.source();
             this.loading = true;
-            axios.get('/api/transactions/unpaid-transactions', {
+            axios.get('/api/transactions/by-job-orders', {
                 params: {
                     keyword: this.keyword,
                     page: this.page,
@@ -96,7 +102,12 @@ export default {
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
-                this.items = res.data.result.data;
+                if(this.reset) {
+                    this.reset = false;
+                    this.items = res.data.result.data;
+                } else {
+                    this.items = [...this.items, ...res.data.result.data];
+                }
             }).finally(() => {
                 this.loading = false;
             });
@@ -105,12 +116,20 @@ export default {
             this.transactionId = transaction.id;
             this.openTransactionDialog = true;
         },
-        closePayment(transaction) {
-            this.items = this.items.filter(t => t.id != transaction.id);
-        },
         cancelSearch() {
             if(this.cancelSource) {
                 this.cancelSource.cancel();
+            }
+        },
+        loadMore() {
+            this.page += 1;
+            this.load();
+        },
+        datePaid(item) {
+            if(item.date_paid) {
+                return moment(item.date_paid).format('LLL');
+            } else {
+                return "(Not paid)";
             }
         }
     },

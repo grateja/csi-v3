@@ -7,7 +7,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn @click="close">close</v-btn>
-                <v-btn class="primary" @click="viewPayment">View payment</v-btn>
+                <v-btn class="primary" @click="viewPayment" v-if="tempTransaction && tempTransaction.payment == null">View payment</v-btn>
             </v-card-actions>
         </v-card>
         <payment-dialog v-model="openPaymentDialog" :transaction="tempTransaction" @save="savePayment" />

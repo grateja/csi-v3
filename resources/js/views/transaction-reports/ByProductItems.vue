@@ -1,7 +1,5 @@
 <template>
-    <v-container>
-        <h3 class="title grey--text">Unpaid transactions</h3>
-        <v-divider class="my-3"></v-divider>
+    <div>
         <v-card>
             <v-card-text>
                 <v-layout>
@@ -12,7 +10,7 @@
                         <v-text-field class="ml-1" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
-                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date']" @change="filter"></v-combobox>
+                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['job_order', 'name', 'customer_name', 'date']" @change="filter"></v-combobox>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -30,16 +28,19 @@
                     </v-btn>
                 </td>
                 <td>{{ props.item.customer_name }}</td>
-                <td>{{ props.item.saved }}</td>
-                <td>{{ parseFloat(props.item.total_price).toFixed(2) }}</td>
+                <td>{{ props.item.name }}</td>
+                <td>{{ props.item.quantity }}</td>
+                <td>{{ parseFloat(props.item.price).toFixed(2) }}</td>
+                <td>{{ props.item.date }}</td>
             </template>
         </v-data-table>
-        <transaction-dialog :transactionId="transactionId" v-model="openTransactionDialog" @savePayment="closePayment" />
-    </v-container>
+        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" />
+    </div>
 </template>
 
 <script>
-import TransactionDialog from '../transaction-reports/TransactionDialog.vue';
+import TransactionDialog from './TransactionDialog.vue';
 
 export default {
     components: {
@@ -47,13 +48,14 @@ export default {
     },
     data() {
         return {
-            items: [],
+            cancelSource: null,
             keyword: null,
             date: null,
-            cancelSource: null,
-            sortBy: 'job_order',
-            orderBy: 'asc',
             page: 1,
+            sortBy: 'job_order',
+            orderBy: 'desc',
+            items: [],
+            reset: true,
             loading: false,
             transactionId: null,
             openTransactionDialog: false,
@@ -67,11 +69,19 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Date saved',
+                    text: 'Product name',
+                    sortable: false
+                },
+                {
+                    text: 'Quantity',
                     sortable: false
                 },
                 {
                     text: 'Price',
+                    sortable: false
+                },
+                {
+                    text: 'Date created',
                     sortable: false
                 }
             ]
@@ -80,13 +90,14 @@ export default {
     methods: {
         filter() {
             this.page = 1;
+            this.reset = true;
             this.load();
         },
         load() {
             this.cancelSearch();
             this.cancelSource = axios.CancelToken.source();
             this.loading = true;
-            axios.get('/api/transactions/unpaid-transactions', {
+            axios.get('/api/transactions/by-product-items', {
                 params: {
                     keyword: this.keyword,
                     page: this.page,
@@ -96,22 +107,28 @@ export default {
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
-                this.items = res.data.result.data;
+                if(this.reset) {
+                    this.reset = false;
+                    this.items = res.data.result.data;
+                } else {
+                    this.items = [...this.items, ...res.data.result.data];
+                }
             }).finally(() => {
                 this.loading = false;
             });
         },
         previewTransaction(transaction) {
-            this.transactionId = transaction.id;
+            this.transactionId = transaction.transaction_id;
             this.openTransactionDialog = true;
-        },
-        closePayment(transaction) {
-            this.items = this.items.filter(t => t.id != transaction.id);
         },
         cancelSearch() {
             if(this.cancelSource) {
                 this.cancelSource.cancel();
             }
+        },
+        loadMore() {
+            this.page += 1;
+            this.load();
         }
     },
     created() {
