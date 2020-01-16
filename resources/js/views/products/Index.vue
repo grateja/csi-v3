@@ -2,7 +2,7 @@
     <v-container>
         <h3 class="title grey--text">Products</h3>
         <v-divider class="my-3"></v-divider>
-        <v-btn class="ml-0 primary" @click="addProduct" round>
+        <v-btn class="ml-0 primary" @click="addProduct" round v-if="isOwner">
             <v-icon left>add</v-icon> add product
         </v-btn>
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>

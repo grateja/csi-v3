@@ -170,7 +170,11 @@ export default {
             this.openProductItemDialog = true;
         },
         updatePrice() {
-            this.service.price = this.service.full_service_items.reduce((sum, item) => sum + item.price, 0) + this.service.additional_charge - this.service.discount + this.service.full_service_products.reduce((sum, item) => sum + item.price, 0);
+            this.service.price =
+                parseFloat(this.service.full_service_items.reduce((sum, item) => sum + item.price, 0)) +
+                parseFloat(this.service.additional_charge) -
+                parseFloat(this.service.discount) +
+                parseFloat(this.service.full_service_products.reduce((sum, item) => sum + item.price, 0));
         },
         updateItems(data) {
             if(data.mode == 'insert') {

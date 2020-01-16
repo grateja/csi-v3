@@ -62,7 +62,7 @@ export default {
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#c4eabd',
-                    route: '/keme'
+                    route: '/pending-services'
                 },
                 {
                     text: 'Customers',
@@ -79,11 +79,11 @@ export default {
                     route: '/keme'
                 },
                 {
-                    text: 'Purchases',
+                    text: 'Product Purchases',
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
-                    route: '/keme'
+                    route: '/product-purchases'
                 },
                 {
                     text: 'Expenses',

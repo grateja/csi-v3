@@ -89,6 +89,10 @@ const routes = [
         component: require('./views/remote-panel/Index.vue').default
     },
     {
+        path: '/pending-services',
+        component: require('./views/pending-services/Index.vue').default
+    },
+    {
         path: '/products',
         component: require('./views/products/Index.vue').default,
         meta: {
@@ -120,6 +124,10 @@ const routes = [
     {
         path: '/customers',
         component: require('./views/customers/Index.vue').default
+    },
+    {
+        path: '/product-purchases',
+        component: require('./views/product-purchases/Index.vue').default
     },
     {
         path: '/people',

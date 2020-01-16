@@ -15,6 +15,9 @@ const actions = {
         }).catch(err => {
             return Promise.reject(err);
         });
+    },
+    disposeService(context, data) {
+        return axios.post(`/api/pending-services/${data.serviceType}/${data.serviceId}/dispose-service`);
     }
 };
 

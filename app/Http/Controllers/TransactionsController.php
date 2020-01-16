@@ -52,7 +52,10 @@ class TransactionsController extends Controller
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'asc';
 
-        $result = Transaction::where('customer_name', 'like', "%$request->keyword%")
+        $result = Transaction::where(function($query) use ($request) {
+            $query->where('customer_name', 'like', "%$request->keyword%")
+                ->orWhere('job_order', 'like', "%$request->keyword%");
+        })
             ->whereNotNull('saved')
             ->whereDoesntHave('payment');
 

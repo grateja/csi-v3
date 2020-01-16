@@ -344,8 +344,16 @@ Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
 });
 
 // /api/pending-services
-
 Route::group(['prefix' => 'pending-services'], function() {
+    // /api/pending-services
+    Route::get('', 'PendingServicesController@index');
+
+    // /api/pending-services/{customerId}/view-all
+    Route::get('{customerId}/view-all', 'PendingServicesController@viewAll');
+
+    // /api/pending-services/{serviceType}/{serviceId}/dispose-service
+    Route::post('{serviceType}/{serviceId}/dispose-service', 'PendingServicesController@disposeService');
+
     // /api/pending-services/customers
     Route::get('customers', 'PendingServicesController@customers');
 
@@ -354,6 +362,18 @@ Route::group(['prefix' => 'pending-services'], function() {
 
     // /api/pending-services/drying-services
     Route::get('drying-services', 'PendingServicesController@dryingServices');
+});
+
+// /api/product-purchases
+Route::group(['prefix' => 'product-purchases'], function() {
+    // /api/product-purchases
+    Route::get('', 'ProductPurchasesController@index');
+
+    // /api/product-purchases/create
+    Route::post('create', 'ProductPurchasesController@store');
+
+    // /api/product-purchases/{productPurchaseId}/delete-product-purchase
+    Route::post('{productPurchaseId}/delete-product-purchase', 'ProductPurchasesController@deleteProductPurchase');
 });
 
 

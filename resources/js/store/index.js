@@ -31,6 +31,7 @@ import fullservice from './modules/fullservice.js';
 import postransaction from './modules/postransaction.js';
 import fullserviceitem from './modules/fullserviceitem.js';
 import fullserviceproduct from './modules/fullserviceproduct.js';
+import productpurchase from './modules/productpurchase.js';
 
 export default new  Vuex.Store({
     state: {
@@ -107,6 +108,7 @@ export default new  Vuex.Store({
         postransaction,
         fullservice,
         fullserviceitem,
-        fullserviceproduct
+        fullserviceproduct,
+        productpurchase
     }
 });

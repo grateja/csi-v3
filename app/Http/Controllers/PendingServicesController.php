@@ -43,4 +43,81 @@ class PendingServicesController extends Controller
             'result' => $result,
         ]);
     }
+
+    public function index(Request $request) {
+        $result = Customer::withCount([
+            'customerWashes' => function($query) {
+                $query->whereNull('used');
+            },
+            'customerDries' => function($query) {
+                $query->whereNull('used');
+            }
+        ])->whereHas('customerWashes', function($query) {
+            $query->whereNull('used');
+        })->orWhereHas('customerDries', function($query) {
+            $query->whereNull('used');
+        })->orderBy('name');
+
+        return response()->json([
+            'result' => $result->get(),
+        ]);
+    }
+
+    public function viewAll($customerId) {
+        $customerWashes = CustomerWash::with('serviceTransactionItem.transaction')
+            ->where('customer_id', $customerId)->get();
+
+        $customerDries = CustomerDry::with('serviceTransactionItem.transaction')
+            ->where('customer_id', $customerId)->get();
+
+        $customerWashes = $customerWashes->transform(function($item) {
+            return [
+                'id' => $item->id,
+                'service_name' => $item->service_name,
+                'machine_size' => $item->machine_type,
+                'minutes' => $item->minutes,
+                'created_at' => $item->created_at,
+                'job_order' => $item->serviceTransactionItem->transaction->job_order,
+                'transaction_id' => $item->serviceTransactionItem->transaction_id,
+            ];
+        });
+
+        $customerDries = $customerDries->transform(function($item) {
+            return [
+                'id' => $item->id,
+                'service_name' => $item->service_name,
+                'machine_size' => $item->machine_type,
+                'minutes' => $item->minutes,
+                'created_at' => $item->created_at,
+                'job_order' => $item->serviceTransactionItem->transaction->job_order,
+                'transaction_id' => $item->serviceTransactionItem->transaction_id,
+            ];
+        });
+
+        return response()->json([
+            'customerWashes' => $customerWashes,
+            'customerDries' => $customerDries,
+        ]);
+    }
+
+    public function disposeService($serviceType, $serviceId) {
+        if($serviceType == 'washing') {
+            $service = CustomerWash::findOrFail($serviceId);
+        } else if($serviceType == 'drying') {
+            $service = CustomerDry::findOrFail($serviceId);
+        } else {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Invalid service type']
+                ]
+            ], 422);
+        }
+
+        if($service) {
+            $service->delete();
+            return response()->json([
+                'service' => $service,
+            ]);
+        }
+    }
 }

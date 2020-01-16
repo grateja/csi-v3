@@ -34,6 +34,10 @@ class ServiceTransactionItem extends Model
         return $this->hasOne('App\CustomerDry');
     }
 
+    public function transaction() {
+        return $this->belongsTo('App\Transaction');
+    }
+
     public function machineName() {
         if($this->category == 'washing' && $this->saved) {
             return $this->customerWash->washer_name;

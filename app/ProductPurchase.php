@@ -14,6 +14,8 @@ class ProductPurchase extends Model
         'date', 'product_id', 'receipt', 'quantity', 'unit_cost', 'remarks', 'user_id',
     ];
 
+    public $timestamps = false;
+
     public function product() {
         return $this->belongsTo('App\Product');
     }

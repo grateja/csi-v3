@@ -13,4 +13,8 @@ class CustomerDry extends Model
     protected $fillable = [
         'service_name', 'customer_id', 'service_transaction_item_id', 'pulse_count', 'minutes', 'dryer_name', 'machine_type', 'used', 'user_id',
     ];
+
+    public function serviceTransactionItem() {
+        return $this->belongsTo('App\ServiceTransactionItem');
+    }
 }
