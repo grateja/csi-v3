@@ -7,7 +7,7 @@
             Create new customer
         </v-btn>
         <form @submit.prevent="filter">
-            <v-text-field v-model="keyword" label="Search" append-icon="search"></v-text-field>
+            <v-text-field v-model="keyword" label="Search" append-icon="search" @input="filter"></v-text-field>
         </form>
 
 
@@ -17,9 +17,9 @@
                 <td>{{ props.item.contact_number }}</td>
                 <td>{{ props.item.email }}</td>
                 <td>{{ props.item.address }}</td>
-                <td>{{ date(props.item.birthday) }}</td>
-                <td>{{props.item.available_wash}}</td>
-                <td>{{props.item.available_dry}}</td>
+                <td>{{ date(props.item.first_visit) }}</td>
+                <td>{{props.item.customer_washes_count}}</td>
+                <td>{{props.item.customer_dries_count}}</td>
                 <td>
                     <span v-if="props.item.earned_points">
                         {{props.item.earned_points.toFixed(2)}}
@@ -32,8 +32,14 @@
                         </v-btn>
                         <span>Edit details</span>
                     </v-tooltip>
+                    <v-tooltip top v-if="isOwner">
+                        <v-btn slot="activator" small icon @click="deleteCustomer(props.item)" :loading="props.item.isDeleting">
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
+                        <span>Edit details</span>
+                    </v-tooltip>
                     <v-tooltip top v-if="props.item.rfid_cards_count > 0">
-                        <v-btn slot="activator" small icon :to="`/rfid/cards/c?customerId=${props.item.id}`">
+                        <v-btn slot="activator" small icon @click="viewCards">
                             <v-icon small>credit_card</v-icon>
                             {{props.item.rfid_cards_count}}
                         </v-btn>
@@ -42,20 +48,23 @@
                 </td>
             </template>
         </v-data-table>
-        <!-- <customer-dialog v-model="openCustomerDialog" :customer="activeCustomer" @save="editContinue"></customer-dialog> -->
+        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <customer-dialog v-model="openCustomerDialog" :customer="activeCustomer" @save="editContinue"></customer-dialog>
     </v-container>
 </template>
 
 <script>
-// import CustomerDialog from './CustomerDialog.vue';
+import CustomerDialog from './CustomerDialog.vue';
 import moment from 'moment';
 
 export default {
     components: {
-        // CustomerDialog
+        CustomerDialog
     },
     data() {
         return {
+            reset: true,
+            cancelSource: null,
             keyword: this.$route.query.keyword,
             page: parseInt(this.$route.query.page) || 1,
             loading: false,
@@ -81,7 +90,7 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Birth day',
+                    text: 'First visit',
                     sortable: false
                 },
                 {
@@ -106,28 +115,26 @@ export default {
     methods: {
         filter() {
             this.page = 1;
+            this.reset = true;
             this.load();
         },
         load() {
-            if(this.loading) return;
-
-            this.$router.push({
-                query: {
-                    keyword: this.keyword,
-                    page: this.page
-                }
-            });
+            this.cancelSearch();
+            this.cancelSource = axios.CancelToken.source();
 
             this.loading = true;
-
             axios.get('/api/customers', {
                 params: {
                     keyword: this.keyword,
                     page: this.page
-                }
+                },
+                cancelToken: this.cancelSource.token
             }).then((res, rej) => {
-                console.log(res.data);
-                this.items = res.data.result.data;
+                if(this.reset) {
+                    this.items = res.data.result.data;
+                } else {
+                    this.items = [...this.items, ...res.data.result.data];
+                }
                 this.totalPage = res.data.result.last_page;
                 this.loading = false;
             }).catch(err => {
@@ -150,7 +157,7 @@ export default {
                 this.activeCustomer.contact_number = data.customer.contact_number;
                 this.activeCustomer.email = data.customer.email;
                 this.activeCustomer.address = data.customer.address;
-                this.activeCustomer.birthday = data.customer.birthday;
+                this.activeCustomer.first_visit = data.customer.first_visit;
             }
         },
         addCustomer() {
@@ -160,10 +167,33 @@ export default {
         date(date) {
             let _date = moment(date);
             return _date.isValid() ? _date.format('MMM D, YY') : date;
+        },
+        cancelSearch() {
+            if(this.cancelSource) {
+                this.cancelSource.cancel();
+            }
+        },
+        loadMore() {
+            this.page += 1;
+            this.reset = false;
+            this.load();
+        },
+        deleteCustomer(customer) {
+            if(confirm('Delete this customer?')) {
+                Vue.set(customer, 'isDeleting', true);
+                this.$store.dispatch('customer/deleteCustomer', customer.id).then((res, rej) => {
+                    this.items = this.items.filter(c => c.id != customer.id);
+                }).finally(() => {
+                    Vue.set(customer, 'isDeleting', false);
+                })
+            }
+        },
+        viewCards(customer) {
+
         }
     },
     computed: {
-        isAdmin() {
+        isOwner() {
             let user = this.$store.getters.getCurrentUser;
             console.log('admin', user);
             if(user) {

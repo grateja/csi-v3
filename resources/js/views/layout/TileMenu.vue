@@ -118,7 +118,7 @@ export default {
                     icon: '',
                     roles: ['admin'],
                     color: '#e4dfdd',
-                    route: '/keme'
+                    route: '/machines'
                 },
                 {
                     text: 'Loyalty points',

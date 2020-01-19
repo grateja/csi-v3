@@ -29,4 +29,14 @@ class Customer extends Model
     public function customerWashes() {
         return $this->hasMany('App\CustomerWash');
     }
+
+    protected static function boot() {
+        static::deleting(function($model) {
+            $model->customerDries()->delete();
+            $model->customerWashes()->delete();
+            $model->rfidCards()->delete();
+        });
+
+        parent::boot();
+    }
 }

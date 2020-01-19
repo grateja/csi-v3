@@ -35,7 +35,18 @@ class Machine extends Model
         // 'total_cycle_count'
     ];
 
+    public function machineUsages() {
+        return $this->hasMany('App\MachineUsage');
+    }
+
+    public function totalUsage() {
+        return $this->machineUsages();
+    }
+
     public function getTimeEndsInAttribute() {
+        if($this->time_activated == null) {
+            return false;
+        }
         $t = new Carbon($this->time_activated);
         return $t->addMinutes($this->total_minutes);
     }
@@ -115,6 +126,7 @@ class Machine extends Model
                 'machine_id' => $this->id,
                 'customer_name' => $customerName,
                 'minutes' => $minutes,
+                'activation_type' => 'card',
             ]);
         }
 

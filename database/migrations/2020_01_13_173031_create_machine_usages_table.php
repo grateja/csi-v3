@@ -19,6 +19,7 @@ class CreateMachineUsagesTable extends Migration
             $table->uuid('machine_id');
             $table->string('customer_name')->nullable();
             $table->double('minutes');
+            $table->string('activation_type')->conmment('card, remote')->nullable();
             $table->timestamp('synched')->nullable();
 
             $table->timestamps();

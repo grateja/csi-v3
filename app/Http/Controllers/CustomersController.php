@@ -11,12 +11,14 @@ class CustomersController extends Controller
 {
     public function index(Request $request) {
 
-        $customers = Customer::withCount('rfidCards')->where(function($query) use ($request) {
+        $customers = Customer::withCount(['rfidCards',
+            'customerDries', 'customerWashes'
+        ])->where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
         })->orderBy('name');
 
         return response()->json([
-            'result' => $customers->paginate(20)
+            'result' => $customers->paginate(10)
         ], 200);
     }
 
@@ -61,7 +63,7 @@ class CustomersController extends Controller
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
-                    'birthday' => $request->birthday,
+                    'first_visit' => $request->firstVisit,
                 ]);
 
                 return response()->json([
@@ -86,13 +88,22 @@ class CustomersController extends Controller
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
-                    'birthday' => $request->birthday,
+                    'first_visit' => $request->firstVisit,
                 ]);
 
                 return response()->json([
                     'customer' => $customer,
                 ], 200);
             });
+        }
+    }
+
+    public function deleteCustomer($customerId) {
+        $customer = Customer::findOrFail($customerId);
+        if($customer->delete()) {
+            return response()->json([
+                'customer' => $customer,
+            ]);
         }
     }
 }

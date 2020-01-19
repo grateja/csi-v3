@@ -65,10 +65,10 @@ class PendingServicesController extends Controller
 
     public function viewAll($customerId) {
         $customerWashes = CustomerWash::with('serviceTransactionItem.transaction')
-            ->where('customer_id', $customerId)->get();
+            ->where('customer_id', $customerId)->whereNull('used')->get();
 
         $customerDries = CustomerDry::with('serviceTransactionItem.transaction')
-            ->where('customer_id', $customerId)->get();
+            ->where('customer_id', $customerId)->whereNull('used')->get();
 
         $customerWashes = $customerWashes->transform(function($item) {
             return [

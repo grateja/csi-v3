@@ -18,7 +18,7 @@
                         <h3 class="font-weight-bold">Total price: P {{ parseFloat(service.price).toFixed(2)}}</h3>
                     </v-card-text>
                     <v-divider></v-divider>
-                    <v-card-actions>
+                    <v-card-actions v-if="isOwner">
                         <v-btn small color="purple" dark round @click="viewItems(service)">view items</v-btn>
                         <v-spacer></v-spacer>
                         <v-btn small @click="edit(service)" icon><v-icon small>edit</v-icon></v-btn>

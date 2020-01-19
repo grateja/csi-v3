@@ -8,8 +8,7 @@
                     <v-text-field v-model="formData.address" :error-messages="errors.get('address')" outline label="Address"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>
-                    <v-text-field v-model="formData.birthday" :error-messages="errors.get('birthday')" outline label="Birthday" type="date"></v-text-field>
-                    <pre>{{customer}}</pre>
+                    <v-text-field v-model="formData.firstVisit" :error-messages="errors.get('firstVisit')" outline label="Birthday" type="date"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn class="primary" type="submit" round :loading="saving">Save</v-btn>
@@ -33,7 +32,7 @@ export default {
                 address: null,
                 contactNumber: null,
                 email: null,
-                birthday: new Date().toISOString().substring(0, 10)
+                firstVisit: moment().format('YYYY-DD-MM')
             }
         }
     },
@@ -70,14 +69,14 @@ export default {
                 this.formData.address = val.address;
                 this.formData.contactNumber = val.contactNumber;
                 this.formData.email = val.email;
-                this.formData.birthday = new Date(val.birthday).toISOString().substring(0, 10);
+                this.formData.firstVisit = moment(val.first_visit).format('YYYY-MM-DD');
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
                 this.formData.address = null;
                 this.formData.contactNumber = null;
                 this.formData.email = null;
-                this.formData.birthday = new Date().toISOString().substring(0, 10);
+                this.formData.firstVisit = moment().format('YYYY-MM-DD');
             }
         }
     }

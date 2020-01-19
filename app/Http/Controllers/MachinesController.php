@@ -91,6 +91,7 @@ class MachinesController extends Controller
                 'machine_id' => $machine->id,
                 'customer_name' => $customer->name,
                 'minutes' => $totalMinutes,
+                'activation_type' => 'remote',
             ]);
 
             $output = $machine->remoteActivate($pulse);
@@ -145,6 +146,27 @@ class MachinesController extends Controller
     public function reset() {
         Machine::where('total_minutes', '>', 0)->update([
             'total_minutes' => 0,
+        ]);
+    }
+
+    public function viewByType($machineType, Request $request) {
+        $result = Machine::withCount([
+            'machineUsages as usage_today' => function($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            },
+            'totalUsage as total_usage'
+        ])->where('machine_type', $machineType)->orderBy('machine_name')->get();
+        return response()->json([
+            'result' => $result,
+        ]);
+    }
+
+    public function history($machineId, Request $request) {
+        $result = MachineUsage::where('machine_id', $machineId)
+            ->whereDate('created_at', $request->date)
+            ->get();
+        return response()->json([
+            'result' => $result,
         ]);
     }
 

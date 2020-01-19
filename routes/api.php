@@ -66,6 +66,9 @@ Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
     // /api/customers/{customerId}/check-points
     Route::get('{customerId}/check-points', 'CustomersController@checkPoints');
 
+    // /api/customers/{customerId}/delete-customer
+    Route::post('{customerId}/delete-customer', 'CustomersController@deleteCustomer');
+
     // /api/customers
     Route::get('/', 'CustomersController@index');
 
@@ -323,6 +326,9 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
     // /api/machines
     Route::get('/', 'MachinesController@index');
 
+    // /api/machines/{machineId}/history
+    Route::get('{machineId}/history', 'MachinesController@history');
+
     Route::group(['middleware' => 'role:developer'], function() {
         // /api/machines/{branchId}/store
     });
@@ -332,7 +338,17 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
 
     // /api/machines/last-activated
     Route::get('last-activated', 'MachinesController@lastActivated');
+
+    // /api/machines/{machineType}
+    Route::get('{machineType}', 'MachinesController@viewByType');
 });
+
+// /api/machine-usages
+Route::group(['prefix' => 'machine-usages'], function() {
+    // /api/machine-usages/{machineUsageId}/delete-usage
+    Route::post('{machineUsageId}/delete-usage', 'MachineUsagesController@deleteUsage');
+});
+
 
 // /api/remote
 Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {

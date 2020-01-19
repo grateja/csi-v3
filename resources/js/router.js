@@ -130,6 +130,10 @@ const routes = [
         component: require('./views/product-purchases/Index.vue').default
     },
     {
+        path: '/machines',
+        component: require('./views/machines/Index.vue').default
+    },
+    {
         path: '/people',
         component: require('./views/people/Index.vue').default,
         meta: {

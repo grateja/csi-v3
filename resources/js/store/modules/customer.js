@@ -54,6 +54,9 @@ const actions = {
             context.commit('setSavingStatus', false);
             return Promise.reject(err);
         });
+    },
+    deleteCustomer(context, customerId) {
+        return axios.post(`/api/customers/${customerId}/delete-customer`);
     }
 };
 
