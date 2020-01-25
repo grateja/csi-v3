@@ -125,7 +125,7 @@ export default {
                     icon: '',
                     roles: ['admin'],
                     color: '#def794',
-                    route: '/keme'
+                    route: '/loyalty-points'
                 },
                 {
                     text: 'Discounts',

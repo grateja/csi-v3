@@ -156,6 +156,10 @@ const routes = [
         component: require('./views/discounts/Index.vue').default
     },
     {
+        path: '/loyalty-points',
+        component: require('./views/loyalty/Index.vue').default
+    },
+    {
         path: '/people',
         component: require('./views/people/Index.vue').default,
         meta: {
@@ -227,29 +231,6 @@ const routes = [
                 component: require('./views/remote-activation/RemotePanel.vue').default,
                 meta: {
                     breadcrumb: 'Remote panel'
-                }
-            }
-        ]
-    },
-    {
-        path: '/loyalty',
-        component: require('./views/loyalty/Index.vue').default,
-        meta: {
-            breadcrumb: 'Loyalty'
-        },
-        children: [
-            {
-                path: 'discounts',
-                component: require('./views/loyalty/discounts/DiscountsList.vue').default,
-                meta: {
-                    breadcrumb: 'Discounts'
-                }
-            },
-            {
-                path: 'points',
-                component: require('./views/loyalty/points/PointsSetup.vue').default,
-                meta: {
-                    breadcrumb: 'Points'
                 }
             }
         ]
