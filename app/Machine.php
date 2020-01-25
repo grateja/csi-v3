@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use App\Traits\UsesUuid;
+use Illuminate\Support\Facades\DB;
 
 class Machine extends Model
 {
@@ -94,7 +95,7 @@ class Machine extends Model
         return $output;
     }
 
-    public function tapActivate($customerName) {
+    public function tapActivate($customerName, $rfidCard) {
         if($this->is_running) {
             $minutes = $this->total_minutes + $this->additional_time;
             $price = $this->additional_price;
@@ -115,6 +116,17 @@ class Machine extends Model
             $machineUsage = MachineUsage::where('machine_id', $this->id)->orderByDesc('updated_at')->first();
             $machineUsage->update([
                 'minutes' => $minutes,
+                'price' => DB::raw('price+' . $price),
+            ]);
+
+            $rfidCardTransaction = RfidCardTransaction::where([
+                'machine_id' => $this->id,
+                'rfid_card_id' => $rfidCard->id,
+            ])->orderByDesc('updated_at')->first();
+
+            $rfidCardTransaction->update([
+                'price' => DB::raw('price+' . $price),
+                'minutes' => $minutes,
             ]);
 
         } else {
@@ -127,6 +139,17 @@ class Machine extends Model
                 'customer_name' => $customerName,
                 'minutes' => $minutes,
                 'activation_type' => 'card',
+                'price' => $price,
+            ]);
+
+            RfidCardTransaction::create([
+                'rfid' => $rfidCard->rfid,
+                'machine_name' => $this->machine_name,
+                'owner_name' => $rfidCard->owner_name,
+                'price' => $price,
+                'minutes' => $minutes,
+                'machine_id' => $this->id,
+                'rfid_card_id' => $rfidCard->id,
             ]);
         }
 
@@ -137,6 +160,7 @@ class Machine extends Model
         ]);
 
         $this['price'] = $price;
+        $this['minutes'] = $minutes;
         return $this;
     }
 }

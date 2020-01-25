@@ -2,7 +2,7 @@
     <v-container>
         <v-card v-if="!!user" color="transparent" flat>
             <v-layout row wrap>
-                <v-flex xs6 sm4 md3 lg3 v-for="(link, i) in filterLinks" :key="i">
+                <v-flex xs6 sm4 md3 xl2 v-for="(link, i) in filterLinks" :key="i">
                     <v-card class="ma-2 tile" :color="link.color" @click="navigate(link.route)">
                         <v-card-text>
                             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempora quo nostrum dolores adipisci labore impedit debitis voluptas quia, voluptatem quas harum eaque laborum placeat vel dolorum aliquam quasi quod amet.
@@ -25,14 +25,14 @@ export default {
                 {
                     text: 'New transaction',
                     icon: '',
-                    roles: ['staff'],
+                    roles: ['staff', 'admin'],
                     color: '#33cbff',
                     route: '/new-transaction/services'
                 },
                 {
                     text: 'Remote panel',
                     icon: '',
-                    roles: ['staff'],
+                    roles: ['staff', 'admin'],
                     color: '#ff93ef',
                     route: '/remote-panel'
                 },
@@ -111,7 +111,7 @@ export default {
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#83fba8',
-                    route: '/keme'
+                    route: '/rfid/transactions'
                 },
                 {
                     text: 'Machines',

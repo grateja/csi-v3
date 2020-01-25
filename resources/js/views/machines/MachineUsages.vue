@@ -8,8 +8,10 @@
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
                 <template v-slot:items="props">
                     <tr>
+                        <td>{{ moment(props.item.created_at).format('hh:mm:ss A') }}</td>
                         <td>{{ props.item.customer_name }}</td>
                         <td>{{ props.item.minutes }}</td>
+                        <td>{{ parseFloat(props.item.price).toFixed(2) }}</td>
                         <td>{{ props.item.activation_type }}</td>
                         <td>
                             <v-btn icon small @click="deleteUsage(props.item)" :loading="props.item.isDeleting" v-if="isOwner">
@@ -43,11 +45,19 @@ export default {
             items: [],
             headers: [
                 {
+                    text: 'Time',
+                    sortable: false
+                },
+                {
                     text: 'Customer name',
                     sortable: false
                 },
                 {
                     text: 'Minutes',
+                    sortable: false
+                },
+                {
+                    text: 'Price',
                     sortable: false
                 },
                 {

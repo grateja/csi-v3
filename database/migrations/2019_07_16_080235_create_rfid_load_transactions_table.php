@@ -17,6 +17,7 @@ class CreateRfidLoadTransactionsTable extends Migration
             $table->uuid('id')->primary();
 
             $table->uuid('rfid_card_id')->nullable();
+            $table->string('customer_name');
             $table->double('amount')->nullable();
             $table->double('remaining_balance')->nullable()->comment('Remaining balance before loading.');
             $table->double('current_balance')->nullable()->comment('Balance after loading.');
@@ -29,7 +30,7 @@ class CreateRfidLoadTransactionsTable extends Migration
             $table->softDeletes();
             $table->timestamp('synched')->nullable();
 
-            $table->foreign('rfid_card_id')->references('id')->on('rfid_cards')->onDelete('CASCADE');
+            $table->foreign('rfid_card_id')->references('id')->on('rfid_cards')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
         });
     }

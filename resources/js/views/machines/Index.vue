@@ -18,29 +18,44 @@
                 <tr @click="view(props.item)">
                     <td>{{ props.item.machine_name }}</td>
                     <td>{{ status(props.item) }}</td>
-                    <td>{{ customer(props.item) }}</td>
+                    <!-- <td>{{ customer(props.item) }}</td> -->
                     <td>{{ props.item.total_usage }}</td>
                     <td>{{ props.item.usage_today }}</td>
+                    <td>P {{ parseFloat(props.item.initial_price).toFixed(2) }}</td>
+                    <td>{{ props.item.additional_price ? 'P ' + parseFloat(props.item.additional_price).toFixed(2) : 'Disabled' }}</td>
+                    <td>{{ props.item.initial_time }} Mins.</td>
+                    <td>{{ (props.item.additional_time)? props.item.additional_time + 'Mins.' : 'Disabled' }}</td>
+                    <td>
+                        <v-tooltip top>
+                            <v-btn slot="activator" small icon @click="edit(props.item, $event)">
+                                <v-icon small>edit</v-icon>
+                            </v-btn>
+                            <span>Edit prices and minutes</span>
+                        </v-tooltip>
+                    </td>
                 </tr>
             </template>
         </v-data-table>
         <machine-usages :machine="activeMachine" v-model="openMachineDialog" />
+        <machine-settings :machine="activeMachine" v-model="openMachineSettings" @save="updateMachines" />
     </v-container>
 </template>
 
 <script>
 import MachineUsages from './MachineUsages.vue';
 import DateNavigator from '../shared/DateNavigator.vue';
-
+import MachineSettings from './MachineSettings.vue';
 export default {
     components: {
         MachineUsages,
-        DateNavigator
+        DateNavigator,
+        MachineSettings
     },
     data() {
         return {
             date: moment().format('YYYY-MM-DD'),
             openMachineDialog: false,
+            openMachineSettings: false,
             activeMachine: null,
             loading: false,
             tab: null,
@@ -54,16 +69,36 @@ export default {
                     text: 'Status',
                     sortable: false
                 },
-                {
-                    text: 'Customer',
-                    sortable: false
-                },
+                // {
+                //     text: 'Customer',
+                //     sortable: false
+                // },
                 {
                     text: 'Total usage',
                     sortable: false
                 },
                 {
                     text: 'Usage for the day',
+                    sortable: false
+                },
+                {
+                    text: 'Initial price',
+                    sortable: false
+                },
+                {
+                    text: 'Additional price',
+                    sortable: false
+                },
+                {
+                    text: 'Initial time',
+                    sortable: false
+                },
+                {
+                    text: 'Additional time',
+                    sortable: false
+                },
+                {
+                    text: '',
                     sortable: false
                 }
             ]
@@ -108,6 +143,23 @@ export default {
         view(machine) {
             this.activeMachine = machine;
             this.openMachineDialog = true;
+        },
+        edit(machine, event) {
+            event.stopPropagation();
+            console.log(machine);
+            this.activeMachine = machine;
+            this.openMachineSettings = true;
+        },
+        updateMachines(data) {
+            if(data.applyToAll) {
+                this.load();
+                // this.machines = data.result;
+            } else {
+                this.activeMachine.initial_time = data.result.initial_time;
+                this.activeMachine.additional_time = data.result.additional_time;
+                this.activeMachine.initial_price = data.result.initial_price;
+                this.activeMachine.additional_price = data.result.additional_price;
+            }
         }
     },
     watch: {

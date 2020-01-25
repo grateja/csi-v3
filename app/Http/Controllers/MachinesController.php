@@ -92,6 +92,7 @@ class MachinesController extends Controller
                 'customer_name' => $customer->name,
                 'minutes' => $totalMinutes,
                 'activation_type' => 'remote',
+                'price' => $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price,
             ]);
 
             $output = $machine->remoteActivate($pulse);
@@ -164,10 +165,48 @@ class MachinesController extends Controller
     public function history($machineId, Request $request) {
         $result = MachineUsage::where('machine_id', $machineId)
             ->whereDate('created_at', $request->date)
+            ->orderByDesc('created_at')
             ->get();
         return response()->json([
             'result' => $result,
         ]);
+    }
+
+    public function updateSettings($machineId, Request $request) {
+        $rules = [
+            'initialPrice' => 'required|numeric',
+            'additionalPrice' => 'numeric',
+            'initialTime' => 'required|numeric',
+            'additionalTime' => 'numeric',
+        ];
+
+        if($request->validate($rules)) {
+            return DB::transaction(function () use ($request, $machineId) {
+                $result = null;
+                $machine = Machine::findOrFail($machineId);
+                if($request->applyToAll) {
+                    $machines = Machine::where('machine_type', $machine->machine_type);
+                    $machines->update([
+                        'initial_price' => $request->initialPrice,
+                        'additional_price' => $request->additionalPrice,
+                        'initial_time' => $request->initialTime,
+                        'additional_time' => $request->additionalTime,
+                    ]);
+                    $result = $machines->get();
+                } else {
+                    $machine->update([
+                        'initial_price' => $request->initialPrice,
+                        'additional_price' => $request->additionalPrice,
+                        'initial_time' => $request->initialTime,
+                        'additional_time' => $request->additionalTime,
+                    ]);
+                    $result = $machine;
+                }
+                return response()->json([
+                    'result' => $result,
+                ]);
+            });
+        }
     }
 
     /**

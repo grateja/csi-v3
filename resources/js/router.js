@@ -134,6 +134,24 @@ const routes = [
         component: require('./views/machines/Index.vue').default
     },
     {
+        path: '/rfid',
+        component: require('./views/rfid/Index.vue').default,
+        children: [
+            {
+                path: 'rfid-cards',
+                component: require('./views/rfid/RfidCards.vue').default
+            },
+            {
+                path: 'transactions',
+                component: require('./views/rfid/Transactions.vue').default
+            },
+            {
+                path: 'load-transactions',
+                component: require('./views/rfid/LoadTransactions.vue').default
+            }
+        ]
+    },
+    {
         path: '/people',
         component: require('./views/people/Index.vue').default,
         meta: {

@@ -329,6 +329,9 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
     // /api/machines/{machineId}/history
     Route::get('{machineId}/history', 'MachinesController@history');
 
+    // /api/machines/{machineId}/update-settings
+    Route::post('{machineId}/update-settings', 'MachinesController@updateSettings');
+
     Route::group(['middleware' => 'role:developer'], function() {
         // /api/machines/{branchId}/store
     });
@@ -468,6 +471,36 @@ Route::group(['prefix' => 'search', 'middleware' => 'auth:api'], function() {
 Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() {
     // /api/rfid-cards/customer-cards
     Route::get('customer-cards', 'RfidCardsController@customerCards');
+
+    // /api/rfid-cards/unregistered-cards
+    Route::get('unregistered-cards', 'RfidCardsController@unregisteredCards');
+
+    // /api/rfid-cards/tap-transactions
+    Route::get('tap-transactions', 'RfidTapController@index');
+
+    // /api/rfid-cards/tap-transactions/{transactionId}/delete
+    Route::post('tap-transactions/{transactionId}/delete', 'RfidTapController@deleteTransaction');
+
+    // /api/rfid-cards/load-transactions
+    Route::get('load-transactions', 'RfidLoadController@index');
+
+    // /api/rfid-cards/unregistered-cards/clear-all
+    Route::post('unregistered-cards/clear-all', 'RfidCardsController@clearUnregisteredCards');
+
+    // /api/rfid-cards/create
+    Route::post('create', 'RfidCardsController@store');
+
+    // /api/rfid-cards/{rfidCardId}/update
+    Route::post('{rfidCardId}/update', 'RfidCardsController@update');
+
+    // /api/rfid-cards/{rfidCardId}/top-up
+    Route::post('{rfidCardId}/top-up', 'RfidLoadController@topUp');
+
+    // /api/rfid-cards/load-transactions/{rfidLoadId}/delete
+    Route::post('load-transactions/{rfidLoadId}/delete', 'RfidLoadController@deleteTransaction');
+
+    // /api/rfid-cards
+    Route::get('', 'RfidCardsController@index');
 });
 
 // /api/service-prices

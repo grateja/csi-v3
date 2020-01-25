@@ -11,7 +11,7 @@ class RfidLoadTransaction extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'rfid_card_id', 'amount', 'remaining_balance', 'current_balance', 'user_id', 'remarks', 'cash', 'change'
+        'customer_name', 'rfid_card_id', 'amount', 'remaining_balance', 'current_balance', 'user_id', 'remarks', 'cash', 'change'
     ];
 
     public function user() {

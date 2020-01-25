@@ -221,6 +221,7 @@ class PosTransactionController extends Controller
                     'machine_type' => $item->washingService['machine_type'],
                     'minutes' => $item->washingService['regular_minutes'] + $item->washingService['additional_minutes'],
                     'pulse_count' => $item->washingService['additional_minutes'] ? 2 : 1,
+                    'price' => $item->washingService->price,
                 ]);
 
                 $item->update([
@@ -237,6 +238,7 @@ class PosTransactionController extends Controller
                     'machine_type' => $item->dryingService['machine_type'],
                     'minutes' => $item->dryingService['minutes'],
                     'pulse_count' => $item->dryingService['minutes'] / 10,
+                    'price' => $item->dryingService->price,
                 ]);
 
                 $item->update([

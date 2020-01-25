@@ -30,7 +30,7 @@ class RfidCard extends Model
         if($this->card_type == 'c' && $this->customer) {
             return $this->customer->name;
         } else if($this->card_type == 'u' && $this->user) {
-            return $this->user->fullname;
+            return $this->user->name;
         }
     }
 }

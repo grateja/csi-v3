@@ -23,6 +23,7 @@ class CreateCustomerDriesTable extends Migration
             $table->string('machine_type')->comment('TITAN, REGULAR');
             $table->integer('pulse_count');
             $table->integer('minutes');
+            $table->float('price')->default(0);
             $table->dateTime('used')->nullable();
             $table->uuid('user_id')->nullable()->comment('staff who activates the service');
 

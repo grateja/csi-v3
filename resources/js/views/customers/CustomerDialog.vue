@@ -32,7 +32,7 @@ export default {
                 address: null,
                 contactNumber: null,
                 email: null,
-                firstVisit: moment().format('YYYY-DD-MM')
+                firstVisit: moment().format('YYYY-MM-DD')
             }
         }
     },
