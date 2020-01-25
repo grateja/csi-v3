@@ -47,8 +47,20 @@ Route::group(['prefix' => 'account', 'middleware' => 'auth:api'], function() {
 
 // /api/users
 Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
-    // /api/users
+    // /api/users/
+    Route::get('/', 'UsersController@index');
+
+    // /api/users/create
     Route::post('create', 'UsersController@create');
+
+    // /api/users/{userId}/update
+    Route::post('{userId}/update', 'UsersController@update');
+
+    // /api/users/{userId}/change-password
+    Route::post('{userId}/change-password', 'UsersController@changePassword');
+
+    // /api/users/{userId}/delete-user
+    Route::post('{userId}/delete-user', 'UsersController@deleteUser');
 
     // /api/users/{userId}/assign-role
     Route::post('{userId}/assign-role', 'UsersController@assignRole');

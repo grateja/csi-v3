@@ -76,7 +76,7 @@ export default {
                     icon: '',
                     roles: ['admin'],
                     color: '#bcefe5',
-                    route: '/keme'
+                    route: '/users'
                 },
                 {
                     text: 'Product Purchases',

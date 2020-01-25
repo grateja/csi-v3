@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable, SoftDeletes, UsesUuid;
 
-    public $appends = ['roles', 'fullname'];
+    public $appends = ['roles'];
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id', 'lastname', 'firstname', 'middlename', 'contact_number', 'email', 'password', 'address',
+        'id', 'name', 'contact_number', 'email', 'password',
     ];
 
     /**
@@ -52,10 +52,6 @@ class User extends Authenticatable
 
     public function getRolesAttribute() {
         return $this->roles()->pluck('name');
-    }
-
-    public function getFullnameAttribute() {
-        return "{$this->firstname} {$this->lastname}";
     }
 
     public function hasAnyRole($roles) {

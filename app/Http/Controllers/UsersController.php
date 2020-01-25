@@ -13,10 +13,12 @@ class UsersController extends Controller
     public function index(Request $request) {
         $users = User::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
+        })->whereHas('roles', function($query) {
+            $query->where('name', 'staff');
         });
 
         return response()->json([
-            'result' => $users->paginate(10)
+            'result' => $users->get()
         ], 200);
     }
 
@@ -33,9 +35,8 @@ class UsersController extends Controller
     public function create(Request $request) {
         $rules = [
             'name' => 'required',
-            'contactNumber' => 'required',
-            'email' => 'required|email|unique:users|confirmed',
-            'password' => 'required|min:5|confirmed',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:4|confirmed',
         ];
 
         if($request->validate($rules)) {
@@ -43,12 +44,11 @@ class UsersController extends Controller
                 $user = User::create([
                     'name' => $request->name,
                     'email' => $request->email,
-                    'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'password' => bcrypt($request->password),
                 ]);
 
-                $user->assignRole(Role::where('name', 'staff')->first()->id);
+                $user->assignRole(3);
 
                 return response()->json([
                     'user' => $user
@@ -57,33 +57,57 @@ class UsersController extends Controller
         }
     }
 
-    public function assignRole($userId, Request $request) {
-        $client = auth()->user();
-
+    public function update($userId, Request $request) {
         $rules = [
-            'roleId' => 'required',
-            'password' => ['required', new VerifyPassword($client->password)],
-            'branchesId' => 'required'
+            'name' => 'required',
         ];
 
         $user = User::findOrFail($userId);
-
-        if($userId == $client->id) {
-            return response()->json([
-                'errors' => [
-                    'message' => ['Cannot assign role to self.']
-                ]
-            ], 422);
+        if($user->email != $request->email) {
+            $rules['email'] = 'required|email|unique:users';
         }
 
         if($request->validate($rules)) {
-            return DB::transaction(function () use ($request, $user) {
-                $user->assignRole($request->roleId);
+            return DB::transaction(function () use ($user, $request) {
+                $user->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'contact_number' => $request->contactNumber,
+                ]);
 
                 return response()->json([
-                    'user' => $user->fresh('branches'),
-                ], 200);
+                    'user' => $user,
+                ]);
             });
+        }
+    }
+
+    public function changePassword($userId, Request $request) {
+        $rules = [
+            'password' => 'required|min:4|confirmed',
+        ];
+
+        if($request->validate($rules)) {
+            $user = User::findOrFail($userId);
+
+            return DB::transaction(function () use ($user, $request) {
+                $user->update([
+                    'password' => bcrypt($request->password),
+                ]);
+
+                return response()->json([
+                    'user' => $user,
+                ]);
+            });
+        }
+    }
+
+    public function deleteUser($userId) {
+        $user = User::findOrfail($userId);
+        if($user->delete()) {
+            return response()->json([
+                'user' => $user,
+            ]);
         }
     }
 }
