@@ -503,6 +503,7 @@ Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() 
     Route::get('', 'RfidCardsController@index');
 });
 
+
 // /api/service-prices
 Route::group(['prefix' => 'service-prices', 'middleware' => 'auth:api'], function() {
     // /api/service-prices/{servicePriceId}/update

@@ -49,9 +49,9 @@ const actions = {
             return Promise.reject(err);
         });
     },
-    deleteDiscount(context, data) {
+    deleteDiscount(context, discountId) {
         context.commit('clearErrors');
-        return axios.post(`/api/discounts/${data.discountId}/delete`, data.formData).then((res, rej) => {
+        return axios.post(`/api/discounts/${discountId}/delete`).then((res, rej) => {
             return res;
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);

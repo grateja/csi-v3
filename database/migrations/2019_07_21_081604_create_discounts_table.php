@@ -16,11 +16,9 @@ class CreateDiscountsTable extends Migration
         Schema::create('discounts', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name')->nullable();
-            $table->char('discount_type')->default('p')->comment('p = percentage, c = cash');
             $table->double('percentage')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->timestamp('synched')->nullable();
         });
     }
 

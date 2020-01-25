@@ -152,6 +152,10 @@ const routes = [
         ]
     },
     {
+        path: '/discounts',
+        component: require('./views/discounts/Index.vue').default
+    },
+    {
         path: '/people',
         component: require('./views/people/Index.vue').default,
         meta: {

@@ -52,20 +52,13 @@ class DiscountsController extends Controller
     {
         $rules = [
             'name' => 'required',
-            'discountType' => 'required',
+            'percentage' => 'required|numeric',
         ];
-
-        if($request->discountType == 'p') {
-            $rules = array_merge($rules, [
-                'percentage' => 'required',
-            ]);
-        }
 
         if($request->validate($rules)) {
             return DB::transaction(function () use ($request) {
                 $discount = Discount::create([
                     'name' => $request->name,
-                    'discount_type' => $request->discountType['id'],
                     'percentage' => $request->percentage,
                 ]);
 
@@ -111,20 +104,13 @@ class DiscountsController extends Controller
 
         $rules = [
             'name' => 'required',
-            'discountType' => 'required',
+            'percentage' => 'required|numeric',
         ];
-
-        if($request->discountType == 'p') {
-            $rules = array_merge($rules, [
-                'percentage' => 'required',
-            ]);
-        }
 
         if($request->validate($rules)) {
             return DB::transaction(function () use ($request, $discount) {
                 $discount->update([
                     'name' => $request->name,
-                    'discount_type' => $request->discountType['id'],
                     'percentage' => $request->percentage,
                 ]);
 

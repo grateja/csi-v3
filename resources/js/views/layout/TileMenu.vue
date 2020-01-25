@@ -132,7 +132,7 @@ export default {
                     icon: '',
                     roles: ['admin'],
                     color: '#ddfb83',
-                    route: '/keme'
+                    route: '/discounts'
                 },
             ]
         }
