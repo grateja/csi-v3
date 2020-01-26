@@ -38,6 +38,7 @@
                 </td>
             </template>
         </v-data-table>
+        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
         <purchase-dialog v-model="openPurchaseDialog" :productPurchase="activeProductPurchase" @save="save" />
     </v-container>
 </template>

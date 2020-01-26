@@ -67,7 +67,8 @@ class PaymentsController extends Controller
                 }
 
                 $earningPoints = $transaction->serviceTransactionItems()->sum('earning_points');
-                $transaction->customer()->increment('earned_points', $earningPoints);
+                $customer->increment('earned_points', $earningPoints);
+                $customer->decrement('earned_points', $pointsToDeduct);
 
                 $payment = TransactionPayment::create([
                     'transaction_id' => $transaction->id,

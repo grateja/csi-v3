@@ -90,7 +90,7 @@ export default {
                     icon: '',
                     roles: ['staff', 'admin'],
                     color: '#95b9fb',
-                    route: '/keme'
+                    route: '/expenses'
                 },
                 {
                     text: 'Services',

@@ -410,8 +410,14 @@ Route::group(['prefix' => 'product-purchases'], function() {
 
 // /api/expenses
 Route::group(['prefix' => 'expenses', 'middleware' => 'auth:api'], function() {
-    // /api/expenses/store
-    Route::post('store', 'ExpensesController@store');
+    // /api/expenses
+    Route::get('/', 'ExpensesController@index');
+
+    // /api/expenses/create
+    Route::post('create', 'ExpensesController@store');
+
+    // /api/expenses/{expenseId}/update
+    Route::post('{expenseId}/update', 'ExpensesController@update');
 });
 
 

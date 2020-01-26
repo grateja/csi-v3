@@ -25,7 +25,7 @@ const actions = {
     insertExpense(context, data) {
         context.commit('clearErrors');
         context.commit('setSavingStatus', true);
-        return axios.post(`/api/expenses/self/store`, data.formData).then((res, rej) => {
+        return axios.post(`/api/expenses/create`, data.formData).then((res, rej) => {
             context.commit('setSavingStatus', false);
             return res;
         }).catch(err => {
@@ -33,6 +33,21 @@ const actions = {
             context.commit('setErrors', err.response.data.errors);
             return Promise.reject(err);
         });
+    },
+    updateExpense(context, data) {
+        context.commit('clearErrors');
+        context.commit('setSavingStatus', true);
+        return axios.post(`/api/expenses/${data.expenseId}/update`, data.formData).then((res, rej) => {
+            context.commit('setSavingStatus', false);
+            return res;
+        }).catch(err => {
+            context.commit('setSavingStatus', false);
+            context.commit('setErrors', err.response.data.errors);
+            return Promise.reject(err);
+        });
+    },
+    deleteExpense(context, expenseId) {
+        return axios.post(`/api/expenses/${expenseId}/delete-exppense`);
     }
 };
 

@@ -25,13 +25,28 @@ class ExpensesController extends Controller
      */
     public function index(Request $request)
     {
-        $result = Expense::with('user')->where(function($query) use ($request) {
-            $query->where('remarks', 'like', "%$request->keyword%");
-        });
+        $sortBy = $request->sortBy ? $request->sortBy : 'date';
+        $order = $request->orderBy ? $request->orderBy : 'desc';
+
+        $result = DB::table('expenses')
+            ->join('users', 'users.id', '=', 'expenses.user_id')
+            ->where(function($query) {
+
+            })->selectRaw('expenses.id, date, remarks, expense_type, amount, users.name as user_name');
+
+        // $result = Expense::with('user')->where(function($query) use ($request) {
+        //     $query->where('remarks', 'like', "%$request->keyword%");
+        // });
+
+        if($request->date) {
+            $result = $result->whereDate('transactions.saved', $request->date);
+        }
+
+        $result = $result->orderBy($sortBy, $order);
 
         return response()->json([
             'result' => $result->paginate(10),
-        ], 200);
+        ]);
     }
 
     /**
@@ -65,11 +80,12 @@ class ExpensesController extends Controller
                     'remarks' => $request->remarks,
                     'amount' => $request->amount,
                     'user_id' => auth('api')->id(),
-                    'expense_type' => $request->expenseType,
                 ]);
 
+                $expense['user_name'] = $expense->user->name;
+
                 return response()->json([
-                    'expense' => $expense->fresh('user'),
+                    'expense' => $expense,
                 ], 200);
             });
         }
@@ -106,7 +122,29 @@ class ExpensesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'date' => 'required|date',
+            'remarks' => 'required',
+            'amount' => 'required|numeric',
+        ];
+
+        if($request->validate($rules)) {
+            return DB::transaction(function () use ($id, $request) {
+                $expense = Expense::findOrFail($id);
+                $expense->update([
+                    'date' => $request->date,
+                    'remarks' => $request->remarks,
+                    'amount' => $request->amount,
+                    'user_id' => auth('api')->id(),
+                ]);
+
+                $expense['user_name'] = $expense->user->name;
+
+                return response()->json([
+                    'expense' => $expense,
+                ], 200);
+            });
+        }
     }
 
     /**

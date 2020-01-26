@@ -164,6 +164,10 @@ const routes = [
         component: require('./views/users/Index.vue').default
     },
     {
+        path: '/expenses',
+        component: require('./views/expenses/Index.vue').default
+    },
+    {
         path: '/preferences',
         component: require('./views/preferences/Index.vue').default,
         meta: {
