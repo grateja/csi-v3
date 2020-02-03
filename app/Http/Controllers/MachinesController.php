@@ -22,10 +22,10 @@ class MachinesController extends Controller
     public function index()
     {
         $result = [
-            'washers' => Machine::where(['machine_type' => 'rw'])->orderBy('machine_name')->get(),
-            'dryers' => Machine::where(['machine_type' => 'rd'])->orderBy('machine_name')->get(),
-            'titan_washers' => Machine::where(['machine_type' => 'tw'])->orderBy('machine_name')->get(),
-            'titan_dryers' => Machine::where(['machine_type' => 'td'])->orderBy('machine_name')->get(),
+            'washers' => Machine::with('customer')->where(['machine_type' => 'rw'])->orderBy('machine_name')->get(),
+            'dryers' => Machine::with('customer')->where(['machine_type' => 'rd'])->orderBy('machine_name')->get(),
+            'titan_washers' => Machine::with('customer')->where(['machine_type' => 'tw'])->orderBy('machine_name')->get(),
+            'titan_dryers' => Machine::with('customer')->where(['machine_type' => 'td'])->orderBy('machine_name')->get(),
         ];
 
         return response()->json([
@@ -81,25 +81,41 @@ class MachinesController extends Controller
                 ]);
             }
 
-            $machine->update([
-                'time_activated' => Carbon::now(),
-                'total_minutes' => $totalMinutes,
-                'customer_name' => $customer->name,
-            ]);
+            if($request->additional && $machine->is_running) {
+                $machine->update([
+                    'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
+                    'remarks' => 'Additional ' . $totalMinutes,
+                    'customer_id' => $customer->id,
+                ]);
 
-            MachineUsage::create([
-                'machine_id' => $machine->id,
-                'customer_name' => $customer->name,
-                'minutes' => $totalMinutes,
-                'activation_type' => 'remote',
-                'price' => $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price,
-            ]);
+                $machineUsage = MachineUsage::where('machine_id', $machine->id)->orderByDesc('updated_at')->first();
+                $machineUsage->update([
+                    'total_minutes' => DB::raw('total_minutes+', $totalMinutes),
+                    'price' => DB::raw('price+' . $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price),
+                ]);
+
+            } else {
+                $machine->update([
+                    'time_activated' => Carbon::now(),
+                    'total_minutes' => $totalMinutes,
+                    'remarks' => null,
+                    'customer_id' => $customer->id,
+                ]);
+
+                MachineUsage::create([
+                    'machine_id' => $machine->id,
+                    'customer_name' => $customer->name,
+                    'minutes' => $totalMinutes,
+                    'activation_type' => 'remote',
+                    'price' => $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price,
+                ]);
+            }
 
             $output = $machine->remoteActivate($pulse);
 
             if($output) {
                 return response()->json([
-                    'machine' => $machine,
+                    'machine' => $machine->fresh('customer'),
                 ]);
             } else {
 
@@ -126,6 +142,7 @@ class MachinesController extends Controller
             return DB::transaction(function () use ($request) {
                 $machine = Machine::findOrFail($request->machineId);
                 $machineRemarks = MachineRemarks::create([
+                    'title' => 'Force stopped',
                     'remarks' => $request->remarks,
                     'user_id' => auth('api')->id(),
                     'remaining_time' => $machine->remainingTime(),
@@ -134,7 +151,8 @@ class MachinesController extends Controller
 
                 $machine->update([
                     'total_minutes' => 0,
-                    'customer_name' => $machine->customer_name . '(Force Stopped)'
+                    'remarks' => $machine->customer->name . '(Force Stopped)',
+                    'customer_id' => null,
                 ]);
 
                 return response()->json([

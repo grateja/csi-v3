@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\ServiceTransactionItem;
 use App\Transaction;
 use Illuminate\Http\Request;
@@ -138,7 +139,7 @@ class TransactionsController extends Controller
                 $query->where('customer_name', 'like', "%$request->keyword%")
                     ->orWhere('name', 'like', "%$request->keyword%")
                     ->orWhere('job_order', 'like', "%$request->keyword%");
-            })
+            })->where('product_transaction_items.saved', true)
             ->join('transactions', 'transactions.id','=', 'product_transaction_items.transaction_id')
                 ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity');
 
@@ -150,6 +151,16 @@ class TransactionsController extends Controller
 
         return response()->json([
             'result' => $result->paginate(10),
+        ]);
+    }
+
+    public function unsavedTransactions() {
+        $result = Customer::whereHas('transactions', function($query) {
+            $query->whereNull('saved');
+        })->get();
+
+        return response()->json([
+            'result' => $result,
         ]);
     }
 }

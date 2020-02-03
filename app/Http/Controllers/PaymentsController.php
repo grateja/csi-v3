@@ -82,6 +82,10 @@ class PaymentsController extends Controller
                     'user_id' => auth('api')->id(),
                 ]);
 
+                $transaction->update([
+                    'date_paid' => Carbon::now(),
+                ]);
+
                 return response()->json([
                     'transaction' => $transaction,
                 ]);

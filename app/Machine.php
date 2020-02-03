@@ -26,7 +26,8 @@ class Machine extends Model
         'additional_time',
         'initial_price',
         'additional_price',
-        'customer_name',
+        'remarks',
+        'customer_id',
     ];
 
     public $appends = [
@@ -57,11 +58,12 @@ class Machine extends Model
     }
 
     public function customer() {
-        if($this->is_running) {
-            return $this->customer_name;
-        } else {
-            return 'Last customer: ' . $this->customer_name;
-        }
+        return $this->belongsTo('App\Customer');
+        // if($this->is_running) {
+        //     return $this->customer_name;
+        // } else {
+        //     return 'Last customer: ' . $this->customer_name;
+        // }
     }
 
     public function getRemainingTimeAttribute() {
@@ -95,7 +97,7 @@ class Machine extends Model
         return $output;
     }
 
-    public function tapActivate($customerName, $rfidCard) {
+    public function tapActivate($rfidCard) {
         if($this->is_running) {
             $minutes = $this->total_minutes + $this->additional_time;
             $price = $this->additional_price;
@@ -124,6 +126,10 @@ class Machine extends Model
                 'rfid_card_id' => $rfidCard->id,
             ])->orderByDesc('updated_at')->first();
 
+            if($rfidCardTransaction == null) {
+                return false;
+            }
+
             $rfidCardTransaction->update([
                 'price' => DB::raw('price+' . $price),
                 'minutes' => $minutes,
@@ -136,7 +142,7 @@ class Machine extends Model
 
             $machineUsage = MachineUsage::create([
                 'machine_id' => $this->id,
-                'customer_name' => $customerName,
+                'customer_name' => $rfidCard->owner_name,
                 'minutes' => $minutes,
                 'activation_type' => 'card',
                 'price' => $price,
@@ -150,13 +156,15 @@ class Machine extends Model
                 'minutes' => $minutes,
                 'machine_id' => $this->id,
                 'rfid_card_id' => $rfidCard->id,
+                'card_type' => $rfidCard->card_type,
             ]);
         }
 
         $this->update([
             'time_activated' => $timeActivated,
             'total_minutes' => $minutes,
-            'customer_name' => $customerName,
+            'customer_id' => null,
+            'remarks' => 'Activated by card: ' . $rfidCard->owner_name,
         ]);
 
         $this['price'] = $price;

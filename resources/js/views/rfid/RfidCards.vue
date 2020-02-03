@@ -7,7 +7,7 @@
                         <v-text-field label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex>
-                        <v-text-field class="ml-1" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+                        <v-text-field class="ml-1" label="Search rfid or customer name" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['fullname', 'rfid', 'enrolled']" @change="filter"></v-combobox>

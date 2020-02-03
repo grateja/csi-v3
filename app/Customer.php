@@ -14,6 +14,10 @@ class Customer extends Model
         'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points',
     ];
 
+    public function setNameAttribute($value) {
+        $this->attributes['name'] = ucwords($value);
+    }
+
     public function transactions() {
         return $this->hasMany('App\Transaction');
     }

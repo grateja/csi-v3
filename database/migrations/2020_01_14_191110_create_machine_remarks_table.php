@@ -16,6 +16,7 @@ class CreateMachineRemarksTable extends Migration
         Schema::create('machine_remarks', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
+            $table->string('title');
             $table->text('remarks');
             $table->uuid('user_id')->nullable();
             $table->uuid('machine_id');

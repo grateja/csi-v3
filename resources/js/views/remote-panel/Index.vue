@@ -2,31 +2,47 @@
     <v-card class="ma-3 pa-4" flat color="transparent">
 
         <h4 class="title grey--text">Remote panel</h4>
-        <v-divider class="my-3"></v-divider>
+        <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
+        <v-divider v-else class="my-3"></v-divider>
 
-        <h4 class="grey--text mt-4">Regular Dryers</h4>
-        <v-divider class="my-2"></v-divider>
-        <v-layout row wrap>
-            <machine-tile v-for="machine in machines.dryers" :key="machine.id" :machine="machine" @open="open" />
-        </v-layout>
+        <template>
+            <div v-if="machines.dryers && !loading">
+                <h4 class="grey--text mt-4">Regular Dryers</h4>
+                <v-divider class="my-2"></v-divider>
+                <v-layout row wrap>
+                    <machine-tile v-for="machine in machines.dryers" :key="machine.id" :machine="machine" @open="open" />
+                </v-layout>
+            </div>
+        </template>
 
-        <h4 class="grey--text mt-4">Regular Washers</h4>
-        <v-divider class="my-2"></v-divider>
-        <v-layout row wrap>
-            <machine-tile v-for="machine in machines.washers" :key="machine.id" :machine="machine" @open="open" />
-        </v-layout>
+        <template>
+            <div v-if="machines.washers && !loading">
+                <h4 class="grey--text mt-4">Regular Washers</h4>
+                <v-divider class="my-2"></v-divider>
+                <v-layout row wrap>
+                    <machine-tile v-for="machine in machines.washers" :key="machine.id" :machine="machine" @open="open" />
+                </v-layout>
+            </div>
+        </template>
 
-        <h4 class="grey--text mt-4">Titan Dryers</h4>
-        <v-divider class="my-2"></v-divider>
-        <v-layout row wrap>
-            <machine-tile v-for="machine in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" />
-        </v-layout>
-
-        <h4 class="grey--text mt-4">Titan Washers</h4>
-        <v-divider class="my-2"></v-divider>
-        <v-layout row wrap>
-            <machine-tile v-for="machine in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" />
-        </v-layout>
+        <template>
+            <div v-if="machines.titan_dryers && !loading">
+                <h4 class="grey--text mt-4">Titan Dryers</h4>
+                <v-divider class="my-2"></v-divider>
+                <v-layout row wrap>
+                    <machine-tile v-for="machine in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" />
+                </v-layout>
+            </div>
+        </template>
+        <template>
+            <div v-if="machines.titan_washers && !loading">
+                <h4 class="grey--text mt-4">Titan Washers</h4>
+                <v-divider class="my-2"></v-divider>
+                <v-layout row wrap>
+                    <machine-tile v-for="machine in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" />
+                </v-layout>
+            </div>
+        </template>
 
         <customer-browser v-model="openCustomerBrowserDialog" :machine="activeMachine" @machineActivated="updateMachine" />
         <machine-dialog :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" />
@@ -52,13 +68,17 @@ export default {
             activeMachine: null,
             machines: [],
             interval: null,
-            componentKey: 1
+            componentKey: 1,
+            loading: false
         }
     },
     methods: {
         load() {
+            this.loading = true;
             axios.get('/api/machines').then((res, rej) => {
                 this.machines = res.data.result;
+            }).finally(() => {
+                this.loading = false;
             });
         },
         open(machine) {
@@ -73,9 +93,10 @@ export default {
         },
         updateMachine(data) {
             this.activeMachine.time_ends_in = data.machine.time_ends_in;
-            this.activeMachine.customer_name = data.machine.customer_name;
+            this.activeMachine.customer = data.machine.customer;
             this.activeMachine.total_minutes = data.machine.total_minutes;
             this.activeMachine.is_running = data.machine.is_running;
+            this.activeMachine.remarks = data.machine.remarks;
         }
     },
     created() {

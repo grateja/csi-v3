@@ -45,7 +45,6 @@ class AccountsController extends Controller
 
         $rules = [
             'email' => 'required|email',
-            'emailConfirmation' => 'required',
             'password' => ['required', new VerifyPassword($user->password)],
         ];
 
@@ -55,14 +54,6 @@ class AccountsController extends Controller
         }
 
         if($request->validate($rules)) {
-            if($request->email != $request->emailConfirmation) {
-                return response()->json([
-                    'errors' => [
-                        'emailConfirmation' => ['Email confirmation does not matched']
-                    ]
-                ], 422);
-            }
-
             $user->update([
                 'email' => $request->email,
             ]);

@@ -24,6 +24,7 @@ class CreateTransactionsTable extends Migration
 
             $table->string('customer_name');
             $table->float('total_price')->default(0);
+            $table->dateTime('date_paid')->nullable();
 
             $table->softDeletes();
             $table->timestamp('synched')->nullable();

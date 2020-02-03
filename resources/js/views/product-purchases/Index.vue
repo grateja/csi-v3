@@ -29,7 +29,7 @@
                 <td>{{ moment(props.item.date).format('LL') }}</td>
                 <td>{{ props.item.name }}</td>
                 <td>{{ props.item.quantity }}</td>
-                <td>{{ props.item.unit_cost * props.item.quantity }}</td>
+                <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
                 <td>{{ props.item.remarks }}</td>
                 <td v-if="isOwner">
                     <v-btn small icon @click="deletePurchase(props.item)" :loading="props.item.isDeleting">

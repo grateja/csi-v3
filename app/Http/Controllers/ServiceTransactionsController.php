@@ -46,6 +46,12 @@ class ServiceTransactionsController extends Controller
                     }
                 }
 
+
+                $serviceTransactionItem->transaction()->update([
+                    'saved' => null,
+                ]);
+
+
                 return response()->json([
                     'message' => 'Item deleted successfully',
                     'serviceTransactionItem' => $serviceTransactionItem,

@@ -4,7 +4,10 @@
             <v-card-title class="title grey--text">Select service</v-card-title>
             <v-progress-linear v-if="loading" indeterminate height="1"></v-progress-linear>
             <v-divider v-else></v-divider>
-            <v-card-text>
+            <v-card-text v-if="!loading && services.length == 0">
+                No services
+            </v-card-text>
+            <v-card-text v-else>
                 <dl v-if="machine && customer">
                     <dt class="font-weight-bold grey--text">Customer name:</dt>
                     <dd class="ml-2">{{customer.name}}</dd>
@@ -42,7 +45,7 @@
 <script>
 export default {
     props: [
-        'value', 'customer', 'machine'
+        'value', 'customer', 'machine', 'additional'
     ],
     data() {
         return {
@@ -73,7 +76,8 @@ export default {
                     machineId: this.machine.id,
                     machineSize: this.machineSize,
                     serviceType: this.serviceType,
-                    serviceName: service.service_name
+                    serviceName: service.service_name,
+                    additional: this.additional
                 }
             }).then((res, rej) => {
                 this.$emit('activated', res.data);

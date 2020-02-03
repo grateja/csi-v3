@@ -19,6 +19,7 @@ class CreateRfidCardTransactionsTable extends Migration
             $table->string('machine_name');
             $table->string('owner_name');
             $table->float('price')->default(0);
+            $table->string('card_type')->comment('c, u');
             $table->integer('minutes');
 
             $table->uuid('machine_id')->nullable();

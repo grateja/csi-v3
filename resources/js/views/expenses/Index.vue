@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Product purchases</h3>
+        <h3 class="title grey--text">Expenses</h3>
         <v-divider class="my-3"></v-divider>
 
         <v-card>
@@ -10,7 +10,7 @@
                         <v-text-field label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex>
-                        <v-text-field class="ml-1" label="Search products" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+                        <v-text-field class="ml-1" label="Search expense" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'user_name']" @change="filter"></v-combobox>
@@ -22,13 +22,13 @@
             </v-card-text>
         </v-card>
 
-        <v-btn class="success ml-0 my-3" round @click="addNewExpense"><v-icon left>add</v-icon> Add new purchase</v-btn>
+        <v-btn class="success ml-0 my-3" round @click="addNewExpense"><v-icon left>add</v-icon> Add new expense</v-btn>
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
                 <td>{{ moment(props.item.date).format('LL') }}</td>
                 <td>{{ props.item.remarks }}</td>
-                <td>{{ parseFloat(props.item.amount).toFixed(2) }}</td>
+                <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
                 <td>{{ props.item.user_name }}</td>
                 <td>
                     <v-btn icon small @click="editExpense(props.item)">

@@ -80,6 +80,15 @@ export default {
             }
             return 0;
         }
+    },
+    watch: {
+        value(val) {
+            if(!val) {
+                this.formData.amount = 0;
+                this.formData.cash = 0;
+                this.formData.remarks = null;
+            }
+        }
     }
 }
 </script>

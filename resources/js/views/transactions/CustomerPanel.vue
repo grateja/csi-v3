@@ -28,6 +28,15 @@
                 </v-list-tile>
             </v-list>
         </v-card>
+        <v-card v-if="!currentCustomer && !loading && unsavedTransactions.length" class="my-3">
+            <v-card-title class="grey--text">Customers with unsaved transaction</v-card-title>
+            <v-divider class="my-1"></v-divider>
+            <v-list dense>
+                <v-list-tile v-for="customer in unsavedTransactions" :key="customer.id" @click="selectCustomer(customer)">
+                    {{customer.name}}
+                </v-list-tile>
+            </v-list>
+        </v-card>
         <customer-dialog v-model="openCustomerDialog" @save="setCustomer" />
     </div>
 </template>
@@ -46,7 +55,8 @@ export default {
             cancelSource: null,
             keyword: null,
             items: [],
-            customerName: null
+            customerName: null,
+            unsavedTransactions: []
         }
     },
     methods: {
@@ -73,6 +83,7 @@ export default {
         selectCustomer(customer) {
             this.$emit('selectCustomer', customer);
             this.items = [];
+            this.unsavedTransactions = [];
         },
         cancelSearch(){
             if(this.cancelSource){
@@ -81,6 +92,7 @@ export default {
         },
         removeCustomer() {
             this.$store.commit('postransaction/removeCustomer');
+            this.loadUnsavedTransactions();
         },
         createCustomer() {
             this.removeCustomer();
@@ -88,12 +100,20 @@ export default {
         },
         setCustomer(data) {
             this.selectCustomer(data.customer);
+        },
+        loadUnsavedTransactions() {
+            axios.get('/api/transactions/unsaved-transactions').then((res, rej) => {
+                this.unsavedTransactions = res.data.result;
+            });
         }
     },
     computed: {
         currentCustomer() {
             return this.$store.getters['postransaction/getCurrentCustomer'];
         }
+    },
+    created() {
+        this.loadUnsavedTransactions();
     }
 }
 </script>

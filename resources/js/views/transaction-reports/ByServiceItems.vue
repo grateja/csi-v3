@@ -31,7 +31,7 @@
                 <td>{{ props.item.customer_name }}</td>
                 <td>{{ props.item.name }}</td>
                 <td>{{ props.item.quantity }}</td>
-                <td>{{ parseFloat(props.item.price).toFixed(2) }}</td>
+                <td>P {{ parseFloat(props.item.price).toFixed(2) }}</td>
                 <td>{{ props.item.date }}</td>
             </template>
         </v-data-table>

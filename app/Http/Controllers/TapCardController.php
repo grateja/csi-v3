@@ -46,14 +46,14 @@ class TapCardController extends Controller
             ], 422);
         }
 
-        if($machine->is_running && $machine->customer_name != $rfidCard->owner_name) {
+        if($machine->is_running && $machine->customer && $machine->customer->name != $rfidCard->owner_name) {
             return response()->json([
-                'message' => 'Machine is already in use by a different customer: ' . $machine->customer_name,
+                'message' => 'Machine is already in use by a different customer: ' . $machine->customer->name,
             ], 422);
         }
 
         return DB::transaction(function () use ($rfidCard, $machine) {
-            $machine = $machine->tapActivate($rfidCard->owner_name, $rfidCard);
+            $machine = $machine->tapActivate($rfidCard);
 
             if($machine) {
                 if($rfidCard->card_type == 'c' && $rfidCard->balance - $machine->price < 0) {
@@ -70,6 +70,8 @@ class TapCardController extends Controller
                     'price' => $machine->price,
                 ]);
             }
+
+            DB::rollback();
 
             return response()->json([
                 'message' => 'Cannot activate machine',

@@ -10,16 +10,17 @@ use Illuminate\Support\Facades\DB;
 class RfidLoadController extends Controller
 {
     public function index(Request $request) {
-        $sortBy = $request->sortBy ? 'rfid_load_transactions.'. $request->sortBy : 'rfid_load_transactions.'. 'created_at';
+        $sortBy = $request->sortBy ? $request->sortBy : 'created_at';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $result = DB::table('rfid_load_transactions')
-            ->whereNull('rfid_load_transactions.deleted_at')
-            ->join('rfid_cards', 'rfid_cards.id', '=', 'rfid_load_transactions.rfid_card_id')
-            ->selectRaw('rfid_load_transactions.id, customer_name, amount, rfid, remarks, rfid_load_transactions.created_at');
+        $result = RfidLoadTransaction::where(function($query) use ($request) {
+            $query->where('rfid', 'like', "%$request->keyword%")
+                ->orWhere('customer_name', 'like', "%$request->keyword%")
+                ->orWhere('remarks', 'like', "%$request->keyword%");
+        });
 
         if($request->date) {
-            $result = $result->whereDate('rfid_load_transactions.created_at', $request->date);
+            $result = $result->whereDate('created_at', $request->date);
         }
 
         $result = $result->orderBy($sortBy, $order);
@@ -43,6 +44,7 @@ class RfidLoadController extends Controller
                 $rfidLoadTransaction = RfidLoadTransaction::create([
                     'rfid_card_id' => $rfidCard->id,
                     'customer_name' => $rfidCard->owner_name,
+                    'rfid' => $rfidCard->rfid,
                     'amount' => $request->amount,
                     'remaining_balance' => $rfidCard->balance,
                     'current_balance' => $rfidCard->balance + $request->amount,

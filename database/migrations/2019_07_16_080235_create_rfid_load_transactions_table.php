@@ -18,6 +18,7 @@ class CreateRfidLoadTransactionsTable extends Migration
 
             $table->uuid('rfid_card_id')->nullable();
             $table->string('customer_name');
+            $table->string('rfid');
             $table->double('amount')->nullable();
             $table->double('remaining_balance')->nullable()->comment('Remaining balance before loading.');
             $table->double('current_balance')->nullable()->comment('Balance after loading.');

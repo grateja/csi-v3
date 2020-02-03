@@ -73,13 +73,13 @@
 
             <v-card-actions v-if="currentTransaction && !currentTransaction.saved">
                 <v-spacer></v-spacer>
-                <v-btn color="success" @click="saveTransaction" round :loading="saving">confirm</v-btn>
+                <v-btn class="title" color="#cf0" @click="saveTransaction" round :loading="saving"> <span class="font-weight-bold">{{totalPrice}} </span> &nbsp; confirm</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
             <v-card-actions v-else>
                 <v-spacer></v-spacer>
                 <v-btn color="primary" @click="viewPayment" round>Payment</v-btn>
-                <v-btn @click="printClaimStub" round>Print claim stub</v-btn>
+                <v-btn @click="printClaimStub" round :loading="claimStubLoading">Print claim stub</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card-text>
@@ -109,6 +109,14 @@ export default {
         },
         saving() {
             return this.$store.getters['postransaction/isSaving'];
+        },
+        claimStubLoading() {
+            return this.$store.getters['printer/claimStubLoading'];
+        },
+        totalPrice() {
+            if(this.currentTransaction) {
+                return 'P' + parseFloat(this.currentTransaction.total_amount).toFixed(2);
+            }
         }
     },
     methods: {
@@ -136,7 +144,9 @@ export default {
             this.openPaymentDialog = true;
         },
         printClaimStub() {
-
+            this.$store.dispatch('printer/printClaimStub', {
+                transactionId: this.currentTransaction.id
+            });
         }
     }
 }

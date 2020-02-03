@@ -75,4 +75,27 @@ class PrinterController extends Controller
 
          return view('printer.receipt', $data);
     }
+
+
+    public function claimStub($transactionId) {
+        $transaction = Transaction::with('payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
+
+        if(!$transaction->saved) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Cannot print claim stub. Transaction was modified']
+                ]
+            ]);
+        }
+
+        $data = [
+            'job_order' => $transaction->job_order,
+            'date' => Carbon::createFromDate($transaction->date)->format('M-d, Y h:i A'),
+            'customer_name' => $transaction->customer->name,
+            'status' => $transaction->payment == null ? 'Not Paid' : 'Paid to: ' . $transaction->payment->user->name,
+            'total_amount' => $transaction->total_price,
+        ];
+
+        return view('printer.claim-stub', $data);
+    }
 }

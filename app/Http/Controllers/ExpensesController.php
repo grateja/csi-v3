@@ -30,8 +30,9 @@ class ExpensesController extends Controller
 
         $result = DB::table('expenses')
             ->join('users', 'users.id', '=', 'expenses.user_id')
-            ->where(function($query) {
-
+            ->where(function($query) use ($request) {
+                $query->where('remarks', 'like', "%$request->keyword%")
+                    ->orWhere('users.name', 'like', "%$request->keyword%");
             })->selectRaw('expenses.id, date, remarks, expense_type, amount, users.name as user_name');
 
         // $result = Expense::with('user')->where(function($query) use ($request) {

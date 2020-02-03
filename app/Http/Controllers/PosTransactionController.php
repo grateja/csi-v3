@@ -173,6 +173,10 @@ class PosTransactionController extends Controller
                 $product->increment('current_stock');
             }
 
+            $productItem->transaction()->update([
+                'saved' => null,
+            ]);
+
             return response()->json([
                 'productItem' => $productItem
             ]);
@@ -212,6 +216,10 @@ class PosTransactionController extends Controller
                 'transaction_id' => $transactionId,
                 'saved' => false,
             ])->get();
+
+            $products = $transaction->productTransactionItems()->update([
+                'saved' => true,
+            ]);
 
             foreach ($washingServices as $item) {
                 CustomerWash::create([

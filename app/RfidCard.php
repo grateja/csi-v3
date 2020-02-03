@@ -33,4 +33,12 @@ class RfidCard extends Model
             return $this->user->name;
         }
     }
+
+    public function ownerId() {
+        if($this->card_type == 'c' && $this->customer) {
+            return $this->customer_id;
+        } else if($this->card_type == 'u' && $this->user) {
+            return $this->user_id;
+        }
+    }
 }

@@ -9,7 +9,9 @@
         <v-spacer></v-spacer>
 
         <template v-if="!!user">
-            <span>{{user.roles[0] | uppercase}}</span>
+            <v-btn to="/account">
+                <span>{{user.roles[0] | uppercase}}</span>
+            </v-btn>
             <v-btn flat small @click="logout" :loading="isLoggingOut">
                  Logout<v-icon right>close</v-icon>
             </v-btn>

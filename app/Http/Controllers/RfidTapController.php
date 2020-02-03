@@ -8,15 +8,23 @@ use Illuminate\Http\Request;
 class RfidTapController extends Controller
 {
     public function index(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'fullname';
-        $order = $request->orderBy ? $request->orderBy : 'asc';
+        $sortBy = $request->sortBy ? $request->sortBy : 'created_at';
+        $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $result = RfidCardTransaction::where(function($query) {
-
+        $result = RfidCardTransaction::where(function($query) use ($request) {
+            $query->where('owner_name', 'like', "%$request->keyword%")
+                ->orWhere('rfid', 'like', "%$request->keyword%")
+                ->orWhere('machine_name', 'like', "%$request->keyword%");
         });
 
         if($request->date) {
             $result = $result->whereDate('rfid_cards.created_at', $request->date);
+        }
+
+        if($request->cardType == 'customer') {
+            $result = $result->where('card_type', 'c');
+        } else if($request->cardType == 'user') {
+            $result = $result->where('card_type', 'u');
         }
 
         $result = $result->orderBy($sortBy, $order);

@@ -4,6 +4,7 @@ const state = {
     errors: FormHelper,
     isSaving: false,
     isLoading: false,
+    isAddingItem: false,
     currentCustomer: null,
     currentTransaction: null
 };
@@ -14,6 +15,9 @@ const mutations = {
     },
     setCurrentTransaction(state, transaction) {
         state.currentTransaction = transaction;
+    },
+    setAddingItemStatus(state, status) {
+        state.isAddingItem = status;
     },
     removeCustomer(state) {
         state.currentCustomer = null;
@@ -60,26 +64,42 @@ const actions = {
         }
     },
     addService(context, data) {
+        if(context.getters.isBusy) {
+            alert('Please wait...');
+            return;
+        }
+
+        context.commit('setAddingItemStatus', true);
         return axios.post(`/api/pos-transactions/add-service/${data.category}`, {
             customerId: data.customerId,
             transactionId: data.transactionId,
             itemId: data.itemId
         }).then((res, rej) => {
             context.commit('setCurrentTransaction', res.data.transaction);
+            context.commit('setAddingItemStatus', false);
             return res;
         }).catch(err => {
+            context.commit('setAddingItemStatus', false);
             return Promise.reject(err);
         });
     },
     addProduct(context, data) {
+        if(context.getters.isBusy) {
+            alert('Please wait...');
+            return;
+        }
+
+        context.commit('setAddingItemStatus', true);
         return axios.post(`/api/pos-transactions/add-product`, {
             customerId: data.customerId,
             transactionId: data.transactionId,
             itemId: data.itemId
         }).then((res, rej) => {
             context.commit('setCurrentTransaction', res.data.transaction);
+            context.commit('setAddingItemStatus', false);
             return res;
         }).catch(err => {
+            context.commit('setAddingItemStatus', false);
             return Promise.reject(err);
         });
     },
@@ -120,6 +140,9 @@ const getters = {
     },
     isLoading(state) {
         return state.isLoading;
+    },
+    isBusy(state) {
+        return state.isAddingItem && state.currentTransaction == null;
     }
 };
 

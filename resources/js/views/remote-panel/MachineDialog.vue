@@ -9,12 +9,16 @@
 
                 <dl>
                     <dt class="caption grey--text font-weigth-bold">Customer name: </dt>
-                    <dd class="ml-3">{{machine.customer_name}}</dd>
+                    <dd class="ml-3" v-if="!!machine.customer">{{machine.customer.name}}</dd>
                     <dt class="caption grey--text font-weigth-bold">Remaining time: </dt>
                     <dd class="ml-3">{{remainingTime}}</dd>
                 </dl>
 
-                <pre>{{machine}}</pre>
+                <v-btn round @click="addDry" v-if="!!machine && machine.machine_type[1] == 'd'">
+                    <v-icon left>add</v-icon>
+                    Add dry</v-btn>
+
+                <!-- <pre>{{machine}}</pre> -->
             </v-card-text>
 
             <v-card-actions>
@@ -27,22 +31,26 @@
             </v-card-actions>
         </v-card>
         <force-stop-dialog v-model="openForceStopDialog" :machine="machine" @forceStop="forceStopContinue" />
+        <service-browser v-if="machine" v-model="openServiceBrowser" :customer="machine.customer" :machine="machine" :additional="true" />
     </v-dialog>
 </template>
 
 <script>
 import ForceStopDialog from './ForceStopDialog.vue';
+import ServiceBrowser from './ServiceBrowser.vue';
 
 export default {
     components: {
-        ForceStopDialog
+        ForceStopDialog,
+        ServiceBrowser
     },
     props: [
         'value', 'machine'
     ],
     data() {
         return {
-            openForceStopDialog: false
+            openForceStopDialog: false,
+            openServiceBrowser: false
         }
     },
     methods: {
@@ -55,6 +63,9 @@ export default {
         forceStopContinue(machine) {
             this.$emit('forceStop', machine);
             this.close();
+        },
+        addDry() {
+            this.openServiceBrowser = true;
         }
     },
     computed: {
@@ -66,6 +77,13 @@ export default {
                 return `Ends in ${hours > 0 ? hours + ' hour and' : ''} ${minutes} minutes`;
             }
             return 'keme';
+        }
+    },
+    watch: {
+        value(val) {
+            if(val && this.machine) {
+
+            }
         }
     }
 }

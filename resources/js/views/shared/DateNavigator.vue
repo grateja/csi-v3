@@ -51,6 +51,13 @@ export default {
         prev() {
             this.$emit('input', moment(this.value).add(-1, 'days').format('YYYY-MM-DD'));
         }
+    },
+    watch: {
+        value(val) {
+            if(val) {
+                this.date = val;
+            }
+        }
     }
 }
 </script>

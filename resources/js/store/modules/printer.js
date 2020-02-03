@@ -2,12 +2,16 @@ import FormHelper from '../../helpers/FormHelper.js';
 
 const state = {
     errors: FormHelper,
-    isLoading: false
+    isLoading: false,
+    claimStubLoading: false
 };
 
 const mutations = {
     setLoadingStatus(state, status) {
         state.isLoading = status;
+    },
+    setLoadingClaimStub(state, status) {
+        state.claimStubLoading = status;
     },
     setErrors(state, errors) {
         state.errors.errors = errors;
@@ -18,20 +22,20 @@ const mutations = {
 };
 
 const actions = {
-    printReceipt(context, data) {
-        context.commit('setLoadingStatus', true);
+    printClaimStub(context, data) {
+        context.commit('setLoadingClaimStub', true);
         context.commit('clearErrors');
-        return axios.get(`/api/print/receipt/${data.transactionId}`).then((res, rej) => {
+        return axios.get(`/api/transactions/${data.transactionId}/print-claim-stub`).then((res, rej) => {
             let w = window.open('about:blank', 'print', 'width=800,height=600');
 
             w.document.write(res.data);
             w.document.close();
 
-            context.commit('setLoadingStatus', false);
+            context.commit('setLoadingClaimStub', false);
             return res;
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);
-            context.commit('setLoadingStatus', false);
+            context.commit('setLoadingClaimStub', false);
             return Promise.reject(err);
         });
     }
@@ -43,6 +47,9 @@ const getters = {
     },
     isLoading(state) {
         return state.isLoading;
+    },
+    claimStubLoading(state) {
+        return state.claimStubLoading;
     }
 };
 

@@ -6,8 +6,10 @@
                 <pre>{{tempTransaction}}</pre>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="close">close</v-btn>
-                <v-btn class="primary" @click="viewPayment" v-if="tempTransaction && tempTransaction.payment == null">View payment</v-btn>
+                <v-btn @click="close" round>close</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn class="primary" round @click="viewPayment" v-if="tempTransaction && tempTransaction.payment == null">View payment</v-btn>
+                <v-btn class="primary" round @click="printClaimStub" v-if="tempTransaction" :loading="claimStubLoading">Print claim stub</v-btn>
             </v-card-actions>
         </v-card>
         <payment-dialog v-model="openPaymentDialog" :transaction="tempTransaction" @save="savePayment" />
@@ -49,12 +51,24 @@ export default {
         savePayment(transaction) {
             this.$emit('input', false);
             this.$emit('savePayment', transaction);
+        },
+        printClaimStub() {
+            this.$store.dispatch('printer/printClaimStub', {
+                transactionId: this.transactionId
+            });
+        }
+    },
+    computed: {
+        claimStubLoading() {
+            return this.$store.getters['printer/claimStubLoading'];
         }
     },
     watch: {
         value(val) {
             if(val) {
                 this.load();
+            } else {
+                this.tempTransaction = null;
             }
         }
     }

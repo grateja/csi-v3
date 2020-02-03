@@ -28,13 +28,13 @@
                     </v-btn>
                 </td>
                 <td>{{ props.item.customer_name }}</td>
-                <td>{{ props.item.date }}</td>
-                <td>{{ parseFloat(props.item.total_price).toFixed(2) }}</td>
+                <td>{{ moment(props.item.date).format('LLL') }}</td>
+                <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
                 <td>{{ datePaid(props.item) }}</td>
             </template>
         </v-data-table>
         <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
-        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" />
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" @savePayment="savePayment" />
     </div>
 </template>
 
@@ -130,6 +130,12 @@ export default {
                 return moment(item.date_paid).format('LLL');
             } else {
                 return "(Not paid)";
+            }
+        },
+        savePayment(transaction) {
+            let t = this.items.find(tr => tr.id == transaction.id);
+            if(t) {
+                t.date_paid = transaction.date_paid;
             }
         }
     },

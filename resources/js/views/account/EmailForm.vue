@@ -6,7 +6,6 @@
 
             <v-card-text>
                 <v-text-field v-model="formData.email" :error-messages="errors.get('email')" label="Enter new email" append-icon="email" hint="Please keep in mind that emails are used to log in. Make sure the email is active"></v-text-field>
-                <v-text-field v-model="formData.emailConfirmation" :error-messages="errors.get('emailConfirmation')" label="Re-enter email" append-icon="email"></v-text-field>
                 <v-text-field v-model="formData.password" :error-messages="errors.get('password')" type="password" label="Password" hint="Password is required"></v-text-field>
             </v-card-text>
 
@@ -30,7 +29,6 @@ export default {
         return {
             formData: {
                 email: '',
-                emailConfirmation: '',
                 password: ''
             }
         }
@@ -54,6 +52,9 @@ export default {
         errors() {
             return this.$store.getters['account/getErrors'];
         }
+    },
+    created() {
+        this.formData.email = this.$store.getters.getCurrentUser.email;
     }
 }
 </script>

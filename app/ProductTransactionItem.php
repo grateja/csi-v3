@@ -13,4 +13,8 @@ class ProductTransactionItem extends Model
     protected $fillable = [
         'transaction_id', 'name', 'price', 'product_id', 'saved',
     ];
+
+    public function transaction() {
+        return $this->belongsTo('App\Transaction');
+    }
 }

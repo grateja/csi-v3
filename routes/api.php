@@ -66,6 +66,21 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
     Route::post('{userId}/assign-role', 'UsersController@assignRole');
 });
 
+
+// /api/sales-report
+
+Route::group(['prefix' => 'sales-report'], function() {
+    // /api/sales-report/{date}/summary
+    Route::get('{date}/summary', 'SalesReportController@summary');
+
+    // /api/sales-report/{monthIndex}/{year}/all
+    Route::get('{monthIndex}/{year}/all', 'SalesReportController@index');
+
+    // /api/sales-report/{monthIndex}/{year}/pos-transactions
+    Route::get('{monthIndex}/{year}/pos-transactions', 'SalesReportController@posTransactions');
+});
+
+
 // /api/products
 Route::group(['prefix' => 'products'], function() {
     // /api/products
@@ -297,6 +312,9 @@ Route::group(['prefix' => 'pos-transactions'], function () {
 
 // /api/transactions
 Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function() {
+    // /api/transactions/unsaved-transactions
+    Route::get('unsaved-transactions', 'TransactionsController@unsavedTransactions');
+
     // /api/transactions/by-job-orders
     Route::get('by-job-orders', 'TransactionsController@byJobOrders');
 
@@ -314,6 +332,9 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
 
     // /api/transactions/{transactionId}/view-service-items
     Route::get('{transactionId}/view-service-items', 'TransactionsController@viewServiceItems');
+
+    // /api/transactions/{transactionId}/print-claim-stub
+    Route::get('{transactionId}/print-claim-stub', 'PrinterController@claimStub');
 
     // /api/transaction/service-items
     Route::group(['prefix' => 'service-items'], function() {

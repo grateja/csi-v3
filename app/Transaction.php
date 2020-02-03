@@ -15,15 +15,15 @@ class Transaction extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id', 'job_order', 'user_id', 'date', 'saved', 'customer_name', 'total_price',
+        'customer_id', 'job_order', 'user_id', 'date', 'saved', 'customer_name', 'total_price', 'date_paid'
     ];
 
     public function serviceTransactionItems() {
-        return $this->hasMany('App\ServiceTransactionItem')->orderBy('name');
+        return $this->hasMany('App\ServiceTransactionItem');
     }
 
     public function productTransactionItems() {
-        return $this->hasMany('App\ProductTransactionitem')->orderBy('name');
+        return $this->hasMany('App\ProductTransactionitem');
     }
 
     public function customer() {
@@ -109,6 +109,15 @@ class Transaction extends Model
             // foreach($model->serviceTransactions as $service) {
             //     $service->delete();
             // }
+        });
+
+        static::updating(function($model) {
+            unset($model['posServiceItems']);
+            unset($model['posProductItems']);
+            unset($model['posServiceSummary']);
+            unset($model['posProductSummary']);
+            unset($model['customer']);
+            unset($model['total_amount']);
         });
 
         parent::boot();

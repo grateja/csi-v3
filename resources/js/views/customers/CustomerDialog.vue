@@ -62,14 +62,14 @@ export default {
         }
     },
     watch: {
-        customer(val) {
-            if(val) {
+        value(val) {
+            if(val && this.customer) {
                 this.mode = 'update';
-                this.formData.name = val.name;
-                this.formData.address = val.address;
-                this.formData.contactNumber = val.contactNumber;
-                this.formData.email = val.email;
-                this.formData.firstVisit = moment(val.first_visit).format('YYYY-MM-DD');
+                this.formData.name = customer.name;
+                this.formData.address = customer.address;
+                this.formData.contactNumber = customer.contactNumber;
+                this.formData.email = customer.email;
+                this.formData.firstVisit = moment(customer.first_visit).format('YYYY-MM-DD');
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;

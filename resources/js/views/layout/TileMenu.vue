@@ -37,11 +37,11 @@ export default {
                     route: '/remote-panel'
                 },
                 {
-                    text: 'Daily sales',
+                    text: 'Sales report',
                     icon: '',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    route: '/keme'
+                    route: '/sales-report/pos-transactions'
                 },
                 {
                     text: 'Transactions',

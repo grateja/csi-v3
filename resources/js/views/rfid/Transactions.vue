@@ -10,13 +10,26 @@
                         <v-text-field class="ml-1" label="Search customer or RFID" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
-                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['customer_name', 'rfid', 'created_at', 'amount']" @change="filter"></v-combobox>
+                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['owner_name', 'rfid', 'created_at', 'machine_name']" @change="filter"></v-combobox>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
                     </v-flex>
                 </v-layout>
-
+                <v-menu offset-y>
+                    <v-btn slot="activator"> <v-icon left>keyboard_arrow_down</v-icon>{{cardTypeStr}}</v-btn>
+                    <v-list dense>
+                        <v-list-tile @click="setCardType(null)">
+                            All cards
+                        </v-list-tile>
+                        <v-list-tile @click="setCardType('customer')">
+                            Customer cards only
+                        </v-list-tile>
+                        <v-list-tile @click="setCardType('user')">
+                            User cards only
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
             </v-card-text>
         </v-card>
 
@@ -48,6 +61,7 @@ export default {
             date: null,
             sortBy: 'created_at',
             orderBy: 'desc',
+            cardType: null,
             cancelSource: null,
             items: [],
             loading: false,
@@ -102,7 +116,8 @@ export default {
                     page: this.page,
                     sortBy: this.sortBy,
                     orderBy: this.orderBy,
-                    date: this.date
+                    date: this.date,
+                    cardType: this.cardType
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
@@ -142,6 +157,11 @@ export default {
             } else {
                 this.activeRfidCard.rfid = data.rfidCard.rfid;
             }
+        },
+        setCardType(cardType) {
+            this.cardType = cardType;
+            this.reset = true;
+            this.load();
         }
     },
     created() {
@@ -151,6 +171,15 @@ export default {
         isOwner() {
             let user = this.$store.getters.getCurrentUser;
             return (!!user && user.roles[0] == 'admin');
+        },
+        cardTypeStr() {
+            if(this.cardType == 'customer') {
+                return 'Customer cards only';
+            } else if(this.cardType == 'user') {
+                return 'User cards only';
+            } else {
+                return 'All cards';
+            }
         }
     }
 }

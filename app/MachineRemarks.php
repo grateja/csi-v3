@@ -11,6 +11,6 @@ class MachineRemarks extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'remarks', 'user_id', 'remaining_time', 'machine_id',
+        'title', 'remarks', 'user_id', 'remaining_time', 'machine_id',
     ];
 }
