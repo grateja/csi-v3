@@ -13,7 +13,7 @@
                         <v-text-field class="ml-1" label="Search expense" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
-                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'user_name']" @change="filter"></v-combobox>
+                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'staff_name']" @change="filter"></v-combobox>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -26,10 +26,11 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>{{ moment(props.item.date).format('LL') }}</td>
                 <td>{{ props.item.remarks }}</td>
                 <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
-                <td>{{ props.item.user_name }}</td>
+                <td>{{ props.item.staff_name }}</td>
                 <td>
                     <v-btn icon small @click="editExpense(props.item)">
                         <v-icon small>edit</v-icon>
@@ -65,6 +66,10 @@ export default {
             items: [],
             loading: false,
             headers: [
+                {
+                    text: '',
+                    sortable: false
+                },
                 {
                     text: 'Date',
                     sortable: false
@@ -113,6 +118,12 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
             }).finally(() => {
                 this.loading = false;
@@ -143,7 +154,7 @@ export default {
                 this.activeExpese.date = data.expense.date;
                 this.activeExpese.remarks = data.expense.remarks;
                 this.activeExpese.amount = data.expense.amount;
-                this.activeExpese.user_name = data.expense.user_name;
+                this.activeExpese.staff_name = data.expense.staff_name;
             }
         },
         deletePurchase(item) {

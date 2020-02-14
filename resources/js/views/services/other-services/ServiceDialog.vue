@@ -14,7 +14,7 @@
                 </v-card-actions>
 
                 <v-card-text>
-                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline></v-text-field>
+                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Description" v-model="formData.description" outline></v-text-field>
                     <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
                 </v-card-text>
@@ -89,17 +89,27 @@ export default {
         }
     },
     watch: {
-        service(val) {
-            if(!!val) {
+        value(val) {
+            if(!!val && this.service) {
                 this.mode = 'update';
-                this.formData.name = val.name;
-                this.formData.description = val.description;
-                this.formData.price = val.price;
+                this.formData.name = this.service.name;
+                this.formData.description = this.service.description;
+                this.formData.price = this.service.price;
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
                 this.formData.description = null;
                 this.formData.price = 0;
+            }
+            setTimeout(() => {
+                this.$refs.name.$el.querySelector('input').select();
+            }, 500);
+        },
+        service(val) {
+            if(!!val) {
+                this.mode = 'update';
+            } else {
+                this.mode = 'insert';
             }
         }
     }

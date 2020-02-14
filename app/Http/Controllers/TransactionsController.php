@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\ServiceTransactionItem;
 use App\Transaction;
+use App\TransactionRemarks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +35,14 @@ class TransactionsController extends Controller
     }
 
     public function show($transactionId) {
-        $transaction = Transaction::with('customer', 'payment')->findOrfail($transactionId);
+        $transaction = Transaction::with(
+            'user',
+            'serviceTransactionItems',
+            'productTransactionItems',
+            'customer',
+            'payment.user',
+            'remarks'
+        )->findOrfail($transactionId);
         $transaction->refreshAll();
 
         return response()->json([
@@ -43,13 +51,6 @@ class TransactionsController extends Controller
     }
 
     public function unpaidTransactions(Request $request) {
-        // $result = DB::table('transactions')
-        //     ->where('customers.name', 'like', "%$request->keyword%")
-        //     ->whereNotNull('saved')
-        //     ->select('transactions.id','job_order', 'saved', 'total_price', 'customer_id', 'customers.id', 'customers.name')
-        //     ->join('customers', 'customers.id', '=', 'customer_id')
-        //     ->orderBy('name');
-
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'asc';
 
@@ -57,13 +58,13 @@ class TransactionsController extends Controller
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
         })
-            ->whereNotNull('saved')
+            ->where('saved', true)
             ->whereDoesntHave('payment');
 
         $result = $result->orderBy($sortBy, $order);
 
         if($request->date) {
-            $result = $result->whereDate('saved', $request->date);
+            $result = $result->whereDate('date', $request->date);
         }
 
         return response()->json([
@@ -88,21 +89,26 @@ class TransactionsController extends Controller
             $result = $result->whereDate('date', $request->date);
         }
 
+        if($request->datePaid) {
+            $result = $result->whereDate('date_paid', $request->datePaid);
+        }
+
         $result = $result->paginate(10);
 
-        $result->getCollection()->transform(function($item) {
-            return [
-                'id' => $item->id,
-                'job_order' => $item->job_order,
-                'customer_name' => $item->customer_name,
-                'date' => $item->date,
-                'total_price' => $item->total_price,
-                'date_paid' => $item->payment == null ? null : $item->payment['date'],
-            ];
-        });
+        // $result->getCollection()->transform(function($item) {
+        //     return [
+        //         'id' => $item->id,
+        //         'job_order' => $item->job_order,
+        //         'customer_name' => $item->customer_name,
+        //         'date' => $item->date,
+        //         'total_price' => $item->total_price,
+        //         'date_paid' => $item->payment == null ? null : $item->payment['date'],
+        //     ];
+        // });
 
         return response()->json([
             'result' => $result,
+            'summary' => $result->sum('total_price')
         ]);
     }
 
@@ -116,8 +122,9 @@ class TransactionsController extends Controller
                     ->orWhere('name', 'like', "%$request->keyword%")
                     ->orWhere('job_order', 'like', "%$request->keyword%");
             })->where('service_transaction_items.saved', true)
+            ->whereNull('service_transaction_items.deleted_at')
             ->join('transactions', 'transactions.id','=', 'service_transaction_items.transaction_id')
-                ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity');
+                ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id', 'date_paid')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity, transactions.date_paid as date_paid');
 
         if($request->date) {
             $result = $result->whereDate('transactions.saved', $request->date);
@@ -140,8 +147,9 @@ class TransactionsController extends Controller
                     ->orWhere('name', 'like', "%$request->keyword%")
                     ->orWhere('job_order', 'like', "%$request->keyword%");
             })->where('product_transaction_items.saved', true)
+            ->whereNull('product_transaction_items.deleted_at')
             ->join('transactions', 'transactions.id','=', 'product_transaction_items.transaction_id')
-                ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity');
+                ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id', 'date_paid')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity, transactions.date_paid as date_paid');
 
         if($request->date) {
             $result = $result->whereDate('transactions.saved', $request->date);
@@ -155,12 +163,22 @@ class TransactionsController extends Controller
     }
 
     public function unsavedTransactions() {
-        $result = Customer::whereHas('transactions', function($query) {
-            $query->whereNull('saved');
+        $result = Customer::with('transactions')->whereHas('transactions', function($query) {
+            $query->where('saved', false);
         })->get();
 
         return response()->json([
             'result' => $result,
         ]);
+    }
+
+    public function deleteTransaction($transactionId) {
+        $transaction = Transaction::findOrFail($transactionId);
+
+        if($transaction->delete()) {
+            return response()->json([
+                'transaction' => $transaction,
+            ]);
+        }
     }
 }

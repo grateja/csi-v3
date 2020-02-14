@@ -1,16 +1,17 @@
 <template>
     <v-container>
         <h3 class="title grey--text">Transaction</h3>
+        <v-progress-linear v-if="loading" height="3" indeterminate />
         <v-divider class="my-3"></v-divider>
-        <v-btn to="/new-transaction/services" class="ml-0" active-class="primary" round>Services</v-btn>
-        <v-btn to="/new-transaction/products" active-class="primary" round>Products</v-btn>
         <v-layout>
             <v-flex xs7 lg8>
+                <v-btn to="/new-transaction/services" class="ml-0" active-class="primary" round>Services</v-btn>
+                <v-btn to="/new-transaction/products" active-class="primary" round>Products</v-btn>
                 <router-view></router-view>
             </v-flex>
             <v-flex xs5 lg4>
                 <customer-panel @selectCustomer="selectCustomer" />
-                <transaction-items />
+                <transaction-items v-if="customer" />
             </v-flex>
         </v-layout>
     </v-container>
@@ -30,6 +31,18 @@ export default {
                 this.$store.dispatch('postransaction/checkCustomer', customer);
             }
         }
+    },
+    computed: {
+        loading() {
+            return this.$store.getters['postransaction/isLoading'];
+        },
+        customer() {
+            return this.$store.getters['postransaction/getCurrentCustomer'];
+        }
+    },
+    beforeDestroy() {
+        this.$store.commit('postransaction/clearTransaction');
+        this.$store.commit('postransaction/removeCustomer');
     }
 }
 </script>

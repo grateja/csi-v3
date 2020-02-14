@@ -27,6 +27,7 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{ props.index + 1 }}</td>
                 <td>{{ moment(props.item.enrolled).format('LLL') }}</td>
                 <td>{{ props.item.fullname }}</td>
                 <td>{{ props.item.rfid }}</td>
@@ -81,6 +82,10 @@ export default {
             activeRfidCard: null,
             headers: [
                 {
+                    text: '',
+                    sortable: false
+                },
+                {
                     text: 'Date enrolled',
                     sortable: false
                 },
@@ -132,6 +137,12 @@ export default {
                     this.reset = false;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
             }).finally(() => {
                 this.loading = false;

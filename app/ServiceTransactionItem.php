@@ -55,4 +55,12 @@ class ServiceTransactionItem extends Model
         }
         return null;
     }
+
+    protected static function boot() {
+        static::deleting(function($model) {
+            $model->customerDry()->delete();
+            $model->customerWash()->delete();
+        });
+        parent::boot();
+    }
 }

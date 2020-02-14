@@ -14,26 +14,27 @@ class SalesReportController extends Controller
 {
     public function index($monthIndex, $year, Request $request) {
         $result = [];
-        $groupBy = $request->groupBy == 'payment' ? 'transaction_payments.date' : 'transactions.date';
-
         $posTransactions = DB::table('transactions')
-            ->whereNotNull('date_paid')
-            ->whereMonth($groupBy, $monthIndex)->whereYear($groupBy, $year)
+            ->where('saved', true)
+            ->whereNull('deleted_at')
+            ->whereMonth('date', $monthIndex)->whereYear('date', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(' . $groupBy . ') as day, SUM(total_price) total_price')
+            ->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(IF(date_paid IS NULL, 0, total_price)) as collection')
             ->get();
 
         $rfidCardTransactions = DB::table('rfid_card_transactions')
-            ->where('card_type', 'u')
+            // ->where('card_type', 'u')
+            ->whereNull('deleted_at')
             ->whereMonth('created_at', $monthIndex)->whereYear('created_at', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(created_at) as day, SUM(price) as total_price')
+            ->selectRaw('DATE(created_at) as day, SUM(price) as total_price, SUM(IF(card_type = "u", price, 0)) as collection')
             ->get();
 
         $rfidLoadTransactions = DB::table('rfid_load_transactions')
             ->whereMonth('created_at', $monthIndex)->whereYear('created_at', $year)
+            ->whereNull('deleted_at')
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(created_at) as day, SUM(amount) as total_price')
+            ->selectRaw('DATE(created_at) as day, SUM(amount) as total_price, SUM(amount) as collection')
             ->get();
 
         $newCustomers = Customer::whereMonth('first_visit', $monthIndex)
@@ -48,7 +49,8 @@ class SalesReportController extends Controller
             return
             [
                 'date' => $key,
-                'amount' => $item->sum('total_price')
+                'amount' => $item->sum('total_price'),
+                'collection' => $item->sum('collection'),
             ];
         });
 
@@ -61,23 +63,27 @@ class SalesReportController extends Controller
     public function summary($date) {
         $posTransactionSummary = Transaction::whereDate('date', $date)
             ->selectRaw('SUM(IF(date_paid IS NULL, 0, total_price)) as paid_total, SUM(IF(date_paid IS NOT NULL, 0, total_price)) as unpaid_total, SUM(total_price) as total_price, COUNT(IF(date_paid IS NULL, NULL, 1)) as paid_count, COUNT(IF(date_paid IS NULL, 1, NULL)) as unpaid_count, COUNT(job_order) AS total_count')
-            ->get();
+            ->first();
+
+        $posCollections = Transaction::whereDate('date_paid', $date)
+            ->selectRaw('SUM(total_price) as total_price, COUNT(id) as total_count')->first();
 
         $rfidCardTransactionSummary = RfidCardTransaction::whereDate('created_at', $date)
-            ->selectRaw('SUM(IF(card_type = "u", price, 0)) as users_card, SUM(IF(card_type = "c", price, 0)) as customer_card, SUM(price) as total_price, COUNT(id) AS cycle_count')
-            ->get();
+            ->selectRaw('SUM(IF(card_type = "u", price, 0)) as users_card, SUM(IF(card_type = "c", price, 0)) as customers_card, SUM(price) as total_price, COUNT(id) AS cycle_count')
+            ->first();
 
         $rfidLoadTransactionSummary = RfidLoadTransaction::whereDate('created_at', $date)
             ->selectRaw('SUM(amount) as total_price, COUNT(id) as total_count')
-            ->get();
+            ->first();
 
         $newCustomers = Customer::whereDate('first_visit', $date)
             ->selectRaw('COUNT(id) as total_count')
-            ->get();
+            ->first();
 
         return response()->json([
             'result' => [
                 'posTransactionSummary' => $posTransactionSummary,
+                'posCollections' => $posCollections,
                 'rfidCardTransactionSummary' => $rfidCardTransactionSummary,
                 'rfidLoadTransactionSummary' => $rfidLoadTransactionSummary,
                 'newCustomers' => $newCustomers,

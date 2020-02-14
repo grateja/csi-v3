@@ -14,7 +14,7 @@
                 </v-card-actions>
 
                 <v-card-text>
-                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline></v-text-field>
+                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Description" v-model="formData.description" outline></v-text-field>
                     <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
                     <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" v-model="formData.machineType" outline></v-combobox>
@@ -95,15 +95,15 @@ export default {
         }
     },
     watch: {
-        service(val) {
-            if(!!val) {
+        value(val) {
+            if(!!val && this.service) {
                 this.mode = 'update';
-                this.formData.name = val.name;
-                this.formData.description = val.description;
-                this.formData.price = val.price;
-                this.formData.machineType = val.machine_type;
-                this.formData.minutes = val.minutes;
-                this.formData.points = val.points;
+                this.formData.name = this.service.name;
+                this.formData.description = this.service.description;
+                this.formData.price = this.service.price;
+                this.formData.machineType = this.service.machine_type;
+                this.formData.minutes = this.service.minutes;
+                this.formData.points = this.service.points;
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
@@ -112,6 +112,16 @@ export default {
                 this.formData.machineType = 'REGULAR';
                 this.formData.minutes = 40;
                 this.formData.points = 1;
+            }
+            setTimeout(() => {
+                this.$refs.name.$el.querySelector('input').select();
+            }, 500);
+        },
+        service(val) {
+            if(!!val) {
+                this.mode = 'update';
+            } else {
+                this.mode = 'insert';
             }
         }
     }

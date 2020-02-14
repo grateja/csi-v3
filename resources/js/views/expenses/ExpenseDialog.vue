@@ -5,7 +5,7 @@
                 <v-card-title class="title grey--text">Expense info</v-card-title>
                 <v-card-text>
                     <v-text-field v-model="formData.date" :error-messages="errors.get('date')" outline label="Date" type="date"></v-text-field>
-                    <v-text-field v-model="formData.remarks" :error-messages="errors.get('remarks')" outline label="Remarks"></v-text-field>
+                    <v-text-field v-model="formData.remarks" :error-messages="errors.get('remarks')" outline label="Remarks" ref="remarks"></v-text-field>
                     <v-text-field v-model="formData.amount" :error-messages="errors.get('amount')" outline label="Amount"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
@@ -58,17 +58,27 @@ export default {
         }
     },
     watch: {
-        expense(val) {
-            if(val) {
+        value(val) {
+            if(val && this.expense) {
                 this.mode = 'update';
-                this.formData.date = moment(val.date).format('YYYY-MM-DD');
-                this.formData.amount = val.amount;
-                this.formData.remarks = val.remarks;
+                this.formData.date = moment(this.expense.date).format('YYYY-MM-DD');
+                this.formData.amount = this.expense.amount;
+                this.formData.remarks = this.expense.remarks;
             } else {
                 this.mode = 'insert';
                 this.formData.date = moment().format('YYYY-MM-DD');
                 this.formData.remarks = null;
                 this.formData.amount = 0;
+            }
+            setTimeout(() => {
+                this.$refs.remarks.$el.querySelector('input').select();
+            }, 500);
+        },
+        expense(val) {
+            if(!!val) {
+                this.mode = 'update';
+            } else {
+                this.mode = 'insert';
             }
         }
     }

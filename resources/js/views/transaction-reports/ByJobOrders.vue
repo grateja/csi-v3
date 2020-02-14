@@ -4,37 +4,40 @@
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
-                        <v-text-field label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+                        <v-text-field label="Specify date created" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+                    </v-flex>
+                    <v-flex shrink>
+                        <v-text-field label="Specify date paid" v-model="datePaid" type="date" append-icon="date" @change="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex>
                         <v-text-field class="ml-1" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
-                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date']" @change="filter"></v-combobox>
+                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date', 'date_paid']" @change="filter"></v-combobox>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
                     </v-flex>
                 </v-layout>
-
             </v-card-text>
         </v-card>
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>
-                    <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)">
+                    <v-btn small outline class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
                         {{ props.item.job_order }}
                     </v-btn>
                 </td>
                 <td>{{ props.item.customer_name }}</td>
                 <td>{{ moment(props.item.date).format('LLL') }}</td>
                 <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
-                <td>{{ datePaid(props.item) }}</td>
+                <td>{{ datePaidStr(props.item) }}</td>
             </template>
         </v-data-table>
         <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
-        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" @savePayment="savePayment" />
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" @savePayment="savePayment" @deleteTransaction="deleteTransaction" />
     </div>
 </template>
 
@@ -52,6 +55,7 @@ export default {
             sortBy: 'job_order',
             orderBy: 'desc',
             date: null,
+            datePaid: null,
             page: 1,
             reset: false,
             items: [],
@@ -59,6 +63,10 @@ export default {
             transactionId: null,
             openTransactionDialog: false,
             headers: [
+                {
+                    text: '',
+                    sortable: false
+                },
                 {
                     text: 'Job order',
                     sortable: false
@@ -97,6 +105,7 @@ export default {
                     keyword: this.keyword,
                     page: this.page,
                     date: this.date,
+                    datePaid: this.datePaid,
                     sortBy: this.sortBy,
                     orderBy: this.orderBy
                 },
@@ -107,6 +116,12 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
             }).finally(() => {
                 this.loading = false;
@@ -125,7 +140,7 @@ export default {
             this.page += 1;
             this.load();
         },
-        datePaid(item) {
+        datePaidStr(item) {
             if(item.date_paid) {
                 return moment(item.date_paid).format('LLL');
             } else {
@@ -137,6 +152,9 @@ export default {
             if(t) {
                 t.date_paid = transaction.date_paid;
             }
+        },
+        deleteTransaction(transaction) {
+            this.items = this.items.filter(i => i.id != transaction.id);
         }
     },
     created() {

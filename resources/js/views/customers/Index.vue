@@ -13,6 +13,7 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>{{ props.item.name }}</td>
                 <td>{{ props.item.contact_number }}</td>
                 <td>{{ props.item.email }}</td>
@@ -74,6 +75,10 @@ export default {
             openCustomerDialog: false,
             headers: [
                 {
+                    text: '',
+                    sortable: false
+                },
+                {
                     text: 'Name',
                     sortable: false
                 },
@@ -134,6 +139,12 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
                 this.totalPage = res.data.result.last_page;
                 this.loading = false;

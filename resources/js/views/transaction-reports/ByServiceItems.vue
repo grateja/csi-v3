@@ -23,8 +23,9 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>
-                    <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)">
+                    <v-btn small outline class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
                         {{ props.item.job_order }}
                     </v-btn>
                 </td>
@@ -32,11 +33,11 @@
                 <td>{{ props.item.name }}</td>
                 <td>{{ props.item.quantity }}</td>
                 <td>P {{ parseFloat(props.item.price).toFixed(2) }}</td>
-                <td>{{ props.item.date }}</td>
+                <td>{{ moment(props.item.date).format('LLL') }}</td>
             </template>
         </v-data-table>
         <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
-        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" />
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" @deleteTransaction="deleteTransaction" />
     </div>
 </template>
 
@@ -60,6 +61,10 @@ export default {
             transactionId: null,
             openTransactionDialog: false,
             headers: [
+                {
+                    text: '',
+                    sortable: false
+                },
                 {
                     text: 'Job order',
                     sortable: false
@@ -112,6 +117,12 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
             }).finally(() => {
                 this.loading = false;
@@ -129,6 +140,10 @@ export default {
         loadMore() {
             this.page += 1;
             this.load();
+        },
+        deleteTransaction(transaction) {
+            this.items = this.items.filter(t => t.transaction_id != transaction.id);
+            console.log(transaction);
         }
     },
     created() {

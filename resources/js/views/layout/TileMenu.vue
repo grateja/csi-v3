@@ -116,7 +116,7 @@ export default {
                 {
                     text: 'Machines',
                     icon: '',
-                    roles: ['admin'],
+                    roles: ['admin', 'staff'],
                     color: '#e4dfdd',
                     route: '/machines'
                 },

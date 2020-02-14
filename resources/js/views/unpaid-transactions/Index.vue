@@ -30,7 +30,7 @@
                     </v-btn>
                 </td>
                 <td>{{ props.item.customer_name }}</td>
-                <td>{{ props.item.saved }}</td>
+                <td>{{ moment(props.item.date).format('LLL') }}</td>
                 <td>{{ parseFloat(props.item.total_price).toFixed(2) }}</td>
             </template>
         </v-data-table>

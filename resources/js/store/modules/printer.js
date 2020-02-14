@@ -3,7 +3,8 @@ import FormHelper from '../../helpers/FormHelper.js';
 const state = {
     errors: FormHelper,
     isLoading: false,
-    claimStubLoading: false
+    claimStubLoading: false,
+    jobOrderLoading: false
 };
 
 const mutations = {
@@ -12,6 +13,9 @@ const mutations = {
     },
     setLoadingClaimStub(state, status) {
         state.claimStubLoading = status;
+    },
+    setLoadingJobOrder(state, status) {
+        state.jobOrderLoading = status;
     },
     setErrors(state, errors) {
         state.errors.errors = errors;
@@ -26,7 +30,7 @@ const actions = {
         context.commit('setLoadingClaimStub', true);
         context.commit('clearErrors');
         return axios.get(`/api/transactions/${data.transactionId}/print-claim-stub`).then((res, rej) => {
-            let w = window.open('about:blank', 'print', 'width=800,height=600');
+            let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
             w.document.write(res.data);
             w.document.close();
@@ -36,6 +40,36 @@ const actions = {
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);
             context.commit('setLoadingClaimStub', false);
+            return Promise.reject(err);
+        });
+    },
+    printJobOrder(context, transactionId) {
+        context.commit('setLoadingJobOrder', true);
+        context.commit('clearErrors');
+        return axios.get(`/api/transactions/${transactionId}/print-job-order`).then((res, rej) => {
+            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+
+            w.document.write(res.data);
+            w.document.close();
+
+            context.commit('setLoadingJobOrder', false);
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setLoadingJobOrder', false);
+            return Promise.reject(err);
+        });
+    },
+    rfidLoadTransaction(context, transactionId) {
+        context.commit('clearErrors');
+        return axios.get(`/api/rfid-cards/load-transactions/${transactionId}/print-load-transaction`).then((res, rej) => {
+            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+
+            w.document.write(res.data);
+            w.document.close();
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
             return Promise.reject(err);
         });
     }
@@ -50,6 +84,9 @@ const getters = {
     },
     claimStubLoading(state) {
         return state.claimStubLoading;
+    },
+    jobOrderLoading(state) {
+        return state.jobOrderLoading;
     }
 };
 

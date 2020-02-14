@@ -84,21 +84,23 @@ export default {
         }
     },
     watch: {
-        serviceItem(val) {
-            if(!!val) {
+        value(val) {
+            if(!!val && this.serviceItem) {
                 this.mode = 'update';
-                this.formData.name = val.name;
-                this.formData.quantity = val.quantity;
-                this.formData.points = val.points;
-                this.formData.price = val.price;
+                this.formData.name = this.serviceItem.name;
+                this.formData.quantity = this.serviceItem.quantity;
+                this.formData.points = this.serviceItem.points;
+                this.formData.price = this.serviceItem.price;
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
                 this.formData.quantity = 0;
                 this.formData.points = 0;
                 this.formData.price = 0;
-                this.$refs.keyword.$el.querySelector('input').focus();
             }
+            setTimeout(() => {
+                this.$refs.keyword.$el.querySelector('input').select();
+            }, 500);
         },
         fullServiceId(val) {
             this.formData.fullServiceId = val;

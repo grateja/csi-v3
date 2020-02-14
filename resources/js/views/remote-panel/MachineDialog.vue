@@ -8,8 +8,8 @@
             <v-card-text>
 
                 <dl>
-                    <dt class="caption grey--text font-weigth-bold">Customer name: </dt>
-                    <dd class="ml-3" v-if="!!machine.customer">{{machine.customer.name}}</dd>
+                    <dt class="caption grey--text font-weigth-bold">Current user: </dt>
+                    <dd class="ml-3">{{machine.user_name}}</dd>
                     <dt class="caption grey--text font-weigth-bold">Remaining time: </dt>
                     <dd class="ml-3">{{remainingTime}}</dd>
                 </dl>
@@ -31,7 +31,7 @@
             </v-card-actions>
         </v-card>
         <force-stop-dialog v-model="openForceStopDialog" :machine="machine" @forceStop="forceStopContinue" />
-        <service-browser v-if="machine" v-model="openServiceBrowser" :customer="machine.customer" :machine="machine" :additional="true" />
+        <service-browser v-if="machine" v-model="openServiceBrowser" :customer="machine.customer" :machine="machine" :additional="true" @activated="activated" />
     </v-dialog>
 </template>
 
@@ -66,6 +66,10 @@ export default {
         },
         addDry() {
             this.openServiceBrowser = true;
+        },
+        activated(data) {
+            this.$emit('activated', data);
+            this.close();
         }
     },
     computed: {
@@ -73,17 +77,10 @@ export default {
             if(!!this.machine) {
                 var t = Date.parse(this.machine.time_ends_in) - Date.parse(new Date());
                 var hours = Math.floor((t/(1000*60*60)) % 24);
-                var minutes = Math.floor((t/1000/60) % 60);
+                var minutes = Math.ceil((t/1000/60) % 60);
                 return `Ends in ${hours > 0 ? hours + ' hour and' : ''} ${minutes} minutes`;
             }
             return 'keme';
-        }
-    },
-    watch: {
-        value(val) {
-            if(val && this.machine) {
-
-            }
         }
     }
 }

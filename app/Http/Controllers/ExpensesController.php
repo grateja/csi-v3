@@ -28,16 +28,10 @@ class ExpensesController extends Controller
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $result = DB::table('expenses')
-            ->join('users', 'users.id', '=', 'expenses.user_id')
-            ->where(function($query) use ($request) {
-                $query->where('remarks', 'like', "%$request->keyword%")
-                    ->orWhere('users.name', 'like', "%$request->keyword%");
-            })->selectRaw('expenses.id, date, remarks, expense_type, amount, users.name as user_name');
-
-        // $result = Expense::with('user')->where(function($query) use ($request) {
-        //     $query->where('remarks', 'like', "%$request->keyword%");
-        // });
+        $result = Expense::where(function($query) use ($request) {
+            $query->where('remarks', 'like', "%$request->keyword%")
+                ->orWhere('staff_name', 'like', "%$request->keyword%");
+        });
 
         if($request->date) {
             $result = $result->whereDate('transactions.saved', $request->date);
@@ -80,10 +74,8 @@ class ExpensesController extends Controller
                     'date' => $request->date,
                     'remarks' => $request->remarks,
                     'amount' => $request->amount,
-                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
                 ]);
-
-                $expense['user_name'] = $expense->user->name;
 
                 return response()->json([
                     'expense' => $expense,
@@ -136,10 +128,8 @@ class ExpensesController extends Controller
                     'date' => $request->date,
                     'remarks' => $request->remarks,
                     'amount' => $request->amount,
-                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
                 ]);
-
-                $expense['user_name'] = $expense->user->name;
 
                 return response()->json([
                     'expense' => $expense,

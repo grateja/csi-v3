@@ -13,7 +13,7 @@
                         <v-text-field class="ml-1" label="Search products" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
-                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['name', 'date', 'remarks', 'receipt']" @change="filter"></v-combobox>
+                        <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['product_name', 'date', 'remarks', 'receipt']" @change="filter"></v-combobox>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -26,11 +26,13 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>{{ moment(props.item.date).format('LL') }}</td>
-                <td>{{ props.item.name }}</td>
+                <td>{{ props.item.product_name }}</td>
                 <td>{{ props.item.quantity }}</td>
                 <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
                 <td>{{ props.item.remarks }}</td>
+                <td>{{ props.item.staff_name }}</td>
                 <td v-if="isOwner">
                     <v-btn small icon @click="deletePurchase(props.item)" :loading="props.item.isDeleting">
                         <v-icon>delete</v-icon>
@@ -64,6 +66,10 @@ export default {
             loading: false,
             headers: [
                 {
+                    text: '',
+                    sortable: false
+                },
+                {
                     text: 'Date',
                     sortable: false
                 },
@@ -81,6 +87,10 @@ export default {
                 },
                 {
                     text: 'Remarks',
+                    sortable: false
+                },
+                {
+                    text: 'Staff name',
                     sortable: false
                 },
                 {
@@ -115,6 +125,12 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
             }).finally(() => {
                 this.loading = false;
@@ -139,7 +155,7 @@ export default {
                 this.activeProductPurchase = data.productPurchase;
             } else {
                 this.activeProductPurchase.date = data.productPurchase.date;
-                this.activeProductPurchase.name = data.productPurchase.name;
+                this.activeProductPurchase.product_name = data.productPurchase.product_name;
                 this.activeProductPurchase.quantity = data.productPurchase.quantity;
                 this.activeProductPurchase.unit_cost = data.productPurchase.unit_cost;
                 this.activeProductPurchase.receipt = data.productPurchase.receipt;

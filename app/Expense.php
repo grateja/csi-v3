@@ -12,7 +12,7 @@ class Expense extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'date', 'remarks', 'amount', 'user_id', 'expense_type',
+        'date', 'remarks', 'amount', 'staff_name', 'expense_type',
     ];
 
     public function user() {

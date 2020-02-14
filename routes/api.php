@@ -324,11 +324,14 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
     // /api/transactions/by-product-items
     Route::get('by-product-items', 'TransactionsController@byProductItems');
 
-    // /api/transactions/unpaid-transactionsansactions
+    // /api/transactions/unpaid-transactions
     Route::get('unpaid-transactions', 'TransactionsController@unpaidTransactions');
 
     // /api/transactions/{transactionId}
     Route::get('{transactionId}', 'TransactionsController@show');
+
+    // /api/transactions/{transactionId}/delete-transaction
+    Route::post('{transactionId}/delete-transaction', 'TransactionsController@deleteTransaction');
 
     // /api/transactions/{transactionId}/view-service-items
     Route::get('{transactionId}/view-service-items', 'TransactionsController@viewServiceItems');
@@ -336,12 +339,37 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
     // /api/transactions/{transactionId}/print-claim-stub
     Route::get('{transactionId}/print-claim-stub', 'PrinterController@claimStub');
 
+    // /api/transactions/{transactionId}/print-job-order
+    Route::get('{transactionId}/print-job-order', 'PrinterController@jobOrder');
+
     // /api/transaction/service-items
     Route::group(['prefix' => 'service-items'], function() {
         // /api/transaction/service-items/{serviceTransactionItemId}/delete
         Route::post('{serviceTransactionItemId}/delete', 'ServiceTransactionsController@deleteItem');
     });
 
+});
+
+// /api/transaction-remarks
+Route::group(['prefix' => 'transaction-remarks'], function() {
+    // /api/transaction-remarks/{transactionId}/remarks
+    Route::get('{transactionId}/remarks', 'TransactionRemarksController@index');
+
+    // /api/transaction-remarks/{transactionId}/add-remarks
+    Route::post('{transactionId}/add-remarks', 'TransactionRemarksController@store');
+
+    // /api/transaction-remarks/{transactionId}/delete-remarks
+    Route::post('{transactionId}/delete-remarks', 'TransactionRemarksController@deleteRemarks');
+});
+
+
+// /api/reports
+Route::group(['prefix' => 'reports'], function () {
+    // /api/reports/pos
+    Route::get('pos', 'ReportsController@pos');
+
+    // /api/reports/pos-collections
+    Route::get('pos-collections', 'ReportsController@posCollections');
 });
 
 // /api/payments
@@ -523,6 +551,9 @@ Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() 
     // /api/rfid-cards/load-transactions
     Route::get('load-transactions', 'RfidLoadController@index');
 
+    // /api/rfid-cards/load-transactions/{transactionId}/print-load-transaction
+    Route::get('load-transactions/{transactionId}/print-load-transaction', 'PrinterController@loadTransaction');
+
     // /api/rfid-cards/unregistered-cards/clear-all
     Route::post('unregistered-cards/clear-all', 'RfidCardsController@clearUnregisteredCards');
 
@@ -637,12 +668,6 @@ Route::group(['prefix' => 'exports', 'middleware' => 'auth:api'], function () {
 
     // /api/exports/rfid-topups
     Route::get('rfid-topups', 'ExcelReportsController@rfidTopups');
-});
-
-// /api/print
-Route::group(['prefix' => 'print'], function() {
-    // /api/print/receipt/{transactionId}
-    Route::get('receipt/{transactionId}', 'PrinterController@printReceipt');
 });
 
 // oauth

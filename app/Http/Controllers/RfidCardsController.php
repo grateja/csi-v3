@@ -49,7 +49,9 @@ class RfidCardsController extends Controller
                 $query->where('users.name', 'like', "%$request->keyword%")
                     ->orWhere('customers.name', 'like', "%$request->keyword%")
                     ->orWhere('rfid', 'like', "%$request->keyword%");
-            });
+            })->whereNull('rfid_cards.deleted_at')
+            ->whereNull('users.deleted_at')
+            ->whereNull('customers.deleted_at');
 
         if($request->date) {
             $result = $result->whereDate('rfid_cards.created_at', $request->date);

@@ -15,11 +15,11 @@ class TransactionPayment extends Model
     protected $primaryKey = 'transaction_id';
 
     public $appends = [
-        'changeStr'
+        'changeStr', 'discount_in_peso'
     ];
 
     protected $fillable = [
-        'transaction_id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'points_in_peso', 'balance', 'total_cash'
+        'transaction_id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid',
     ];
 
     public function user() {
@@ -32,5 +32,9 @@ class TransactionPayment extends Model
 
     public function getChangeStrAttribute() {
         return 'P' . number_format($this->change, 2);
+    }
+
+    public function getDiscountInPesoAttribute() {
+        return $this->total_amount * $this->discount / 100;
     }
 }

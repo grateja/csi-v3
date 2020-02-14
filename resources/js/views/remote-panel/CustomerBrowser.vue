@@ -3,7 +3,7 @@
         <v-card v-if="!!machine">
             <v-card-title class="grey--text title">Select customer for {{machine.machine_name}}</v-card-title>
             <v-card-text>
-                <v-text-field v-model="keyword" append-icon="search" label="Filter customer name" :loading="loading" @keyup="loadCustomers"></v-text-field>
+                <v-text-field v-model="keyword" append-icon="search" label="Filter customer name" :loading="loading" @keyup="loadCustomers" ref="keyword"></v-text-field>
                 <div v-if="loading">
                     Loading...
                 </div>
@@ -93,6 +93,9 @@ export default {
         value(val) {
             if(val && this.machine) {
                 this.loadCustomers();
+                setTimeout(() => {
+                    this.$refs.keyword.$el.querySelector('input').select();
+                }, 500);
             } else {
                 this.customers = [];
             }

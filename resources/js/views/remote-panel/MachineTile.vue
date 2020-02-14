@@ -12,8 +12,8 @@
                 </v-card-text>
 
                 <div v-if="machine.is_running" class="text-xs-center">
-                    <div class="caption">Current customer:</div>
-                    <div v-if="!!machine.customer">{{machine.customer.name}}</div>
+                    <div class="caption">Current user:</div>
+                    <div>{{machine.user_name}}</div>
                     <span class="font-italic caption" :key="timeKey">{{remainingTime()}}</span>
                     <div v-if="!!machine.remarks" class="text-xs-center caption">
                         <v-divider></v-divider>
@@ -21,8 +21,8 @@
                     </div>
                 </div>
                 <div v-else class="text-xs-center">
-                    <div class="caption grey--text">Last customer:</div>
-                    <div v-if="!!machine.customer">{{machine.customer.name}}</div>
+                    <div class="caption grey--text">Last user:</div>
+                    <div>{{machine.user_name}}</div>
                     <span class="font-italic grey--text caption" :key="timeKey">Ends {{moment(machine.time_ends_in).fromNow()}}</span>
                     <div v-if="!!machine.remarks" class="text-xs-center caption grey--text">
                         <v-divider></v-divider>

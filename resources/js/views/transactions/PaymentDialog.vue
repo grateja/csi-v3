@@ -18,7 +18,7 @@
                         <v-card class="pa-2">
                             <h4 class="grey--text">Total amount :</h4>
                             <v-divider></v-divider>
-                            <span class="display-2">P {{parseFloat(transaction.total_amount).toFixed(2)}}</span>
+                            <span class="display-2">P {{parseFloat(transaction.total_amount - discountInPeso - formData.rfidCardLoad - formData.pointsInPeso).toFixed(2)}}</span>
                         </v-card>
 
                         <v-divider class="my-3 transparent"></v-divider>
@@ -32,18 +32,25 @@
                         </template>
 
                         <template v-if="discount">
-                            <v-btn small @click="discount = null" class="ma-0">cancel discount</v-btn>
-                            <v-text-field :value="discountInPeso" :label="`Discount: ${discount.name} ${discount.percentage}%`" readonly></v-text-field>
+                            <v-card class="pa-2 my-2" elevation-4>
+                                <v-btn small @click="discount = null" class="ma-0">cancel discount</v-btn>
+                                <v-text-field :value="discountInPeso" :label="`Discount: ${discount.name} ${discount.percentage}%`" readonly></v-text-field>
+                            </v-card>
                         </template>
 
-                        <v-text-field outline v-model="formData.cash" label="Cash"></v-text-field>
+                        <v-text-field outline v-model="formData.cash" label="Cash" ref="cash" :error-messages="errors.get('cash')"></v-text-field>
                         <v-text-field outline :value="change" label="Change" readonly></v-text-field>
                         <v-btn round @click="openDiscountDialog = true" :class="{'primary' : !!discount}">discount</v-btn>
                         <v-btn round @click="selectPoints" :class="{'primary' : !!formData.pointsInPeso}">points</v-btn>
                         <v-btn round @click="selectCard" :class="{'primary' : !!formData.rfidCardLoad}">card</v-btn>
                 </v-card-text>
+                <!-- <v-card-actions>
+                    <v-checkbox v-model="printJobOrder" label="Print job order"></v-checkbox>
+                </v-card-actions> -->
                 <v-card-actions>
                     <v-btn type="submit" class="primary" round :loading="saving">Save</v-btn>
+                    <v-btn round :loading="saving" @click="saveAndPrint">Save and print</v-btn>
+                    <v-spacer></v-spacer>
                     <v-btn @click="close" round>close</v-btn>
                 </v-card-actions>
             </v-card>
@@ -74,6 +81,7 @@ export default {
             openPointsDialog: false,
             openDiscountDialog: false,
             discount: null,
+            printJobOrder: false,
             formData: {
                 cash: 0,
                 discountId: null,
@@ -93,11 +101,18 @@ export default {
                 transactionId: this.transaction.id,
                 formData: this.formData
             }).then((res, rej) => {
+                if(this.printJobOrder) {
+                    this.$store.dispatch('printer/printJobOrder', res.data.transaction.id);
+                }
                 this.close();
                 this.$store.commit('postransaction/clearTransaction');
                 this.$store.commit('postransaction/removeCustomer');
                 this.$emit('save', res.data.transaction);
             });
+        },
+        saveAndPrint() {
+            this.printJobOrder = true;
+            this.submit();
         },
         selectCard() {
             this.openRfidCardDialog = true;
@@ -138,12 +153,18 @@ export default {
                 return  parseFloat(this.transaction.total_amount * this.discount.percentage / 100).toFixed(2);
             }
             return 0;
+        },
+        errors() {
+            return this.$store.getters['payment/getErrors'];
         }
     },
     watch: {
         value(val) {
             if(val && this.transaction) {
                 this.formData.cash = this.transaction.total_amount;
+                setTimeout(() => {
+                    this.$refs.cash.$el.querySelector('input').select();
+                }, 500);
             }
         }
     }

@@ -20,11 +20,10 @@ use Illuminate\Support\Facades\DB;
 class PosTransactionController extends Controller
 {
     public function currentTransaction($customerId) {
-        $transaction = Transaction::with('customer')->where(function($query) use ($customerId) {
-            $query->whereDoesntHave('payment', function($query) {
-
-            })->where('customer_id', $customerId);
-        })->first();
+        $transaction = Transaction::with('customer')
+            ->whereNull('date_paid')
+            ->where('customer_id', $customerId)
+            ->first();
 
         if($transaction) {
             $transaction->refreshAll();
@@ -62,15 +61,26 @@ class PosTransactionController extends Controller
         return DB::transaction(function () use ($request, $category) {
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
+
+            if($transaction && !Carbon::createFromDate($transaction->date)->isToday()) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item from other`s day transaction.'],
+                    ]
+                ], 422);
+            }
+
             if($transaction == null) {
                 $transaction = Transaction::create([
                     'customer_id' => $request->customerId,
                     'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
                     'customer_name' => $customer->name,
                 ]);
             } else {
                 $transaction->update([
-                    'saved' => null,
+                    'saved' => false,
                 ]);
             }
 
@@ -127,15 +137,27 @@ class PosTransactionController extends Controller
 
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
+
+            if($transaction && !Carbon::createFromDate($transaction->date)->isToday()) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item from other`s day transaction.'],
+                    ]
+                ], 422);
+            }
+
+
             if($transaction == null) {
                 $transaction = Transaction::create([
                     'customer_id' => $request->customerId,
                     'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
                     'customer_name' => $customer->name,
                 ]);
             } else {
                 $transaction->update([
-                    'saved' => null,
+                    'saved' => false,
                 ]);
             }
 
@@ -169,12 +191,14 @@ class PosTransactionController extends Controller
             ])->orderByDesc('created_at')->first();
 
             if($productItem->forceDelete()) {
-                $product = Product::findOrFail($request->productId);
-                $product->increment('current_stock');
+                $product = Product::withTrashed()->find($request->productId);
+                if($product) {
+                    $product->increment('current_stock');
+                }
             }
 
             $productItem->transaction()->update([
-                'saved' => null,
+                'saved' => false,
             ]);
 
             return response()->json([
@@ -193,7 +217,7 @@ class PosTransactionController extends Controller
                 $transaction->date = Carbon::now();
             }
             $transaction->update([
-                'saved' => Carbon::now(),
+                'saved' => true,
                 'total_price' => $transaction->totalPrice(),
             ]);
             // $transaction->saved = Carbon::now();
@@ -216,6 +240,14 @@ class PosTransactionController extends Controller
                 'transaction_id' => $transactionId,
                 'saved' => false,
             ])->get();
+
+            $otherServices = ServiceTransactionItem::with('fullService.fullServiceItems')->where([
+                'category' => 'other',
+                'transaction_id' => $transactionId,
+                'saved' => false,
+            ])->update([
+                'saved' => true,
+            ]);
 
             $products = $transaction->productTransactionItems()->update([
                 'saved' => true,

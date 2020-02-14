@@ -19,8 +19,9 @@ class CreateTransactionsTable extends Migration
             $table->dateTime('date')->nullable();
             $table->uuid('customer_id')->nullable();
             $table->uuid('user_id')->nullable()->comment('user who saved the transaction');
+            $table->string('staff_name')->nullable()->comment('static name of user who saved the transaction');
             $table->string('job_order')->nullable();
-            $table->dateTime('saved')->nullable();
+            $table->boolean('saved')->default(false);
 
             $table->string('customer_name');
             $table->float('total_price')->default(0);

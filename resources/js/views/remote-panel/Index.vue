@@ -45,7 +45,7 @@
         </template>
 
         <customer-browser v-model="openCustomerBrowserDialog" :machine="activeMachine" @machineActivated="updateMachine" />
-        <machine-dialog :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" />
+        <machine-dialog :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" @activated="updateMachine" />
     </v-card>
 </template>
 

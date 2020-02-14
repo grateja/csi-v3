@@ -11,7 +11,7 @@ class ProductPurchase extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'date', 'product_id', 'receipt', 'quantity', 'unit_cost', 'remarks', 'user_id',
+        'date', 'product_id', 'product_name', 'receipt', 'quantity', 'unit_cost', 'remarks', 'staff_name',
     ];
 
     public $timestamps = false;

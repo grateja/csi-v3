@@ -13,7 +13,7 @@
                             <v-chip close @input="currentOwner = null">{{currentOwner.name}}</v-chip>
                         </v-card-text>
                         <v-card-text v-else>
-                            <v-text-field :error-messages="errors.get('ownerId')" :label="`Search ${formData.cardType == 'c' ? 'customer' : 'user'}`"  outline @keyup="search" v-model="keyword"></v-text-field>
+                            <v-text-field :error-messages="errors.get('ownerId')" :label="`Search ${formData.cardType == 'c' ? 'customer' : 'user'}`"  outline @keyup="search" v-model="keyword" ref="keyword"></v-text-field>
                             <v-card v-if="results.length">
                                 <v-list dense>
                                     <v-list-tile v-for="item in results" :key="item.id" @click="selectOwner(item)">
@@ -150,6 +150,10 @@ export default {
                 this.formData.cardType = 'c';
                 this.currentOwner = null;
             }
+            setTimeout(() => {
+                this.$refs.keyword.$el.querySelector('input').select();
+            }, 500);
+
         },
         'formData.cardType': function(val) {
             this.results = [];

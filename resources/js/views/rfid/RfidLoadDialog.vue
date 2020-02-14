@@ -18,7 +18,7 @@
 
                     <v-divider class="my-3"></v-divider>
 
-                    <v-text-field outline v-model="formData.amount" label="Amount" :error-messages="errors.get('amount')" hint="Amount in peso to be loaded." type="number" @input="updateCash"></v-text-field>
+                    <v-text-field outline v-model="formData.amount" label="Amount" :error-messages="errors.get('amount')" hint="Amount in peso to be loaded." type="number" @input="updateCash" ref="amount"></v-text-field>
                     <v-text-field outline v-model="formData.cash" label="Cash" :error-messages="errors.get('cash')" hint="Cash given by the customer." type="number"></v-text-field>
                     <v-text-field outline :value="change" label="Change" readonly></v-text-field>
                     <v-textarea outline v-model="formData.remarks" label="Remarks" rows="2"></v-textarea>
@@ -88,6 +88,9 @@ export default {
                 this.formData.cash = 0;
                 this.formData.remarks = null;
             }
+            setTimeout(() => {
+                this.$refs.amount.$el.querySelector('input').select();
+            }, 500);
         }
     }
 }

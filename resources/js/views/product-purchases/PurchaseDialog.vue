@@ -16,8 +16,8 @@
 
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn @click="close">close</v-btn>
-                    <v-btn class="primary" type="submit" :loading="saving">save</v-btn>
+                    <v-btn @click="close" round>close</v-btn>
+                    <v-btn class="primary" type="submit" :loading="saving" round>save</v-btn>
                 </v-card-actions>
             </v-card>
         </form>
@@ -108,6 +108,16 @@ export default {
                 this.formData.unitCost = 0;
                 this.formData.totalCost = 0;
                 this.formData.remarks = null;
+            }
+            setTimeout(() => {
+                this.$refs.keyword.$el.querySelector('input').select();
+            }, 500);
+        },
+        productPurchase(val) {
+            if(!!val) {
+                this.mode = 'update';
+            } else {
+                this.mode = 'insert';
             }
         }
     }

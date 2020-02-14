@@ -18,18 +18,18 @@ class CreateProductPurchasesTable extends Migration
 
             $table->dateTime('date')->nullable();
             $table->uuid('product_id')->nullable();
+            $table->string('product_name')->nullable();
             $table->string('receipt')->nullable();
             $table->integer('quantity')->nullable();
             $table->double('unit_cost')->nullable();
             $table->text('remarks')->nullable();
-            $table->uuid('user_id')->nullable();
+            $table->string('staff_name')->nullable();
 
             $table->softDeletes();
 
             $table->timestamp('synched')->nullable();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE')->onUpdate('CASCADE');
         });
     }
 

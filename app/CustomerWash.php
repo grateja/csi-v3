@@ -11,7 +11,7 @@ class CustomerWash extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'service_name', 'customer_id', 'service_transaction_item_id', 'pulse_count', 'minutes', 'washer_name', 'machine_type', 'used', 'user_id', 'price',
+        'service_name', 'customer_id', 'service_transaction_item_id', 'pulse_count', 'minutes', 'washer_name', 'machine_type', 'used', 'staff_name', 'price',
     ];
 
     public function serviceTransactionItem() {

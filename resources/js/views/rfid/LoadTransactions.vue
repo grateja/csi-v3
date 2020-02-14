@@ -22,12 +22,16 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>{{ props.item.customer_name }}</td>
                 <td>{{ props.item.amount }}</td>
                 <td>{{ props.item.rfid }}</td>
                 <td>{{ props.item.remarks }}</td>
-                <td>{{ props.item.created_at }}</td>
+                <td>{{ moment(props.item.created_at).format('LLL') }}</td>
                 <td>
+                    <v-btn icon small v-if="isOwner" @click="printTransaction(props.item)" :loading="props.item.isPrinting">
+                        <v-icon small>print</v-icon>
+                    </v-btn>
                     <v-btn icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting">
                         <v-icon small>delete</v-icon>
                     </v-btn>
@@ -54,6 +58,10 @@ export default {
             openRfidCardDialog: false,
             activeRfidCard: null,
             headers: [
+                {
+                    text: '',
+                    sortable: false
+                },
                 {
                     text: 'Customer name',
                     sortable: false
@@ -106,6 +114,12 @@ export default {
                     this.reset = false;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
                 }
             }).finally(() => {
                 this.loading = false;
@@ -129,6 +143,14 @@ export default {
                     Vue.set(rfidCard, 'isDeleting', false);
                 })
             }
+        },
+        printTransaction(rfidCard) {
+            Vue.set(rfidCard, 'isPrinting', true);
+            this.$store.dispatch('printer/rfidLoadTransaction', rfidCard.id).then((res, rej) => {
+
+            }).finally(() => {
+                Vue.set(rfidCard, 'isPrinting', false);
+            });
         },
         updateCards(data) {
             if(data.mode == 'insert') {

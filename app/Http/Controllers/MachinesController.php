@@ -55,14 +55,15 @@ class MachinesController extends Controller
                     'service_name' => $request->serviceName,
                     'machine_type' => $request->machineSize,
                     'used' => null,
+                    'customer_id' => $request->customerId,
                 ])->first();
                 $totalMinutes = $customerWash->minutes;
                 $pulse = $customerWash->pulse;
 
                 $customerWash->update([
                     'washer_name' => $machine->machine_name,
-                    'used' => Carbon::now(),
-                    'user_id' => auth('api')->id(),
+                    'used' => Carbon::now()->toDateTimeString(),
+                    'staff_name' => auth('api')->user()->name,
                 ]);
 
             } else if($request->serviceType == 'drying') {
@@ -70,21 +71,29 @@ class MachinesController extends Controller
                     'service_name' => $request->serviceName,
                     'machine_type' => $request->machineSize,
                     'used' => null,
+                    'customer_id' => $request->customerId,
                 ])->first();
                 $totalMinutes = $customerDry->minutes;
                 $pulse = $customerDry->pulse;
 
                 $customerDry->update([
-                    'dryer_name' => $customerDry->machine_name,
-                    'used' => Carbon::now(),
-                    'user_id' => auth('api')->id(),
+                    'dryer_name' => $machine->machine_name,
+                    'used' => Carbon::now()->toDateTimeString(),
+                    'staff_name' => auth('api')->user()->name,
                 ]);
+            } else {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Invalid Service type']
+                    ]
+                ], 422);
             }
 
             if($request->additional && $machine->is_running) {
                 $machine->update([
                     'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
                     'remarks' => 'Additional ' . $totalMinutes,
+                    'user_name' => $customer->name,
                     'customer_id' => $customer->id,
                 ]);
 
@@ -98,7 +107,8 @@ class MachinesController extends Controller
                 $machine->update([
                     'time_activated' => Carbon::now(),
                     'total_minutes' => $totalMinutes,
-                    'remarks' => null,
+                    'remarks' => 'Remotely activated',
+                    'user_name' => $customer->name,
                     'customer_id' => $customer->id,
                 ]);
 
@@ -114,8 +124,10 @@ class MachinesController extends Controller
             $output = $machine->remoteActivate($pulse);
 
             if($output) {
+                // DB::rollBack();
                 return response()->json([
                     'machine' => $machine->fresh('customer'),
+                    'customerWash' => $customerWash,
                 ]);
             } else {
 

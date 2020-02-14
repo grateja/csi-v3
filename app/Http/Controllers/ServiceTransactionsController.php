@@ -48,7 +48,7 @@ class ServiceTransactionsController extends Controller
 
 
                 $serviceTransactionItem->transaction()->update([
-                    'saved' => null,
+                    'saved' => false,
                 ]);
 
 

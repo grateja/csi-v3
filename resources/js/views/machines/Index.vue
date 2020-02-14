@@ -26,7 +26,7 @@
                     <td>{{ props.item.initial_time }} Mins.</td>
                     <td>{{ (props.item.additional_time)? props.item.additional_time + 'Mins.' : 'Disabled' }}</td>
                     <td>
-                        <v-tooltip top>
+                        <v-tooltip top v-if="isOwner">
                             <v-btn slot="activator" small icon @click="edit(props.item, $event)">
                                 <v-icon small>edit</v-icon>
                             </v-btn>
@@ -170,6 +170,12 @@ export default {
         },
         date(val) {
             this.load();
+        }
+    },
+    computed: {
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            return (!!user && user.roles[0] == 'admin');
         }
     },
     created() {

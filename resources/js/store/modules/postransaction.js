@@ -58,8 +58,11 @@ const actions = {
     },
     refreshTransaction(context) {
         if(context.getters.getCurrentTransaction) {
+            context.commit('setLoadingStatus', true);
             return axios.get(`/api/transactions/${context.getters.getCurrentTransaction.id}`).then((res, rej) => {
                 context.commit('setCurrentTransaction', res.data.transaction);
+            }).finally(() => {
+                context.commit('setLoadingStatus', false);
             });
         }
     },

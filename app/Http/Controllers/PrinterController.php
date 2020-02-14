@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use App\CompletedServiceTransaction;
 use Illuminate\Support\Facades\DB;
 use App\CompletedProductTransaction;
+use App\RfidLoadTransaction;
 
 class PrinterController extends Controller
 {
@@ -85,7 +86,7 @@ class PrinterController extends Controller
                 'errors' => [
                     'message' => ['Cannot print claim stub. Transaction was modified']
                 ]
-            ]);
+            ], 422);
         }
 
         $data = [
@@ -97,5 +98,46 @@ class PrinterController extends Controller
         ];
 
         return view('printer.claim-stub', $data);
+    }
+
+    public function jobOrder($transactionId) {
+        $transaction = Transaction::with('user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
+
+        if($transaction->date_paid == null) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Cannot print unpaid job order']
+                ]
+            ], 422);
+        }
+
+        $data = [
+            'job_order' => $transaction->job_order,
+            'date' => Carbon::createFromDate($transaction->date)->format('M-d, Y h:i A'),
+            'customer_name' => $transaction->customer->name,
+            'total_amount' => $transaction->total_price,
+            'posServiceSummary' => $transaction->posServiceSummary(),
+            'posServiceItems' => $transaction->posServiceItems(),
+            'posProductItems' => $transaction->posProductItems(),
+            'posProductSummary' => $transaction->posProductSummary(),
+            'staff_name' => $transaction->staff_name,
+            'date_paid' => Carbon::createFromDate($transaction->date_paid)->format('M-d, Y h:i A'),
+            'paid_to' => $transaction->payment->paid_to,
+            'cash' => $transaction->payment->cash,
+            'change' => $transaction->payment->change,
+            'points' => $transaction->payment->points,
+            'points_in_peso' => $transaction->payment->points_in_peso,
+            'discount' => $transaction->payment->discount,
+            'discount_in_peso' => $transaction->payment->discount_in_peso,
+            'rfid' => $transaction->payment->rfid,
+            'card_load_used' => $transaction->payment->card_load_used,
+        ];
+
+        return view('printer.job-order', $data);
+    }
+
+    public function loadTransaction($transactionId) {
+        $rfidLoadTransaction = RfidLoadTransaction::findOrFail($transactionId);
+        return view('printer.rfid-load-transaction', $rfidLoadTransaction);
     }
 }

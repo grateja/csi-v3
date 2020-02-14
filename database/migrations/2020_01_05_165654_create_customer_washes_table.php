@@ -25,14 +25,13 @@ class CreateCustomerWashesTable extends Migration
             $table->integer('minutes');
             $table->float('price')->default(0);
             $table->dateTime('used')->nullable();
-            $table->uuid('user_id')->nullable()->comment('staff who activates the service');
+            $table->string('staff_name')->nullable()->comment('staff who activates the service');
 
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('service_transaction_item_id')->references('id')->on('service_transaction_items')->onDelete('CASCADE')->onUpdate('CASCADE');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE')->onUpdate('CASCADE');
         });
     }
 

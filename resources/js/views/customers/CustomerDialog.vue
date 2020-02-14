@@ -4,7 +4,7 @@
             <v-card>
                 <v-card-title>Customer info</v-card-title>
                 <v-card-text>
-                    <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name"></v-text-field>
+                    <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name" ref="name"></v-text-field>
                     <v-text-field v-model="formData.address" :error-messages="errors.get('address')" outline label="Address"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>
@@ -22,7 +22,7 @@
 <script>
 export default {
     props: [
-        'value', 'customer'
+        'value', 'customer', 'initialName'
     ],
     data() {
         return {
@@ -65,18 +65,28 @@ export default {
         value(val) {
             if(val && this.customer) {
                 this.mode = 'update';
-                this.formData.name = customer.name;
-                this.formData.address = customer.address;
-                this.formData.contactNumber = customer.contactNumber;
-                this.formData.email = customer.email;
-                this.formData.firstVisit = moment(customer.first_visit).format('YYYY-MM-DD');
+                this.formData.name = this.customer.name;
+                this.formData.address = this.customer.address;
+                this.formData.contactNumber = this.customer.contact_number;
+                this.formData.email = this.customer.email;
+                this.formData.firstVisit = moment(this.customer.first_visit).format('YYYY-MM-DD');
             } else {
                 this.mode = 'insert';
-                this.formData.name = null;
+                this.formData.name = this.initialName;
                 this.formData.address = null;
                 this.formData.contactNumber = null;
                 this.formData.email = null;
                 this.formData.firstVisit = moment().format('YYYY-MM-DD');
+            }
+            setTimeout(() => {
+                this.$refs.name.$el.querySelector('input').select();
+            }, 500);
+        },
+        customer(val) {
+            if(!!val) {
+                this.mode = 'update';
+            } else {
+                this.mode = 'insert';
             }
         }
     }

@@ -9,7 +9,7 @@
                         <li>Transaction will not be rolled back.</li>
                     </ul>
 
-                    <v-textarea label="Remarks" v-model="remarks" :error-messages="errors.get('remarks')" outline></v-textarea>
+                    <v-textarea label="Remarks" v-model="remarks" :error-messages="errors.get('remarks')" outline ref="remarks"></v-textarea>
                 </v-card-text>
             <v-card-actions>
                 <v-btn @click="forceStop" round :loading="saving" class="primary">Continue</v-btn>
@@ -51,6 +51,15 @@ export default {
         },
         saving() {
             return this.$store.getters['remote/isSaving'];
+        }
+    },
+    watch: {
+        value(val) {
+            if(val && this.machine) {
+                setTimeout(() => {
+                    this.$refs.remarks.$el.querySelector('textarea').select();
+                }, 500);
+            }
         }
     }
 }

@@ -55,16 +55,11 @@ class ProductPurchasesController extends Controller
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $result = DB::table('product_purchases')
-            ->whereNull('product_purchases.deleted_at')
-            ->whereNull('products.deleted_at')
-            ->where(function($query) use ($request) {
-                $query->where('products.name', 'like', "%$request->keyword%")
-                    ->orWhere('remarks', 'like', "%$request->keyword%")
-                    ->orWhere('receipt', 'like', "%$request->keyword%");
-            })
-            ->join('products', 'products.id', '=', 'product_purchases.product_id')
-            ->selectRaw('products.name, product_purchases.id, date, quantity, unit_cost, remarks, receipt');
+        $result = ProductPurchase::where(function($query) use ($request) {
+            $query->where('product_name', 'like', "%$request->keyword%")
+                ->orWhere('remarks', 'like', "%$request->keyword%")
+                ->orWhere('receipt', 'like', "%$request->keyword%");
+        });
 
         if($request->date) {
             $result = $result->whereDate('date', $request->date);
@@ -98,25 +93,19 @@ class ProductPurchasesController extends Controller
 
                 $prodcutPurchase = ProductPurchase::create([
                     'date' => $request->date,
+                    'product_name' => $request->productName,
                     'product_id' => $product->id,
                     'receipt' => $request->receipt,
                     'quantity' => $request->quantity,
                     'unit_cost' => $request->unitCost,
                     'remarks' => $request->remarks,
-                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
                 ]);
 
                 $product->increment('current_stock', $request->quantity);
 
                 return response()->json([
-                    'productPurchase' => [
-                        'id' => $prodcutPurchase->id,
-                        'date' => $prodcutPurchase->date,
-                        'name' => $prodcutPurchase->product->name,
-                        'quantity' => $prodcutPurchase->quantity,
-                        'unit_cost' => $prodcutPurchase->unit_cost,
-                        'remarks' => $prodcutPurchase->remarks,
-                    ]
+                    'productPurchase' => $prodcutPurchase,
                 ]);
             });
         }
@@ -126,15 +115,17 @@ class ProductPurchasesController extends Controller
         return DB::transaction(function () use ($productPurchaseId) {
             $prodcutPurchase = ProductPurchase::findOrFail($productPurchaseId);
 
-            $product = Product::findOrFail($prodcutPurchase->product_id);
-            $product->decrement('current_stock', $prodcutPurchase->quantity);
-            if($product->current_stock < 0) {
-                $product->update([
-                    'current_stock' => 0,
-                ]);
+            if($prodcutPurchase->delete()) {
+                $product = Product::withTrashed()->find($prodcutPurchase->product_id);
+                if($product) {
+                    $product->decrement('current_stock', $prodcutPurchase->quantity);
+                    if($product->current_stock < 0) {
+                        $product->update([
+                            'current_stock' => 0,
+                        ]);
+                    }
+                }
             }
-
-            $prodcutPurchase->delete();
         });
     }
 }

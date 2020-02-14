@@ -19,9 +19,15 @@ class Product extends Model
         return $this->hasMany('App\FullServiceProduct');
     }
 
+    public function productTransactionItems() {
+        return $this->hasMany('App\ProductTransactionItem');
+    }
+
     protected static function boot() {
         static::deleting(function($model) {
             $model->fullServiceProducts()->delete();
+
+            $model->productTransactionItems()->where('saved', false)->delete();
         });
 
         parent::boot();

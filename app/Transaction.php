@@ -15,8 +15,12 @@ class Transaction extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'customer_id', 'job_order', 'user_id', 'date', 'saved', 'customer_name', 'total_price', 'date_paid'
+        'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid'
     ];
+
+    public function user() {
+        return $this->belongsTo('App\User');
+    }
 
     public function serviceTransactionItems() {
         return $this->hasMany('App\ServiceTransactionItem');
@@ -32,6 +36,10 @@ class Transaction extends Model
 
     public function payment() {
         return $this->hasOne('App\TransactionPayment');
+    }
+
+    public function remarks() {
+        return $this->hasMany('App\TransactionRemarks');
     }
 
     public function posServiceItems() {
@@ -78,6 +86,7 @@ class Transaction extends Model
         $this['posServiceSummary'] = $this->posServiceSummary();
         $this['posProductSummary'] = $this->posProductSummary();
         $this['total_amount'] = $this->posProductSummary()['total_price'] + $this->posServiceSummary()['total_price'];
+        $this['paidTo'] = $this->user;
         $this['customer'] = $this->customer;
     }
 
@@ -90,6 +99,14 @@ class Transaction extends Model
     {
         static::deleting(function($model) {
             $model->payment()->delete();
+
+            foreach ($model->serviceTransactionItems as $value) {
+                $value->delete();
+            }
+
+            foreach ($model->productTransactionItems as $value) {
+                $value->delete();
+            }
 
             // foreach($model->completedProductTransactions as $product) {
             //     $product->delete();
@@ -118,6 +135,7 @@ class Transaction extends Model
             unset($model['posProductSummary']);
             unset($model['customer']);
             unset($model['total_amount']);
+            unset($model['paidTo']);
         });
 
         parent::boot();

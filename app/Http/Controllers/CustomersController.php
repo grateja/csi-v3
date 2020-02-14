@@ -12,7 +12,11 @@ class CustomersController extends Controller
     public function index(Request $request) {
 
         $customers = Customer::withCount(['rfidCards',
-            'customerDries', 'customerWashes'
+            'customerDries' => function($query) {
+                $query->whereNull('used');
+            }, 'customerWashes' => function($query) {
+                $query->whereNull('used');
+            }
         ])->where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
         })->orderBy('name');
@@ -80,6 +84,10 @@ class CustomersController extends Controller
             'name' => 'required',
             'date' => 'nullable|date'
         ];
+
+        if($customer->name != $request->name) {
+            $rules['name'] = 'required|unique:customers';
+        }
 
         if($request->validate($rules)) {
             return DB::transaction(function () use ($customer, $request) {

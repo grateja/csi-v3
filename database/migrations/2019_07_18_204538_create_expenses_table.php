@@ -19,12 +19,10 @@ class CreateExpensesTable extends Migration
             $table->text('remarks')->nullable();
             $table->double('amount')->nullable();
             $table->string('expense_type')->nullable()->comment('Free text. Can add what ever type user may want to add');
-            $table->uuid('user_id')->nullable();
+            $table->uuid('staff_name')->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->timestamp('synched')->nullable();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
         });
     }
 

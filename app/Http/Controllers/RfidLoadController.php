@@ -50,7 +50,7 @@ class RfidLoadController extends Controller
                     'current_balance' => $rfidCard->balance + $request->amount,
                     'cash' => $request->cash,
                     'change' => $request->cash - $request->amount,
-                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
                     'remarks' => $request->remarks,
                 ]);
 

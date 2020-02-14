@@ -27,6 +27,7 @@ class Machine extends Model
         'initial_price',
         'additional_price',
         'remarks',
+        'user_name',
         'customer_id',
     ];
 
@@ -59,11 +60,6 @@ class Machine extends Model
 
     public function customer() {
         return $this->belongsTo('App\Customer');
-        // if($this->is_running) {
-        //     return $this->customer_name;
-        // } else {
-        //     return 'Last customer: ' . $this->customer_name;
-        // }
     }
 
     public function getRemainingTimeAttribute() {
@@ -163,7 +159,7 @@ class Machine extends Model
         $this->update([
             'time_activated' => $timeActivated,
             'total_minutes' => $minutes,
-            'customer_id' => null,
+            'user_name' => $rfidCard->owner_name,
             'remarks' => 'Activated by card: ' . $rfidCard->owner_name,
         ]);
 

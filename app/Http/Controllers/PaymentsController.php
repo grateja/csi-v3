@@ -27,6 +27,7 @@ class PaymentsController extends Controller
                 $discountInPeso = 0;
                 $pointsToDeduct = 0;
                 $percentageDiscount = 0;
+                $rfid = null;
                 $transaction = Transaction::findOrFail($transactionId);
                 $customer = Customer::findOrFail($transaction->customer_id);
                 $transaction->refreshAll();
@@ -62,6 +63,7 @@ class PaymentsController extends Controller
                             ]
                         ], 422);
                     } else {
+                        $rfid = $rfidCard->rfid;
                         $rfidCard->decrement('balance', $request->rfidCardLoad);
                     }
                 }
@@ -69,6 +71,18 @@ class PaymentsController extends Controller
                 $earningPoints = $transaction->serviceTransactionItems()->sum('earning_points');
                 $customer->increment('earned_points', $earningPoints);
                 $customer->decrement('earned_points', $pointsToDeduct);
+
+                $totalCash = $request->cash + $discountInPeso + $request->pointsInPeso + $request->rfidCardLoad;
+                $change = $totalCash - $transaction->total_amount;
+
+                if($change < 0) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => [
+                            'cash' => ['Not enough cash']
+                        ]
+                    ], 422);
+                }
 
                 $payment = TransactionPayment::create([
                     'transaction_id' => $transaction->id,
@@ -79,7 +93,12 @@ class PaymentsController extends Controller
                     'points_in_peso' => $request->pointsInPeso,
                     'discount' => $percentageDiscount,
                     'total_amount' => $transaction->total_amount,
+                    'total_cash' => $totalCash,
                     'user_id' => auth('api')->id(),
+                    'paid_to' => auth('api')->user()->name,
+                    'change' => $totalCash - $transaction->total_amount,
+                    'card_load_used' => $request->rfidCardLoad,
+                    'rfid' => $rfid,
                 ]);
 
                 $transaction->update([
@@ -88,6 +107,8 @@ class PaymentsController extends Controller
 
                 return response()->json([
                     'transaction' => $transaction,
+                    'payment' => $payment,
+                    'cash' => $request->cash,
                 ]);
             });
         }

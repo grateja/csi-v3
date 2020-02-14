@@ -9,7 +9,7 @@
                 </v-responsive>
 
                 <v-card-text>
-                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline></v-text-field>
+                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Additional charge" v-model="formData.additionalCharge" :error-messages="errors.get('additionalCharge')" outline></v-text-field>
                     <v-text-field label="Discount" v-model="formData.discount" :error-messages="errors.get('discount')" outline></v-text-field>
                 </v-card-text>
@@ -84,18 +84,21 @@ export default {
         }
     },
     watch: {
-        service(val) {
-            if(!!val) {
+        value(val) {
+            if(!!val && this.service) {
                 this.mode = 'update';
-                this.formData.name = val.name;
-                this.formData.additionalCharge = val.additional_charge;
-                this.formData.discount = val.discount;
+                this.formData.name = this.service.name;
+                this.formData.additionalCharge = this.service.additional_charge;
+                this.formData.discount = this.service.discount;
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
                 this.formData.additionalCharge = 0;
                 this.formData.discount = 0;
             }
+            setTimeout(() => {
+                this.$refs.name.$el.querySelector('input').select();
+            }, 500);
         }
     }
 }

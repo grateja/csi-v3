@@ -47,10 +47,10 @@ class PendingServicesController extends Controller
     public function index(Request $request) {
         $result = Customer::withCount([
             'customerWashes' => function($query) {
-                $query->whereNull('used');
+                $query->whereNull('used')->whereHas('serviceTransactionItem');
             },
             'customerDries' => function($query) {
-                $query->whereNull('used');
+                $query->whereNull('used')->whereHas('serviceTransactionItem');
             }
         ])->whereHas('customerWashes', function($query) {
             $query->whereNull('used');
@@ -65,10 +65,14 @@ class PendingServicesController extends Controller
 
     public function viewAll($customerId) {
         $customerWashes = CustomerWash::with('serviceTransactionItem.transaction')
-            ->where('customer_id', $customerId)->whereNull('used')->get();
+            ->where('customer_id', $customerId)
+            ->whereHas('serviceTransactionItem')
+            ->whereNull('used')->get();
 
         $customerDries = CustomerDry::with('serviceTransactionItem.transaction')
-            ->where('customer_id', $customerId)->whereNull('used')->get();
+            ->where('customer_id', $customerId)
+            ->whereHas('serviceTransactionItem')
+            ->whereNull('used')->get();
 
         $customerWashes = $customerWashes->transform(function($item) {
             return [

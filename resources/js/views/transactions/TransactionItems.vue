@@ -1,12 +1,12 @@
 <template>
-    <v-card v-if="currentTransaction">
+    <v-card>
         <v-card-text>
-            <dl>
+            <dl v-if="currentTransaction">
                 <dt>Date :</dt>
-                <dd>{{currentTransaction && currentTransaction.date ? moment(currentTransaction.date).format('MMMM DD, YYYY hh:mm A') : 'Date will appear upon saving'}}</dd>
+                <dd>{{currentTransaction && currentTransaction.date ? moment(currentTransaction.date).format('MMMM DD, YYYY hh:mm A') : 'Date will appear after saving'}}</dd>
 
                 <dt>Job order :</dt>
-                <dd>{{currentTransaction ? currentTransaction.job_order || 'Job order number will appear upon saving' : null}}</dd>
+                <dd>{{currentTransaction ? currentTransaction.job_order || 'Job order number will appear after saving' : null}}</dd>
             </dl>
 
 
@@ -20,19 +20,21 @@
                     <th>QUANTITY</th>
                     <th>TOTAL</th>
                 </tr>
-                <tr v-for="item in currentTransaction.posServiceItems" :key="item.id" @click="viewServiceItems(item)">
-                    <td class="pl-1">{{item.name}}</td>
-                    <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
-                    <td class="text-xs-center">
-                        {{item.quantity}}
-                        <v-tooltip top>
-                            <v-btn slot="activator" small icon><v-icon small>list</v-icon></v-btn>
-                            <span>View all</span>
-                        </v-tooltip>
-                    </td>
-                    <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
-                </tr>
-                <tr class=" font-weight-bold">
+                <template v-if="currentTransaction">
+                    <tr v-for="item in currentTransaction.posServiceItems" :key="item.id" @click="viewServiceItems(item)">
+                        <td class="pl-1">{{item.name}}</td>
+                        <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                        <td class="text-xs-center">
+                            {{item.quantity}}
+                            <v-tooltip top>
+                                <v-btn slot="activator" small icon><v-icon small>list</v-icon></v-btn>
+                                <span>View all</span>
+                            </v-tooltip>
+                        </td>
+                        <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                    </tr>
+                </template>
+                <tr class=" font-weight-bold" v-if="currentTransaction">
                     <td colspan="2" class="pl-1">Total</td>
                     <td class="text-xs-center">{{currentTransaction.posServiceSummary.total_quantity}}</td>
                     <td class="text-xs-center">P {{parseFloat(currentTransaction.posServiceSummary.total_price).toFixed(2)}}</td>
@@ -51,25 +53,26 @@
                     <th>QUANTITY</th>
                     <th>TOTAL</th>
                 </tr>
-                <tr v-for="item in currentTransaction.posProductItems" :key="item.id">
-                    <td class="pl-1">{{item.name}}</td>
-                    <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
-                    <td class="text-xs-center">
-                        {{item.quantity}}
-                        <v-tooltip top>
-                            <v-btn slot="activator" small icon :loading="item.reducing" @click="reduceItems(item)"><v-icon small>remove</v-icon></v-btn>
-                            <span>Remove 1 item</span>
-                        </v-tooltip>
-                    </td>
-                    <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
-                </tr>
-                <tr class=" font-weight-bold">
+                <template v-if="currentTransaction">
+                    <tr v-for="item in currentTransaction.posProductItems" :key="item.id">
+                        <td class="pl-1">{{item.name}}</td>
+                        <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                        <td class="text-xs-center">
+                            {{item.quantity}}
+                            <v-tooltip top>
+                                <v-btn slot="activator" small icon :loading="item.reducing" @click="reduceItems(item)"><v-icon small>remove</v-icon></v-btn>
+                                <span>Remove 1 item</span>
+                            </v-tooltip>
+                        </td>
+                        <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                    </tr>
+                </template>
+                <tr class=" font-weight-bold" v-if="currentTransaction">
                     <td colspan="2" class="pl-1">Total</td>
                     <td class="text-xs-center">{{currentTransaction.posProductSummary.total_quantity}}</td>
                     <td class="text-xs-center">P {{parseFloat(currentTransaction.posProductSummary.total_price).toFixed(2)}}</td>
                 </tr>
             </table>
-
 
             <v-card-actions v-if="currentTransaction && !currentTransaction.saved">
                 <v-spacer></v-spacer>
@@ -78,7 +81,7 @@
             </v-card-actions>
             <v-card-actions v-else>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="viewPayment" round>Payment</v-btn>
+                <v-btn color="primary" @click="viewPayment" round>{{totalPrice}}&nbsp;&nbsp;Payment</v-btn>
                 <v-btn @click="printClaimStub" round :loading="claimStubLoading">Print claim stub</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>

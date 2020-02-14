@@ -10,6 +10,9 @@
                         <v-icon small>close</v-icon>
                     </v-btn>
                 </v-card-actions>
+                <v-card-actions v-if="!!currentCustomer && !currentTransaction">
+                    <div class="font-italic">No current transaction. Select services or products</div>
+                </v-card-actions>
             </v-card>
         </div>
         <div v-else>
@@ -28,16 +31,42 @@
                 </v-list-tile>
             </v-list>
         </v-card>
+
         <v-card v-if="!currentCustomer && !loading && unsavedTransactions.length" class="my-3">
             <v-card-title class="grey--text">Customers with unsaved transaction</v-card-title>
             <v-divider class="my-1"></v-divider>
             <v-list dense>
                 <v-list-tile v-for="customer in unsavedTransactions" :key="customer.id" @click="selectCustomer(customer)">
+                    <v-list-tile-action>
+                        <div v-if="customer.transactions[0] && customer.transactions[0].job_order">
+                            {{customer.transactions[0].job_order}}
+                        </div>
+                        <div v-else>
+                            ######
+                        </div>
+                    </v-list-tile-action>
                     {{customer.name}}
                 </v-list-tile>
             </v-list>
         </v-card>
-        <customer-dialog v-model="openCustomerDialog" @save="setCustomer" />
+
+        <v-card v-if="!currentCustomer && !loading && unpaidTransactions.length" class="my-3">
+            <v-card-title class="grey--text">Customers with unpaid transaction</v-card-title>
+            <v-divider class="my-1"></v-divider>
+            <v-list dense>
+                <v-list-tile v-for="transaction in unpaidTransactions" :key="transaction.id" @click="selectUnpaidCustomer(transaction)">
+                    <v-list-tile-action class="grey--text caption">{{transaction.job_order}}</v-list-tile-action>
+                    <v-list-tile-content>
+                        <div>{{transaction.customer_name}}</div>
+                        <div class="caption grey--text">{{moment(transaction.date).format('LLL')}}</div>
+                    </v-list-tile-content>
+                    <v-list-tile-action>
+                        P{{parseFloat(transaction.total_price).toFixed(2)}}
+                    </v-list-tile-action>
+                </v-list-tile>
+            </v-list>
+        </v-card>
+        <customer-dialog v-model="openCustomerDialog" @save="setCustomer" :initialName="keyword" />
     </div>
 </template>
 
@@ -56,7 +85,8 @@ export default {
             keyword: null,
             items: [],
             customerName: null,
-            unsavedTransactions: []
+            unsavedTransactions: [],
+            unpaidTransactions: []
         }
     },
     methods: {
@@ -83,7 +113,12 @@ export default {
         selectCustomer(customer) {
             this.$emit('selectCustomer', customer);
             this.items = [];
-            this.unsavedTransactions = [];
+        },
+        selectUnpaidCustomer(transaction) {
+            this.selectCustomer({
+                name: transaction.customer_name,
+                id: transaction.customer_id
+            });
         },
         cancelSearch(){
             if(this.cancelSource){
@@ -92,7 +127,6 @@ export default {
         },
         removeCustomer() {
             this.$store.commit('postransaction/removeCustomer');
-            this.loadUnsavedTransactions();
         },
         createCustomer() {
             this.removeCustomer();
@@ -105,15 +139,35 @@ export default {
             axios.get('/api/transactions/unsaved-transactions').then((res, rej) => {
                 this.unsavedTransactions = res.data.result;
             });
+        },
+        loadUnpaidTransactions() {
+            axios.get('/api/transactions/unpaid-transactions').then((res, rej) => {
+                this.unpaidTransactions = res.data.result.data;
+            });
         }
     },
     computed: {
         currentCustomer() {
             return this.$store.getters['postransaction/getCurrentCustomer'];
+        },
+        currentTransaction() {
+            return this.$store.getters['postransaction/getCurrentTransaction'];
         }
     },
     created() {
         this.loadUnsavedTransactions();
+        this.loadUnpaidTransactions();
+    },
+    watch: {
+        currentCustomer(val) {
+            if(!!val) {
+                this.unpaidTransactions = [];
+                this.unsavedTransactions = [];
+            } else {
+                this.loadUnsavedTransactions();
+                this.loadUnpaidTransactions();
+            }
+        }
     }
 }
 </script>

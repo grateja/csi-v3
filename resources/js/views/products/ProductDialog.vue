@@ -13,7 +13,7 @@
                     <v-btn icon @click="removePicture" v-if="!!product && product.img_path"> <v-icon>delete</v-icon></v-btn>
                 </v-card-actions>
                 <v-card-text>
-                    <v-text-field dense outline label="Name" v-model="formData.name" :error-messages="errors.get('name')"></v-text-field>
+                    <v-text-field dense outline label="Name" v-model="formData.name" :error-messages="errors.get('name')" ref="name"></v-text-field>
                     <v-text-field dense outline label="Description" v-model="formData.description"></v-text-field>
                     <v-text-field dense outline label="Selling price" v-model="formData.sellingPrice"></v-text-field>
                     <v-text-field dense outline label="Current Stock" v-model="formData.currentStock"></v-text-field>
@@ -92,14 +92,14 @@ export default {
         }
     },
     watch: {
-        product(val) {
-            if(!!val) {
+        value(val) {
+            if(!!val && this.product) {
                 this.mode = 'update';
-                this.formData.name = val.name;
-                this.formData.description = val.description;
-                this.formData.imgPath = val.img_path;
-                this.formData.sellingPrice = val.selling_price;
-                this.formData.currentStock = val.current_stock;
+                this.formData.name = this.product.name;
+                this.formData.description = this.product.description;
+                this.formData.imgPath = this.product.img_path;
+                this.formData.sellingPrice = this.product.selling_price;
+                this.formData.currentStock = this.product.current_stock;
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
@@ -107,6 +107,16 @@ export default {
                 this.formData.imgPath = null;
                 this.formData.sellingPrice = 0;
                 this.formData.currentStock = 0;
+            }
+            setTimeout(() => {
+                this.$refs.name.$el.querySelector('input').select();
+            }, 500);
+        },
+        product(val) {
+            if(!!val) {
+                this.mode = 'update';
+            } else {
+                this.mode = 'insert';
             }
         }
     }

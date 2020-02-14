@@ -27,13 +27,14 @@ class CreateMachinesTable extends Migration
             $table->double('initial_price')->nullable();
             $table->double('additional_price')->nullable();
             $table->integer('initial_cycle_count')->nullable();
-            $table->uuid('customer_id')->nullable();
+            $table->string('user_name')->nullable();
             $table->text('remarks')->nullable();
+            $table->uuid('customer_id')->nullable()->comment('Used only for reference for dryer, for additional dry');
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('SET NULL')->onUpdate('CASCADE');
+            $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('CASCADE')->onDelete('SET NULL');
         });
     }
 
