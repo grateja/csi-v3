@@ -27,7 +27,7 @@ class Transaction extends Model
     }
 
     public function productTransactionItems() {
-        return $this->hasMany('App\ProductTransactionitem');
+        return $this->hasMany('App\ProductTransactionItem');
     }
 
     public function customer() {
