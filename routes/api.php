@@ -400,8 +400,8 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
     // /api/machines/view-all
     Route::get('{branchId}/view-all', 'MachinesController@index');
 
-    // /api/machines/last-activated
-    Route::get('last-activated', 'MachinesController@lastActivated');
+    // /api/machines/get-update
+    Route::get('get-update', 'MachinesController@lastActivated');
 
     // /api/machines/{machineType}
     Route::get('{machineType}', 'MachinesController@viewByType');
@@ -562,6 +562,9 @@ Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() 
 
     // /api/rfid-cards/{rfidCardId}/update
     Route::post('{rfidCardId}/update', 'RfidCardsController@update');
+
+    // /api/rfid-cards/{rfidCardId}/delete-card
+    Route::post('{rfidCardId}/delete-card', 'RfidCardsController@deleteCard');
 
     // /api/rfid-cards/{rfidCardId}/top-up
     Route::post('{rfidCardId}/top-up', 'RfidLoadController@topUp');

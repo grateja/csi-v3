@@ -31,7 +31,7 @@
                                 <v-radio value="u" label="Master card"></v-radio>
                                 <v-radio value="c" label="Customer card"></v-radio>
                             </v-radio-group>
-                            <v-text-field label="RFID" v-model="formData.rfid" :error-messages="errors.get('rfid')" outline></v-text-field>
+                            <v-text-field label="RFID" v-model="formData.rfid" :error-messages="errors.get('rfid')" outline ref="rfid"></v-text-field>
                         </v-card-text>
                     </v-flex>
                 </v-layout>
@@ -144,15 +144,18 @@ export default {
                 this.mode = 'update';
                 this.formData.rfid = this.rfidCard.rfid;
                 this.formData.cardType = this.rfidCard.card_type;
+                setTimeout(() => {
+                    this.$refs.rfid.$el.querySelector('input').select();
+                }, 500);
             } else {
                 this.mode = 'insert';
                 this.formData.rfid = null;
                 this.formData.cardType = 'c';
                 this.currentOwner = null;
+                setTimeout(() => {
+                    this.$refs.keyword.$el.querySelector('input').select();
+                }, 500);
             }
-            setTimeout(() => {
-                this.$refs.keyword.$el.querySelector('input').select();
-            }, 500);
 
         },
         'formData.cardType': function(val) {

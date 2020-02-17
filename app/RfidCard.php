@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UsesUuid;
+use Carbon\Carbon;
 
 class RfidCard extends Model
 {
@@ -40,5 +41,14 @@ class RfidCard extends Model
         } else if($this->card_type == 'u' && $this->user) {
             return $this->user_id;
         }
+    }
+
+    protected static function boot() {
+        static::deleting(function($model) {
+            $model->update([
+                'rfid' => $model->rfid . '[' . Carbon::now()->toDateTimeString() . ']',
+            ]);
+        });
+        parent::boot();
     }
 }

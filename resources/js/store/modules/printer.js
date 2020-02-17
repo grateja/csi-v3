@@ -72,6 +72,23 @@ const actions = {
             context.commit('setErrors', err.response.data.errors);
             return Promise.reject(err);
         });
+    },
+    posCollections(context, query) {
+        context.commit('clearErrors');
+        return axios.get('/api/reports/pos-collections', {
+            params: query
+        }).then((res, rej) => {
+            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+
+            w.document.write(res.data);
+            w.document.close();
+
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setLoadingJobOrder', false);
+            return Promise.reject(err);
+        });
     }
 };
 

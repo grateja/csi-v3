@@ -69,7 +69,7 @@ export default {
         }
     },
     created() {
-        this.timer = setInterval(this.refreshTime, 1000)
+        // this.timer = setInterval(this.refreshTime, 1000)
     },
     beforeDestroy() {
         this.cancelUpdate();

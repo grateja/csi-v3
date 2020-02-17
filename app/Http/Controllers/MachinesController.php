@@ -51,6 +51,14 @@ class MachinesController extends Controller
             $pulse = 0;
 
             if($request->serviceType == 'washing') {
+                if($machine->is_running) {
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Machine is already running']
+                        ]
+                    ], 422);
+                }
+
                 $customerWash = CustomerWash::where([
                     'service_name' => $request->serviceName,
                     'machine_type' => $request->machineSize,
@@ -67,6 +75,14 @@ class MachinesController extends Controller
                 ]);
 
             } else if($request->serviceType == 'drying') {
+                if($machine->is_running && $customer->name != $machine->user_name) {
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Machine is already running']
+                        ]
+                    ], 422);
+                }
+
                 $customerDry = CustomerDry::where([
                     'service_name' => $request->serviceName,
                     'machine_type' => $request->machineSize,

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use App\Traits\UsesUuid;
+use Carbon\Carbon;
 
 class Transaction extends Model
 {
@@ -18,16 +19,21 @@ class Transaction extends Model
         'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid'
     ];
 
+    // public $appends = [
+    //     'dateStr',
+    //     'datePaidStr',
+    // ];
+
     public function user() {
         return $this->belongsTo('App\User');
     }
 
     public function serviceTransactionItems() {
-        return $this->hasMany('App\ServiceTransactionItem');
+        return $this->hasMany('App\ServiceTransactionItem')->orderBy('name');
     }
 
     public function productTransactionItems() {
-        return $this->hasMany('App\ProductTransactionItem');
+        return $this->hasMany('App\ProductTransactionItem')->orderBy('name');
     }
 
     public function customer() {
@@ -48,6 +54,16 @@ class Transaction extends Model
 
     public function posProductItems() {
         return $this->productTransactionItems()->groupBy('name', 'price', 'product_id')->selectRaw('product_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
+    }
+
+    public function getDateStrAttribute() {
+        return Carbon::createFromDate($this->date)->format('M-d, Y H:i A');
+    }
+
+    public function getDatePaidStrAttribute() {
+        if($this->date_paid) {
+            return Carbon::createFromDate($this->date_paid)->format('M-d, Y H:i A');
+        }
     }
 
     public function posServiceSummary() {

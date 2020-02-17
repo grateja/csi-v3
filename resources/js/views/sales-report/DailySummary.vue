@@ -118,10 +118,10 @@ export default {
         },
         printPosCollection() {
             this.posCollectionPrinting = true;
-            axios.get('/api/reports/pos-collections', {
-                params: {
-                    date: this.date
-                }
+            this.$store.dispatch('printer/posCollections', {
+                date: this.date
+            }).then((res, rej) => {
+
             }).finally(() => {
                 this.posCollectionPrinting = false;
             });

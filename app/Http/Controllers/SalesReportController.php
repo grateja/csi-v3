@@ -23,7 +23,7 @@ class SalesReportController extends Controller
             ->get();
 
         $rfidCardTransactions = DB::table('rfid_card_transactions')
-            // ->where('card_type', 'u')
+            ->where('card_type', 'u')
             ->whereNull('deleted_at')
             ->whereMonth('created_at', $monthIndex)->whereYear('created_at', $year)
             ->groupBy(DB::raw('day'))

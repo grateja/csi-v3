@@ -1,5 +1,5 @@
 <template>
-    <v-card class="ma-3 pa-4" flat color="transparent">
+    <v-card class="ma-3 pa-4" flat color="transparent" ref="machines">
 
         <h4 class="title grey--text">Remote panel</h4>
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
@@ -69,7 +69,8 @@ export default {
             machines: [],
             interval: null,
             componentKey: 1,
-            loading: false
+            loading: false,
+            timer: null
         }
     },
     methods: {
@@ -79,6 +80,7 @@ export default {
                 this.machines = res.data.result;
             }).finally(() => {
                 this.loading = false;
+                this.startTimer();
             });
         },
         open(machine) {
@@ -94,9 +96,23 @@ export default {
         updateMachine(data) {
             this.activeMachine.time_ends_in = data.machine.time_ends_in;
             this.activeMachine.customer = data.machine.customer;
+            this.activeMachine.user_name = data.machine.user_name;
             this.activeMachine.total_minutes = data.machine.total_minutes;
             this.activeMachine.is_running = data.machine.is_running;
             this.activeMachine.remarks = data.machine.remarks;
+        },
+        getUpdate() {
+            if(this.$refs.machines) {
+                axios.get('/api/machines').then((res, rej) => {
+                    this.machines = res.data.result;
+                    this.startTimer();
+                }).catch(err => {
+                    setTimeout(this.startTimer(), 4000)
+                });
+            }
+        },
+        startTimer() {
+            this.timer = setTimeout(this.getUpdate, 1000);
         }
     },
     created() {

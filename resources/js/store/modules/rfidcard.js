@@ -84,6 +84,15 @@ const actions = {
             context.commit('setErrors', err.response.data.errors);
             return Promise.reject(err);
         });
+    },
+    deleteRfidCard(context, rfidCardId) {
+        context.commit('clearErrors');
+        return axios.post(`/api/rfid-cards/${rfidCardId}/delete-card`).then((res, rej) => {
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            return Promise.reject(err);
+        });
     }
 };
 

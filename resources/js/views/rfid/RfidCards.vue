@@ -44,7 +44,7 @@
                     <v-btn icon v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="edit(props.item)">
                         <v-icon small>edit</v-icon>
                     </v-btn>
-                    <v-btn icon v-if="isOwner || !isOwner && props.item.card_type == 'c'" small>
+                    <v-btn icon v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="deleteCard(props.item)" :loading="props.item.isDeleting">
                         <v-icon small>delete</v-icon>
                     </v-btn>
                 </td>
@@ -185,6 +185,16 @@ export default {
         loadACard(rfidCard) {
             this.activeRfidCard = rfidCard;
             this.openRfidLoadDialog = true;
+        },
+        deleteCard(item) {
+            if(confirm('Delete this card?')) {
+                Vue.set(item, 'isDeleting', true);
+                this.$store.dispatch('rfidcard/deleteRfidCard', item.rfid_card_id).then((res, rej) => {
+                    this.items = this.items.filter(card => card.rfid_card_id != item.rfid_card_id);
+                }).finally(() => {
+                    Vue.set(item, 'isDeleting', false);
+                });
+            }
         }
     },
     created() {

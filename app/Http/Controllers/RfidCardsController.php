@@ -44,7 +44,7 @@ class RfidCardsController extends Controller
         $result = DB::table('rfid_cards')
             ->leftjoin('customers', 'customers.id', '=', 'rfid_cards.customer_id')
             ->leftjoin('users', 'users.id', '=', 'rfid_cards.user_id')
-            ->selectRaw('coalesce(users.name, customers.name) as fullname, rfid, balance, card_type, customers.id as customer_id, users.id as user_id, rfid_cards.id as rfid_card_id, rfid_cards.created_at as enrolled')
+            ->selectRaw('rfid_cards.id as rfid_card_id, coalesce(users.name, customers.name) as fullname, rfid, balance, card_type, customers.id as customer_id, users.id as user_id, rfid_cards.id as rfid_card_id, rfid_cards.created_at as enrolled')
             ->where(function($query) use ($request) {
                 $query->where('users.name', 'like', "%$request->keyword%")
                     ->orWhere('customers.name', 'like', "%$request->keyword%")
@@ -114,6 +114,15 @@ class RfidCardsController extends Controller
                     'rfidLoadTransaction' => $rfidLoadTransaction,
                 ]);
             });
+        }
+    }
+
+    public function deleteCard($rfidCardId) {
+        $rfidCard = RfidCard::findOrFail($rfidCardId);
+        if($rfidCard->delete()) {
+            return response()->json([
+                'rfidCard' => $rfidCard,
+            ]);
         }
     }
 

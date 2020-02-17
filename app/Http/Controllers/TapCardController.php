@@ -20,7 +20,9 @@ class TapCardController extends Controller
             ], 422);
         }
 
-        $rfidCard = RfidCard::where('rfid', $rfid)->first();
+        $rfidCard = RfidCard::where(function($query) {
+            $query->whereHas('customer')->orWhereHas('user');
+        })->where('rfid', $rfid)->first();
         if($rfidCard == null) {
 
             $unregisteredCard = UnregisteredCard::where('rfid', $rfid)->first();
@@ -46,7 +48,7 @@ class TapCardController extends Controller
             ], 422);
         }
 
-        if($machine->is_running && $machine->customer && $machine->customer->name != $rfidCard->owner_name) {
+        if($machine->is_running && $machine->user_name != $rfidCard->owner_name) {
             return response()->json([
                 'message' => 'Machine is already in use by a different customer: ' . $machine->customer->name,
             ], 422);
