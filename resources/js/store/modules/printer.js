@@ -78,7 +78,7 @@ const actions = {
         return axios.get('/api/reports/pos-collections', {
             params: query
         }).then((res, rej) => {
-            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            let w = window.open('about:blank', 'print', 'width=1900,height=1240');
 
             w.document.write(res.data);
             w.document.close();
