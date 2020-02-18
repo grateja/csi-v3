@@ -102,6 +102,7 @@ export default {
             this.activeMachine.remarks = data.machine.remarks;
         },
         getUpdate() {
+            console.log('get update');
             if(this.$refs.machines) {
                 axios.get('/api/machines').then((res, rej) => {
                     this.machines = res.data.result;
