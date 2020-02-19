@@ -66,7 +66,7 @@ class MachinesController extends Controller
                     'customer_id' => $request->customerId,
                 ])->first();
                 $totalMinutes = $customerWash->minutes;
-                $pulse = $customerWash->pulse;
+                $pulse = $customerWash->pulse_count;
 
                 $customerWash->update([
                     'washer_name' => $machine->machine_name,
@@ -90,7 +90,7 @@ class MachinesController extends Controller
                     'customer_id' => $request->customerId,
                 ])->first();
                 $totalMinutes = $customerDry->minutes;
-                $pulse = $customerDry->pulse;
+                $pulse = $customerDry->pulse_count;
 
                 $customerDry->update([
                     'dryer_name' => $machine->machine_name,
@@ -144,6 +144,8 @@ class MachinesController extends Controller
                 return response()->json([
                     'machine' => $machine->fresh('customer'),
                     'customerWash' => $customerWash,
+                    'customerDry' => $customerDry,
+                    'pulse' => $pulse,
                 ]);
             } else {
 

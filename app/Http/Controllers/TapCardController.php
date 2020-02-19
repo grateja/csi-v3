@@ -70,6 +70,7 @@ class TapCardController extends Controller
                     'rfid' => $rfidCard->rfid,
                     'balance' => $rfidCard->balance,
                     'price' => $machine->price,
+                    'pulse' => 1,
                 ]);
             }
 
