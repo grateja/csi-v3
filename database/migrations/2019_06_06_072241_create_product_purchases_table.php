@@ -26,6 +26,7 @@ class CreateProductPurchasesTable extends Migration
             $table->string('staff_name')->nullable();
 
             $table->softDeletes();
+            $table->timestamps();
 
             $table->timestamp('synched')->nullable();
 

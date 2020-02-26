@@ -125,6 +125,9 @@ export default {
             }).finally(() => {
                 this.posCollectionPrinting = false;
             });
+        },
+        excelPosCollections() {
+
         }
     },
     watch:{

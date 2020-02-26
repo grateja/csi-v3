@@ -28,8 +28,10 @@ class CreateServiceTransactionItemsTable extends Migration
             $table->uuid('other_service_id')->nullable();
             $table->uuid('full_service_id')->nullable();
             $table->boolean('saved')->default(false);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('washing_service_id')->references('id')->on('washing_services')->onDelete('CASCADE')->onUpdate('CASCADE');

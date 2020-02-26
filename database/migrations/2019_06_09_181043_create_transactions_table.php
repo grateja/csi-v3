@@ -28,6 +28,7 @@ class CreateTransactionsTable extends Migration
             $table->dateTime('date_paid')->nullable();
 
             $table->softDeletes();
+            $table->timestamps();
             $table->timestamp('synched')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE')->onUpdate('CASCADE');

@@ -2,16 +2,17 @@
 
 namespace App;
 
+use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ServiceTransactionItem extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'transaction_id', 'name', 'price', 'category', 'washing_service_id', 'drying_service_id', 'other_service_id', 'full_service_id', 'saved', 'earning_points',
+        'transaction_id', 'name', 'price', 'category', 'washing_service_id', 'drying_service_id', 'other_service_id', 'full_service_id', 'saved', 'earning_points', 'synched',
     ];
 
     public function washingService() {

@@ -26,9 +26,9 @@
                                 <v-btn small icon class="ma-0" :class="hover ? 'blue--text' : 'grey--text'">
                                     {{date}}
                                 </v-btn>
-                                <div class="caption green--text text-xs-right">{{collection(date)}}</div>
-                                <div class="title text-xs-right">{{amount(date)}}</div>
-                                <pre>{{newCustomers(date)}}</pre>
+                                <div class="caption green--text text-xs-center">{{collection(date)}}</div>
+                                <div class="title text-xs-center">{{amount(date)}}</div>
+                                <div class="text-xs-center">{{newCustomers(date)}}</div>
                             </v-card>
                         </v-hover>
                     </li>
@@ -62,7 +62,7 @@ export default {
             if(this.results) {
                 let i = this.results.find(d => moment(d.date).format('DD') == day);
                 if(i) {
-                    return '₱' + parseFloat(i.amount).toFixed(2);
+                    return '₱' + parseFloat(i.amount).toLocaleString();
                 }
                 return '-';
             }
@@ -72,7 +72,7 @@ export default {
             if(this.results) {
                 let i = this.results.find(d => moment(d.date).format('DD') == day);
                 if(i) {
-                    return '₱' + parseFloat(i.collection).toFixed(2);
+                    return parseFloat(i.collection).toLocaleString();
                 }
                 return '-';
             }

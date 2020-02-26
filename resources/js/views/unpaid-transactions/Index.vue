@@ -31,7 +31,16 @@
                 </td>
                 <td>{{ props.item.customer_name }}</td>
                 <td>{{ moment(props.item.date).format('LLL') }}</td>
-                <td>{{ parseFloat(props.item.total_price).toFixed(2) }}</td>
+                <td>P {{ parseFloat(props.item.total_price).toLocaleString(2) }}</td>
+            </template>
+            <template slot="footer">
+                <tr v-if="!!summary">
+                    <td colspan="3">
+                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                    </td>
+                    <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                    <td></td>
+                </tr>
             </template>
         </v-data-table>
         <transaction-dialog :transactionId="transactionId" v-model="openTransactionDialog" @savePayment="closePayment" />
@@ -48,6 +57,7 @@ export default {
     data() {
         return {
             items: [],
+            summary: null,
             keyword: null,
             date: null,
             cancelSource: null,
@@ -97,6 +107,7 @@ export default {
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
                 this.items = res.data.result.data;
+                this.summary = res.data.summary;
             }).finally(() => {
                 this.loading = false;
             });

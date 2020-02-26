@@ -75,10 +75,12 @@ const actions = {
     },
     posCollections(context, query) {
         context.commit('clearErrors');
-        return axios.get('/api/reports/pos-collections', {
+        return axios.get('/api/reports/print/pos-collections', {
             params: query
         }).then((res, rej) => {
-            let w = window.open('about:blank', 'print', 'width=1900,height=1240');
+            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            console.log(params)
+            let w = window.open('about:blank', 'print', params);
 
             w.document.write(res.data);
             w.document.close();

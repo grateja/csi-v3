@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UsesUuid;
@@ -9,14 +10,14 @@ use Carbon\Carbon;
 
 class RfidCard extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     public $appends = [
         'owner_name',
     ];
 
     protected $fillable = [
-        'rfid', 'balance', 'customer_id', 'user_id', 'card_type', 'unlimited',
+        'rfid', 'balance', 'customer_id', 'user_id', 'card_type', 'unlimited', 'synched',
     ];
 
     public function customer() {

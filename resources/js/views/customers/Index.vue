@@ -48,6 +48,13 @@
                     </v-tooltip>
                 </td>
             </template>
+            <template slot="footer">
+                <tr v-if="!!summary">
+                    <td colspan="10">
+                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                    </td>
+                </tr>
+            </template>
         </v-data-table>
         <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
         <customer-dialog v-model="openCustomerDialog" :customer="activeCustomer" @save="editContinue"></customer-dialog>
@@ -71,6 +78,7 @@ export default {
             loading: false,
             totalPage: 0,
             items: [],
+            summary: null,
             activeCustomer: null,
             openCustomerDialog: false,
             headers: [
@@ -146,6 +154,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.summary = res.data.summary;
                 this.totalPage = res.data.result.last_page;
                 this.loading = false;
             }).catch(err => {

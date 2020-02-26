@@ -18,7 +18,7 @@ class RfidTapController extends Controller
         });
 
         if($request->date) {
-            $result = $result->whereDate('rfid_cards.created_at', $request->date);
+            $result = $result->whereDate('created_at', $request->date);
         }
 
         if($request->cardType == 'customer') {
@@ -32,7 +32,32 @@ class RfidTapController extends Controller
 
         return response()->json([
             'result' => $result->paginate(10),
+            'summary' => $this->rfidSummary($request)
         ]);
+    }
+
+    private function rfidSummary($request) {
+        $result = RfidCardTransaction::where(function($query) use ($request) {
+            $query->where('owner_name', 'like', "%$request->keyword%")
+                ->orWhere('rfid', 'like', "%$request->keyword%")
+                ->orWhere('machine_name', 'like', "%$request->keyword%");
+        });
+
+        if($request->date) {
+            $result = $result->whereDate('created_at', $request->date);
+        }
+
+        if($request->cardType == 'customer') {
+            $result = $result->where('card_type', 'c');
+        } else if($request->cardType == 'user') {
+            $result = $result->where('card_type', 'u');
+        }
+
+        return [
+            'total_items' => $result->count(),
+            'total_price' => $result->sum('price'),
+            'total_minutes' => $result->sum('minutes'),
+        ];
     }
 
     public function deleteTransaction($transactionId) {

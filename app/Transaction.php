@@ -13,11 +13,11 @@ class Transaction extends Model
 {
     use SoftDeletes, UsesUuid, UsesSynch;
 
-    public $timestamps = false;
-
     protected $fillable = [
-        'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid'
+        'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid', 'synched', 'updated_at',
     ];
+
+    // public $timestamps = false;
 
     // public $appends = [
     //     'dateStr',
@@ -121,6 +121,7 @@ class Transaction extends Model
             }
 
             foreach ($model->productTransactionItems as $value) {
+                $value->product()->increment('current_stock');
                 $value->delete();
             }
 
@@ -152,6 +153,8 @@ class Transaction extends Model
             unset($model['customer']);
             unset($model['total_amount']);
             unset($model['paidTo']);
+            $model['updated_at'] = Carbon::now()->toDateTimeString();
+            $model['created_at'] = Carbon::now()->toDateTimeString();
         });
 
         parent::boot();

@@ -16,7 +16,6 @@ class CreateRoleUsersTable extends Migration
         Schema::create('role_users', function (Blueprint $table) {
             $table->uuid('user_id');
             $table->unsignedInteger('role_id');
-            $table->timestamp('synched')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('role_id')->references('id')->on('roles')->onUpdate('CASCADE')->onDelete('CASCADE');

@@ -25,6 +25,8 @@ class CreateCustomersTable extends Migration
 
             $table->softDeletes();
             $table->timestamps();
+
+            $table->timestamp('synched')->nullable();
         });
     }
 

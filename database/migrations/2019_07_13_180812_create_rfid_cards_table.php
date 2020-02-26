@@ -24,6 +24,7 @@ class CreateRfidCardsTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('CASCADE');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('CASCADE')->onUpdate('CASCADE');

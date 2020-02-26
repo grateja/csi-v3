@@ -20,7 +20,6 @@ class CreateLoyaltyPointsTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-            $table->timestamp('synched')->nullable();
         });
     }
 

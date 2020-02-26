@@ -23,8 +23,6 @@ class CreateJobOrderFormatsTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-            $table->timestamp('synched')->nullable();
-
         });
     }
 

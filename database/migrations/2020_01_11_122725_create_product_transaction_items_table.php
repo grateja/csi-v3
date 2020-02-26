@@ -26,6 +26,7 @@ class CreateProductTransactionItemsTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE')->onUpdate('CASCADE');

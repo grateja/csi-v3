@@ -7,13 +7,14 @@
 
                 <v-card-text>
                     <v-responsive>
-                        <pre>[This is a box]</pre>
+                        <v-progress-circular v-if="machine.is_running" :value="progress"></v-progress-circular>
                     </v-responsive>
                 </v-card-text>
 
                 <div v-if="machine.is_running" class="text-xs-center">
                     <div class="caption">Current user:</div>
                     <div>{{machine.user_name}}</div>
+                    <pre>{{progress}}</pre>
                     <span class="font-italic caption" :key="timeKey">{{remainingTime()}}</span>
                     <div v-if="!!machine.remarks" class="text-xs-center caption">
                         <v-divider></v-divider>
@@ -66,6 +67,15 @@ export default {
                 return `Ends in ${hours > 0 ? hours + ' hour and' : ''} ${minutes} minutes`;
             }
             return 'keme';
+        }
+    },
+    computed: {
+        progress() {
+            if(!!this.machine) {
+                var t = Date.parse(this.machine.time_ends_in) - Date.parse(new Date());
+                var minutes = (t/1000/60);
+                return Math.round(minutes / parseInt(this.machine.total_minutes) * 100);
+            }
         }
     },
     created() {

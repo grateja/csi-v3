@@ -79,7 +79,7 @@
                 <v-btn class="title" color="#cf0" @click="saveTransaction" round :loading="saving"> <span class="font-weight-bold">{{totalPrice}} </span> &nbsp; confirm</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
-            <v-card-actions v-else>
+            <v-card-actions v-else-if="!!currentTransaction">
                 <v-spacer></v-spacer>
                 <v-btn color="primary" @click="viewPayment" round>{{totalPrice}}&nbsp;&nbsp;Payment</v-btn>
                 <v-btn @click="printClaimStub" round :loading="claimStubLoading">Print claim stub</v-btn>

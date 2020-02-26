@@ -21,8 +21,17 @@ class CustomersController extends Controller
             $query->where('name', 'like', "%$request->keyword%");
         })->orderBy('name');
 
+
+
+        $count = Customer::where(function($query) use ($request) {
+            $query->where('name', 'like', "%$request->keyword%");
+        })->count();
+
         return response()->json([
-            'result' => $customers->paginate(10)
+            'result' => $customers->paginate(10),
+            'summary' => [
+                'total_items' => $count,
+            ]
         ], 200);
     }
 

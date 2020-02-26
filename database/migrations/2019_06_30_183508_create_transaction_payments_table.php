@@ -32,6 +32,8 @@ class CreateTransactionPaymentsTable extends Migration
             $table->uuid('user_id')->nullable()->comment('Bantay');
 
             $table->softDeletes();
+            $table->timestamps();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('SET NULL');

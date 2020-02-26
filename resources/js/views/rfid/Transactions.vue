@@ -35,6 +35,7 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{props.index + 1}}</td>
                 <td>{{ props.item.owner_name }}</td>
                 <td>{{ props.item.rfid }}</td>
                 <td>{{ props.item.machine_name }}</td>
@@ -46,6 +47,17 @@
                         <v-icon small>delete</v-icon>
                     </v-btn>
                 </td>
+            </template>
+            <template slot="footer">
+                <tr v-if="!!summary">
+                    <td colspan="4">
+                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                    </td>
+                    <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                    <td class="font-weight-bold">{{summary.total_minutes}} Mins</td>
+                    <td></td>
+                    <td></td>
+                </tr>
             </template>
         </v-data-table>
         <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
@@ -64,6 +76,7 @@ export default {
             cardType: null,
             cancelSource: null,
             items: [],
+            summary: null,
             loading: false,
             reset: true,
             openRfidCardDialog: false,
@@ -133,6 +146,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.summary = res.data.summary;
             }).finally(() => {
                 this.loading = false;
             });

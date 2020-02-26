@@ -21,6 +21,8 @@ class CreateTransactionRemarksTable extends Migration
             $table->string('added_by');
 
             $table->timestamps();
+            $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
         });

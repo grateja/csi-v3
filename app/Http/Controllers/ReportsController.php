@@ -31,39 +31,45 @@ class ReportsController extends Controller
         ]);
     }
 
-    public function _posCollections(Request $request) {
-        $serviceTransactions = DB::table('transactions')
-            ->whereDate('transactions.date_paid', $request->date)
-            ->whereNull('transactions.deleted_at')
-            ->whereNull('service_transaction_items.deleted_at')
-            ->join('service_transaction_items', 'transactions.id', '=', 'service_transaction_items.transaction_id')
-            ->selectRaw('transactions.id as transaction_id, job_order, date, customer_name, service_transaction_items.name as item_name, service_transaction_items.price as item_price, transactions.date_paid as _date');
+    // public function posCollections(Request $request) {
+    //     $serviceTransactions = DB::table('transactions')
+    //         ->whereDate('transactions.date_paid', $request->date)
+    //         ->whereNull('transactions.deleted_at')
+    //         ->whereNull('service_transaction_items.deleted_at')
+    //         ->join('service_transaction_items', 'transactions.id', '=', 'service_transaction_items.transaction_id')
+    //         ->selectRaw('transactions.id as transaction_id, job_order, date, customer_name, service_transaction_items.name as item_name, service_transaction_items.price as item_price, transactions.date_paid as _date');
 
-        $result = DB::table('transactions')
-            ->whereDate('transactions.date_paid', $request->date)
-            ->whereNull('transactions.deleted_at')
-            ->whereNull('product_transaction_items.deleted_at')
-            ->join('product_transaction_items', 'transactions.id', '=', 'product_transaction_items.transaction_id')
-            ->selectRaw('transactions.id as transactions_id, job_order, date, customer_name, product_transaction_items.name as item_name, product_transaction_items.price as item_price, transactions.date_paid as _date')
-            ->unionAll($serviceTransactions)
-            ->orderBy(DB::raw('job_order, item_name'))
-            ->get()
-            ->groupBy('job_order');
+    //     $result = DB::table('transactions')
+    //         ->whereDate('transactions.date_paid', $request->date)
+    //         ->whereNull('transactions.deleted_at')
+    //         ->whereNull('product_transaction_items.deleted_at')
+    //         ->join('product_transaction_items', 'transactions.id', '=', 'product_transaction_items.transaction_id')
+    //         ->selectRaw('transactions.id as transactions_id, job_order, date, customer_name, product_transaction_items.name as item_name, product_transaction_items.price as item_price, transactions.date_paid as _date')
+    //         ->unionAll($serviceTransactions)
+    //         ->orderBy(DB::raw('job_order, item_name'))
+    //         ->get();
+    //         // ->groupBy('job_order');
 
 
-        return view('printer.pos-collections', [
-            'result' => $result,
-        ]);
-    }
+    //     return view('printer.pos-collections', [
+    //         'result' => $result,
+    //     ]);
+    // }
 
-    public function posCollections(Request $request) {
+    public function printPosCollections(Request $request) {
         $result = Transaction::with('serviceTransactionItems', 'productTransactionItems', 'payment')
             ->whereDate('date_paid', $request->date)
             ->orderBy('job_order')
             ->get();
 
+        $summary = [
+            'totalCount' => $result->count(),
+            'totalCollections' => $result->sum('total_price'),
+        ];
+
         return view('printer.pos-collections', [
             'result' => $result,
+            'summary' => $summary,
         ]);
     }
 }

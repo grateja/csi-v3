@@ -62,7 +62,7 @@ class PosTransactionController extends Controller
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
 
-            if($transaction && !Carbon::createFromDate($transaction->date)->isToday()) {
+            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [
@@ -135,10 +135,18 @@ class PosTransactionController extends Controller
 
             $product = Product::findOrFail($request->itemId);
 
+            if($product->current_stock <= 0) {
+                return response()->json([
+                    'errors' => [
+                        'message' => [$product->name . ' is not available']
+                    ]
+                ], 422);
+            }
+
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
 
-            if($transaction && !Carbon::createFromDate($transaction->date)->isToday()) {
+            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [

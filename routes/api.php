@@ -368,8 +368,13 @@ Route::group(['prefix' => 'reports'], function () {
     // /api/reports/pos
     Route::get('pos', 'ReportsController@pos');
 
-    // /api/reports/pos-collections
-    Route::get('pos-collections', 'ReportsController@posCollections');
+
+    // /reports/print
+    Route::group(['prefix' => 'print'], function() {
+        // /api/reports/print/pos-collections
+        Route::get('pos-collections', 'ReportsController@printPosCollections');
+    });
+
 });
 
 // /api/payments
@@ -692,8 +697,8 @@ Route::group(['prefix' => 'mail'], function () {
 
 // /api/live
 Route::group(['prefix' => 'live'], function() {
-    // /api/live/register-owner
-    Route::get('register-owner', 'LiveHostController@registerOwner');
+    // /api/live/update
+    Route::get('update', 'LiveHostController@update');
 });
 
 

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class Machine extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
         'ip_address',
@@ -29,6 +30,7 @@ class Machine extends Model
         'remarks',
         'user_name',
         'customer_id',
+        'synched',
     ];
 
     public $appends = [

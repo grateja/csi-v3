@@ -63,6 +63,7 @@ class SalesReportController extends Controller
     public function summary($date) {
         $posTransactionSummary = Transaction::whereDate('date', $date)
             ->selectRaw('SUM(IF(date_paid IS NULL, 0, total_price)) as paid_total, SUM(IF(date_paid IS NOT NULL, 0, total_price)) as unpaid_total, SUM(total_price) as total_price, COUNT(IF(date_paid IS NULL, NULL, 1)) as paid_count, COUNT(IF(date_paid IS NULL, 1, NULL)) as unpaid_count, COUNT(job_order) AS total_count')
+            ->where('saved', true)
             ->first();
 
         $posCollections = Transaction::whereDate('date_paid', $date)

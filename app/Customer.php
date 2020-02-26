@@ -2,16 +2,17 @@
 
 namespace App;
 
+use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UsesUuid;
 
 class Customer extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points',
+        'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points', 'synched',
     ];
 
     public function setNameAttribute($value) {

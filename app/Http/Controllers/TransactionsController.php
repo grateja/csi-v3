@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
 use App\TransactionRemarks;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -69,7 +71,31 @@ class TransactionsController extends Controller
 
         return response()->json([
             'result' => $result->paginate(),
+            'summary' => [
+                'total_items' => $result->count(),
+                'total_price' => $result->sum('total_price'),
+            ]
         ]);
+    }
+
+    private function jobOrderSummary($request) {
+        $result = Transaction::where(function($query) use ($request) {
+            $query->where('customer_name', 'like', "%$request->keyword%")
+                ->orWhere('job_order', 'like', "%$request->keyword%");
+        })->whereNotNull('saved');
+
+        if($request->date) {
+            $result = $result->whereDate('date', $request->date);
+        }
+
+        if($request->datePaid) {
+            $result = $result->whereDate('date_paid', $request->datePaid);
+        }
+
+        return [
+            'total_items' => $result->count(),
+            'total_price' => $result->sum('total_price'),
+        ];
     }
 
     public function byJobOrders(Request $request) {
@@ -108,7 +134,7 @@ class TransactionsController extends Controller
 
         return response()->json([
             'result' => $result,
-            'summary' => $result->sum('total_price')
+            'summary' => $this->jobOrderSummary($request),
         ]);
     }
 
@@ -127,7 +153,7 @@ class TransactionsController extends Controller
                 ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id', 'date_paid')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity, transactions.date_paid as date_paid');
 
         if($request->date) {
-            $result = $result->whereDate('transactions.saved', $request->date);
+            $result = $result->whereDate('transactions.date', $request->date);
         }
 
         $result = $result->orderBy($sortBy, $order);
@@ -152,23 +178,33 @@ class TransactionsController extends Controller
                 ->groupBy('job_order', 'customer_name', 'name', 'date', 'transaction_id', 'date_paid')->selectRaw('job_order, customer_name, name, date, transaction_id, SUM(price) as price, COUNT(name) as quantity, transactions.date_paid as date_paid');
 
         if($request->date) {
-            $result = $result->whereDate('transactions.saved', $request->date);
+            $result = $result->whereDate('transactions.date', $request->date);
         }
 
         $result = $result->orderBy($sortBy, $order);
 
         return response()->json([
-            'result' => $result->paginate(10),
+            'result' => $result->paginate(10)
         ]);
     }
 
     public function unsavedTransactions() {
-        $result = Customer::with('transactions')->whereHas('transactions', function($query) {
+        $transactions = Transaction::whereNull('job_order')
+            ->whereDate('created_at','<>', Carbon::now())
+            ->get();
+        foreach($transactions as $transaction) {
+            $transaction->forceDelete();
+        }
+
+        $result = Customer::with(['transactions' => function($query) {
             $query->where('saved', false);
-        })->get();
+        }])->whereHas('transactions', function($query) {
+            $query->where('saved', false);
+        })->orderBy('name')->get();
 
         return response()->json([
             'result' => $result,
+            'fromDifferentDates' => $transactions,
         ]);
     }
 

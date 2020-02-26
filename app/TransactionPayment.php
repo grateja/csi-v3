@@ -2,15 +2,14 @@
 
 namespace App;
 
+use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UsesUuid;
 
 class TransactionPayment extends Model
 {
-    use SoftDeletes, UsesUuid;
-
-    public $timestamps = false;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $primaryKey = 'transaction_id';
 
@@ -19,7 +18,7 @@ class TransactionPayment extends Model
     ];
 
     protected $fillable = [
-        'transaction_id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid',
+        'transaction_id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid', 'synched',
     ];
 
     public function user() {

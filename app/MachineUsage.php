@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MachineUsage extends Model
 {
-    use UsesUuid, UsesSynch;
+    use UsesUuid, UsesSynch, UsesSynch;
 
     protected $fillable = [
         'machine_id', 'customer_name', 'minutes', 'activation_type', 'synched', 'price',

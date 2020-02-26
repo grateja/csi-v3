@@ -39,5 +39,6 @@ class SynchCommand extends Command
     public function handle()
     {
         $ctrl = new LiveHostController();
+        $ctrl->update();
     }
 }

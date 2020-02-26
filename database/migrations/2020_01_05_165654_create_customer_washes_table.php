@@ -29,6 +29,7 @@ class CreateCustomerWashesTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('service_transaction_item_id')->references('id')->on('service_transaction_items')->onDelete('CASCADE')->onUpdate('CASCADE');

@@ -42,10 +42,42 @@ use App\Jobs\Synch;
 
 class LiveHostController extends Controller
 {
-    public function test() {
-        $user = User::where('email', 'admin@gmail.com')->first();
+    public $shopId = 'shop@email.com';
 
-        dispatch((new Synch($user))->delay(Carbon::now()->addSeconds(20)));
+    public function update() {
+        $tables = [
+            'customers',
+            'customer_dries',
+            'customer_washes',
+            'expenses',
+            'machines',
+            'machine_remarks',
+            'machine_usages',
+            'products',
+            'product_purchases',
+            'product_transaction_items',
+            'rfid_cards',
+            'rfid_card_transactions',
+            'rfid_load_transactions',
+            'service_transaction_items',
+            'transactions',
+            'transaction_payments',
+            'transaction_remarks',
+        ];
+
+        $collections = [];
+
+        foreach($tables as $table) {
+            $collections[] = DB::table($table)
+                ->whereNull('synched')
+                ->orderByDesc('created_at')
+                ->limit(25)
+                ->get();
+        }
+
+        return response()->json([
+            'collections' => $collections,
+        ]);
     }
 
     public function registerOwner() {

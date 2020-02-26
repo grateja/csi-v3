@@ -23,6 +23,8 @@ class CreateMachineRemarksTable extends Migration
             $table->integer('remaining_time');
 
             $table->timestamps();
+            $table->timestamp('synched')->nullable();
+            $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
             $table->foreign('machine_id')->references('id')->on('machines')->onDelete('CASCADE')->onUpdate('CASCADE');

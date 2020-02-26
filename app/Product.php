@@ -12,7 +12,7 @@ class Product extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'description', 'minimum_stock', 'current_stock', 'img_path', 'selling_price',
+        'name', 'description', 'minimum_stock', 'current_stock', 'img_path', 'selling_price', 'synched',
     ];
 
     public function fullServiceProducts() {

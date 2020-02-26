@@ -24,16 +24,27 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
-                <td>{{props.index + 1}}</td>
-                <td>
-                    <v-btn small outline class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
-                        {{ props.item.job_order }}
-                    </v-btn>
-                </td>
-                <td>{{ props.item.customer_name }}</td>
-                <td>{{ moment(props.item.date).format('LLL') }}</td>
-                <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
-                <td>{{ datePaidStr(props.item) }}</td>
+                <tr>
+                    <td>{{props.index + 1}}</td>
+                    <td>
+                        <v-btn small outline class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
+                            {{ props.item.job_order }}
+                        </v-btn>
+                    </td>
+                    <td>{{ props.item.customer_name }}</td>
+                    <td>{{ moment(props.item.date).format('LLL') }}</td>
+                    <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
+                    <td>{{ datePaidStr(props.item) }}</td>
+                </tr>
+            </template>
+            <template slot="footer">
+                <tr v-if="!!summary">
+                    <td colspan="4">
+                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                    </td>
+                    <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                    <td></td>
+                </tr>
             </template>
         </v-data-table>
         <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
@@ -59,6 +70,7 @@ export default {
             page: 1,
             reset: false,
             items: [],
+            summary: null,
             loading: false,
             transactionId: null,
             openTransactionDialog: false,
@@ -123,6 +135,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.summary = res.data.summary;
             }).finally(() => {
                 this.loading = false;
             });

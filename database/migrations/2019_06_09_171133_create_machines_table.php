@@ -33,6 +33,7 @@ class CreateMachinesTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('CASCADE')->onDelete('SET NULL');
         });
