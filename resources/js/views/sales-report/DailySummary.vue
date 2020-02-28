@@ -13,7 +13,7 @@
                         <span>Print</span>
                     </v-tooltip>
                     <v-tooltip top>
-                        <v-btn slot="activator" icon small class="mx-0">
+                        <v-btn slot="activator" icon small class="mx-0" :loading="excelDownloading == 'pos-transactions'" @click="excelDownload('pos-transactions')">
                             <v-avatar size="24">
                                 <img src="/img/excel-btn.png" alt="">
                             </v-avatar>
@@ -40,7 +40,7 @@
                             <span>Print collections</span>
                         </v-tooltip>
                         <v-tooltip top>
-                            <v-btn slot="activator" icon small class="mx-0">
+                            <v-btn slot="activator" icon small class="mx-0"  :loading="excelDownloading == 'pos-collections'" @click="excelDownload('pos-collections')">
                                 <v-avatar size="18">
                                     <img src="/img/excel-btn.png" alt="">
                                 </v-avatar>
@@ -58,6 +58,14 @@
                             <v-icon>print</v-icon>
                         </v-btn>
                         <span>Print</span>
+                    </v-tooltip>
+                    <v-tooltip top>
+                        <v-btn slot="activator" icon small class="mx-0" :loading="excelDownloading == 'rfid-transactions'" @click="excelDownload('rfid-transactions')">
+                            <v-avatar size="24">
+                                <img src="/img/excel-btn.png" alt="">
+                            </v-avatar>
+                        </v-btn>
+                        <span>Excel</span>
                     </v-tooltip>
                 </h3>
                 <v-divider></v-divider>
@@ -90,7 +98,15 @@
                             </v-btn>
                             <span>Print</span>
                         </v-tooltip>
-                    </h3>
+                    <v-tooltip top>
+                        <v-btn slot="activator" icon small class="mx-0" :loading="excelDownloading == 'rfid-load-transactions'" @click="excelDownload('rfid-load-transactions')">
+                            <v-avatar size="24">
+                                <img src="/img/excel-btn.png" alt="">
+                            </v-avatar>
+                        </v-btn>
+                        <span>Excel</span>
+                    </v-tooltip>
+                </h3>
                 <v-divider></v-divider>
                 <dl>
                     <dt class="caption grey--text">Total count:</dt>
@@ -118,8 +134,10 @@ export default {
         return {
             loading: false,
             result: null,
+            excelDownloading: null,
             rfidPrinting: null,
             rfidLoadPrinting: null,
+            exportingPosTransactions: false,
             posCollectionPrinting: false,
             posTransactionsPrinting: false
         }
@@ -169,8 +187,17 @@ export default {
                 this.rfidLoadPrinting = false;
             });
         },
-        excelPosCollections() {
-
+        excelDownload(uri) {
+            this.excelDownloading = uri;
+            console.log(uri);
+            this.$store.dispatch('exportdownload/download', {
+                uri,
+                params: {
+                    date: this.date
+                }
+            }).finally(() => {
+                this.excelDownloading = null;
+            });
         }
     },
     watch:{

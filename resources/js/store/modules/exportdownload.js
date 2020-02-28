@@ -21,7 +21,7 @@ const actions = {
     download(context, data) {
         context.commit('setLoadingStatus', true);
         context.commit('clearErrors');
-        axios.get(`/api/exports/${data.uri}/self`, {
+        return axios.get(`/api/reports/excel/${data.uri}`, {
             params: data.params,
             responseType: 'blob'
         }).then((res, rej) => {

@@ -2,35 +2,100 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReportTemplate;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportsController extends Controller
 {
-    public function pos(Request $request) {
+    public function excelPosTransactions(Request $request) {
         $serviceTransactions = DB::table('transactions')
             ->whereDate('transactions.date', $request->date)
             ->whereNull('transactions.deleted_at')
             ->whereNull('service_transaction_items.deleted_at')
             ->join('service_transaction_items', 'transactions.id', '=', 'service_transaction_items.transaction_id')
-            ->selectRaw('transactions.id as transaction_id, job_order, service_transaction_items.name as item_name, service_transaction_items.price as item_price, transactions.date as _date');
+            ->selectRaw('job_order, customer_name, service_transaction_items.name as item_name, service_transaction_items.price as item_price, transactions.date as jo_date, date_paid');
 
-        $productTransactions = DB::table('transactions')
+        $result = DB::table('transactions')
             ->whereDate('transactions.date', $request->date)
             ->whereNull('transactions.deleted_at')
             ->whereNull('product_transaction_items.deleted_at')
             ->join('product_transaction_items', 'transactions.id', '=', 'product_transaction_items.transaction_id')
-            ->selectRaw('transactions.id as transactions_id, job_order, product_transaction_items.name as item_name, product_transaction_items.price as item_price, transactions.date as _date')
+            ->selectRaw('job_order, customer_name, product_transaction_items.name as item_name, product_transaction_items.price as item_price, transactions.date as jo_date, date_paid')
             ->unionAll($serviceTransactions)
-            ->orderBy('job_order')
+            ->orderByDesc('job_order')
             ->get();
 
-        return response()->json([
-            'result' => $productTransactions->groupBy('job_order'),
-        ]);
+        return Excel::download(new ReportTemplate($result, [
+            'JOB ORDER',
+            'CUSTOMER',
+            'ITEM NAME',
+            'ITEM PRICE',
+            'DATE',
+            'DATE PAID',
+        ]), 'parts.xls');
+    }
+
+    public function excelPosCollections(Request $request) {
+        $serviceTransactions = DB::table('transactions')
+            ->whereDate('transactions.date_paid', $request->date)
+            ->whereNull('transactions.deleted_at')
+            ->whereNull('service_transaction_items.deleted_at')
+            ->join('service_transaction_items', 'transactions.id', '=', 'service_transaction_items.transaction_id')
+            ->selectRaw('job_order, customer_name, service_transaction_items.name as item_name, service_transaction_items.price as item_price, transactions.date as jo_date, date_paid');
+
+        $result = DB::table('transactions')
+            ->whereDate('transactions.date_paid', $request->date)
+            ->whereNull('transactions.deleted_at')
+            ->whereNull('product_transaction_items.deleted_at')
+            ->join('product_transaction_items', 'transactions.id', '=', 'product_transaction_items.transaction_id')
+            ->selectRaw('job_order, customer_name, product_transaction_items.name as item_name, product_transaction_items.price as item_price, transactions.date as jo_date, date_paid')
+            ->unionAll($serviceTransactions)
+            ->orderByDesc('job_order')
+            ->get();
+
+        return Excel::download(new ReportTemplate($result, [
+            'JOB ORDER',
+            'CUSTOMER',
+            'ITEM NAME',
+            'ITEM PRICE',
+            'DATE',
+            'DATE PAID',
+        ]), 'parts.xls');
+    }
+
+    public function excelRfidTransactions(Request $request) {
+        $result = RfidCardTransaction::whereDate('created_at', $request->date);
+
+        $result = $result->select('created_at', 'owner_name', 'machine_name', 'minutes', 'price', 'rfid', 'card_type')->orderByDesc('created_at')->get();
+
+        return Excel::download(new ReportTemplate($result, [
+            'DATE & TIME',
+            'CARD OWNER',
+            'MACHINE NAME',
+            'MINUTES',
+            'PRICE',
+            'RFID',
+            'CARD TYPE',
+        ]), 'parts.xls');
+    }
+
+    public function excelRfidLoadTransactions(Request $request) {
+        $result = RfidLoadTransaction::whereDate('created_at', $request->date);
+
+        $result = $result->select('created_at', 'customer_name', 'rfid', 'amount', 'remarks')->orderByDesc('created_at')->get();
+
+        return Excel::download(new ReportTemplate($result, [
+            'DATE & TIME',
+            'CUSTOMER',
+            'RFID',
+            'AMOUNT',
+            'REMARKS',
+        ]), 'parts.xls');
     }
 
     // public function posCollections(Request $request) {

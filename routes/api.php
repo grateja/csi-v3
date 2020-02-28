@@ -365,8 +365,21 @@ Route::group(['prefix' => 'transaction-remarks'], function() {
 
 // /api/reports
 Route::group(['prefix' => 'reports'], function () {
-    // /api/reports/pos
-    Route::get('pos', 'ReportsController@pos');
+    // /api/reports/excel
+    Route::group(['prefix' => 'excel'], function () {
+        // /api/reports/excel/pos-transactions
+        Route::get('pos-transactions', 'ReportsController@excelPosTransactions');
+
+        // /api/reports/excel/pos-collections
+        Route::get('pos-collections', 'ReportsController@excelPosCollections');
+
+        // /api/reports/excel/rfid-transactions
+        Route::get('rfid-transactions', 'ReportsController@excelRfidTransactions');
+
+        // /api/reports/excel/rfid-load-transactions
+        Route::get('rfid-load-transactions', 'ReportsController@excelRfidLoadTransactions');
+
+    });
 
 
     // /reports/print

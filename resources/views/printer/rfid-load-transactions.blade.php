@@ -35,7 +35,7 @@
             <tr>
                 <td>{{$item->dateTimeStr}}</td>
                 <td>{{$item->customer_name}}</td>
-                <td>{{$item->RFID}}</td>
+                <td>{{$item->rfid}}</td>
                 <td>P {{number_format($item->amount, 2)}}</td>
                 <td>{{$item->remarks}}</td>
             </tr>
