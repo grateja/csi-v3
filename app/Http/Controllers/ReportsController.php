@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\RfidCardTransaction;
+use App\RfidLoadTransaction;
 use App\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -68,6 +70,83 @@ class ReportsController extends Controller
         ];
 
         return view('printer.pos-collections', [
+            'result' => $result,
+            'summary' => $summary,
+        ]);
+    }
+
+    public function printPosTransactions(Request $request) {
+        $result = Transaction::with('serviceTransactionItems', 'productTransactionItems', 'payment')
+            ->whereDate('date', $request->date)
+            ->orderBy('job_order')
+            ->get();
+
+        $unpaid = $result->filter(function($item) {
+            return $item->date_paid == null;
+        });
+
+        $paid = $result->filter(function($item) {
+            return $item->date_paid != null;
+        });
+
+        $summary = [
+            'totalCount' => $result->count(),
+            'totalSales' => $result->sum('total_price'),
+            'paidCount' => $paid->count(),
+            'totalCollections' => $paid->sum('total_price'),
+            'unpaidCount' => $unpaid->count(),
+            'totalUnpaid' => $unpaid->sum('total_price'),
+        ];
+
+        return view('printer.pos-transactions', [
+            'result' => $result,
+            'summary' => $summary,
+        ]);
+    }
+
+    public function printRfidTransactions(Request $request) {
+        $result = RfidCardTransaction::whereDate('created_at', $request->date);
+
+        if($request->cardType == 'c') {
+            $result = $result->where('card_type', 'c');
+        } else if($request->cardType == 'u') {
+            $result = $result->where('card_type', 'u');
+        }
+
+        $result = $result->orderByDesc('created_at')->get();
+
+        $customerCards = $result->filter(function($item) {
+            return $item->card_type == 'c';
+        });
+        $userCards = $result->filter(function($item) {
+            return $item->card_type == 'u';
+        });
+
+        $summary = [
+            'customerCount' => $customerCards->count(),
+            'customerCollections' => $customerCards->sum('price'),
+            'userCount' => $userCards->count(),
+            'userCollections' => $userCards->sum('price'),
+            'totalCount' => $result->count(),
+            'totalSales' => $result->sum('price'),
+        ];
+
+        return view('printer.rfid-transactions', [
+            'result' => $result,
+            'summary' => $summary,
+        ]);
+    }
+
+    public function printRfidLoadTransactions(Request $request) {
+        $result = RfidLoadTransaction::whereDate('created_at', $request->date)
+            ->orderByDesc('created_at')->get();
+
+        $summary = [
+            'totalCount' => $result->count(),
+            'totalPrice' => $result->sum('amount'),
+        ];
+
+        return view('printer.rfid-load-transactions', [
             'result' => $result,
             'summary' => $summary,
         ]);

@@ -22,4 +22,8 @@ class RfidLoadTransaction extends Model
     public function rfidCard() {
         return $this->belongsTo('App\RfidCard');
     }
+
+    public function getDateTimeStrAttribute() {
+        return $this->created_at->format('M-d, Y H:i A');
+    }
 }

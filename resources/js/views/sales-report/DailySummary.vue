@@ -7,7 +7,7 @@
             <v-card-text v-if="result">
                 <h3 class="grey--text mt-3">Job orders
                     <v-tooltip top>
-                        <v-btn slot="activator" icon small class="mr-0" @click="printPos" :loading="posPrinting">
+                        <v-btn slot="activator" icon small class="mr-0" @click="printPosTransactions" :loading="posTransactionsPrinting">
                             <v-icon>print</v-icon>
                         </v-btn>
                         <span>Print</span>
@@ -52,17 +52,45 @@
                     <dd class="ml-3"> <span class="font-italic">Including transactions from yesterday and other days</span></dd>
                 </dl>
 
-                <h3 class="grey--text mt-3">RFID Tap Card</h3>
+                <h3 class="grey--text mt-3">RFID Tap Card
+                    <v-tooltip top>
+                        <v-btn small icon slot="activator" :loading="rfidPrinting == 'all'" @click="printRfid('all')">
+                            <v-icon>print</v-icon>
+                        </v-btn>
+                        <span>Print</span>
+                    </v-tooltip>
+                </h3>
                 <v-divider></v-divider>
                 <dl>
-                    <dt class="caption grey--text">Users card:</dt>
+                    <dt class="caption grey--text">Users card:
+                        <v-tooltip top>
+                            <v-btn small icon slot="activator" :loading="rfidPrinting == 'u'" @click="printRfid('u')">
+                                <v-icon small>print</v-icon>
+                            </v-btn>
+                            <span>Print</span>
+                        </v-tooltip>
+                    </dt>
                     <dd class="ml-3 font-weight-bold green--text">P {{parseFloat(result.rfidCardTransactionSummary.users_card || 0).toFixed(2)}}</dd>
 
-                    <dt class="caption grey--text">Customers card:</dt>
+                    <dt class="caption grey--text">Customers card:
+                        <v-tooltip top>
+                            <v-btn small icon slot="activator" :loading="rfidPrinting == 'c'" @click="printRfid('c')">
+                                <v-icon small>print</v-icon>
+                            </v-btn>
+                            <span>Print</span>
+                        </v-tooltip>
+                    </dt>
                     <dd class="ml-3">P {{parseFloat(result.rfidCardTransactionSummary.customers_card || 0).toFixed(2)}}</dd>
                 </dl>
 
-                <h3 class="grey--text mt-3">RFID Load Transactions</h3>
+                <h3 class="grey--text mt-3">RFID Load Transactions
+                        <v-tooltip top>
+                            <v-btn small icon slot="activator" :loading="rfidLoadPrinting" @click="printRfidLoadTransactions">
+                                <v-icon>print</v-icon>
+                            </v-btn>
+                            <span>Print</span>
+                        </v-tooltip>
+                    </h3>
                 <v-divider></v-divider>
                 <dl>
                     <dt class="caption grey--text">Total count:</dt>
@@ -90,8 +118,10 @@ export default {
         return {
             loading: false,
             result: null,
-            posPrinting: false,
-            posCollectionPrinting: false
+            rfidPrinting: null,
+            rfidLoadPrinting: null,
+            posCollectionPrinting: false,
+            posTransactionsPrinting: false
         }
     },
     methods: {
@@ -106,24 +136,37 @@ export default {
                 this.loading = false;
             });
         },
-        printPos() {
-            this.posPrinting = true;
-            axios.get('/api/reports/pos', {
-                params: {
-                    date: this.date
-                }
+        printRfid(cardType) {
+            this.rfidPrinting = cardType;
+            this.$store.dispatch('printer/rfidTransactions', {
+                date: this.date,
+                cardType
             }).finally(() => {
-                this.posPrinting = false;
+                this.rfidPrinting = null;
             });
         },
         printPosCollection() {
             this.posCollectionPrinting = true;
             this.$store.dispatch('printer/posCollections', {
                 date: this.date
-            }).then((res, rej) => {
-
             }).finally(() => {
                 this.posCollectionPrinting = false;
+            });
+        },
+        printPosTransactions() {
+            this.posTransactionsPrinting = true;
+            this.$store.dispatch('printer/posTransactions', {
+                date: this.date
+            }).finally(() => {
+                this.posTransactionsPrinting = false;
+            });
+        },
+        printRfidLoadTransactions() {
+            this.rfidLoadPrinting = true;
+            this.$store.dispatch('printer/rfidLoadTransactions', {
+                date: this.date
+            }).finally(() => {
+                this.rfidLoadPrinting = false;
             });
         },
         excelPosCollections() {

@@ -91,6 +91,63 @@ const actions = {
             context.commit('setLoadingJobOrder', false);
             return Promise.reject(err);
         });
+    },
+    posTransactions(context, query) {
+        context.commit('clearErrors');
+        return axios.get('/api/reports/print/pos-transactions', {
+            params: query
+        }).then((res, rej) => {
+            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            console.log(params)
+            let w = window.open('about:blank', 'print', params);
+
+            w.document.write(res.data);
+            w.document.close();
+
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setLoadingJobOrder', false);
+            return Promise.reject(err);
+        });
+    },
+    rfidTransactions(context, query) {
+        context.commit('clearErrors');
+        return axios.get('/api/reports/print/rfid-transactions', {
+            params: query
+        }).then((res, rej) => {
+            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            console.log(params)
+            let w = window.open('about:blank', 'print', params);
+
+            w.document.write(res.data);
+            w.document.close();
+
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setLoadingJobOrder', false);
+            return Promise.reject(err);
+        });
+    },
+    rfidLoadTransactions(context, query) {
+        context.commit('clearErrors');
+        return axios.get('/api/reports/print/rfid-load-transactions', {
+            params: query
+        }).then((res, rej) => {
+            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            console.log(params)
+            let w = window.open('about:blank', 'print', params);
+
+            w.document.write(res.data);
+            w.document.close();
+
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setLoadingJobOrder', false);
+            return Promise.reject(err);
+        });
     }
 };
 

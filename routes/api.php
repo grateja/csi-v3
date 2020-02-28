@@ -373,6 +373,15 @@ Route::group(['prefix' => 'reports'], function () {
     Route::group(['prefix' => 'print'], function() {
         // /api/reports/print/pos-collections
         Route::get('pos-collections', 'ReportsController@printPosCollections');
+
+        // /api/reports/print/pos-transactions
+        Route::get('pos-transactions', 'ReportsController@printPosTransactions');
+
+        // /api/reports/print/rfid-transactions
+        Route::get('rfid-transactions', 'ReportsController@printRfidTransactions');
+
+        // /api/reports/print/rfid-load-transactions
+        Route::get('rfid-load-transactions', 'ReportsController@printRfidLoadTransactions');
     });
 
 });
