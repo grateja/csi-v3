@@ -68,8 +68,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
 
 
 // /api/sales-report
-
-Route::group(['prefix' => 'sales-report'], function() {
+Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function() {
     // /api/sales-report/{date}/summary
     Route::get('{date}/summary', 'SalesReportController@summary');
 
@@ -79,14 +78,6 @@ Route::group(['prefix' => 'sales-report'], function() {
     // /api/sales-report/{monthIndex}/{year}/pos-transactions
     Route::get('{monthIndex}/{year}/pos-transactions', 'SalesReportController@posTransactions');
 });
-
-
-// /api/products
-Route::group(['prefix' => 'products'], function() {
-    // /api/products
-    Route::get('/', 'ProductsController@index');
-});
-
 
 // /api/customers
 Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
@@ -117,8 +108,8 @@ Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
 
 // /api/products
 Route::group(['prefix' => 'products', 'middleware' => 'auth:api'], function() {
-    // /api/products/all
-    Route::get('/all', 'ProductsController@index');
+    // /api/products
+    Route::get('/', 'ProductsController@index');
 
     // /api/products/{id}
     Route::get('{id}', 'ProductsController@show');
@@ -287,7 +278,7 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
 });
 
 // /apo/pos-transactions
-Route::group(['prefix' => 'pos-transactions'], function () {
+Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], function () {
     // /api/pos-transactions/current-transaction/{customerId}
     Route::get('current-transaction/{customerId}', 'PosTransactionController@currentTransaction');
 
@@ -351,7 +342,7 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
 });
 
 // /api/transaction-remarks
-Route::group(['prefix' => 'transaction-remarks'], function() {
+Route::group(['prefix' => 'transaction-remarks', 'middleware' => 'auth:api'], function() {
     // /api/transaction-remarks/{transactionId}/remarks
     Route::get('{transactionId}/remarks', 'TransactionRemarksController@index');
 
@@ -364,7 +355,7 @@ Route::group(['prefix' => 'transaction-remarks'], function() {
 
 
 // /api/reports
-Route::group(['prefix' => 'reports'], function () {
+Route::group(['prefix' => 'reports', 'middleware' => 'auth:api'], function () {
     // /api/reports/excel
     Route::group(['prefix' => 'excel'], function () {
         // /api/reports/excel/pos-transactions
@@ -400,7 +391,7 @@ Route::group(['prefix' => 'reports'], function () {
 });
 
 // /api/payments
-Route::group(['prefix' => 'payments'], function() {
+Route::group(['prefix' => 'payments', 'middleware' => 'auth:api'], function() {
     // /api/payments/{transactionId}
     Route::get('{transactionId}', 'PaymentsController@transactionPayment');
 
@@ -435,7 +426,7 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
 });
 
 // /api/machine-usages
-Route::group(['prefix' => 'machine-usages'], function() {
+Route::group(['prefix' => 'machine-usages', 'middleware' => 'auth:api'], function() {
     // /api/machine-usages/{machineUsageId}/delete-usage
     Route::post('{machineUsageId}/delete-usage', 'MachineUsagesController@deleteUsage');
 });
@@ -451,7 +442,7 @@ Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
 });
 
 // /api/pending-services
-Route::group(['prefix' => 'pending-services'], function() {
+Route::group(['prefix' => 'pending-services', 'middleware' => 'auth:api'], function() {
     // /api/pending-services
     Route::get('', 'PendingServicesController@index');
 
@@ -472,7 +463,7 @@ Route::group(['prefix' => 'pending-services'], function() {
 });
 
 // /api/product-purchases
-Route::group(['prefix' => 'product-purchases'], function() {
+Route::group(['prefix' => 'product-purchases', 'middleware' => 'auth:api'], function() {
     // /api/product-purchases
     Route::get('', 'ProductPurchasesController@index');
 

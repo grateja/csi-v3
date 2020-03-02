@@ -150,7 +150,7 @@ export default {
                     serviceType: 'drying',
                     serviceId: dry.id
                 }).then((res, rej) => {
-                    this.washes = this.washes.filter(w => w.id != dry.id);
+                    this.dries = this.dries.filter(w => w.id != dry.id);
                 }).finally(() => {
                     Vue.set(dry, 'isDisposing', false);
                 })

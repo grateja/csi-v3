@@ -6,7 +6,6 @@
                     <v-flex xs6 sm4 md3 v-for="(link, i) in filterLinks" :key="i">
                         <v-card class="ma-2 tile" :color="link.color" @click="navigate(link.route)">
                             <v-card-text>
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempora quo nostrum dolores adipisci labore impedit debitis voluptas quia, voluptatem quas harum eaque laborum placeat vel dolorum aliquam quasi quod amet.
                                 <div class="title text-xs-center ma-2">{{link.text}}</div>
                             </v-card-text>
                         </v-card>
