@@ -70,7 +70,8 @@ export default {
             interval: null,
             componentKey: 1,
             loading: false,
-            timer: null
+            timer: null,
+            lastTimeStamp: null
         }
     },
     methods: {
@@ -106,18 +107,32 @@ export default {
             if(this.$refs.machines) {
                 axios.get('/api/machines').then((res, rej) => {
                     this.machines = res.data.result;
-                    this.startTimer();
-                }).catch(err => {
-                    setTimeout(this.startTimer(), 4000)
                 });
             }
         },
         startTimer() {
-            this.timer = setTimeout(this.getUpdate, 1000);
+            this.timer = setTimeout(this.check, 1000);
+        },
+        check() {
+            if(this.$refs.machines) {
+                axios.get('/checker/').then((res, rej)=> {
+                    this.lastTimeStamp = res.data;
+                    setTimeout(this.startTimer, 1000)
+                }).catch(err => {
+                    setTimeout(this.startTimer, 4000)
+                });
+            }
         }
     },
     created() {
         this.load();
+    },
+    watch: {
+        lastTimeStamp(val) {
+            if(val) {
+                this.getUpdate();
+            }
+        }
     }
 }
 </script>
