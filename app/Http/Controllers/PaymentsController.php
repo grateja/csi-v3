@@ -85,7 +85,7 @@ class PaymentsController extends Controller
                 }
 
                 $payment = TransactionPayment::create([
-                    'transaction_id' => $transaction->id,
+                    'id' => $transaction->id,
                     'customer_id' => $transaction->customer_id,
                     'date' => Carbon::now(),
                     'cash' => $request->cash,

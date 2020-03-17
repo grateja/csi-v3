@@ -40,6 +40,7 @@ class Customer extends Model
             $model->customerDries()->delete();
             $model->customerWashes()->delete();
             $model->rfidCards()->delete();
+            $model->transactions()->whereNull('date_paid')->delete();
         });
 
         parent::boot();

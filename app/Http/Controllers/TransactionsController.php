@@ -103,7 +103,7 @@ class TransactionsController extends Controller
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $result = Transaction::with(['payment' => function($query) {
-            $query->select('transaction_id', 'date');
+            $query->select('id', 'date');
         }])->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");

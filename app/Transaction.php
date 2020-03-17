@@ -41,7 +41,7 @@ class Transaction extends Model
     }
 
     public function payment() {
-        return $this->hasOne('App\TransactionPayment');
+        return $this->hasOne('App\TransactionPayment', 'id', 'id');
     }
 
     public function remarks() {

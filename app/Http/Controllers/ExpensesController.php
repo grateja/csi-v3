@@ -144,8 +144,14 @@ class ExpensesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function deleteExpense($expenseId)
     {
-        //
+        $expense = Expense::findOrFail($expenseId);
+        if($expense) {
+            $expense->delete();
+            return response()->json([
+                'expense' => $expense,
+            ]);
+        }
     }
 }

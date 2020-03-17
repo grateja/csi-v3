@@ -83,6 +83,10 @@ export default {
             activeRfidCard: null,
             headers: [
                 {
+                    text: '',
+                    sortable: false
+                },
+                {
                     text: 'Customer name',
                     sortable: false
                 },

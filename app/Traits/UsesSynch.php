@@ -13,5 +13,10 @@ trait UsesSynch {
             //     $model->{$model->getKeyName()} = (string) Str::uuid();
             // }
         });
+
+        static::deleting(function($model) {
+            $model->synched = null;
+            $model->save();
+        });
     }
 }

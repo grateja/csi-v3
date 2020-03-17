@@ -15,7 +15,7 @@ class CreateTransactionPaymentsTable extends Migration
     public function up()
     {
         Schema::create('transaction_payments', function (Blueprint $table) {
-            $table->uuid('transaction_id')->primary()->unique();
+            $table->uuid('id')->primary()->unique();
             $table->uuid('customer_id')->nullable();
             $table->timestamp('date')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->double('cash')->nullable()->default(0);
@@ -35,7 +35,7 @@ class CreateTransactionPaymentsTable extends Migration
             $table->timestamps();
             $table->timestamp('synched')->nullable();
 
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE');
+            $table->foreign('id')->references('id')->on('transactions')->onDelete('CASCADE');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('SET NULL');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
         });

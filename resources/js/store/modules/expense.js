@@ -47,7 +47,7 @@ const actions = {
         });
     },
     deleteExpense(context, expenseId) {
-        return axios.post(`/api/expenses/${expenseId}/delete-exppense`);
+        return axios.post(`/api/expenses/${expenseId}/delete`);
     }
 };
 

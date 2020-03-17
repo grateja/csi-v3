@@ -35,7 +35,7 @@
                     <v-btn icon small @click="editExpense(props.item)">
                         <v-icon small>edit</v-icon>
                     </v-btn>
-                    <v-btn icon small>
+                    <v-btn icon small @click="deleteExpense(props.item)" :loading="props.item.isDeleting">
                         <v-icon small>delete</v-icon>
                     </v-btn>
                 </td>
@@ -157,10 +157,10 @@ export default {
                 this.activeExpese.staff_name = data.expense.staff_name;
             }
         },
-        deletePurchase(item) {
-            if(confirm('Delete this purchase?')) {
+        deleteExpense(item) {
+            if(confirm('Delete this expense?')) {
                 Vue.set(item, 'isDeleting', true);
-                this.$store.dispatch('productpurchase/deleteProductPurchase', item.id).then((res, rej) => {
+                this.$store.dispatch('expense/deleteExpense', item.id).then((res, rej) => {
                     this.items = this.items.filter(i => i.id != item.id);
                 }).finally(() => {
                     Vue.set(item, 'isDeleting', false);

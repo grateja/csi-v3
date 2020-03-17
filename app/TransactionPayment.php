@@ -11,14 +11,14 @@ class TransactionPayment extends Model
 {
     use SoftDeletes, UsesUuid, UsesSynch;
 
-    protected $primaryKey = 'transaction_id';
+    // protected $primaryKey = 'transaction_id';
 
     public $appends = [
         'changeStr', 'discount_in_peso'
     ];
 
     protected $fillable = [
-        'transaction_id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid', 'synched',
+        'id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid', 'synched',
     ];
 
     public function user() {
@@ -26,7 +26,7 @@ class TransactionPayment extends Model
     }
 
     public function transaction() {
-        return $this->belongsTo('App\Transaction');
+        return $this->belongsTo('App\Transaction', 'id', 'id');
     }
 
     public function getChangeStrAttribute() {

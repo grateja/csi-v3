@@ -485,6 +485,9 @@ Route::group(['prefix' => 'expenses', 'middleware' => 'auth:api'], function() {
 
     // /api/expenses/{expenseId}/update
     Route::post('{expenseId}/update', 'ExpensesController@update');
+
+    // /api/expenses/{expenseId}/delete
+    Route::post('{expenseId}/delete', 'ExpensesController@deleteExpense');
 });
 
 
