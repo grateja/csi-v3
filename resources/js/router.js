@@ -9,6 +9,10 @@ const routes = [
         component: require('./views/auth/LoginPage.vue').default
     },
     {
+        path: '/client',
+        component: require('./views/client/Index.vue').default
+    },
+    {
         path: '/account',
         component: require('./views/account/Index.vue').default,
         meta: {

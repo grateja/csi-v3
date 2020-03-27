@@ -1,5 +1,6 @@
 <?php
 
+use App\Client;
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -37,5 +38,9 @@ class UsersSeeder extends Seeder
         \App\User::insert($users);
         User::where('email', 'admin@csi.com')->first()->assignRole(2);
         User::where('email', 'staff@csi.com')->first()->assignRole(3);
+        Client::create([
+            'user_id' => $id,
+            'shop_name' => 'Shopname',
+        ]);
     }
 }

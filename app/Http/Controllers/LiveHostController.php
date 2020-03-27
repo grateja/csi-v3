@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client as GuzzleHttpClient;
@@ -9,9 +10,13 @@ use Carbon\Carbon;
 
 class LiveHostController extends Controller
 {
-    public $shopId = 'f5f13ed0-6598-11ea-9e7b-04922614e2b1';
+    // public $shopId = 'f5f13ed0-6598-11ea-9e7b-04922614e2b1';
 
     public function update() {
+        if(!($client = $this->getClient())) {
+            return false;
+        }
+
         $tables = [
             'customers',
             'customer_dries',
@@ -42,7 +47,8 @@ class LiveHostController extends Controller
                 ->get();
         }
 
-        $response = $this->createRequest($collections);
+        $collections['client'] = $client;
+        $response = $this->createRequest($collections, $client['id']);
 
         if($response->getStatusCode() == 200) {
             $result = json_decode($response->getBody());
@@ -68,9 +74,23 @@ class LiveHostController extends Controller
         return $entities;
     }
 
-    private function createRequest($data) {
+    private function getClient() {
+        $client = Client::with('user')->first();
+        if($client == null) {
+            return false;
+        }
+        return [
+            'id' => $client->user_id,
+            'name' => $client->shop_name,
+            'contact_number' => $client->contact_number,
+            'email' => $client->user['email'],
+            'password' => $client->user['password'],
+        ];
+    }
+
+    private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
-        $response = $clientRequest->post('http://csi-v3-live/api/live/update/' . $this->shopId, [
+        $response = $clientRequest->post('http://csi-v3-live/api/live/update/' . $shopId, [
             'json' => $data,
             'headers' => [
                 'Content-Type' => 'application/json',

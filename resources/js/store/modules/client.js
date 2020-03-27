@@ -3,7 +3,8 @@ import FormHelper from '../../helpers/FormHelper.js';
 const state = {
     errors: FormHelper,
     isSaving: false,
-    isUpdating: false
+    isUpdating: false,
+    settingMachine: false
 };
 
 const mutations = {
@@ -12,6 +13,9 @@ const mutations = {
     },
     setUpdatingStatus(state, status) {
         state.isUpdating = status;
+    },
+    settingMachineStatus(state, status) {
+        state.settingMachine = status;
     },
     setErrors(state, errors) {
         state.errors.errors = errors;
@@ -22,10 +26,10 @@ const mutations = {
 };
 
 const actions = {
-    insertClient(context, data) {
+    insertUser(context, data) {
         context.commit('setSavingStatus', true);
         context.commit('clearErrors');
-        return axios.post('/api/clients/create', data.formData).then((res, rej) => {
+        return axios.post('/api/developer/create-user', data.formData).then((res, rej) => {
             context.commit('setSavingStatus', false);
             return res;
         }).catch(err => {
@@ -34,10 +38,10 @@ const actions = {
             return Promise.reject(err);
         });
     },
-    updateClient(context, data) {
+    updateUser(context, data) {
         context.commit('setSavingStatus', true);
         context.commit('clearErrors');
-        return axios.post(`/api/clients/${data.branchId}/update`, data.formData).then((res, rej) => {
+        return axios.post(`/api/developer/${data.userId}/update-user`, data.formData).then((res, rej) => {
             context.commit('setSavingStatus', false);
             return res;
         }).catch(err => {
@@ -46,10 +50,10 @@ const actions = {
             return Promise.reject(err);
         });
     },
-    updateClientDetails(context, data) {
+    setUpClient(context, data) {
         context.commit('setUpdatingStatus', true);
         context.commit('clearErrors');
-        return axios.post(`/api/clients/${data.clientId}/update-client-details`, data.formData).then((res, rej) => {
+        return axios.post(`/api/developer/setup-client`, data.formData).then((res, rej) => {
             context.commit('setUpdatingStatus', false);
             return res;
         }).catch(err => {
@@ -58,11 +62,15 @@ const actions = {
             return Promise.reject(err);
         });
     },
-    deleteClient(context, clientId) {
-        return axios.post(`/api/clients/${clientId}/delete-client`).then((res, rej) => {
+    setUpMachines(context, data) {
+        context.commit('settingMachineStatus', true);
+        context.commit('clearErrors');
+        return axios.post(`/api/developer/setup-machines`, data).then((res, rej) => {
+            context.commit('settingMachineStatus', false);
             return res;
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);
+            context.commit('settingMachineStatus', false);
             return Promise.reject(err);
         });
     }
@@ -77,6 +85,9 @@ const getters = {
     },
     isUpdating(state) {
         return state.isUpdating;
+    },
+    settingUpMachine(state) {
+        return state.settingMachine;
     }
 };
 

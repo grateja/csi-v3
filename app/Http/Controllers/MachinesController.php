@@ -153,7 +153,7 @@ class MachinesController extends Controller
 
                 return response()->json([
                     'errors' => [
-                        'message' => ['Cannot activate machine'],
+                        'message' => ['Cannot connect to ' . $machine->machine_name . ' (' . $machine->ip_address . ')'],
                         'machine' => $machine,
                         'output' => $output,
                     ]

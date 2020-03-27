@@ -13,6 +13,27 @@ use Illuminate\Http\Request;
 |
 */
 
+// /api/developer
+Route::group(['prefix' => 'developer'], function () {
+    // /api/developer/client
+    Route::get('client', 'ClientsController@index');
+
+    // /api/developer/create-user
+    Route::post('create-user', 'ClientsController@createUser');
+
+    // /api/developer/{userId}/update-user
+    Route::post('{userId}/update-user', 'ClientsController@updateUser');
+
+    // /api/developer/setup-client
+    Route::post('setup-client', 'ClientsController@setUpClient');
+
+    // /api/developer/setup-machines
+    Route::post('setup-machines', 'ClientsController@setUpMachines');
+
+    // /api/developer/reset
+    Route::post('reset', 'ClientsController@reset');
+});
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

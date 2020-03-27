@@ -138,6 +138,12 @@ export default {
                     color: '#ddfb83',
                     route: '/discounts'
                 },
+                {
+                    text: 'Client',
+                    icon: 'client',
+                    roles: ['developer'],
+                    route: '/client'
+                }
             ]
         }
     },
