@@ -18,4 +18,8 @@ class CustomerWash extends Model
     public function serviceTransactionItem() {
         return $this->belongsTo('App\ServiceTransactionItem');
     }
+
+    public function customer() {
+        return $this->belongsTo('App\Customer');
+    }
 }

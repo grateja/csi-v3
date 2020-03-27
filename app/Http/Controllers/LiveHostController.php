@@ -38,7 +38,7 @@ class LiveHostController extends Controller
             $collections[$table] = DB::table($table)
                 ->whereNull('synched')
                 ->orderByDesc('created_at')
-                ->limit(25)
+                ->limit(15)
                 ->get();
         }
 

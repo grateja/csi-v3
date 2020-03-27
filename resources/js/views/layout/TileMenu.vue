@@ -4,11 +4,14 @@
             <v-card v-if="!!user" color="transparent" flat>
                 <v-layout row wrap>
                     <v-flex xs6 sm4 md3 v-for="(link, i) in filterLinks" :key="i">
-                        <v-card class="ma-2 tile" :color="link.color" @click="navigate(link.route)">
-                            <v-card-text>
-                                <div class="title text-xs-center ma-2">{{link.text}}</div>
-                            </v-card-text>
-                        </v-card>
+                        <v-hover v-slot:default="{ hover }">
+                            <v-card :elevation="hover ? 12 : 0" class="ma-2 tile" :color="'#fbf9e9'" @click="navigate(link.route)">
+                                <v-img :src="`/img/icons/${link.icon}.png`" alt="" />
+                                <v-card-text>
+                                    <div class="title text-xs-center ma-2">{{link.text}}</div>
+                                </v-card-text>
+                            </v-card>
+                        </v-hover>
                     </v-flex>
                 </v-layout>
             </v-card>
@@ -25,112 +28,112 @@ export default {
             links: [
                 {
                     text: 'New transaction',
-                    icon: '',
+                    icon: 'new-transaction',
                     roles: ['staff', 'admin'],
                     color: '#33cbff',
                     route: '/new-transaction/services'
                 },
                 {
                     text: 'Remote panel',
-                    icon: '',
+                    icon: 'remote-panel',
                     roles: ['staff', 'admin'],
-                    color: '#ff93ef',
+                    color: '#fbf9e9',
                     route: '/remote-panel'
                 },
                 {
                     text: 'Sales report',
-                    icon: '',
+                    icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
                     route: '/sales-report/pos-transactions'
                 },
                 {
                     text: 'Transactions',
-                    icon: '',
+                    icon: 'transactions',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
                     route: '/transaction-reports/by-job-orders'
                 },
                 {
                     text: 'Unpaid Transactions',
-                    icon: '',
+                    icon: 'unpaid-transactions',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',
                     route: '/unpaid-transactions'
                 },
                 {
                     text: 'Pending services',
-                    icon: '',
+                    icon: 'pending-services',
                     roles: ['staff', 'admin'],
                     color: '#c4eabd',
                     route: '/pending-services'
                 },
                 {
                     text: 'Customers',
-                    icon: '',
+                    icon: 'customers',
                     roles: ['staff', 'admin'],
                     color: '#a1e6d9',
                     route: '/customers'
                 },
                 {
                     text: 'Users',
-                    icon: '',
+                    icon: 'users',
                     roles: ['admin'],
                     color: '#bcefe5',
                     route: '/users'
                 },
                 {
                     text: 'Product Purchases',
-                    icon: '',
+                    icon: 'product-purchases',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
                     route: '/product-purchases'
                 },
                 {
                     text: 'Expenses',
-                    icon: '',
+                    icon: 'expenses',
                     roles: ['staff', 'admin'],
                     color: '#95b9fb',
                     route: '/expenses'
                 },
                 {
                     text: 'Services',
-                    icon: '',
+                    icon: 'services',
                     roles: ['admin', 'staff'],
                     color: '#fbf783',
                     route: '/services/washing-services'
                 },
                 {
                     text: 'Products',
-                    icon: '',
+                    icon: 'products',
                     roles: ['admin', 'staff'],
                     color: '#f6f783',
                     route: '/products'
                 },
                 {
                     text: 'RFID',
-                    icon: '',
+                    icon: 'rfid',
                     roles: ['staff', 'admin'],
                     color: '#83fba8',
                     route: '/rfid/transactions'
                 },
                 {
                     text: 'Machines',
-                    icon: '',
+                    icon: 'machines',
                     roles: ['admin', 'staff'],
                     color: '#e4dfdd',
                     route: '/machines'
                 },
                 {
                     text: 'Loyalty points',
-                    icon: '',
+                    icon: 'loyalty-points',
                     roles: ['admin'],
                     color: '#def794',
                     route: '/loyalty-points'
                 },
                 {
                     text: 'Discounts',
-                    icon: '',
+                    icon: 'discounts',
                     roles: ['admin'],
                     color: '#ddfb83',
                     route: '/discounts'
