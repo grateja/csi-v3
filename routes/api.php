@@ -32,6 +32,9 @@ Route::group(['prefix' => 'developer'], function () {
 
     // /api/developer/reset
     Route::post('reset', 'ClientsController@reset');
+
+    // /api/developer/unsynch
+    Route::get('unsynch', 'ClientsController@unsynch');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -50,6 +53,11 @@ Route::group(['prefix' => 'reset'], function() {
     Route::get('machines', 'MachinesController@reset');
 });
 
+// /api/admin
+Route::group(['prefix' => 'admin', 'middleware' => ['auth:api', 'role:admin,developer']], function () {
+    // /api/admin/preferences/shop-details/{shopId}
+    Route::get('preferences/shop-details/{shopId}', 'ClientsController@edit');
+});
 
 // /api/account
 Route::group(['prefix' => 'account', 'middleware' => 'auth:api'], function() {

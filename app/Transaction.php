@@ -83,10 +83,12 @@ class Transaction extends Model
 
     public function attachJobOrder() {
         $jobOrder = JobOrderFormat::first();
-        if($jobOrder) {
-            $this->job_order = sprintf($jobOrder->format, $jobOrder->start_number);
-            $jobOrder->increment('start_number');
+        if(!$jobOrder) {
+            JobOrderFormat::create();
+            $jobOrder = JobOrderFormat::first();
         }
+        $this->job_order = sprintf($jobOrder->format, $jobOrder->start_number);
+        $jobOrder->increment('start_number');
     }
 
     public function totalPrice() {

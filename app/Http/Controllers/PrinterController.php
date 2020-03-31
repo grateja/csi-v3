@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use Illuminate\Http\Request;
 use App\Transaction;
 use Illuminate\Support\Carbon;
@@ -79,6 +80,7 @@ class PrinterController extends Controller
 
 
     public function claimStub($transactionId) {
+        $client = Client::firstOrFail();
         $transaction = Transaction::with('payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
 
         if(!$transaction->saved) {
@@ -90,6 +92,10 @@ class PrinterController extends Controller
         }
 
         $data = [
+            'shop_name' => $client->shop_name,
+            'shop_address' => $client->address,
+            'shop_email' => $client->shop_email,
+            'shop_number' => $client->shop_number,
             'job_order' => $transaction->job_order,
             'date' => Carbon::createFromDate($transaction->date)->format('M-d, Y h:i A'),
             'customer_name' => $transaction->customer->name,
@@ -101,6 +107,8 @@ class PrinterController extends Controller
     }
 
     public function jobOrder($transactionId) {
+        $client = Client::firstOrFail();
+
         $transaction = Transaction::with('user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
 
         if($transaction->date_paid == null) {
@@ -112,6 +120,10 @@ class PrinterController extends Controller
         }
 
         $data = [
+            'shop_name' => $client->shop_name,
+            'shop_address' => $client->address,
+            'shop_email' => $client->shop_email,
+            'shop_number' => $client->shop_number,
             'job_order' => $transaction->job_order,
             'date' => Carbon::createFromDate($transaction->date)->format('M-d, Y h:i A'),
             'customer_name' => $transaction->customer->name,
@@ -137,7 +149,26 @@ class PrinterController extends Controller
     }
 
     public function loadTransaction($transactionId) {
+        $client = Client::firstOrFail();
         $rfidLoadTransaction = RfidLoadTransaction::findOrFail($transactionId);
-        return view('printer.rfid-load-transaction', $rfidLoadTransaction);
+
+        $data = [
+            'shop_name' => $client->shop_name,
+            'shop_address' => $client->address,
+            'shop_email' => $client->shop_email,
+            'shop_number' => $client->shop_number,
+            'created_at' => $rfidLoadTransaction->created_at,
+            'customer_name' => $rfidLoadTransaction->customer_name,
+            'rfid' => $rfidLoadTransaction->rfid,
+            'amount' => $rfidLoadTransaction->amount,
+            'remaining_balance' => $rfidLoadTransaction->remaining_balance,
+            'current_balance' => $rfidLoadTransaction->current_balance,
+            'cash' => $rfidLoadTransaction->cash,
+            'change' => $rfidLoadTransaction->change,
+            'staff_name' => $rfidLoadTransaction->staff_name,
+            'remarks' => $rfidLoadTransaction->remarks,
+        ];
+
+        return view('printer.rfid-load-transaction', $data);
     }
 }

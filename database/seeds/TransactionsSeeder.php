@@ -28,7 +28,7 @@ class TransactionsSeeder extends Seeder
     public function run()
     {
         DB::transaction(function () {
-            for ($i=0; $i < 100; $i++) {
+            for ($i=0; $i < 5000; $i++) {
                 $date = Carbon::now()->subDay(rand(0, 90));
                 $customer = Customer::inRandomOrder()->first();
                 $user = User::inRandomOrder()->first();

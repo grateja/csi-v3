@@ -9,6 +9,10 @@
         <v-spacer></v-spacer>
 
         <template v-if="!!user">
+            <v-btn v-if="isOwner" @click="openShopPreferences = true">
+                <v-icon left>store</v-icon>
+                shop preferences
+            </v-btn>
             <v-btn to="/account">
                 <span>{{user.roles[0] | uppercase}}</span>
             </v-btn>
@@ -21,13 +25,24 @@
             <v-btn flat router to="/login">Login</v-btn>
         </template>
 
+        <shop-preferences-dialog v-model="openShopPreferences" />
     </v-toolbar>
 </template>
 <script>
+import ShopPreferencesDialog from './ShopPreferencesDialog.vue';
+
 export default {
+    components: {
+        ShopPreferencesDialog
+    },
+    data() {
+        return {
+            openShopPreferences: false
+        }
+    },
     methods: {
         logout() {
-            this.$store.dispatch('auth/logout').then((res, rej) => {
+            this.$store.dispatch('auth/logout').finally(() => {
                 this.$router.push('/login');
             });
         }
@@ -38,6 +53,12 @@ export default {
         },
         user() {
             return this.$store.getters.getCurrentUser;
+        },
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            if(user) {
+                return user.roles.some(r => r == 'admin');
+            }
         }
     }
 }

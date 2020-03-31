@@ -57,6 +57,31 @@ class ClientsController extends Controller
         ]);
     }
 
+    public function unsynch() {
+        return DB::transaction(function () {
+            TransactionRemarks::whereNotNull('synched')->update(['synched' => null]);
+            RfidCardTransaction::whereNotNull('synched')->update(['synched' => null]);
+
+            MachineRemarks::whereNotNull('synched')->update(['synched' => null]);
+            MachineUsage::whereNotNull('synched')->update(['synched' => null]);
+
+            ProductTransactionItem::whereNotNull('synched')->update(['synched' => null]);
+            ServiceTransactionItem::whereNotNull('synched')->update(['synched' => null]);
+            CustomerDry::whereNotNull('synched')->update(['synched' => null]);
+            CustomerWash::whereNotNull('synched')->update(['synched' => null]);
+            Expense::whereNotNull('synched')->update(['synched' => null]);
+            RfidLoadTransaction::whereNotNull('synched')->update(['synched' => null]);
+            RfidCard::whereNotNull('synched')->update(['synched' => null]);
+            TransactionPayment::whereNotNull('synched')->update(['synched' => null]);
+            Transaction::whereNotNull('synched')->update(['synched' => null]);
+            Machine::whereNotNull('synched')->update(['synched' => null]);
+            Customer::whereNotNull('synched')->update(['synched' => null]);
+
+            ProductPurchase::whereNotNull('synched')->update(['synched' => null]);
+            Product::whereNotNull('synched')->update(['synched' => null]);
+        });
+    }
+
     public function reset() {
         return DB::transaction(function () {
             TransactionRemarks::where(function($query){})->forceDelete();
@@ -269,9 +294,8 @@ class ClientsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($shopId)
     {
-        //
     }
 
     /**
@@ -282,7 +306,10 @@ class ClientsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $client = Client::firstOrFail();
+        return response()->json([
+            'client' => $client,
+        ]);
     }
 
     /**

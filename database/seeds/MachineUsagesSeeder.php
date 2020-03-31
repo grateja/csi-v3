@@ -20,7 +20,7 @@ class MachineUsagesSeeder extends Seeder
     public function run()
     {
         DB::transaction(function () {
-            for ($i=0; $i < 1000; $i++) {
+            for ($i=0; $i < 5000; $i++) {
                 $minutes = 0;
                 $price = 0;
 

@@ -42,8 +42,8 @@ class LiveHostController extends Controller
         foreach($tables as $table) {
             $collections[$table] = DB::table($table)
                 ->whereNull('synched')
-                ->orderByDesc('created_at')
-                ->limit(15)
+                ->orderBy('created_at')
+                ->limit(500)
                 ->get();
         }
 
