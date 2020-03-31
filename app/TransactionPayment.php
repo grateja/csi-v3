@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,5 +36,9 @@ class TransactionPayment extends Model
 
     public function getDiscountInPesoAttribute() {
         return $this->total_amount * $this->discount / 100;
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('transaction_payments', $this->id))->delay(5);
     }
 }

@@ -19,7 +19,7 @@ class UsersSeeder extends Seeder
             [
                 'id' => 'e026cf14-0093-4de3-8ab2-e13086acb7ac',
                 'name' => 'The Programmer',
-                'email' => 'developer@gmail.com',
+                'email' => 'developer@csi.com',
                 'password' => bcrypt('admin'),
             ],
             [

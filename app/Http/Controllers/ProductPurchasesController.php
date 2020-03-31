@@ -104,6 +104,9 @@ class ProductPurchasesController extends Controller
 
                 $product->increment('current_stock', $request->quantity);
 
+                $this->dispatch($product->queSynch());
+                $this->dispatch($prodcutPurchase->queSynch());
+
                 return response()->json([
                     'productPurchase' => $prodcutPurchase,
                 ]);
@@ -126,6 +129,8 @@ class ProductPurchasesController extends Controller
                     }
                 }
             }
+            $this->dispatch($product->queSynch());
+            $this->dispatch($prodcutPurchase->queSynch());
         });
     }
 }

@@ -3,13 +3,11 @@
         <v-card flat class="transparent" max-width="1024" style="margin: 10px auto;">
             <v-card v-if="!!user" color="transparent" flat>
                 <v-layout row wrap>
-                    <v-flex xs6 sm4 md3 v-for="(link, i) in filterLinks" :key="i">
+                    <v-flex xs4 sm3 md2 v-for="(link, i) in filterLinks" :key="i">
                         <v-hover v-slot:default="{ hover }">
                             <v-card :elevation="hover ? 12 : 0" class="ma-2 tile" :color="'#fbf9e9'" @click="navigate(link.route)">
                                 <v-img :src="`/img/icons/${link.icon}.png`" alt="" />
-                                <v-card-text>
-                                    <div class="title text-xs-center ma-2">{{link.text}}</div>
-                                </v-card-text>
+                                <div class="text-xs-center my-2">{{link.text}}</div>
                             </v-card>
                         </v-hover>
                     </v-flex>

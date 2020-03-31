@@ -79,6 +79,8 @@ class CustomersController extends Controller
                     'first_visit' => $request->firstVisit,
                 ]);
 
+                $this->dispatch($customer->queSynch());
+
                 return response()->json([
                     'customer' => $customer
                 ], 200);
@@ -108,6 +110,8 @@ class CustomersController extends Controller
                     'first_visit' => $request->firstVisit,
                 ]);
 
+                $this->dispatch($customer->queSynch());
+
                 return response()->json([
                     'customer' => $customer,
                 ], 200);
@@ -118,6 +122,7 @@ class CustomersController extends Controller
     public function deleteCustomer($customerId) {
         $customer = Customer::findOrFail($customerId);
         if($customer->delete()) {
+            $this->dispatch($customer->queSynch());
             return response()->json([
                 'customer' => $customer,
             ]);

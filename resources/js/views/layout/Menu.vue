@@ -1,23 +1,29 @@
 <template>
     <div>
         <flash-message />
-        <v-toolbar flat dark app color="red">
+        <v-toolbar flat dark app class="green lighten-1">
             <v-toolbar-side-icon v-if="!!user" @click="drawer = !drawer"></v-toolbar-side-icon>
 
             <v-toolbar-title v-if="!!user">
-                <v-progress-circular v-if="loadingBranch" indeterminate></v-progress-circular>
-                <span class="font-weight-light" v-else>
-                    {{branchName}}
-                </span>
+                <v-btn large to="/" flat class="ml-0 pl-0">
+                    <v-icon left large>apps</v-icon> MENU
+                </v-btn>
             </v-toolbar-title>
 
             <v-spacer></v-spacer>
 
             <template v-if="!!user">
-
-                <span>{{user.roles[0] | uppercase}}</span>
-                <v-btn flat fab small @click="logout" :loading="isLoggingOut">
-                    <v-icon>exit_to_app</v-icon>
+                <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 580">
+                    <v-icon :left="$vuetify.breakpoint.width > 580">store</v-icon>
+                    <span v-if="$vuetify.breakpoint.width > 580">
+                        shop preferences
+                    </span>
+                </v-btn>
+                <v-btn to="/account">
+                    <span>{{user.roles[0] | uppercase}}</span>
+                </v-btn>
+                <v-btn flat small @click="logout" :loading="isLoggingOut">
+                    Logout<v-icon right>close</v-icon>
                 </v-btn>
             </template>
 
@@ -99,219 +105,143 @@
         </v-list>
 
         </v-navigation-drawer>
+        <shop-preferences-dialog v-model="openShopPreferences" />
     </div>
 </template>
 
 <script>
 import FlashMessage from './FlashMessage.vue';
+import ShopPreferencesDialog from './ShopPreferencesDialog.vue';
 export default {
     components: {
-        FlashMessage
+        FlashMessage,
+        ShopPreferencesDialog
     },
     data() {
         return {
             drawer: true,
             mini: false,
             needsToHide: true,
+            openShopPreferences: false,
             links: [
                 {
-                    to: '/dashboard',
-                    icon: 'dashboard',
-                    text: 'Dashboard',
-                    roles: ['admin']
-                },
-                {
-                    to: '/pos/products',
-                    icon: 'assessment',
-                    text: 'POS',
-                    roles: ['staff', 'oic']
-                },
-                {
-                    to: '/remote-activation/remote-panel',
-                    icon: 'settings_remote',
-                    text: 'Remote activation',
-                    roles: ['staff', 'oic']
-                },
-                {
-                    to: '/reports',
-                    icon: 'local_printshop',
-                    text: 'Reports',
-                    roles: ['*', '!developer'],
-                    children: [
-                        {
-                            to: '/reports/transactions/pos-transactions',
-                            icon: 'compare_arrows',
-                            text: 'Transactions',
-                            roles: ['*']
-                        },
-                        {
-                            to: '/reports/inventories',
-                            icon: 'dashboard',
-                            text: 'Inventories',
-                            roles: ['*']
-                        },
-                        {
-                            to: '/reports/purchases',
-                            icon: 'shopping_cart',
-                            text: 'Purchases',
-                            roles: ['admin', 'oic', 'staff']
-                        },
-                        {
-                            to: '/reports/trashed/transactions',
-                            icon: 'delete_sweep',
-                            text: 'Trashed',
-                            roles: ['admin']
-                        }
-                    ]
-                },
-                {
-                    to: '/people',
-                    icon: 'people',
-                    text: 'People',
-                    roles: ['*', '!developer'],
-                    children: [
-                        {
-                            to: '/people/customers',
-                            icon: 'people_outline',
-                            text: 'Customers',
-                            roles: ['*'],
-                        },
-                        {
-                            to: '/people/users',
-                            icon: 'supervisor_account',
-                            text: 'Users',
-                            roles: ['admin', 'oic']
-                        }
-                    ]
-                },
-                {
-                    to: '/expenses',
-                    icon: 'account_balance_wallet',
-                    text: 'Expenses',
-                    roles: ['admin', 'oic'],
-                    children: [
-                        {
-                            to: '/expenses/expense-list',
-                            icon: 'assignment',
-                            text: 'Expenses list',
-                            roles: ['*']
-                        }
-                    ]
-                },
-                {
-                    to: '/items',
-                    icon: 'assignment',
-                    text: 'Items',
-                    roles: ['*', '!developer'],
-                    children: [
-                        {
-                            to: '/items/product-list',
-                            icon: 'assignment',
-                            text: 'Product list',
-                            roles: ['*'],
-                            btn: {
-                                to: '/items/product/add',
-                                text: 'Add',
-                                icon: 'add'
-                            }
-                        },
-                        {
-                            to: '/items/service-list',
-                            icon: 'work',
-                            text: 'Services',
-                            roles: ['*'],
-                            btn: {
-                                to: '/items/services/add',
-                                text: 'Add',
-                                icon: 'add'
-                            }
-                        }
-                    ]
-                },
-                // {
-                //     to: '/developer',
-                //     icon: 'face',
-                //     text: 'developer',
-                //     roles: ['developer'],
-                //     children: [
-                //         {
-                //             to: '/developer/clients',
-                //             icon: 'recent_actors',
-                //             text: 'Clients',
-                //             roles: ['developer'],
-                //             btn: {
-                //                 to: '/developer/clients/add',
-                //                 text: 'Add new client',
-                //                 icon: 'add'
-                //             }
-                //         }
-                //     ]
-                // },
-                {
-                    to: '/rfid',
-                    icon: 'credit_card',
-                    text: 'RFID',
-                    roles: ['!developer', '*'],
-                    children: [
-                        {
-                            to: '/rfid/service-prices',
-                            icon: '',
-                            text: 'Service prices',
-                            roles: ['!developer', '*']
-                        },
-                        {
-                            to: '/rfid/cards/all',
-                            icon: '',
-                            text: 'RFID cards',
-                            roles: ['!developer', '*']
-                        },
-                        {
-                            to: '/rfid/transactions/services',
-                            icon: 'compare_arrows',
-                            text: 'Transactions',
-                            roles: ['!developer', '*']
-                        },
-                        {
-                            to: '/rfid/transactions/top-up',
-                            icon: 'compare_arrows',
-                            text: 'Top ups',
-                            roles: ['!developer', '*']
-                        }
-                    ]
-                },
-                {
-                    to: '/loyalty',
+                    text: 'Clients',
                     icon: '',
-                    text: 'Loyalty',
-                    roles: ['!developer', 'admin'],
-                    children: [
-                        {
-                            to: '/loyalty/discounts',
-                            text: 'Discounts',
-                            icon: '',
-                            roles: ['admin']
-                        },
-                        {
-                            to: '/loyalty/points',
-                            text: 'Points',
-                            icon: '',
-                            roles: ['admin']
-                        }
-                    ]
+                    roles: ['developer'],
+                    color: '#a7a1e6',
+                    to: '/clients'
                 },
                 {
-                    to: '/preferences',
-                    icon: 'settings',
-                    text: 'Preferences',
-                    roles: ['!developer', 'admin'],
-                    children: [
-                        {
-                            to: '/preferences/job-order',
-                            text: 'Job order',
-                            icon: 'receipt',
-                            roles: ['admin']
-                        }
-                    ]
+                    text: 'New transaction',
+                    icon: 'computer',
+                    roles: ['admin', 'staff'],
+                    color: '#a7a1e6',
+                    to: '/new-transaction/services'
+                },
+                {
+                    text: 'Remote panel',
+                    icon: 'cast_connected',
+                    roles: ['admin', 'staff'],
+                    color: '#a7a1e6',
+                    to: '/remote-panel'
+                },
+                {
+                    text: 'Sales report',
+                    icon: 'event_note',
+                    roles: ['admin'],
+                    color: '#a7a1e6',
+                    to: '/sales-report/pos-transactions'
+                },
+                {
+                    text: 'Transactions',
+                    icon: 'receipt',
+                    roles: ['staff', 'admin'],
+                    color: '#cfe6a1',
+                    to: '/transaction-reports/by-job-orders'
+                },
+                {
+                    text: 'Unpaid Transactions',
+                    icon: 'announcement',
+                    roles: ['staff', 'admin'],
+                    color: '#ace6a1',
+                    to: '/unpaid-transactions'
+                },
+                {
+                    text: 'Pending services',
+                    icon: 'format_list_numbered',
+                    roles: ['staff', 'admin'],
+                    color: '#ace6a1',
+                    to: '/pending-services'
+                },
+                {
+                    text: 'Customers',
+                    icon: 'people',
+                    roles: ['staff', 'admin'],
+                    color: '#a1e6d9',
+                    to: '/customers'
+                },
+                {
+                    text: 'Users',
+                    icon: 'people',
+                    roles: ['admin'],
+                    color: '#a1e6d9',
+                    to: '/users'
+                },
+                {
+                    text: 'Services',
+                    icon: 'toc',
+                    roles: ['staff', 'admin'],
+                    color: '#95b9fb',
+                    to: '/services/washing-services'
+                },
+                {
+                    text: 'Products',
+                    icon: 'list_alt',
+                    roles: ['staff', 'admin'],
+                    color: '#83adfb',
+                    to: '/products'
+                },
+                {
+                    text: 'Product Purchases',
+                    icon: 'playlist_add',
+                    roles: ['staff', 'admin'],
+                    color: '#83adfb',
+                    to: '/product-purchases'
+                },
+                {
+                    text: 'Expenses',
+                    icon: 'toc',
+                    roles: ['staff', 'admin'],
+                    color: '#95b9fb',
+                    to: '/expenses'
+                },
+                {
+                    text: 'RFID',
+                    icon: 'phonelink_ring',
+                    roles: ['staff', 'admin'],
+                    color: '#83fba8',
+                    to: '/rfid/transactions'
+                },
+                {
+                    text: 'Machines',
+                    icon: 'local_laundry_service',
+                    roles: ['admin', 'staff'],
+                    color: '#e4dfdd',
+                    to: '/machines'
+                },
+                {
+                    text: 'Loyalty points',
+                    icon: 'star',
+                    roles: ['admin'],
+                    color: '#e4dfdd',
+                    to: '/loyalty-points'
+                },
+                {
+                    text: 'Discounts',
+                    icon: 'loyalty',
+                    roles: ['admin'],
+                    color: '#e4dfdd',
+                    to: '/discounts'
                 }
             ]
         }
@@ -345,16 +275,25 @@ export default {
         isLoggingOut() {
             return this.$store.getters['auth/getLoggingOut'];
         },
-        branchName() {
-            let activeBranch = this.$store.getters['getActiveBranch'];
-            if(activeBranch != null) {
-                return activeBranch.name;
-            } else if(!this.loadingBranch) {
-                return 'Branch not set';
+        shopName() {
+            if(this.user) {
+                return this.user.name;
             }
+            // let activeBranch = this.$store.getters['getActiveBranch'];
+            // if(activeBranch != null) {
+            //     return activeBranch.name;
+            // } else if(!this.loadingBranch) {
+            //     return 'Branch not set';
+            // }
         },
         loadingBranch() {
             return this.$store.getters['branch/isSelectingBranch'];
+        },
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            if(user) {
+                return user.roles.some(r => r == 'admin');
+            }
         }
     },
     methods: {

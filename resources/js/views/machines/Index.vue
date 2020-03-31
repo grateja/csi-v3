@@ -36,7 +36,7 @@
                 </tr>
             </template>
         </v-data-table>
-        <machine-usages :machine="activeMachine" v-model="openMachineDialog" />
+        <machine-usages :machine="activeMachine" v-model="openMachineDialog" :activeDate="date" />
         <machine-settings :machine="activeMachine" v-model="openMachineSettings" @save="updateMachines" />
     </v-container>
 </template>

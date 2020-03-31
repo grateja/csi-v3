@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UsesUuid;
@@ -17,5 +18,9 @@ class Expense extends Model
 
     public function user() {
         return $this->belongsTo('App\User');
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('expenses', $this->id))->delay(5);
     }
 }

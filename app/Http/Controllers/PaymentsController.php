@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Discount;
+use App\Jobs\SendTransaction;
 use App\LoyaltyPoint;
 use App\RfidCard;
 use App\Transaction;
@@ -104,6 +105,8 @@ class PaymentsController extends Controller
                 $transaction->update([
                     'date_paid' => Carbon::now(),
                 ]);
+
+                $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
                 return response()->json([
                     'transaction' => $transaction,

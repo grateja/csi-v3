@@ -31,6 +31,8 @@ class TransactionRemarksController extends Controller
                 'added_by' => auth('api')->user()->name,
             ]);
 
+            $this->dispatch($remarks->queSynch());
+
             return response()->json([
                 'remarks' => $remarks,
             ]);
@@ -40,6 +42,7 @@ class TransactionRemarksController extends Controller
     public function deleteRemarks($remarksId) {
         $remarks = TransactionRemarks::findOrFail($remarksId);
         if($remarks->delete()) {
+            $this->dispatch($remarks->queSynch());
             return response()->json([
                 'remarks' => $remarks
             ]);

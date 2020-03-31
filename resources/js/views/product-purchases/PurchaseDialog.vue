@@ -50,7 +50,7 @@ export default {
             this.formData.id = null;
             this.cancelSearch();
             this.cancelSource = axios.CancelToken.source();
-            axios.get('/api/products/all', {
+            axios.get('/api/products', {
                 params: {
                     keyword: e.target.value
                 },

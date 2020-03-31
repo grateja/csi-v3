@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Jobs\SendTransaction;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
@@ -70,19 +71,33 @@ class TransactionsController extends Controller
         }
 
         return response()->json([
-            'result' => $result->paginate(),
-            'summary' => [
-                'total_items' => $result->count(),
-                'total_price' => $result->sum('total_price'),
-            ]
+            'result' => $result->paginate(10),
+            'summary' => $this->unpaidSummary($request)
         ]);
+    }
+
+    private function unpaidSummary($request) {
+        $result = Transaction::where(function($query) use ($request) {
+            $query->where('customer_name', 'like', "%$request->keyword%")
+                ->orWhere('job_order', 'like', "%$request->keyword%");
+        })
+            ->where('saved', true)
+            ->whereDoesntHave('payment');
+
+        if($request->date) {
+            $result = $result->whereDate('date', $request->date);
+        }
+        return [
+            'total_items' => $result->count(),
+            'total_price' => $result->sum('total_price'),
+        ];
     }
 
     private function jobOrderSummary($request) {
         $result = Transaction::where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
-        })->whereNotNull('saved');
+        })->where('saved', true);
 
         if($request->date) {
             $result = $result->whereDate('date', $request->date);
@@ -107,7 +122,7 @@ class TransactionsController extends Controller
         }])->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
-        })->whereNotNull('saved');
+        })->where('saved', true);
 
         $result = $result->orderBy($sortBy, $order);
 
@@ -212,6 +227,7 @@ class TransactionsController extends Controller
         $transaction = Transaction::findOrFail($transactionId);
 
         if($transaction->delete()) {
+            $this->dispatch((new SendTransaction($transactionId))->delay(5));
             return response()->json([
                 'transaction' => $transaction,
             ]);

@@ -36,6 +36,8 @@ class ProductsController extends Controller
                     'img_path' => $request->imgPath,
                 ]);
 
+                $this->dispatch($product->queSynch());
+
                 return response()->json([
                     'product' => $product,
                 ], 200);
@@ -86,6 +88,9 @@ class ProductsController extends Controller
         $product = Product::findOrFail($id);
         if($product->delete()) {
             File::delete(public_path() . $product->img_path);
+
+            $this->dispatch($product->queSynch());
+
             return response()->json([
                 'product' => $product,
             ]);
@@ -110,6 +115,8 @@ class ProductsController extends Controller
                     'current_stock' => $request->currentStock,
                     'img_path' => $request->imgPath,
                 ]);
+
+                $this->dispatch($product->queSynch());
 
                 return response()->json([
                     'product' => $product,
@@ -145,6 +152,9 @@ class ProductsController extends Controller
                 'remarks' => $request->remarks,
                 'user_id' => auth('api')->id(),
             ]);
+
+            $this->dispatch($product->queSynch());
+            $this->dispatch($productPurchase->queSynch());
 
             return response()->json([
                 'branchProduct' => $product->fresh(),

@@ -50,7 +50,7 @@ class TapCardController extends Controller
 
         if($machine->is_running && $machine->user_name != $rfidCard->owner_name) {
             return response()->json([
-                'message' => 'Machine is already in use by a different customer: ' . $machine->customer->name,
+                'message' => 'Machine is already in use by a different customer: ' . $machine->user_name,
             ], 422);
         }
 
@@ -66,6 +66,12 @@ class TapCardController extends Controller
                 }
 
                 $rfidCard->decrement('balance', $rfidCard->card_type == 'c' ? $machine->price : 0);
+
+                $this->dispatch($machine->queSynch());
+                $this->dispatch($rfidCard->queSynch());
+                $this->dispatch($machine->machineUsage->queSynch());
+                $this->dispatch($machine->rfidCardTransaction->queSynch());
+
                 return response()->json([
                     'rfid' => $rfidCard->rfid,
                     'balance' => $rfidCard->balance,

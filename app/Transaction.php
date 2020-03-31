@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -45,7 +46,7 @@ class Transaction extends Model
     }
 
     public function remarks() {
-        return $this->hasMany('App\TransactionRemarks');
+        return $this->hasMany('App\TransactionRemarks')->orderBy('created_at');
     }
 
     public function posServiceItems() {
@@ -160,5 +161,9 @@ class Transaction extends Model
         });
 
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('transactions', $this->id))->delay(5);
     }
 }

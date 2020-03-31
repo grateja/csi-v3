@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,5 +22,9 @@ class ProductPurchase extends Model
 
     public function user() {
         return $this->belongsTo('App\User');
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('product_purchases', $this->id))->delay(5);
     }
 }

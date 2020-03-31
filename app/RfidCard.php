@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -51,5 +52,9 @@ class RfidCard extends Model
             ]);
         });
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('rfid_cards', $this->id))->delay(5);
     }
 }

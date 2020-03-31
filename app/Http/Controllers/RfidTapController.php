@@ -64,6 +64,7 @@ class RfidTapController extends Controller
         $rfidCardTransaction =RfidCardTransaction::findOrFail($transactionId);
 
         if($rfidCardTransaction->delete()) {
+            $this->dispatch($rfidCardTransaction->queSynch());
             return response()->json([
                 'rfidCardTransaction' => $rfidCardTransaction,
             ]);

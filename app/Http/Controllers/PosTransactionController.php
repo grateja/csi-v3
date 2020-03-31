@@ -7,6 +7,7 @@ use App\CustomerDry;
 use App\CustomerWash;
 use App\DryingService;
 use App\FullService;
+use App\Jobs\SendTransaction;
 use App\OtherService;
 use App\Product;
 use App\ProductTransactionItem;
@@ -123,6 +124,7 @@ class PosTransactionController extends Controller
                 $transaction->refreshAll();
             }
 
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
             return response()->json([
                 'transaction' => $transaction,
@@ -183,6 +185,8 @@ class PosTransactionController extends Controller
                 $transaction->refreshAll();
             }
 
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+            $this->dispatch($product->queSynch());
 
             return response()->json([
                 'transaction' => $transaction,
@@ -209,6 +213,9 @@ class PosTransactionController extends Controller
                 'saved' => false,
             ]);
 
+            $this->dispatch((new SendTransaction($product->transaction_id))->delay(5));
+            $this->dispatch($product->queSynch());
+
             return response()->json([
                 'productItem' => $productItem
             ]);
@@ -228,6 +235,7 @@ class PosTransactionController extends Controller
                 'saved' => true,
                 'total_price' => $transaction->totalPrice(),
             ]);
+
             // $transaction->saved = Carbon::now();
             // $transaction->save();
 
@@ -346,6 +354,7 @@ class PosTransactionController extends Controller
                 $transaction->refreshAll();
             }
 
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
             return response()->json([
                 'transaction' => $transaction,

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -21,5 +22,9 @@ class CustomerWash extends Model
 
     public function customer() {
         return $this->belongsTo('App\Customer');
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('customer_washes', $this->id))->delay(5);
     }
 }

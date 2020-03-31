@@ -9,9 +9,11 @@
         <v-spacer></v-spacer>
 
         <template v-if="!!user">
-            <v-btn v-if="isOwner" @click="openShopPreferences = true">
-                <v-icon left>store</v-icon>
-                shop preferences
+            <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 580">
+                <v-icon :left="$vuetify.breakpoint.width > 580">store</v-icon>
+                <span v-if="$vuetify.breakpoint.width > 580">
+                    shop preferences
+                </span>
             </v-btn>
             <v-btn to="/account">
                 <span>{{user.roles[0] | uppercase}}</span>

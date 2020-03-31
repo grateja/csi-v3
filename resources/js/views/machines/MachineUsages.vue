@@ -36,11 +36,11 @@ export default {
         DateNavigator
     },
     props: [
-        'value', 'machine'
+        'value', 'machine', 'activeDate'
     ],
     data() {
         return {
-            date: moment().format('YYYY-MM-DD'),
+            date: null,
             loading: false,
             items: [],
             headers: [
@@ -109,6 +109,7 @@ export default {
     },
     watch: {
         date(val) {
+            console.log(val);
             if(val && this.machine) {
                 this.load();
             }
@@ -118,6 +119,17 @@ export default {
                 this.date = moment().format('YYYY-MM-DD');
                 this.load();
             }
+        },
+        value(val) {
+            if(val) {
+                let date = moment(this.activeDate);
+                if(date.isValid()) {
+                    this.date = date.format('YYYY-MM-DD');
+                }
+            }
+        },
+        activeDate(val) {
+            console.log(val);
         }
     }
 }

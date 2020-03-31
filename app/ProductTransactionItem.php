@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -21,5 +22,9 @@ class ProductTransactionItem extends Model
 
     public function product() {
         return $this->belongsTo('App\Product');
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('product_transaction_items', $this->id))->delay(5);
     }
 }

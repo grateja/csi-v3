@@ -45,6 +45,7 @@ class MachinesController extends Controller
         return DB::transaction(function () use ($request) {
             $customerWash = null;
             $customerDry = null;
+            $avWash = null;
             $totalMinutes = 0;
             $customer = Customer::findOrFail($request->customerId);
             $machine = Machine::findOrFail($request->machineId);
@@ -74,6 +75,8 @@ class MachinesController extends Controller
                     'staff_name' => auth('api')->user()->name,
                 ]);
 
+                $avWash = $customerWash;
+
             } else if($request->serviceType == 'drying') {
                 if($machine->is_running && $customer->name != $machine->user_name) {
                     return response()->json([
@@ -97,6 +100,9 @@ class MachinesController extends Controller
                     'used' => Carbon::now()->toDateTimeString(),
                     'staff_name' => auth('api')->user()->name,
                 ]);
+
+                $avWash = $customerDry;
+
             } else {
                 return response()->json([
                     'errors' => [
@@ -128,7 +134,7 @@ class MachinesController extends Controller
                     'customer_id' => $customer->id,
                 ]);
 
-                MachineUsage::create([
+                $machineUsage = MachineUsage::create([
                     'machine_id' => $machine->id,
                     'customer_name' => $customer->name,
                     'minutes' => $totalMinutes,
@@ -141,6 +147,12 @@ class MachinesController extends Controller
 
             if($output) {
                 // DB::rollBack();
+
+                $this->dispatch($machine->queSynch());
+                $this->dispatch($machineUsage->queSynch());
+                $this->dispatch($avWash->queSynch());
+
+
                 return response()->json([
                     'machine' => $machine->fresh('customer'),
                     'customerWash' => $customerWash,
@@ -184,6 +196,9 @@ class MachinesController extends Controller
                     'remarks' => $machine->customer->name . '(Force Stopped)',
                     'customer_id' => null,
                 ]);
+
+                $this->dispatch($machine->queSynch());
+                $this->dispatch($machineRemarks->queSynch());
 
                 return response()->json([
                     'machine' => $machine,
@@ -250,6 +265,8 @@ class MachinesController extends Controller
                     ]);
                     $result = $machine;
                 }
+                $this->dispatch($machine->queSynch());
+
                 return response()->json([
                     'result' => $result,
                 ]);

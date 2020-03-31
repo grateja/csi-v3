@@ -6,6 +6,7 @@ use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\UsesUuid;
+use App\Jobs\AutoSynch;
 
 class Customer extends Model
 {
@@ -44,5 +45,9 @@ class Customer extends Model
         });
 
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('customers', $this->id))->delay(5);
     }
 }

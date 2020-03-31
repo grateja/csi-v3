@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -63,5 +64,9 @@ class ServiceTransactionItem extends Model
             $model->customerWash()->delete();
         });
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('service_transaction_items', $this->id))->delay(5);
     }
 }

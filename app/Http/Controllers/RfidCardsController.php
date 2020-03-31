@@ -109,6 +109,9 @@ class RfidCardsController extends Controller
 
                 $rfidCard->increment('balance', $request->amount);
 
+                $this->dispatch($rfidCard->queSynch());
+                $this->dispatch($rfidLoadTransaction->queSynch());
+
                 return response()->json([
                     'rfidCard' => $rfidCard,
                     'rfidLoadTransaction' => $rfidLoadTransaction,
@@ -120,6 +123,7 @@ class RfidCardsController extends Controller
     public function deleteCard($rfidCardId) {
         $rfidCard = RfidCard::findOrFail($rfidCardId);
         if($rfidCard->delete()) {
+            $this->dispatch($rfidCard->queSynch());
             return response()->json([
                 'rfidCard' => $rfidCard,
             ]);
@@ -161,6 +165,7 @@ class RfidCardsController extends Controller
                 ]);
 
                 UnregisteredCard::where('rfid', $request->rfid)->delete();
+                $this->dispatch($rfidCard->queSynch());
 
                 $rfidCard = [
                     'fullname' => $rfidCard->ownerName,
@@ -237,6 +242,8 @@ class RfidCardsController extends Controller
                 $rfidCard->update([
                     'rfid' => $request->rfid,
                 ]);
+
+                $this->dispatch($rfidCard->queSynch());
 
                 return response()->json([
                     'rfidCard' => $rfidCard->fresh('customer', 'user')

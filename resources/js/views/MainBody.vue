@@ -1,25 +1,33 @@
 <template>
-    <div>
+    <!-- <div>
         <v-content>
             <toolbar />
-
-            <!-- <breadcrumbs></breadcrumbs> -->
             <v-progress-linear v-if="isCheckingUser" indeterminate></v-progress-linear>
             <router-view v-else />
             <flash-message />
+        </v-content>
+    </div> -->
+    <div>
+        <menus />
+        <v-content>
+            <!-- <breadcrumbs></breadcrumbs> -->
+            <v-progress-linear v-if="isCheckingUser" indeterminate></v-progress-linear>
+            <router-view v-else />
         </v-content>
     </div>
 </template>
 
 <script>
-import Toolbar from './layout/Toolbar.vue';
-import Breadcrumbs from './layout/Breadcrumbs.vue';
-import FlashMessage from './layout/FlashMessage';
+import Menus from './layout/Menu.vue';
+//import Toolbar from './layout/Toolbar.vue';
+//import Breadcrumbs from './layout/Breadcrumbs.vue';
+//import FlashMessage from './layout/FlashMessage';
 export default {
     components: {
-        Breadcrumbs,
-        Toolbar,
-        FlashMessage
+        Menus//,
+        //Breadcrumbs,
+        //Toolbar,
+        //FlashMessage
     },
     computed: {
         isCheckingUser() {

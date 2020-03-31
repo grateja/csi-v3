@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -146,7 +147,7 @@ class Machine extends Model
                 'price' => $price,
             ]);
 
-            RfidCardTransaction::create([
+            $rfidCardTransaction = RfidCardTransaction::create([
                 'rfid' => $rfidCard->rfid,
                 'machine_name' => $this->machine_name,
                 'owner_name' => $rfidCard->owner_name,
@@ -167,6 +168,12 @@ class Machine extends Model
 
         $this['price'] = $price;
         $this['minutes'] = $minutes;
+        $this['machineUsage'] = $machineUsage;
+        $this['rfidCardTransaction'] = $rfidCardTransaction;
         return $this;
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('machines', $this->id))->delay(5);
     }
 }

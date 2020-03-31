@@ -34,7 +34,7 @@ class ExpensesController extends Controller
         });
 
         if($request->date) {
-            $result = $result->whereDate('transactions.saved', $request->date);
+            $result = $result->whereDate('date', $request->date);
         }
 
         $result = $result->orderBy($sortBy, $order);
@@ -76,6 +76,8 @@ class ExpensesController extends Controller
                     'amount' => $request->amount,
                     'staff_name' => auth('api')->user()->name,
                 ]);
+
+                $this->dispatch($expense->queSynch());
 
                 return response()->json([
                     'expense' => $expense,
@@ -131,6 +133,8 @@ class ExpensesController extends Controller
                     'staff_name' => auth('api')->user()->name,
                 ]);
 
+                $this->dispatch($expense->queSynch());
+
                 return response()->json([
                     'expense' => $expense,
                 ], 200);
@@ -149,6 +153,8 @@ class ExpensesController extends Controller
         $expense = Expense::findOrFail($expenseId);
         if($expense) {
             $expense->delete();
+            $this->dispatch($expense->queSynch());
+
             return response()->json([
                 'expense' => $expense,
             ]);

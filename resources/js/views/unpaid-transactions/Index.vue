@@ -24,6 +24,7 @@
 
         <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
             <template v-slot:items="props">
+                <td>{{ props.index + 1 }}</td>
                 <td>
                     <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)">
                         {{ props.item.job_order }}
@@ -43,6 +44,7 @@
                 </tr>
             </template>
         </v-data-table>
+        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
         <transaction-dialog :transactionId="transactionId" v-model="openTransactionDialog" @savePayment="closePayment" />
     </v-container>
 </template>
@@ -64,10 +66,15 @@ export default {
             sortBy: 'job_order',
             orderBy: 'asc',
             page: 1,
+            reset: false,
             loading: false,
             transactionId: null,
             openTransactionDialog: false,
             headers: [
+                {
+                    text: '',
+                    sortable: false
+                },
                 {
                     text: 'Job order',
                     sortable: false
@@ -90,6 +97,7 @@ export default {
     methods: {
         filter() {
             this.page = 1;
+            this.reset = true;
             this.load();
         },
         load() {
@@ -106,8 +114,19 @@ export default {
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
-                this.items = res.data.result.data;
+                if(this.reset) {
+                    this.items = res.data.result.data;
+                } else {
+                    this.items = [...this.items, ...res.data.result.data];
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 10);
+                }
                 this.summary = res.data.summary;
+                this.reset = false;
             }).finally(() => {
                 this.loading = false;
             });
@@ -118,6 +137,10 @@ export default {
         },
         closePayment(transaction) {
             this.items = this.items.filter(t => t.id != transaction.id);
+        },
+        loadMore() {
+            this.page += 1;
+            this.load();
         },
         cancelSearch() {
             if(this.cancelSource) {

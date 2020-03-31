@@ -7,7 +7,7 @@
             Create new customer
         </v-btn>
         <form @submit.prevent="filter">
-            <v-text-field v-model="keyword" label="Search" append-icon="search" @input="filter"></v-text-field>
+            <v-text-field outline v-model="keyword" label="Search" append-icon="search" @input="filter"></v-text-field>
         </form>
 
 

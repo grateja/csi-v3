@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\CustomerDry;
 use App\CustomerWash;
+use App\Jobs\SendTransaction;
 use App\ServiceTransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,7 @@ class ServiceTransactionsController extends Controller
                     'saved' => false,
                 ]);
 
+                $this->dispatch((new SendTransaction($serviceTransactionItem->transaction_id))->delay(5));
 
                 return response()->json([
                     'message' => 'Item deleted successfully',

@@ -13,6 +13,7 @@ class LiveHostController extends Controller
     // public $shopId = 'f5f13ed0-6598-11ea-9e7b-04922614e2b1';
 
     public function update() {
+        $hasRecord = false;
         if(!($client = $this->getClient())) {
             return false;
         }
@@ -40,12 +41,21 @@ class LiveHostController extends Controller
         $collections = [];
 
         foreach($tables as $table) {
-            $collections[$table] = DB::table($table)
+            $rec = DB::table($table)
                 ->whereNull('synched')
                 ->orderBy('created_at')
-                ->limit(500)
+                ->limit(10)
                 ->get();
+            $collections[$table] = $rec;
+            if($rec->count()) {
+                $hasRecord = true;
+            }
         }
+
+        if(!$hasRecord) {
+            return false;
+        }
+        // return response()->json($collections);
 
         $collections['client'] = $client;
         $response = $this->createRequest($collections, $client['id']);
@@ -90,7 +100,7 @@ class LiveHostController extends Controller
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
-        $response = $clientRequest->post('http://csi-v3-live/api/live/update/' . $shopId, [
+        $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId, [
             'json' => $data,
             'headers' => [
                 'Content-Type' => 'application/json',

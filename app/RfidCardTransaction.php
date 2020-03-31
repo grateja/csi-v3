@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -18,5 +19,9 @@ class RfidCardTransaction extends Model
 
     public function getDateTimeStrAttribute() {
         return $this->created_at->format('M-d, Y H:i A');
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('rfid_card_transactions', $this->id))->delay(5);
     }
 }

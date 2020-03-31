@@ -56,6 +56,9 @@ class RfidLoadController extends Controller
 
                 $rfidCard->increment('balance', $request->amount);
 
+                $this->dispatch($rfidCard->queSynch());
+                $this->dispatch($rfidLoadTransaction->queSynch());
+
                 return response()->json([
                     'rfidLoadTransaction' => $rfidLoadTransaction,
                     'rfidCard' => $rfidCard,
@@ -74,6 +77,10 @@ class RfidLoadController extends Controller
 
             if($rfidLoadTransaction->delete()) {
                 RfidCard::find($rfidLoadTransaction->rfid_card_id)->decrement('balance', $amount);
+
+                $this->dispatch($rfidCard->queSynch());
+                $this->dispatch($rfidLoadTransaction->queSynch());
+
                 return response()->json([
                     'message' => 'Transaction deleted successfuly',
                 ]);

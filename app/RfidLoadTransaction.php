@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,5 +26,9 @@ class RfidLoadTransaction extends Model
 
     public function getDateTimeStrAttribute() {
         return $this->created_at->format('M-d, Y H:i A');
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('rfid_load_transactions', $this->id))->delay(5);
     }
 }

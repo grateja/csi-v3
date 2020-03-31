@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
@@ -14,4 +15,8 @@ class MachineRemarks extends Model
     protected $fillable = [
         'title', 'remarks', 'user_id', 'remaining_time', 'machine_id', 'synched',
     ];
+
+    public function queSynch() {
+        return (new AutoSynch('machine_remarks', $this->id))->delay(5);
+    }
 }

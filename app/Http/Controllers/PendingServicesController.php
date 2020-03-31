@@ -119,6 +119,8 @@ class PendingServicesController extends Controller
 
         if($service) {
             $service->delete();
+            $this->dispatch($service->queSynch());
+
             return response()->json([
                 'service' => $service,
             ]);
