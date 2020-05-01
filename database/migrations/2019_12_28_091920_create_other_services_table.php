@@ -19,8 +19,10 @@ class CreateOtherServicesTable extends Migration
             $table->string('description')->nullable();
             $table->string('img_path')->nullable();
             $table->double('price')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
         });
     }
 

@@ -27,8 +27,10 @@ class CreateFullServiceItemsTable extends Migration
             $table->integer('quantity')->default(1);
             $table->float('price')->default(0);
             $table->float('points')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('full_service_id')->references('id')->on('full_services')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('washing_service_id')->references('id')->on('washing_services')->onDelete('CASCADE')->onUpdate('CASCADE');

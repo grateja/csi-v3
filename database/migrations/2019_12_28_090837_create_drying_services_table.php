@@ -22,8 +22,10 @@ class CreateDryingServicesTable extends Migration
             $table->string('machine_type')->comment('REGULAR, TITAN');
             $table->integer('minutes')->comment('Must be divisible by 10');
             $table->double('points')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
         });
     }
 

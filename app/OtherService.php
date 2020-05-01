@@ -2,13 +2,15 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
+use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OtherService extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
         'name', 'description', 'img_path', 'price', 'points',
@@ -24,5 +26,9 @@ class OtherService extends Model
         });
 
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('other_services', $this->id))->delay(5);
     }
 }

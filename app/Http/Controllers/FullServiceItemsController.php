@@ -88,6 +88,8 @@ class FullServiceItemsController extends Controller
                 ], 422);
             }
 
+            $this->dispatch($serviceItem->queSynch());
+
             return response()->json([
                 'serviceItem' => $serviceItem,
             ]);
@@ -177,6 +179,8 @@ class FullServiceItemsController extends Controller
                 ], 422);
             }
 
+            $this->dispatch($serviceItem->queSynch());
+
             return response()->json([
                 'serviceItem' => $serviceItem,
             ]);
@@ -192,7 +196,10 @@ class FullServiceItemsController extends Controller
     public function deleteService($id)
     {
         $fullServiceItem = FullServiceItem::findOrFail($id);
-        if($fullServiceItem->forceDelete()) {
+        if($fullServiceItem->delete()) {
+
+            $this->dispatch($fullServiceItem->queSynch());
+
             return response()->json([
                 'fullServiceItem' => $fullServiceItem,
             ]);

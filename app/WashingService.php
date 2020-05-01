@@ -2,16 +2,18 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
+use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WashingService extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'description', 'img_path', 'price', 'machine_type', 'regular_minutes', 'additional_minutes', 'points',
+        'name', 'description', 'img_path', 'price', 'machine_type', 'regular_minutes', 'additional_minutes', 'points', 'synched', 'deleted_at', 'updated_at',
     ];
 
     public function fullServiceItems() {
@@ -24,5 +26,9 @@ class WashingService extends Model
         });
 
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('washing_services', $this->id))->delay(5);
     }
 }

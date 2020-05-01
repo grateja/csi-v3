@@ -2,13 +2,15 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
+use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FullServiceItem extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
         'full_service_id', 'category', 'name', 'price', 'quantity', 'points', 'washing_service_id', 'drying_service_id', 'other_service_id',
@@ -38,5 +40,9 @@ class FullServiceItem extends Model
         } else if($this->category == 'other') {
             return $this->otherService->name;
         }
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('full_service_items', $this->id))->delay(5);
     }
 }

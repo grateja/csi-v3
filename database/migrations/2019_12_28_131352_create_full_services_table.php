@@ -18,8 +18,10 @@ class CreateFullServicesTable extends Migration
             $table->string('name');
             $table->float('additional_charge')->default(0);
             $table->float('discount')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
         });
     }
 

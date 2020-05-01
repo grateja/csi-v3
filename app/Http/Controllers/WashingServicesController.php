@@ -64,6 +64,9 @@ class WashingServicesController extends Controller
     public function deleteService($id) {
         $service = WashingService::findOrFail($id);
         if($service->delete()) {
+
+            $this->dispatch($service->queSynch());
+
             File::delete(public_path() . $service->img_path);
             return response()->json([
                 'service' => $service,
@@ -108,6 +111,8 @@ class WashingServicesController extends Controller
                 'points' => $request->points,
                 'img_path' => null,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
@@ -165,6 +170,8 @@ class WashingServicesController extends Controller
                 'price' => $request->price,
                 'points' => $request->points,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,

@@ -23,8 +23,10 @@ class CreateWashingServicesTable extends Migration
             $table->integer('regular_minutes');
             $table->integer('additional_minutes')->default(0);
             $table->double('points')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
         });
     }
 

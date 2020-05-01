@@ -90,11 +90,12 @@ class LiveHostController extends Controller
             return false;
         }
         return [
-            'id' => $client->user_id,
-            'name' => $client->shop_name,
-            'contact_number' => $client->contact_number,
-            'email' => $client->user['email'],
-            'password' => $client->user['password'],
+            'id' => $client->user->id,              /// this field will be the shop_id
+            'shop_name' => $client->shop_name,
+            'owner_name' => $client->user->name,
+            'address' => $client->address,
+            'owner_email' => $client->user->email,
+            'password' => $client->user->password,
         ];
     }
 

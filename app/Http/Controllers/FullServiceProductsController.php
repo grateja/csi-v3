@@ -61,6 +61,8 @@ class FullServiceProductsController extends Controller
                 ], 422);
             }
 
+            $this->dispatch($productItem->queSynch());
+
             return response()->json([
                 'productItem' => $productItem,
             ]);
@@ -124,6 +126,8 @@ class FullServiceProductsController extends Controller
                 ], 422);
             }
 
+            $this->dispatch($productItem->queSynch());
+
             return response()->json([
                 'productItem' => $productItem,
             ]);
@@ -140,6 +144,7 @@ class FullServiceProductsController extends Controller
     {
         $fullServiceProduct = FullServiceProduct::findOrFail($id);
         if($fullServiceProduct->delete()) {
+            $this->dispatch($fullServiceProduct->queSynch());
             return response()->json([
                 'fullServiceItem' => $fullServiceProduct,
             ]);

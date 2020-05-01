@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DryingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class DryingServicesController extends Controller
@@ -62,13 +63,17 @@ class DryingServicesController extends Controller
     }
 
     public function deleteService($id) {
-        $service = DryingService::findOrFail($id);
-        if($service->delete()) {
-            File::delete(public_path() . $service->img_path);
-            return response()->json([
-                'service' => $service,
-            ]);
-        }
+        return DB::transaction(function () use ($id) {
+            $service = DryingService::findOrFail($id);
+            if($service->delete()) {
+                $this->dispatch($service->queSynch());
+
+                File::delete(public_path() . $service->img_path);
+                return response()->json([
+                    'service' => $service,
+                ]);
+            }
+        });
     }
 
     /**
@@ -106,6 +111,8 @@ class DryingServicesController extends Controller
                 'points' => $request->points,
                 'img_path' => null,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
@@ -161,6 +168,8 @@ class DryingServicesController extends Controller
                 'price' => $request->price,
                 'points' => $request->points,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,

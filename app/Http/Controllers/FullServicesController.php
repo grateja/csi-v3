@@ -18,6 +18,7 @@ class FullServicesController extends Controller
     public function deleteService($id) {
         $service = FullService::findOrFail($id);
         if($service->delete()) {
+            $this->dispatch($service->queSynch());
             return response()->json([
                 'service' => $service,
             ]);
@@ -38,6 +39,8 @@ class FullServicesController extends Controller
                 'additional_charge' => $request->additionalCharge,
                 'discount' => $request->discount,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service->fresh('fullServiceItems', 'fullServiceProducts'),
@@ -60,6 +63,8 @@ class FullServicesController extends Controller
                 'additional_charge' => $request->additionalCharge,
                 'discount' => $request->discount,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service->fresh('fullServiceItems'),

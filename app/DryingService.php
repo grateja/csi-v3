@@ -2,13 +2,15 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
+use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DryingService extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
         'name', 'description', 'img_path', 'price', 'machine_type', 'minutes', 'points',
@@ -24,5 +26,9 @@ class DryingService extends Model
         });
 
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('drying_services', $this->id))->delay(5);
     }
 }

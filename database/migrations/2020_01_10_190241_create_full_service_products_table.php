@@ -22,8 +22,10 @@ class CreateFullServiceProductsTable extends Migration
             $table->string('name');
             $table->integer('quantity')->default(1);
             $table->float('price')->default(0);
+
             $table->timestamps();
             $table->softDeletes();
+            $table->timestamp('synched')->nullable();
 
             $table->foreign('full_service_id')->references('id')->on('full_services')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE')->onUpdate('CASCADE');

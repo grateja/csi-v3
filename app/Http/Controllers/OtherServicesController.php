@@ -64,6 +64,7 @@ class OtherServicesController extends Controller
     public function deleteService($id) {
         $service = OtherService::findOrFail($id);
         if($service->delete()) {
+            $this->dispatch($service->queSynch());
             File::delete(public_path() . $service->img_path);
             return response()->json([
                 'service' => $service,
@@ -102,6 +103,8 @@ class OtherServicesController extends Controller
                 'price' => $request->price,
                 'img_path' => null,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
@@ -152,6 +155,8 @@ class OtherServicesController extends Controller
                 'description' => $request->description,
                 'price' => $request->price,
             ]);
+
+            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,

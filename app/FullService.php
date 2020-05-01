@@ -2,13 +2,15 @@
 
 namespace App;
 
+use App\Jobs\AutoSynch;
+use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FullService extends Model
 {
-    use SoftDeletes, UsesUuid;
+    use SoftDeletes, UsesUuid, UsesSynch;
 
     public $appends = [
         'price',
@@ -42,5 +44,9 @@ class FullService extends Model
         });
 
         parent::boot();
+    }
+
+    public function queSynch() {
+        return (new AutoSynch('full_services', $this->id))->delay(5);
     }
 }
