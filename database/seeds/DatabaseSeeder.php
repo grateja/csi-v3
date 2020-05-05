@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(\OtherServicesSeeder::class);
         $this->call(\JobOrderSeeder::class);
         $this->call(\PointsDataSeeder::class);
+        $this->call(\StoreHoursSeeder::class);
 
         DB::table('role_users')->insert([
             [

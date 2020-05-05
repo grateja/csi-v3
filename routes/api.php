@@ -57,6 +57,14 @@ Route::group(['prefix' => 'reset'], function() {
 Route::group(['prefix' => 'admin', 'middleware' => ['auth:api', 'role:admin,developer']], function () {
     // /api/admin/preferences/shop-details/{shopId}
     Route::get('preferences/shop-details/{shopId}', 'ClientsController@edit');
+
+    // /api/admin/store-hours
+    Route::group(['prefix' => 'store-hours'], function () {
+        Route::get('/', 'StoreHoursController@index');
+
+        // /api/admin/store-hourse/{id}/update
+        Route::post('{id}/update', 'StoreHoursController@update');
+    });
 });
 
 // /api/account

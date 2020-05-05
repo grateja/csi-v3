@@ -36,6 +36,7 @@ class LiveHostController extends Controller
             'transactions',
             'transaction_payments',
             'transaction_remarks',
+            'store_hours',
         ];
 
         $collections = [];

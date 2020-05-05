@@ -10,6 +10,11 @@
                     <v-text-field outline v-model="formData.shopAddress" :error-messages="errors.get('shopAddress')" label="Address" :enabled="!loading"></v-text-field>
                     <v-text-field outline v-model="formData.shopNumber" :error-messages="errors.get('shopNumber')" label="Shop contact number" :enabled="!loading"></v-text-field>
                     <v-text-field outline v-model="formData.shopEmail" :error-messages="errors.get('shopEmail')" label="Shop email" :enabled="!loading"></v-text-field>
+
+                    <v-btn @click="openStoreHours = true" round class="ml-0">
+                        <v-icon left>access_time</v-icon>
+                        Store hours
+                    </v-btn>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
@@ -18,11 +23,17 @@
                 </v-card-actions>
             </v-card>
         </form>
+        <store-hours-dialog v-model="openStoreHours" />
     </v-dialog>
 </template>
 
 <script>
+import StoreHoursDialog from '../shop-preferences/StoreHoursDialog.vue';
+
 export default {
+    components: {
+        StoreHoursDialog
+    },
     props: [
         'value', 'clientId'
     ],
@@ -34,7 +45,8 @@ export default {
                 shopNumber: null,
                 shopEmail: null
             },
-            loading: false
+            loading: false,
+            openStoreHours: false
         }
     },
     methods: {

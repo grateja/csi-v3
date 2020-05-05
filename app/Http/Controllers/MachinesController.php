@@ -256,6 +256,9 @@ class MachinesController extends Controller
                         'additional_time' => $request->additionalTime,
                     ]);
                     $result = $machines->get();
+                    foreach ($result as $_machine) {
+                        $this->dispatch($_machine->queSynch());
+                    }
                 } else {
                     $machine->update([
                         'initial_price' => $request->initialPrice,
@@ -264,8 +267,8 @@ class MachinesController extends Controller
                         'additional_time' => $request->additionalTime,
                     ]);
                     $result = $machine;
+                    $this->dispatch($machine->queSynch());
                 }
-                $this->dispatch($machine->queSynch());
 
                 return response()->json([
                     'result' => $result,

@@ -34,6 +34,8 @@ import fullserviceproduct from './modules/fullserviceproduct.js';
 import productpurchase from './modules/productpurchase.js';
 import machine from './modules/machine.js';
 
+import storehour from './modules/storehour.js';
+
 export default new  Vuex.Store({
     state: {
         currentUser: null,
@@ -111,6 +113,7 @@ export default new  Vuex.Store({
         fullserviceitem,
         fullserviceproduct,
         productpurchase,
-        machine
+        machine,
+        storehour
     }
 });
