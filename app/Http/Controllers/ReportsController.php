@@ -134,6 +134,7 @@ class ReportsController extends Controller
             'totalCollections' => $result->sum('total_price'),
         ];
 
+
         return view('printer.pos-collections', [
             'result' => $result,
             'summary' => $summary,

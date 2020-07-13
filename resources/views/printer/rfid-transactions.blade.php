@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/app.css">
     <style>
         body, html {
             width: 11in;
@@ -12,13 +13,20 @@
         }
 
 
-
-        @media print{@page {size: landscape}}
+        @media print {
+            .button-container {
+                display: none;
+            }
+            body {
+                font-size: 7pt;
+            }
+            @page {size: landscape}
+        }
     </style>
     <title>RFID Card Transactions</title>
 </head>
 <body>
-    <table class="table table-bordered table-sm">
+    <table class="table table-bordered table-compressed">
         <tr>
             <td colspan="2" class="text-right">Customer card: </td>
             <td colspan="3" class="text-left">{{$summary['customerCount']}}</td>

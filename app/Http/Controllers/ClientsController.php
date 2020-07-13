@@ -13,6 +13,7 @@ use App\FullService;
 use App\FullServiceItem;
 use App\FullServiceProduct;
 use App\JobOrderFormat;
+use App\Jobs\SendShopPreferences;
 use App\LoyaltyPoint;
 use App\Machine;
 use App\MachineRemarks;
@@ -227,6 +228,7 @@ class ClientsController extends Controller
                     ]);
                 }
 
+                $this->dispatch((new SendShopPreferences())->delay(5));
 
                 return response()->json([
                     'client' => $client,

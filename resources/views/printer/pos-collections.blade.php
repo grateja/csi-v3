@@ -5,20 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/app.css">
     <style>
         body, html {
             width: 11in;
             margin: 20px auto;
         }
 
-
-
-        @media print{@page {size: landscape}}
+        @media print{
+            @page {
+                size: landscape;
+            }
+            body {
+                font-size: 7pt;
+            }
+        }
     </style>
     <title>Collections</title>
 </head>
 <body>
-    <table class="table table-bordered table-sm">
+    <table class="table table-bordered table-compressed">
         <tr>
             <td colspan="2" class="text-right">Job orders: </td>
             <td colspan="3" class="text-left">{{$summary['totalCount']}}</td>
@@ -41,7 +47,7 @@
                 <td class="top-left date">{{$item->dateStr}}</td>
                 <td class="top-left date-paid">{{$item->datePaidStr}}</td>
                 <td class="top-left">
-                    <table class="table table-borderless table-sm mb-0">
+                    <table class="table table-borderless table-compressed mb-0">
                         @if(count($item->posServiceItems()))
                             <tr class="text-center border-bottom">
                                 <th class="sub-title">Name</th>
@@ -67,12 +73,12 @@
                                     <td>P {{number_format($productItem->total_price, 2)}}</td>
                                 </tr>
                             @endforeach
-                            <tr class="font-weight-bold border-top border-dark">
-                                <td colspan="3">Total</td>
-                                <td class="text-right">P {{number_format($item->total_price, 2)}}</td>
-                            </tr>
                         @endif
-                    </table>
+                        <tr class="font-weight-bold border-top border-dark">
+                            <td colspan="3">Total</td>
+                            <td class="text-right">P {{number_format($item->total_price, 2)}}</td>
+                        </tr>
+                </table>
                 </td>
             </tr>
         @endforeach

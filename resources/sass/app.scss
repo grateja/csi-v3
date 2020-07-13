@@ -15,3 +15,8 @@ a {
 .pointer {
     cursor: pointer;
 }
+
+.table-compressed td ,
+.table-compressed th{
+    padding: 0px;
+}
