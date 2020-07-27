@@ -14,6 +14,14 @@ class OAuthController extends Controller
         ])) {
             $user = User::findOrFail(auth()->id());
 
+            if($user->hasAnyRole(['customer'])) {
+                return response()->json([
+                    'errors' => [
+                        'email' => ['You do not have permission to access this panel']
+                    ]
+                ], 422);
+            }
+
             $token = $user->createToken('csi-2019');
             return response()->json([
                 'user' => $user,

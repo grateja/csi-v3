@@ -12,6 +12,22 @@
             margin: 20px auto;
         }
 
+        .name {
+            width: 40%;
+        }
+
+        .quantity {
+            width: 20%;
+        }
+
+        .unit-price {
+            width: 20%;
+        }
+
+        .amount {
+            width: 20%;
+        }
+
         @media print{
             @page {
                 size: landscape
@@ -57,10 +73,10 @@
                     <table class="table table-borderless table-sm mb-0">
                         @if(count($item->posServiceItems()))
                             <tr class="text-center border-bottom">
-                                <th class="sub-title">Name</th>
-                                <th class="sub-title">Unit price</th>
-                                <th class="sub-title">Quantity</th>
-                                <th class="sub-title">Amount</th>
+                                <th class="sub-title name">Name</th>
+                                <th class="sub-title unit-price">Unit price</th>
+                                <th class="sub-title quantity">Quantity</th>
+                                <th class="sub-title amount">Amount</th>
                             </tr>
                             @foreach($item->posServiceItems() as $serviceItem)
                                 <tr class="text-center">

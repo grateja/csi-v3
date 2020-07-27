@@ -20,7 +20,7 @@ class SalesReportController extends Controller
             ->whereNull('deleted_at')
             ->whereMonth('date', $monthIndex)->whereYear('date', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(IF(date_paid IS NULL, 0, total_price)) as collection')
+            ->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(IF(date_paid IS NULL, 0, total_price)) as collection, SUM(1) as total_jo, SUM(IF(date_paid IS NULL, 0, 1)) as paid_jo')
             //->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(IF(date_paid IS NULL, 0,(select (`total_amount` - (`total_amount` /  100 * `discount`)) from `transaction_payments` where `transaction_payments`.`id` = `transactions`.`id`))) as collection')
             ->get();
 
@@ -53,12 +53,21 @@ class SalesReportController extends Controller
                 'date' => $key,
                 'amount' => $item->sum('total_price'),
                 'collection' => $item->sum('collection'),
+                'total_jo' => $item->sum('total_jo'),
+                'paid_jo' => $item->sum('paid_jo'),
             ];
         });
+
+        $summary = [
+            'total_sales' => $result->sum('amount'),
+            'total_jo' => $result->sum('total_jo'),
+            'paid_jo' => $result->sum('paid_jo'),
+        ];
 
         return response()->json([
             'result' => array_values($result->toArray()),
             'newCustomers' => $newCustomers,
+            'summary' => $summary,
         ]);
     }
 
@@ -110,5 +119,9 @@ class SalesReportController extends Controller
         return response()->json([
             'result' => $posTransactions,
         ]);
+    }
+
+    public function rangeSummary($dateFrom, $dateTo) {
+
     }
 }

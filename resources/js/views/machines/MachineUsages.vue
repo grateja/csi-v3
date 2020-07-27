@@ -123,13 +123,15 @@ export default {
         value(val) {
             if(val) {
                 let date = moment(this.activeDate);
+                console.log(this.activeDate);
                 if(date.isValid()) {
                     this.date = date.format('YYYY-MM-DD');
+                    this.load();
                 }
             }
         },
         activeDate(val) {
-            console.log(val);
+            console.log('usage', val);
         }
     }
 }
