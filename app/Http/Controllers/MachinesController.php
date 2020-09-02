@@ -147,7 +147,7 @@ class MachinesController extends Controller
             $url = "$machine->ip_address/activate?pulse=$pulse";
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 15);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($curl);
             curl_close($curl);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Expense;
 use App\Machine;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
@@ -45,7 +46,13 @@ class SalesReportController extends Controller
             ->selectRaw('DATE(first_visit) as day, COUNT(id) as total_count')
             ->get();
 
-        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray());
+        $expenses = Expense::whereMonth('date', $monthIndex)
+            ->whereYear('date', $year)
+            ->groupBy(DB::raw('date'))
+            ->selectRaw('DATE(date) as day, SUM(amount) as expense')
+            ->get();
+
+        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray(), $expenses->toArray());
         $result = collect($result)->groupBy('day');
         $result = $result->map(function($item, $key) {
             return
@@ -55,13 +62,14 @@ class SalesReportController extends Controller
                 'collection' => $item->sum('collection'),
                 'total_jo' => $item->sum('total_jo'),
                 'paid_jo' => $item->sum('paid_jo'),
+                'expenses' => $item->sum('expense'),
             ];
         });
 
         $summary = [
-            'total_sales' => $result->sum('amount'),
-            'total_jo' => $result->sum('total_jo'),
-            'paid_jo' => $result->sum('paid_jo'),
+            'total_jo' => $posTransactions->sum('total_jo'),
+            'paid_jo' => $posTransactions->sum('paid_jo'),
+            'expenses' => $expenses->sum('expense'),
         ];
 
         return response()->json([
@@ -95,6 +103,11 @@ class SalesReportController extends Controller
             ->selectRaw('COUNT(id) as total_count')
             ->first();
 
+        $expenses = Expense::whereDate('date', $date)
+            ->selectRaw('SUM(amount) as expense')
+            ->first();
+
+
         return response()->json([
             'result' => [
                 'posTransactionSummary' => $posTransactionSummary,
@@ -102,6 +115,7 @@ class SalesReportController extends Controller
                 'rfidCardTransactionSummary' => $rfidCardTransactionSummary,
                 'rfidLoadTransactionSummary' => $rfidLoadTransactionSummary,
                 'newCustomers' => $newCustomers,
+                'expenses' => $expenses,
             ]
         ]);
     }

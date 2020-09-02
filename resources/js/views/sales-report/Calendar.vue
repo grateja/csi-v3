@@ -5,7 +5,9 @@
                 <v-icon>chevron_left</v-icon>
             </v-btn>
             <v-spacer></v-spacer>
-            <h4 class="title">{{month + ' - ' + year}}</h4>
+                <v-btn flat large @click="openMonthSelector = true">
+                    {{month + ' ' + year}}
+                </v-btn>
             <v-spacer></v-spacer>
             <v-btn icon @click="addMonth">
                 <v-icon>chevron_right</v-icon>
@@ -26,7 +28,8 @@
                                 <v-btn small icon class="ma-0" :class="hover ? 'blue--text' : 'grey--text'">
                                     {{date}}
                                 </v-btn>
-                                <div class="caption green--text text-xs-center">{{collection(date)}}</div>
+                                <!-- <div class="caption green--text text-xs-center">{{collection(date)}}</div> -->
+                                <div class="title text-xs-center caption" :class="`${count(date).color}--text`">{{count(date).text}}</div>
                                 <div class="title text-xs-center">{{amount(date)}}</div>
                                 <div class="text-xs-center">{{newCustomers(date)}}</div>
                             </v-card>
@@ -35,10 +38,15 @@
                 </ul>
             </v-card-text>
         </div>
+        <month-selector v-model="openMonthSelector" @select="selectMonth" />
     </v-card>
 </template>
 <script>
+import MonthSelector from './MonthSelector.vue';
 export default {
+    components: {
+        MonthSelector
+    },
     props: [
         'results', 'customers'
     ],
@@ -46,7 +54,8 @@ export default {
         return {
             today: moment(),
             dateContext: moment(),
-            days: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+            days: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+            openMonthSelector: false
         }
     },
     methods: {
@@ -88,11 +97,29 @@ export default {
             }
             return '...';
         },
+        count(day) {
+            if(this.results) {
+                let i = this.results.find(d => moment(d.date).format('DD') == day);
+                if(i) {
+                    if(i.total_count == 0) return 'No J.O.';
+                    return {
+                        color: i.total_jo == i.paid_jo ? 'green' : 'grey',
+                        text: 'J.O.' + i.paid_jo + '/' + i.total_jo + ' Paid'
+                    };
+                }
+                return '-';
+            }
+            return '...';
+        },
         emitMonth() {
             this.$emit('month-changed', this.dateContext);
         },
         dateClick(date) {
             this.$emit('input', date);
+        },
+        selectMonth(monthIndex) {
+            this.dateContext = moment(this.dateContext).set('month',monthIndex);
+            this.emitMonth();
         }
     },
     computed: {
