@@ -46,6 +46,14 @@
             <td colspan="3" class="text-left">{{$summary['totalCount']}}</td>
         </tr>
         <tr>
+            <td colspan="2" class="text-right">Total paid J.O.: </td>
+            <td colspan="3" class="text-left">P {{number_format($summary['totalSales'], 2)}}</td>
+        </tr>
+        <tr>
+            <td colspan="2" class="text-right">Discount: </td>
+            <td colspan="3" class="text-left">P {{number_format($summary['totalSales'] - $summary['totalCollections'], 2)}}</td>
+        </tr>
+        <tr>
             <td colspan="2" class="text-right">Collections: </td>
             <td colspan="3" class="text-left">P {{number_format($summary['totalCollections'], 2)}}</td>
         </tr>
@@ -53,15 +61,14 @@
             <th>JO #</th>
             <th>Customer</th>
             <th>Date & Time</th>
-            <th>Paid</th>
             <th>Items</th>
+            <th>Payment</th>
         </tr>
         @foreach($result as $item)
             <tr>
                 <td class="top-left job-order">{{$item->job_order}}</td>
                 <td class="top-left customer-name">{{$item->customer_name}}</td>
                 <td class="top-left date">{{$item->dateStr}}</td>
-                <td class="top-left date-paid">{{$item->datePaidStr}}</td>
                 <td class="top-left">
                     <table class="table table-borderless table-compressed mb-0">
                         @if(count($item->posServiceItems()))
@@ -94,7 +101,39 @@
                             <td colspan="3">Total</td>
                             <td class="text-right">P {{number_format($item->total_price, 2)}}</td>
                         </tr>
-                </table>
+                    </table>
+                </td>
+                <td class="top-left date-paid">{{$item->datePaidStr}}
+                    <table class="table table-compressed">
+                        @if($item->payment['card_load_used'])
+                        <tr>
+                            <td>RFID:</td>
+                            <td>{{$item->payment['rfid']}}</td>
+                        </tr>
+                        <tr>
+                            <td>Card load:</td>
+                            <td>{{number_format($item->payment['card_load_used'], 2)}}</td>
+                        </tr>
+                        @endif
+                        @if($item->payment['discount'])
+                        <tr>
+                            <td>Discount:</td>
+                            <td>P {{number_format($item->payment['discount_in_peso'], 2)}} ({{number_format($item->payment['discount'], 2)}} %)</td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td>Cash:</td>
+                            <td>P {{number_format($item->payment['cash'], 2)}}</td>
+                        </tr>
+                        <tr>
+                            <td>Change:</td>
+                            <td>P {{number_format($item->payment['change'], 2)}}</td>
+                        </tr>
+                        <tr>
+                            <td>Paid to:</td>
+                            <td>{{$item->payment['paid_to']}}</td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         @endforeach

@@ -150,7 +150,7 @@ export default {
                     icon: 'event_note',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    to: '/sales-report/pos-transactions'
+                    to: '/sales-report/calendar'
                 },
                 {
                     text: 'Transactions',

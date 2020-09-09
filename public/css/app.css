@@ -11,3 +11,7 @@ a {
   padding: 0px;
 }
 
+.rounded-card {
+  border-radius: 20px !important;
+}
+

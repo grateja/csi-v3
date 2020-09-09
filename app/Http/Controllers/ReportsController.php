@@ -6,6 +6,7 @@ use App\Exports\ReportTemplate;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\Transaction;
+use App\TransactionPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -129,11 +130,14 @@ class ReportsController extends Controller
             ->orderBy('job_order')
             ->get();
 
-        $summary = [
-            'totalCount' => $result->count(),
-            'totalCollections' => $result->sum('total_price'),
-        ];
+        $posCollections = TransactionPayment::whereDate('created_at', $request->date)
+            ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as total_price, COUNT(id) as total_count')->first();
 
+        $summary = [
+            'totalCount' => $posCollections->total_count,
+            'totalCollections' => $posCollections->total_price,
+            'totalSales' => $result->sum('total_price'),
+        ];
 
         return view('printer.pos-collections', [
             'result' => $result,

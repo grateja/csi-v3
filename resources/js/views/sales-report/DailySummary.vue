@@ -1,7 +1,12 @@
 <template>
     <v-dialog :value="value" max-width="720px" persistent>
         <v-card>
-            <v-card-title class="title grey--text">Summary for {{moment(date).format('MMMM DD, YYYY')}}</v-card-title>
+            <v-card-title class="grey--text"><span class="title">Summary for {{moment(date).format('MMMM DD, YYYY')}}</span>
+                <v-spacer></v-spacer>
+                <v-btn icon sm @click="close">
+                    <v-icon>close</v-icon>
+                </v-btn>
+            </v-card-title>
             <v-progress-linear class="my-0" height="1" v-if="loading" indeterminate />
             <v-divider v-else></v-divider>
             <v-card-text v-if="result">

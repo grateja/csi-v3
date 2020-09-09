@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Expense;
 use App\Machine;
+use App\ProductPurchase;
+use App\ProductTransactionItem;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\Transaction;
 use App\TransactionPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -52,7 +55,13 @@ class SalesReportController extends Controller
             ->selectRaw('DATE(date) as day, SUM(amount) as expense')
             ->get();
 
-        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray(), $expenses->toArray());
+        $productPurchases = ProductPurchase::whereMonth('date', $monthIndex)
+            ->whereYear('date', $year)
+            ->groupBy(DB::raw('date'))
+            ->selectRaw('DATE(date) as day, SUM(unit_cost * quantity) as product_purchase')
+            ->get();
+
+        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray(), $expenses->toArray(), $productPurchases->toArray(), $newCustomers->toArray());
         $result = collect($result)->groupBy('day');
         $result = $result->map(function($item, $key) {
             return
@@ -62,14 +71,18 @@ class SalesReportController extends Controller
                 'collection' => $item->sum('collection'),
                 'total_jo' => $item->sum('total_jo'),
                 'paid_jo' => $item->sum('paid_jo'),
-                'expenses' => $item->sum('expense'),
+                'expenses' => $item->sum('expense') + $item->sum('product_purchase'),
+                'newCustomers' => $item->sum('total_count'),
             ];
         });
 
         $summary = [
             'total_jo' => $posTransactions->sum('total_jo'),
             'paid_jo' => $posTransactions->sum('paid_jo'),
-            'expenses' => $expenses->sum('expense'),
+            'expenses' => $expenses->sum('expense') + $productPurchases->sum('product_purchase'),
+            'totalSales' => $result->sum('amount'),
+            'totalCollections' => $result->sum('collection'),
+            'totalNewCustomers' => $result->sum('newCustomers'),
         ];
 
         return response()->json([
@@ -107,6 +120,9 @@ class SalesReportController extends Controller
             ->selectRaw('SUM(amount) as expense')
             ->first();
 
+        $inventory = ProductTransactionItem::whereDate('created_at', $date)
+            ->select(DB::raw('COUNT(*) as total_count, product_id, name, SUM(price) as total_price'))
+            ->groupBy('product_id', 'name')->get();
 
         return response()->json([
             'result' => [
@@ -116,6 +132,7 @@ class SalesReportController extends Controller
                 'rfidLoadTransactionSummary' => $rfidLoadTransactionSummary,
                 'newCustomers' => $newCustomers,
                 'expenses' => $expenses,
+                'inventory' => $inventory,
             ]
         ]);
     }
@@ -137,5 +154,124 @@ class SalesReportController extends Controller
 
     public function rangeSummary($dateFrom, $dateTo) {
 
+    }
+
+    public function weekly($monthIndex, $year, Request $request) {
+        $posTransactions = Transaction::whereMonth('date', $monthIndex)
+            ->whereYear('date', $year)
+            ->where('saved', true)
+            ->selectRaw('SUM(IF(date_paid IS NULL, 0, total_price)) as paid_total,
+                SUM(IF(date_paid IS NOT NULL, 0, total_price)) as unpaid_total,
+                SUM(total_price) as total_price,
+                COUNT(IF(date_paid IS NULL, NULL, 1)) as paid_jo,
+                COUNT(IF(date_paid IS NULL, 1, NULL)) as unpaid_jo,
+                COUNT(job_order) AS total_jo,
+                CONCAT(
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(date, INTERVAL DAYOFMONTH(date)-1 DAY), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(date), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%d"))
+                ) as label')
+            ->groupBy(DB::raw('label'))->get();
+
+            $rfidCardTransactions = RfidCardTransaction::where('card_type', 'u')
+                ->whereMonth('created_at', $monthIndex)->whereYear('created_at', $year)
+                ->selectRaw('SUM(price) as total_price, SUM(IF(card_type = "u", price, 0)) as collection,
+                CONCAT(
+                    IF(DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(created_at, INTERVAL DAYOFMONTH(created_at)-1 DAY), "%d"),
+                        DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(created_at), "%d"),
+                        DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)-6) DAY), "%d"))
+                ) as label')
+                ->groupBy(DB::raw('label'))
+                ->get();
+
+            $rfidLoadTransactions = RfidLoadTransaction::whereMonth('created_at', $monthIndex)
+                ->whereYear('created_at', $year)
+                ->selectRaw('SUM(amount) as total_price, SUM(amount) as collection,
+                CONCAT(
+                    IF(DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(created_at, INTERVAL DAYOFMONTH(created_at)-1 DAY), "%d"),
+                        DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(created_at), "%d"),
+                        DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)-6) DAY), "%d"))
+                ) as label')
+                ->groupBy(DB::raw('label'))
+                ->get();
+
+            $newCustomers = Customer::whereMonth('first_visit', $monthIndex)
+                ->whereYear('first_visit', $year)
+                ->selectRaw('COUNT(id) as total_count,
+                CONCAT(
+                    IF(DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(first_visit, INTERVAL DAYOFMONTH(first_visit)-1 DAY), "%d"),
+                        DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(first_visit), "%d"),
+                        DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)-6) DAY), "%d"))
+                ) as label')
+                ->groupBy(DB::raw('label'))
+                ->get();
+
+            $expenses = Expense::whereMonth('date', $monthIndex)
+                ->whereYear('date', $year)
+                ->selectRaw('SUM(amount) as expense, CONCAT(
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(date, INTERVAL DAYOFMONTH(date)-1 DAY), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(date), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%d"))
+                ) as label')
+                ->groupBy(DB::raw('label'))
+                ->get();
+
+            $productPurchases = ProductPurchase::whereMonth('date', $monthIndex)
+                ->whereYear('date', $year)
+                ->selectRaw('SUM(unit_cost * quantity) as product_purchase,
+                CONCAT(
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(date, INTERVAL DAYOFMONTH(date)-1 DAY), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(date), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%d"))
+                ) as label')
+                ->groupBy(DB::raw('label'))
+                ->get();
+
+        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray(), $expenses->toArray(), $productPurchases->toArray(), $newCustomers->toArray());
+
+        $result = collect($result)->groupBy('label');
+        $result = $result->map(function($item, $key) {
+            return
+            [
+                'label' => $key,
+                'amount' => $item->sum('total_price'),
+                'total_jo' => $item->sum('total_jo'),
+                'paid_jo' => $item->sum('paid_jo'),
+                'expenses' => $item->sum('expense') + $item->sum('product_purchase'),
+                'newCustomers' => $item->sum('total_count'),
+            ];
+        });
+
+        $summary = [
+            'total_jo' => $posTransactions->sum('total_jo'),
+            'paid_jo' => $posTransactions->sum('paid_jo'),
+            'expenses' => $expenses->sum('expense') + $productPurchases->sum('product_purchase'),
+            'totalSales' => $result->sum('amount'),
+            'totalCollections' => $result->sum('collection'),
+            'totalNewCustomers' => $result->sum('newCustomers'),
+        ];
+
+        return response()->json([
+            'result' => array_values($result->toArray()),
+            'summary' => $summary,
+        ]);
     }
 }

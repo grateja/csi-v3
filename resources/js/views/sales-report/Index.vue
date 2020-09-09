@@ -1,57 +1,84 @@
 <template>
-    <v-container>
+    <v-container fluid>
         <h3 class="title grey--text">Sales report</h3>
-        <v-progress-linear class="my-3" v-if="loading" indeterminate height="1" />
-        <v-divider class="my-3" v-else></v-divider>
-        <calendar :results="results" :customers="newCustomers" :year="year" @month-changed="monthChanged" @input="preview" />
-        <daily-summary v-model="openDailySummary" :date="date" />
+        <v-divider class="my-3"></v-divider>
+        <v-btn :to="`/sales-report/calendar?year=${year}&monthIndex=${monthIndex}`" class="ml-0" active-class="primary" round>Calendar view</v-btn>
+        <v-btn :to="`/sales-report/week?year=${year}&monthIndex=${monthIndex}`" active-class="primary" round>Week view</v-btn>
+        <v-card class="rounded-card">
+            <v-card-actions>
+                <v-btn icon @click="subtractMonth">
+                    <v-icon>chevron_left</v-icon>
+                </v-btn>
+                <v-spacer></v-spacer>
+                    <v-btn flat large @click="openMonthSelector = true" outline round>
+                        {{month}}, {{year}}
+                        <v-icon right>arrow_drop_up</v-icon>
+                    </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn icon @click="addMonth">
+                    <v-icon>chevron_right</v-icon>
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+        <v-divider class="my-2 transparent"></v-divider>
+        <router-view />
+        <month-selector v-model="openMonthSelector" @select="selectMonth" :year="year" @selectYear="selectYear" />
     </v-container>
 </template>
 
 <script>
-import Calendar from './Calendar.vue';
-import DailySummary from './DailySummary.vue';
-
+import MonthSelector from './MonthSelector.vue';
 export default {
     components: {
-        Calendar,
-        DailySummary
+        MonthSelector
     },
     data() {
         return {
-            results: [],
-            newCustomers: [],
-            monthIndex: moment().format('MM'),
-            year: moment().format('YYYY'),
-            date: moment(),
-            openDailySummary: false,
-            loading: false
+            dateContext: null,
+            openMonthSelector: false
         }
     },
     methods: {
-        load() {
-            this.loading = true;
-            axios.get(`/api/sales-report/${this.monthIndex}/${this.year}/all`).then((res, rej) => {
-                this.results = res.data.result;
-                this.newCustomers = res.data.newCustomers;
-            }).finally(() => {
-                this.loading = false;
-            })
+        addMonth() {
+            this.dateContext = moment(this.dateContext).add(1, 'month');
+            this.emitMonth();
         },
-        monthChanged(dateContext) {
-            this.monthIndex = moment(dateContext).format('M');
-            this.year = moment(dateContext).format('YYYY');
-            this.results = null;
-            this.newCustomers = null;
-            this.load();
+        subtractMonth() {
+            this.dateContext = moment(this.dateContext).subtract(1, 'month');
+            this.emitMonth();
         },
-        preview(day) {
-            this.date = moment(`${this.year}-${this.monthIndex}-${day}`).format('YYYY-MM-DD');
-            this.openDailySummary = true;
+        emitMonth() {
+            this.$router.push({
+                path: this.$router.currentRoute.path,
+                query: {
+                    year: this.year,
+                    monthIndex: this.monthIndex
+                }
+            });
+        },
+        selectMonth(monthIndex) {
+            this.dateContext = moment(this.dateContext).set('month',monthIndex);
+            this.emitMonth();
+        },
+        selectYear(year) {
+            this.dateContext = moment(this.dateContext).set('year', year);
+            this.emitMonth();
+        }
+    },
+    computed: {
+        month() {
+            return this.dateContext.format('MMMM');
+        },
+        monthIndex() {
+            return this.dateContext.format('M');
+        },
+        year() {
+            return this.dateContext.format('YYYY');
         }
     },
     created() {
-        this.load();
+        this.dateContext = moment();
+        this.emitMonth();
     }
 }
 </script>

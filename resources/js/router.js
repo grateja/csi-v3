@@ -53,13 +53,17 @@ const routes = [
         path: '/sales-report',
         component: require('./views/sales-report/Index.vue').default,
         children: [
-            {
-                path: 'pos-transactions/:monthIndex?/:year?',
-                component: require('./views/sales-report/PosTransactions.vue').default
-            },
+            // {
+            //     path: 'pos-transactions/:monthIndex?/:year?',
+            //     component: require('./views/sales-report/PosTransactions.vue').default
+            // },
             {
                 path: 'calendar',
-                component: require('./views/sales-report/Calendar.vue').default
+                component: require('./views/sales-report/CalendarView.vue').default
+            },
+            {
+                path: 'week',
+                component: require('./views/sales-report/WeekView.vue').default
             }
         ]
     },
