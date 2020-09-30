@@ -1,6 +1,23 @@
 <template>
     <div>
-        <v-card>
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="ml-1 translucent-input round-input" label="Search rfid or customer name" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex style="max-width: 220px">
+                <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['fullname', 'rfid', 'enrolled']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+
+        <!-- <v-card>
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -18,39 +35,41 @@
                 </v-layout>
 
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
         <v-btn class="primary" @click="add" round>
             <v-icon left>add</v-icon>
             register rfid card
         </v-btn>
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{ props.index + 1 }}</td>
-                <td>{{ moment(props.item.enrolled).format('LLL') }}</td>
-                <td>{{ props.item.fullname }}</td>
-                <td>{{ props.item.rfid }}</td>
-                <td>{{ props.item.card_type == 'u' ? 'Unlimited' : 'P ' + parseFloat(props.item.balance).toFixed(2) }}
-                    <v-tooltip top v-if="props.item.card_type == 'c'">
-                        <v-btn icon small slot="activator" color="green" dark @click="loadACard(props.item)">
-                            <v-icon small>how_to_vote</v-icon>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{ props.index + 1 }}</td>
+                    <td>{{ moment(props.item.enrolled).format('LLL') }}</td>
+                    <td>{{ props.item.fullname }}</td>
+                    <td>{{ props.item.rfid }}</td>
+                    <td>{{ props.item.card_type == 'u' ? 'Unlimited' : 'P ' + parseFloat(props.item.balance).toFixed(2) }}
+                        <v-tooltip top v-if="props.item.card_type == 'c'">
+                            <v-btn outline icon small slot="activator" color="green" dark @click="loadACard(props.item)">
+                                <v-icon small>how_to_vote</v-icon>
+                            </v-btn>
+                            <span>Top up/ Load a card</span>
+                        </v-tooltip>
+                    </td>
+                    <td>{{ cardType(props.item) }}</td>
+                    <td>
+                        <v-btn icon outline v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="edit(props.item)">
+                            <v-icon small>edit</v-icon>
                         </v-btn>
-                        <span>Top up/ Load a card</span>
-                    </v-tooltip>
-                </td>
-                <td>{{ cardType(props.item) }}</td>
-                <td>
-                    <v-btn icon v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="edit(props.item)">
-                        <v-icon small>edit</v-icon>
-                    </v-btn>
-                    <v-btn icon v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="deleteCard(props.item)" :loading="props.item.isDeleting">
-                        <v-icon small>delete</v-icon>
-                    </v-btn>
-                </td>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+                        <v-btn icon outline v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="deleteCard(props.item)" :loading="props.item.isDeleting">
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
 
         <rfid-card-dialog :rfidCard="activeRfidCard" v-model="openRfidCardDialog" @save="updateCards" />
         <rfid-load-dialog :rfidCard="activeRfidCard" v-model="openRfidLoadDialog" @save="updateCards"/>

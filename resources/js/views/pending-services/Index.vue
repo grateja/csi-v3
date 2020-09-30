@@ -1,18 +1,20 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Pending services</h3>
+        <h3 class="title white--text">Pending services</h3>
         <v-divider class="my-3"></v-divider>
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{ props.item.name }}</td>
-                <td>{{ props.item.customer_washes_count }}</td>
-                <td>{{ props.item.customer_dries_count }}</td>
-                <td>
-                    <v-btn small @click="viewAll(props.item)">View all</v-btn>
-                </td>
-            </template>
-        </v-data-table>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{ props.item.name }}</td>
+                    <td>{{ props.item.customer_washes_count }}</td>
+                    <td>{{ props.item.customer_dries_count }}</td>
+                    <td>
+                        <v-btn small @click="viewAll(props.item)" round outline>View all</v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
         <service-items-dialog v-model="openServiceItemsDialog" :customerId="activeCustomerId" />
     </v-container>
 </template>

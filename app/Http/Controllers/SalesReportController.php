@@ -51,17 +51,31 @@ class SalesReportController extends Controller
 
         $expenses = Expense::whereMonth('date', $monthIndex)
             ->whereYear('date', $year)
-            ->groupBy(DB::raw('date'))
+            ->groupBy(DB::raw('day'))
             ->selectRaw('DATE(date) as day, SUM(amount) as expense')
             ->get();
 
         $productPurchases = ProductPurchase::whereMonth('date', $monthIndex)
             ->whereYear('date', $year)
-            ->groupBy(DB::raw('date'))
+            ->groupBy(DB::raw('day'))
             ->selectRaw('DATE(date) as day, SUM(unit_cost * quantity) as product_purchase')
             ->get();
 
-        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray(), $expenses->toArray(), $productPurchases->toArray(), $newCustomers->toArray());
+        $transactionPayment = TransactionPayment::whereMonth('date', $monthIndex)
+            ->whereYear('date', $year)
+            ->groupBy(DB::raw('day'))
+            ->selectRaw('DATE(date) as day, SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as collection')
+            ->get();
+
+        $result = array_merge(
+            $posTransactions->toArray(),
+            $rfidCardTransactions->toArray(),
+            $rfidLoadTransactions->toArray(),
+            $expenses->toArray(),
+            $productPurchases->toArray(),
+            $newCustomers->toArray(),
+            $transactionPayment->toArray()
+        );
         $result = collect($result)->groupBy('day');
         $result = $result->map(function($item, $key) {
             return
@@ -87,7 +101,6 @@ class SalesReportController extends Controller
 
         return response()->json([
             'result' => array_values($result->toArray()),
-            'newCustomers' => $newCustomers,
             'summary' => $summary,
         ]);
     }
@@ -245,7 +258,29 @@ class SalesReportController extends Controller
                 ->groupBy(DB::raw('label'))
                 ->get();
 
-        $result = array_merge($posTransactions->toArray(), $rfidCardTransactions->toArray(), $rfidLoadTransactions->toArray(), $expenses->toArray(), $productPurchases->toArray(), $newCustomers->toArray());
+            $transactionPayment = TransactionPayment::whereMonth('date', $monthIndex)
+                ->whereYear('date', $year)
+                ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as collection,
+                CONCAT(
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(date, INTERVAL DAYOFMONTH(date)-1 DAY), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(date), "%d"),
+                        DATE_FORMAT((date - INTERVAL (WEEKDAY(date)-6) DAY), "%d"))
+                ) as label')
+                ->groupBy(DB::raw('label'))
+                ->get();
+
+        $result = array_merge(
+            $posTransactions->toArray(),
+            $rfidCardTransactions->toArray(),
+            $rfidLoadTransactions->toArray(),
+            $expenses->toArray(),
+            $productPurchases->toArray(),
+            $newCustomers->toArray(),
+            $transactionPayment->toArray()
+        );
 
         $result = collect($result)->groupBy('label');
         $result = $result->map(function($item, $key) {
@@ -257,6 +292,7 @@ class SalesReportController extends Controller
                 'paid_jo' => $item->sum('paid_jo'),
                 'expenses' => $item->sum('expense') + $item->sum('product_purchase'),
                 'newCustomers' => $item->sum('total_count'),
+                'collections' => $item->sum('collection'),
             ];
         });
 
@@ -265,7 +301,7 @@ class SalesReportController extends Controller
             'paid_jo' => $posTransactions->sum('paid_jo'),
             'expenses' => $expenses->sum('expense') + $productPurchases->sum('product_purchase'),
             'totalSales' => $result->sum('amount'),
-            'totalCollections' => $result->sum('collection'),
+            'totalCollections' => $result->sum('collections'),
             'totalNewCustomers' => $result->sum('newCustomers'),
         ];
 

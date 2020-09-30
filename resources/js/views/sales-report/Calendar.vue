@@ -1,65 +1,69 @@
 <template>
-    <v-card class="rounded-card">
+    <v-card class="transparent" flat>
         <v-layout row wrap>
             <v-flex lg10>
                 <div class="calendar">
                     <div class="main-container">
-                        <v-card-text>
-                            <ul class="weekdays">
-                                <li v-for="(day, i) in days" :key="i + 'w'">
-                                    <h3 class="font-weight-bold text-xs-center grey--text py-2">{{day}}</h3>
-                                </li>
-                                <li class="sunday">
-                                    <h3 class="font-weight-bold text-xs-center white--text py-2">Sun</h3>
-                                </li>
-                            </ul>
-                            <ul class="dates">
-                                <template v-if="firstDayOfMonth > 0">
-                                    <li v-for="(blank, i) in firstDayOfMonth" :key="i + 'd'" class="blank">&nbsp;</li>
-                                </template>
-                                <template v-for="draft in drafts">
-                                    <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == dateContext &amp;&amp; month == initialMonth && year == initialYear}">
-                                        <template v-if="draft.active">
-                                            <v-hover v-slot:default="{ hover }" v-if="draft.active">
-                                                <v-card class="ma-0 pointer day-blank" :elevation="hover ? 6 : 0" flat @click="dateClick(draft.date)" height="96px">
-                                                    <span>{{draft.date}}</span>
-                                                    <v-tooltip top>
-                                                        <div slot="activator" class="title text-xs-center caption" :class="draft.jo_color">{{draft.jo_count}}</div>
-                                                        <span>Total number of Job Orders</span>
-                                                    </v-tooltip>
-                                                    <v-tooltip top>
-                                                        <div slot="activator" class="title text-xs-center">
-                                                            <v-icon small>arrow_upward</v-icon>
-                                                            {{draft.amount}}</div>
-                                                        <span>Total sales</span>
-                                                    </v-tooltip>
-                                                    <v-tooltip top>
-                                                        <div slot="activator" class="text-xs-center grey--text">
-                                                            <v-icon small>arrow_downward</v-icon>
-                                                            {{draft.expenses}}</div>
-                                                        <span>Total expenses</span>
-                                                    </v-tooltip>
-                                                    <v-tooltip top>
-                                                        <div slot="activator" class="text-xs-center">{{draft.newCustomers}}</div>
-                                                        <span>Total number of customer</span>
-                                                    </v-tooltip>
-                                                </v-card>
-                                            </v-hover>
-                                            <v-progress-linear :background-color="draft.background" color="green" v-if="draft.active && draft.profitPercentage" :value="draft.value" class="ma-0" height="20px">
-                                                <div class="white--text text-xs-center">{{draft.profitStr}} ({{Math.round(draft.profitPercentage)}} %)</div>
-                                            </v-progress-linear>
-                                        </template>
-                                        <template v-else>
-                                            <v-card class="ma-0" color="#f6f6f6" flat height="116px">
-                                                <div>
-                                                    <span class="day ma-1">{{draft.date}}</span>
-                                                </div>
+                        <ul class="weekdays">
+                            <li v-for="(day, i) in days" :key="i + 'w'">
+                                <h3 class="font-weight-bold text-xs-center py-2"><span>{{day}}</span></h3>
+                            </li>
+                            <li class="sunday">
+                                <h3 class="font-weight-bold text-xs-center py-2"><span>Sun</span></h3>
+                            </li>
+                        </ul>
+                        <ul class="dates">
+                            <template v-if="firstDayOfMonth > 0">
+                                <li v-for="(blank, i) in firstDayOfMonth" :key="i + 'd'" class="blank">&nbsp;</li>
+                            </template>
+                            <template v-for="draft in drafts">
+                                <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == dateContext &amp;&amp; month == initialMonth && year == initialYear}">
+                                    <template v-if="draft.active">
+                                        <v-hover v-slot:default="{ hover }" v-if="draft.active">
+                                            <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="dateClick(draft.date)" height="121px">
+                                                <span>{{draft.date}}</span>
+                                                <v-tooltip top>
+                                                    <div slot="activator" class="title text-xs-center caption" :class="draft.jo_color">{{draft.jo_count}}</div>
+                                                    <span>Total number of Job Orders</span>
+                                                </v-tooltip>
+                                                <v-tooltip top>
+                                                    <div slot="activator" class="title text-xs-center">
+                                                        <v-icon small>collections_bookmark</v-icon>
+                                                        {{draft.amount}}</div>
+                                                    <span>Total sales</span>
+                                                </v-tooltip>
+                                                <v-tooltip top>
+                                                    <div slot="activator" class="text-xs-center blue--text">
+                                                        <v-icon small color="blue">move_to_inbox</v-icon>
+                                                        {{draft.collection}}</div>
+                                                    <span>Total collections</span>
+                                                </v-tooltip>
+                                                <v-tooltip top>
+                                                    <div slot="activator" class="text-xs-center grey--text">
+                                                        <v-icon small>save</v-icon>
+                                                        {{draft.expenses}}</div>
+                                                    <span>Total expenses</span>
+                                                </v-tooltip>
+                                                <v-tooltip top>
+                                                    <div slot="activator" class="text-xs-center">{{draft.newCustomers}}</div>
+                                                    <span>Total number of customer</span>
+                                                </v-tooltip>
                                             </v-card>
-                                        </template>
-                                    </li>
-                                </template>
-                            </ul>
-                        </v-card-text>
+                                        </v-hover>
+                                        <v-progress-linear :background-color="draft.background" color="green" v-if="draft.active && draft.profitPercentage" :value="draft.value" class="ma-0" height="20px">
+                                            <div class="white--text text-xs-center">{{draft.profitStr}} ({{Math.round(draft.profitPercentage)}} %)</div>
+                                        </v-progress-linear>
+                                    </template>
+                                    <template v-else>
+                                        <v-card class="ma-0 translucent day" color="#f6f6f6" flat height="141px">
+                                            <div>
+                                                <span class="day ma-1">{{draft.date}}</span>
+                                            </div>
+                                        </v-card>
+                                    </template>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
                 </div>
             </v-flex>
@@ -184,7 +188,8 @@ export default {
                             background: profit > 1 ? 'blue' : 'pink',
                             newCustomers: i.newCustomers ? i.newCustomers + ' new customer' + (i.newCustomers > 1 ? 's' : '') : '',
                             jo_color: i.total_jo == i.paid_jo ? 'green--text' : 'grey--text',
-                            jo_count: 'J.O.' + i.paid_jo + '/' + i.total_jo + ' Paid'
+                            jo_count: 'J.O.' + i.paid_jo + '/' + i.total_jo + ' Paid',
+                            collection: '₱' + parseFloat(i.collection).toLocaleString(),
                         };
                     } else if(index != 0) {
                         days[index] = {
@@ -206,16 +211,9 @@ export default {
         daysInMonth() {
             return this.dateContext.daysInMonth();
         },
-        // currentDate() {
-        //     return this.dateContext.get('date');
-        // },
         firstDayOfMonth() {
-            var firstDay = moment(this.dateContext).subtract((this.dateContext - 1), 'days');
-            return this.dateContext.weekday() - 2;
+            return moment(this.dateContext).set('date', 1).day() - 1;
         },
-        // dateContext() {
-        //     return this.today.get('date');
-        // },
         initialMonth() {
             return moment(this.dateContext).format('MMMM');
         }
@@ -233,9 +231,30 @@ ul.weekdays li {
     margin: 0;
     list-style: none;
     width: 14.28%;
-    border-top: 1px solid #c1c6f7;
-    border-bottom: 1px solid #c1c6f7;
-    background: rgb(195, 229, 238);
+    /* border-top: 1px solid #c1c6f7; */
+    /* border-bottom: 1px solid #c1c6f7; */
+    /* background: rgb(195, 229, 238); */
+}
+ul.weekdays li span {
+    color: white;
+    background: #2196f3;
+    padding: 5px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 20px;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.4);
+}
+ul.weekdays li.sunday span {
+    color: white;
+    background: #e91e63;
+    /* border-left: 1px solid #f1b9d5 !important; */
+    /* border-right: 1px solid #f1b9d5 !important; */
+}
+div.day {
+    border-radius:10px !important;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+}
+.sunday > h3 > span {
 }
 
 ul.dates{
@@ -248,7 +267,8 @@ ul.dates li {
     margin: 0;
     list-style: none;
     width: 14.28%;
-    border: 1px solid #e6e6e6;
+    padding: 5px;
+    /* border: 1px solid #e6e6e6; */
 }
 ul.dates li.blank {
     border: none;
@@ -259,19 +279,9 @@ ul.dates li.blank {
 .main-container {
     min-width: 720px;
 }
-.sunday {
-    border-left: 1px solid #f1b9d5 !important;
-    border-right: 1px solid #f1b9d5 !important;
-}
-.sunday > h3 {
-    background: #fb9bcc;
-}
 .sunday .day {
-    color: #f1b9d5;
+    color: #a80b5a;
     font-weight: bold;
-}
-.day {
-    color: #ddd;
 }
 /* .day-blank {
     box-shadow:5px 5px 5px rgba(0,0,0,.05) inset,

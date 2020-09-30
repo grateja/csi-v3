@@ -1,44 +1,46 @@
 <template>
-    <v-card class="ma-3 pa-4" flat color="transparent" ref="machines">
-
-        <h4 class="title grey--text">Remote panel</h4>
+    <v-card class="ma-3 pa-4 machines-container" flat color="transparent" ref="machines">
+        <h4 class="title white--text">Remote panel</h4>
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
         <v-divider v-else class="my-3"></v-divider>
 
+        <v-btn to="/remote-panel" exact active-class="primary" round>Giant C+</v-btn>
+        <v-btn to="/remote-panel/titan" active-class="primary" round exact>Titan C+</v-btn>
+
         <template>
-            <div v-if="machines.dryers && !loading">
-                <h4 class="grey--text mt-4">Regular Dryers</h4>
+            <div v-if="machines.dryers && !loading && !titan">
+                <h4 class="white--text mt-4">Regular Dryers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout row wrap>
+                <v-layout class="panel">
                     <machine-tile v-for="machine in machines.dryers" :key="machine.id" :machine="machine" @open="open" />
                 </v-layout>
             </div>
         </template>
 
         <template>
-            <div v-if="machines.washers && !loading">
-                <h4 class="grey--text mt-4">Regular Washers</h4>
+            <div v-if="machines.washers && !loading && !titan">
+                <h4 class="white--text mt-4">Regular Washers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout row wrap>
+                <v-layout class="panel">
                     <machine-tile v-for="machine in machines.washers" :key="machine.id" :machine="machine" @open="open" />
                 </v-layout>
             </div>
         </template>
 
         <template>
-            <div v-if="machines.titan_dryers && !loading">
-                <h4 class="grey--text mt-4">Titan Dryers</h4>
+            <div v-if="machines.titan_dryers && !loading && titan">
+                <h4 class="white--text mt-4">Titan Dryers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout row wrap>
+                <v-layout class="panel">
                     <machine-tile v-for="machine in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" />
                 </v-layout>
             </div>
         </template>
         <template>
-            <div v-if="machines.titan_washers && !loading">
-                <h4 class="grey--text mt-4">Titan Washers</h4>
+            <div v-if="machines.titan_washers && !loading && titan">
+                <h4 class="white--text mt-4">Titan Washers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout row wrap>
+                <v-layout  class="panel">
                     <machine-tile v-for="machine in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" />
                 </v-layout>
             </div>
@@ -133,6 +135,21 @@ export default {
                 this.getUpdate();
             }
         }
+    },
+    computed: {
+        titan() {
+            return !!this.$route.params.mt;
+        }
     }
 }
 </script>
+
+<style scoped>
+    .machines-container {
+        border: 1px solid red;
+    }
+    .panel {
+        overflow-y: auto;
+        padding: 30px;
+    }
+</style>

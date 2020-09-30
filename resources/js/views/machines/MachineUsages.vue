@@ -1,6 +1,6 @@
 <template>
     <v-dialog :value="value" max-width="720" persistent>
-        <v-card v-if="machine">
+        <v-card v-if="machine" class="rounded-card">
             <v-card-title class="title grey--text">Machine usages for {{machine.machine_name}}</v-card-title>
             <date-navigator v-model="date" />
             <v-divider></v-divider>

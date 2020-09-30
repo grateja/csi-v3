@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
         <form @submit.prevent="submit">
-            <v-card>
+            <v-card class="rounded-card">
                 <v-card-title class="title grey--text">User info</v-card-title>
                 <v-card-text>
                     <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name"></v-text-field>

@@ -1,11 +1,12 @@
 <template>
     <div>
-        <div v-if="!!currentCustomer">
-            <v-card>
+        <!-- <div v-if="!!currentCustomer">
+            <v-card class="rounded-card">
                 <v-card-actions>
-                    <h4 class="title grey--text">CUSTOMER: </h4>
-                    <h1 class="title">{{currentCustomer.name}}</h1>
-                    <v-spacer></v-spacer>
+                    <v-layout>
+                        <v-flex xs5 class="text-xs-right mr-3">Customer name:</v-flex>
+                        <v-flex xs7>{{currentCustomer.name}}</v-flex>
+                    </v-layout>
                     <v-btn icon small @click="removeCustomer">
                         <v-icon small>close</v-icon>
                     </v-btn>
@@ -14,12 +15,12 @@
                     <div class="font-italic">No current transaction. Select services or products</div>
                 </v-card-actions>
             </v-card>
+        </div> -->
+        <div>
+            <v-btn class="primary mb-3 ml-0" round @click="openCustomerDialog = true">Create new customer</v-btn>
+            <v-text-field class="translucent-input round-input" dense :loading="loading" @keyup="filter" v-model="keyword" label="Search customer" append-icon="search" outline></v-text-field>
         </div>
-        <div v-else>
-            <v-text-field dense :loading="loading" @keyup="filter" v-model="keyword" label="Search customer" append-icon="search" outline></v-text-field>
-            <v-btn v-if="items.length == 0" class="primary ma-0" round @click="openCustomerDialog = true">Create new customer</v-btn>
-        </div>
-        <v-card v-if="items.length">
+        <v-card v-if="items.length" class="rounded-card pa-2">
             <v-list dense>
                 <v-list-tile v-for="item in items" :key="item.id" @click="selectCustomer(item)">
                     <v-list-tile-content>
@@ -32,7 +33,7 @@
             </v-list>
         </v-card>
 
-        <v-card v-if="!currentCustomer && !loading && unsavedTransactions.length" class="my-3">
+        <v-card v-if="!currentCustomer && !loading && unsavedTransactions.length" class="my-3 rounded-card">
             <v-card-title class="grey--text">Customers with unsaved transaction</v-card-title>
             <v-divider class="my-1"></v-divider>
             <v-list dense>
@@ -50,7 +51,7 @@
             </v-list>
         </v-card>
 
-        <v-card v-if="!currentCustomer && !loading && unpaidTransactions.length" class="my-3">
+        <v-card v-if="!currentCustomer && !loading && unpaidTransactions.length" class="my-3 rounded-card">
             <v-card-title class="grey--text">Customers with unpaid transaction</v-card-title>
             <v-divider class="my-1"></v-divider>
             <v-list dense>
@@ -124,9 +125,6 @@ export default {
             if(this.cancelSource){
                 this.cancelSource.cancel();
             }
-        },
-        removeCustomer() {
-            this.$store.commit('postransaction/removeCustomer');
         },
         createCustomer() {
             this.removeCustomer();

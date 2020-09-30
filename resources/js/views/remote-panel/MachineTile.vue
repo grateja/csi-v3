@@ -1,19 +1,23 @@
 <template>
-    <v-flex xs4 sm3 md2 xl1>
+    <v-flex class="machine-tile__flex">
+        <div class="text-xs-center white--text">{{machine.machine_name}}</div>
         <v-hover v-slot:default="{ hover }" v-if="machine">
-            <v-card :elevation="hover ? 12 : 2" class="ma-1 pointer" @click="open(machine)" :color="machine.is_running ? 'blue' : 'white'" :dark="machine.is_running" >
-                <div class="text-xs-center">{{machine.machine_name}}</div>
-                <v-divider></v-divider>
+            <v-card :elevation="hover ? 12 : 2" class="ma-1 pa-3 pointer rounded-card translucent machine-tile__card" @click="open(machine)" :class="{'running': machine.is_running}" >
+                <!-- <div class="text-xs-center">{{machine.machine_name}}</div>
+                <v-divider></v-divider> -->
 
-                <v-card-text>
-                    <v-responsive>
-                        <v-progress-circular v-if="machine.is_running" :value="progress()" :key="timeKey"></v-progress-circular>
-                    </v-responsive>
-                </v-card-text>
 
-                <div v-if="machine.is_running" class="text-xs-center">
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-img :src="`/img/dos-icons/${machine.machine_type[1]}.png`" width="50%" centered></v-img>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+                <div class="text-xs-center">{{machine.user_name}}</div>
+                <div class="text-xs-center" v-if="machine.is_running">{{remainingTime()}}</div>
+                <div class="text-xs-center font-italic caption grey--text" v-else>Used {{moment(machine.time_ends_in).fromNow()}}</div>
+
+                <!-- <div v-if="machine.is_running" class="text-xs-center">
                     <div class="caption">Current user:</div>
-                    <div>{{machine.user_name}}</div>
                     <span class="font-italic caption" :key="timeKey">{{remainingTime()}}</span>
                     <div v-if="!!machine.remarks" class="text-xs-center caption">
                         <v-divider></v-divider>
@@ -28,7 +32,7 @@
                         <v-divider></v-divider>
                         {{machine.remarks}}
                     </div>
-                </div>
+                </div> -->
             </v-card>
         </v-hover>
     </v-flex>

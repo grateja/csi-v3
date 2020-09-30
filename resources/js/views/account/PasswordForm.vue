@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="submit">
 
-        <v-card>
+        <v-card class="rounded-card">
             <v-card-title class="title grey--text">Change password</v-card-title>
             <v-card-text>
                 <v-text-field type="password" label="Old password" v-model="formData.oldPassword" :error-messages="errors.get('oldPassword')"></v-text-field>
@@ -11,8 +11,8 @@
                 <v-text-field type="password" label="Password confirmation" v-model="formData.password_confirmation" :error-messages="errors.get('password_confirmation')"></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn type="submit" class="primary" :loading="saving">Save</v-btn>
-                <v-btn @click="cancel">Cancel</v-btn>
+                <v-btn type="submit" class="primary" :loading="saving" round>Save</v-btn>
+                <v-btn @click="cancel" round>Cancel</v-btn>
             </v-card-actions>
         </v-card>
 

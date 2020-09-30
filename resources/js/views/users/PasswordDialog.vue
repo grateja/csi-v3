@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
         <form @submit.prevent="submit">
-            <v-card v-if="user">
+            <v-card v-if="user" class="rounded-card">
                 <v-card-title class="title grey--text">Change password</v-card-title>
                 <v-card-text>
                     <v-text-field :value="user.name" outline label="Name"></v-text-field>

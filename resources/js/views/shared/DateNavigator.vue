@@ -1,5 +1,5 @@
 <template>
-    <v-card flat transparent>
+    <v-card flat transparent class="rounded-card translucent">
         <v-divider></v-divider>
         <v-card-actions>
             <v-btn small flat @click="prev">
@@ -8,7 +8,7 @@
             </v-btn>
             <v-spacer></v-spacer>
             <div>
-                <v-btn small flat @click="browseDate">
+                <v-btn small flat @click="browseDate" round outline>
                     {{moment(value).format('MMMM DD, YYYY')}}
                     <v-icon small right>event</v-icon>
                 </v-btn>

@@ -1,6 +1,24 @@
 <template>
     <div>
-        <v-card>
+
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="ml-1 translucent-input round-input" label="Search rfid or customer name" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex style="max-width: 220px">
+                <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['customer_name', 'rfid', 'created_at', 'amount']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+
+        <!-- <v-card>
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -18,27 +36,29 @@
                 </v-layout>
 
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{props.index + 1}}</td>
-                <td>{{ props.item.customer_name }}</td>
-                <td>{{ props.item.amount }}</td>
-                <td>{{ props.item.rfid }}</td>
-                <td>{{ props.item.remarks }}</td>
-                <td>{{ moment(props.item.created_at).format('LLL') }}</td>
-                <td>
-                    <v-btn icon small v-if="isOwner" @click="printTransaction(props.item)" :loading="props.item.isPrinting">
-                        <v-icon small>print</v-icon>
-                    </v-btn>
-                    <v-btn icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting">
-                        <v-icon small>delete</v-icon>
-                    </v-btn>
-                </td>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{props.index + 1}}</td>
+                    <td>{{ props.item.customer_name }}</td>
+                    <td>{{ props.item.amount }}</td>
+                    <td>{{ props.item.rfid }}</td>
+                    <td>{{ props.item.remarks }}</td>
+                    <td>{{ moment(props.item.created_at).format('LLL') }}</td>
+                    <td>
+                        <v-btn icon small v-if="isOwner" @click="printTransaction(props.item)" :loading="props.item.isPrinting" outline>
+                            <v-icon small>print</v-icon>
+                        </v-btn>
+                        <v-btn icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting" outline>
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn round class="translucent" block @click="loadMore" :loading="loading">Load more</v-btn>
     </div>
 </template>
 

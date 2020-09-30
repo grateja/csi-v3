@@ -36,7 +36,7 @@
                 </v-list>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="close" round>Close</v-btn>
+                <v-btn @click="close" round :disabled="activating">Close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

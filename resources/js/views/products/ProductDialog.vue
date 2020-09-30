@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
         <form @submit.prevent="submit">
-            <v-card>
+            <v-card class="rounded-card">
                 <v-card-title class="title grey--text">Product details</v-card-title>
                 <v-divider></v-divider>
                 <v-responsive v-if="product && product.img_path" :aspect-ratio="16/9" max-height="300">

@@ -1,6 +1,40 @@
 <template>
     <div>
-        <v-card>
+
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="translucent-input round-input" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex shrink>
+                <v-menu offset-y>
+                    <v-btn slot="activator" class="translucent" round> <v-icon left>keyboard_arrow_down</v-icon>{{cardTypeStr}}</v-btn>
+                    <v-list dense>
+                        <v-list-tile @click="setCardType(null)">
+                            All cards
+                        </v-list-tile>
+                        <v-list-tile @click="setCardType('customer')">
+                            Customer cards only
+                        </v-list-tile>
+                        <v-list-tile @click="setCardType('user')">
+                            User cards only
+                        </v-list-tile>
+                    </v-list>
+                </v-menu>
+            </v-flex>
+            <v-flex shrink>
+                <v-text-field label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline class="mr-2 round-input translucent-input" style="width: 200px" dense></v-text-field>
+            </v-flex>
+            <v-flex shrink>
+                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['owner_name', 'rfid', 'created_at', 'machine_name']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex shrink>
+                <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+
+        <!-- <v-card>
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -31,36 +65,38 @@
                     </v-list>
                 </v-menu>
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{props.index + 1}}</td>
-                <td>{{ props.item.owner_name }}</td>
-                <td>{{ props.item.rfid }}</td>
-                <td>{{ props.item.machine_name }}</td>
-                <td>P{{ parseFloat(props.item.price).toFixed(2) }}</td>
-                <td>{{ props.item.minutes }} Mins</td>
-                <td>{{ moment(props.item.created_at).format('LLL') }}</td>
-                <td>
-                    <v-btn icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting">
-                        <v-icon small>delete</v-icon>
-                    </v-btn>
-                </td>
-            </template>
-            <template slot="footer">
-                <tr v-if="!!summary">
-                    <td colspan="4">
-                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{props.index + 1}}</td>
+                    <td>{{ props.item.owner_name }}</td>
+                    <td>{{ props.item.rfid }}</td>
+                    <td>{{ props.item.machine_name }}</td>
+                    <td>P{{ parseFloat(props.item.price).toFixed(2) }}</td>
+                    <td>{{ props.item.minutes }} Mins</td>
+                    <td>{{ moment(props.item.created_at).format('LLL') }}</td>
+                    <td>
+                        <v-btn outline icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting">
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
                     </td>
-                    <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
-                    <td class="font-weight-bold">{{summary.total_minutes}} Mins</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+                </template>
+                <template slot="footer">
+                    <tr v-if="!!summary">
+                        <td colspan="4">
+                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                        </td>
+                        <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                        <td class="font-weight-bold">{{summary.total_minutes}} Mins</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" class="translucent" round>Load more</v-btn>
     </div>
 </template>
 

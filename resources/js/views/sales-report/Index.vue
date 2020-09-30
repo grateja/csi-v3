@@ -1,10 +1,10 @@
 <template>
     <v-container fluid>
-        <h3 class="title grey--text">Sales report</h3>
+        <h3 class="title white--text">Sales report</h3>
         <v-divider class="my-3"></v-divider>
         <v-btn :to="`/sales-report/calendar?year=${year}&monthIndex=${monthIndex}`" class="ml-0" active-class="primary" round>Calendar view</v-btn>
         <v-btn :to="`/sales-report/week?year=${year}&monthIndex=${monthIndex}`" active-class="primary" round>Week view</v-btn>
-        <v-card class="rounded-card">
+        <v-card class="rounded-card translucent">
             <v-card-actions>
                 <v-btn icon @click="subtractMonth">
                     <v-icon>chevron_left</v-icon>

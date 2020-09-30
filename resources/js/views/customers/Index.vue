@@ -1,62 +1,64 @@
 <template>
     <v-container>
-        <h4 class="title grey--text">Customers</h4>
+        <h4 class="title panel-title">Customers</h4>
         <v-divider class="my-3"></v-divider>
-        <v-btn class="primary ml-0" round @click="addCustomer">
+        <v-btn class="primary ml-0 translucent" round @click="addCustomer">
             <v-icon small left>add</v-icon>
             Create new customer
         </v-btn>
         <form @submit.prevent="filter">
-            <v-text-field outline v-model="keyword" label="Search" append-icon="search" @input="filter"></v-text-field>
+            <v-text-field outline v-model="keyword" label="Search" append-icon="search" @input="filter" class="round-input translucent-input"></v-text-field>
         </form>
 
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{props.index + 1}}</td>
-                <td>{{ props.item.name }}</td>
-                <td>{{ props.item.contact_number }}</td>
-                <td>{{ props.item.email }}</td>
-                <td>{{ props.item.address }}</td>
-                <td>{{ date(props.item.first_visit) }}</td>
-                <td>{{props.item.customer_washes_count}}</td>
-                <td>{{props.item.customer_dries_count}}</td>
-                <td>
-                    <span v-if="props.item.earned_points">
-                        {{props.item.earned_points.toFixed(2)}}
-                    </span>
-                </td>
-                <td>
-                    <v-tooltip top>
-                        <v-btn slot="activator" small icon @click="editCustomer(props.item)">
-                            <v-icon small>edit</v-icon>
-                        </v-btn>
-                        <span>Edit details</span>
-                    </v-tooltip>
-                    <v-tooltip top v-if="isOwner">
-                        <v-btn slot="activator" small icon @click="deleteCustomer(props.item)" :loading="props.item.isDeleting">
-                            <v-icon small>delete</v-icon>
-                        </v-btn>
-                        <span>Edit details</span>
-                    </v-tooltip>
-                    <v-tooltip top v-if="props.item.rfid_cards_count > 0">
-                        <v-btn slot="activator" small icon @click="viewCards">
-                            <v-icon small>credit_card</v-icon>
-                            {{props.item.rfid_cards_count}}
-                        </v-btn>
-                        <span>{{props.item.rfid_cards_count}} Registered RFID card(s)</span>
-                    </v-tooltip>
-                </td>
-            </template>
-            <template slot="footer">
-                <tr v-if="!!summary">
-                    <td colspan="10">
-                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{props.index + 1}}</td>
+                    <td>{{ props.item.name }}</td>
+                    <td>{{ props.item.contact_number }}</td>
+                    <td>{{ props.item.email }}</td>
+                    <td>{{ props.item.address }}</td>
+                    <td>{{ date(props.item.first_visit) }}</td>
+                    <td>{{props.item.customer_washes_count}}</td>
+                    <td>{{props.item.customer_dries_count}}</td>
+                    <td>
+                        <span v-if="props.item.earned_points">
+                            {{props.item.earned_points.toFixed(2)}}
+                        </span>
                     </td>
-                </tr>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+                    <td>
+                        <v-tooltip top>
+                            <v-btn slot="activator" small icon @click="editCustomer(props.item)" outline>
+                                <v-icon small>edit</v-icon>
+                            </v-btn>
+                            <span>Edit details</span>
+                        </v-tooltip>
+                        <v-tooltip top v-if="isOwner">
+                            <v-btn slot="activator" small icon @click="deleteCustomer(props.item)" :loading="props.item.isDeleting" outline>
+                                <v-icon small>delete</v-icon>
+                            </v-btn>
+                            <span>Edit details</span>
+                        </v-tooltip>
+                        <v-tooltip top v-if="props.item.rfid_cards_count > 0">
+                            <v-btn slot="activator" small icon @click="viewCards" outline>
+                                <v-icon small>credit_card</v-icon>
+                                {{props.item.rfid_cards_count}}
+                            </v-btn>
+                            <span>{{props.item.rfid_cards_count}} Registered RFID card(s)</span>
+                        </v-tooltip>
+                    </td>
+                </template>
+                <template slot="footer">
+                    <tr v-if="!!summary">
+                        <td colspan="10">
+                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                        </td>
+                    </tr>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <customer-dialog v-model="openCustomerDialog" :customer="activeCustomer" @save="editContinue"></customer-dialog>
     </v-container>
 </template>

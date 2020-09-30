@@ -107,7 +107,7 @@ const routes = [
         component: require('./views/unpaid-transactions/Index.vue').default
     },
     {
-        path: '/remote-panel',
+        path: '/remote-panel/:mt?',
         component: require('./views/remote-panel/Index.vue').default
     },
     {

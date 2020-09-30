@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="value" max-width="400" persistent>
         <form @submit.prevent="submit">
-            <v-card>
+            <v-card class="rounded-card">
                 <v-card-title class="grey--text title">Purchase item details</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>

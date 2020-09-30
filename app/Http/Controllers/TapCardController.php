@@ -12,12 +12,16 @@ use Illuminate\Support\Facades\DB;
 
 class TapCardController extends Controller
 {
-    public function tap($ip, $rfid) {
+    public function tap($ip, $rfid, $macAddress = null) {
         $machine = Machine::where('ip_address', $ip)->first();
         if($machine == null) {
             return response()->json([
                 'message' => 'Machine IP ' . $ip . ' not registered'
             ], 422);
+        } else {
+            $machine->update([
+                'mac_address' => $macAddress,
+            ]);
         }
 
         $rfidCard = RfidCard::where(function($query) {

@@ -5,11 +5,13 @@
                 <v-layout row wrap>
                     <v-flex xs4 sm3 md2 v-for="(link, i) in filterLinks" :key="i">
                         <v-hover v-slot:default="{ hover }">
-                            <v-card :elevation="hover ? 12 : 0" class="ma-2 tile" :color="'#fbf9e9'" @click="navigate(link.route)">
-                                <v-img :src="`/img/icons/${link.icon}.png`" alt="" />
-                                <div class="text-xs-center my-2">{{link.text}}</div>
+                            <v-card :elevation="hover ? 12 : 0" class="ma-4 tile rounded-card translucent" @click="navigate(link.route)">
+                                <div class="pa-4">
+                                    <v-img :src="`/img/dos-icons/${link.icon}.png`" alt="" />
+                                </div>
                             </v-card>
                         </v-hover>
+                        <div class="text-xs-center my-2">{{link.text}}</div>
                     </v-flex>
                 </v-layout>
             </v-card>
@@ -43,11 +45,11 @@ export default {
                     icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    route: '/sales-report/pos-transactions'
+                    route: '/sales-report/calendar'
                 },
                 {
                     text: 'Transactions',
-                    icon: 'transactions',
+                    icon: 'job-orders',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
                     route: '/transaction-reports/by-job-orders'

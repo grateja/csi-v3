@@ -1,12 +1,12 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Transaction</h3>
+        <h3 class="title panel-title">New Job Order</h3>
         <v-progress-linear v-if="loading" height="3" indeterminate />
         <v-divider class="my-3"></v-divider>
         <v-layout>
             <v-flex xs7 lg8>
-                <v-btn to="/new-transaction/services" class="ml-0" active-class="primary" round>Services</v-btn>
-                <v-btn to="/new-transaction/products" active-class="primary" round>Products</v-btn>
+                <v-btn to="/new-transaction/services" class="ml-0 translucent" active-class="primary" round>Services</v-btn>
+                <v-btn to="/new-transaction/products" class="translucent" active-class="primary" round>Products</v-btn>
                 <router-view></router-view>
             </v-flex>
             <v-flex xs5 lg4>

@@ -1,15 +1,15 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Loyalty points</h3>
+        <h3 class="title white--text">Loyalty points</h3>
         <v-divider class="my-3"></v-divider>
         <form @submit.prevent="save">
-            <v-card max-width="480px">
+            <v-card max-width="480px" class="rounded-card">
                 <v-card-title class="grey-text title">Loyalty points</v-card-title>
                 <v-card-text>
                     <v-text-field :loading="loading" :error-messages="errors.get('amount')" label="Amount in peso for each points" v-model="formData.amount"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn class="primary" type="submit" :loading="saving">ok</v-btn>
+                    <v-btn round class="primary" type="submit" :loading="saving">ok</v-btn>
                 </v-card-actions>
             </v-card>
         </form>

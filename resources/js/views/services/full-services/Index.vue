@@ -5,7 +5,7 @@
         </v-btn>
         <v-layout row wrap>
             <v-flex xs12 sm6 md4 lg3 v-for="service in items" :key="service.id">
-                <v-card class="ma-2">
+                <v-card class="ma-2 rounded-card translucent">
                     <v-card-title class="title grey--">{{service.name}}</v-card-title>
                     <v-divider></v-divider>
                     <v-card-text>

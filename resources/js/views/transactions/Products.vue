@@ -1,12 +1,12 @@
 <template>
     <div>
-        <h3 class="grey--text mt-5">Products</h3>
+        <h3 class="white--text mt-5">Products</h3>
         <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
         <v-divider v-else></v-divider>
         <v-layout row wrap v-if="products.length">
             <v-flex v-for="item in products" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
-                    <v-card class="ma-1 pointer" :elevation="hover ? 12 : 2" @click="addProduct(item)">
+                    <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="addProduct(item)">
                         <v-card-text>
                             <v-responsive v-if="item.img_path">
                                 <v-img height="100px" :src="item.img_path" max-height="100px" ></v-img>

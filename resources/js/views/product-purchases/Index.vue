@@ -1,9 +1,26 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Product purchases</h3>
+        <h3 class="title white--text">Product purchases</h3>
         <v-divider class="my-3"></v-divider>
 
-        <v-card>
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="ml-1 translucent-input round-input" label="Search products" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex style="max-width: 220px">
+                <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['product_name', 'date', 'remarks', 'receipt']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+
+        <!-- <v-card>
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -20,27 +37,29 @@
                     </v-flex>
                 </v-layout>
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
         <v-btn class="success ml-0 my-3" round @click="addNewPurchase"><v-icon left>add</v-icon> Add new purchase</v-btn>
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{props.index + 1}}</td>
-                <td>{{ moment(props.item.date).format('LL') }}</td>
-                <td>{{ props.item.product_name }}</td>
-                <td>{{ props.item.quantity }}</td>
-                <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
-                <td>{{ props.item.remarks }}</td>
-                <td>{{ props.item.staff_name }}</td>
-                <td v-if="isOwner">
-                    <v-btn small icon @click="deletePurchase(props.item)" :loading="props.item.isDeleting">
-                        <v-icon>delete</v-icon>
-                    </v-btn>
-                </td>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{props.index + 1}}</td>
+                    <td>{{ moment(props.item.date).format('LL') }}</td>
+                    <td>{{ props.item.product_name }}</td>
+                    <td>{{ props.item.quantity }}</td>
+                    <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
+                    <td>{{ props.item.remarks }}</td>
+                    <td>{{ props.item.staff_name }}</td>
+                    <td v-if="isOwner">
+                        <v-btn small outline icon @click="deletePurchase(props.item)" :loading="props.item.isDeleting">
+                            <v-icon>delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <purchase-dialog v-model="openPurchaseDialog" :productPurchase="activeProductPurchase" @save="save" />
     </v-container>
 </template>

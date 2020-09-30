@@ -1,41 +1,42 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Machines</h3>
-
+        <h3 class="title white--text">Machines</h3>
 
         <v-divider class="my-3"></v-divider>
-        <v-btn round :class="{primary: tab == 'rw'}" @click="tab = 'rw'">Regular washers</v-btn>
-        <v-btn round :class="{primary: tab == 'rd'}" @click="tab = 'rd'">Regular dryers</v-btn>
-        <v-btn round :class="{primary: tab == 'tw'}" @click="tab = 'tw'">Titan washers</v-btn>
-        <v-btn round :class="{primary: tab == 'td'}" @click="tab = 'td'">Titan dryers</v-btn>
+        <v-btn round class="ml-0 translucent" :class="{primary: tab == 'rw'}" @click="tab = 'rw'">Regular washers</v-btn>
+        <v-btn round class="translucent" :class="{primary: tab == 'rd'}" @click="tab = 'rd'">Regular dryers</v-btn>
+        <v-btn round class="translucent" :class="{primary: tab == 'tw'}" @click="tab = 'tw'">Titan washers</v-btn>
+        <v-btn round class="translucent" :class="{primary: tab == 'td'}" @click="tab = 'td'">Titan dryers</v-btn>
 
         <v-divider class="my-3"></v-divider>
         <date-navigator v-model="date" />
         <v-divider class="my-3"></v-divider>
 
-        <v-data-table :headers="headers" :items="machines" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <tr @click="view(props.item)">
-                    <td>{{ props.item.machine_name }}</td>
-                    <td>{{ status(props.item) }}</td>
-                    <!-- <td>{{ customer(props.item) }}</td> -->
-                    <td>{{ props.item.total_usage }}</td>
-                    <td>{{ props.item.usage_today }}</td>
-                    <td>P {{ parseFloat(props.item.initial_price).toFixed(2) }}</td>
-                    <td>{{ props.item.additional_price ? 'P ' + parseFloat(props.item.additional_price).toFixed(2) : 'Disabled' }}</td>
-                    <td>{{ props.item.initial_time }} Mins.</td>
-                    <td>{{ (props.item.additional_time)? props.item.additional_time + 'Mins.' : 'Disabled' }}</td>
-                    <td>
-                        <v-tooltip top v-if="isOwner">
-                            <v-btn slot="activator" small icon @click="edit(props.item, $event)">
-                                <v-icon small>edit</v-icon>
-                            </v-btn>
-                            <span>Edit prices and minutes</span>
-                        </v-tooltip>
-                    </td>
-                </tr>
-            </template>
-        </v-data-table>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="machines" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <tr @click="view(props.item)">
+                        <td>{{ props.item.machine_name }}</td>
+                        <td>{{ status(props.item) }}</td>
+                        <!-- <td>{{ customer(props.item) }}</td> -->
+                        <td>{{ props.item.total_usage }}</td>
+                        <td>{{ props.item.usage_today }}</td>
+                        <td>P {{ parseFloat(props.item.initial_price).toFixed(2) }}</td>
+                        <td>{{ props.item.additional_price ? 'P ' + parseFloat(props.item.additional_price).toFixed(2) : 'Disabled' }}</td>
+                        <td>{{ props.item.initial_time }} Mins.</td>
+                        <td>{{ (props.item.additional_time)? props.item.additional_time + 'Mins.' : 'Disabled' }}</td>
+                        <td>
+                            <v-tooltip top v-if="isOwner">
+                                <v-btn slot="activator" small icon @click="edit(props.item, $event)" outline>
+                                    <v-icon small>edit</v-icon>
+                                </v-btn>
+                                <span>Edit prices and minutes</span>
+                            </v-tooltip>
+                        </td>
+                    </tr>
+                </template>
+            </v-data-table>
+        </v-card>
         <machine-usages :machine="activeMachine" v-model="openMachineDialog" :activeDate="date" />
         <machine-settings :machine="activeMachine" v-model="openMachineSettings" @save="updateMachines" />
     </v-container>

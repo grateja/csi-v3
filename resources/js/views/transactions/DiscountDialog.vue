@@ -1,10 +1,12 @@
 <template>
     <v-dialog :value="value" max-width="400" persistent>
-        <v-card>
+        <v-card class="rounded-card">
             <v-card-title>
                 <span class="title">Select discount</span>
             </v-card-title>
-
+            <v-progress-linear v-if="loading" indeterminate height="1"></v-progress-linear>
+            <v-card-text v-else-if="!loading && discounts.length == 0">No discounts available</v-card-text>
+            <v-divider v-else></v-divider>
             <v-card-text>
                 <v-list>
                     <v-list-tile v-for="item in discounts" :key="item.id" @click="select(item)">
@@ -17,7 +19,7 @@
             </v-card-text>
 
             <v-card-actions>
-                <v-btn @click="close">close</v-btn>
+                <v-btn @click="close" round>close</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -30,7 +32,8 @@ export default {
     ],
     data() {
         return {
-            discounts: []
+            discounts: [],
+            loading: false
         }
     },
     methods: {
@@ -43,8 +46,12 @@ export default {
         }
     },
     created() {
+        this.loading = true;
         axios.get('/api/discounts').then((res, rej) => {
             this.discounts = res.data.result;
+            this.loading = false;
+        }).catch(e => {
+            this.loading = false;
         });
     }
 }

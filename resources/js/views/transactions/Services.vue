@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3 class="grey--text mt-5">Washing services</h3>
+        <h3 class="white--text mt-5">Washing services</h3>
 
         <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
         <v-divider v-else></v-divider>
@@ -8,7 +8,7 @@
         <v-layout row wrap v-if="washingServices.length">
             <v-flex v-for="item in washingServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
-                    <v-card class="ma-1 pointer" :elevation="hover ? 12 : 2" @click="addWashingService(item)">
+                    <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="addWashingService(item)">
                         <v-card-text>
                             <v-responsive v-if="item.img_path">
                                 <v-img height="100px" :src="item.img_path" max-height="100px" ></v-img>
@@ -32,13 +32,13 @@
         <span v-if="!loading && washingServices.length == 0">No data</span>
         <span v-else-if="loading">Loading...</span>
 
-        <h3 class="grey--text mt-5">Drying services</h3>
+        <h3 class="white--text mt-5">Drying services</h3>
         <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
         <v-divider v-else></v-divider>
         <v-layout row wrap v-if="dryingServices.length">
             <v-flex v-for="item in dryingServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
-                    <v-card class="ma-1 pointer" :elevation="hover ? 12 : 2" @click="addDryingService(item)">
+                    <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="addDryingService(item)">
                         <v-card-text>
                             <v-responsive v-if="item.img_path">
                                 <v-img height="100px" :src="item.img_path" max-height="100px" ></v-img>
@@ -62,13 +62,13 @@
         <span v-if="!loading && dryingServices.length == 0">No data</span>
         <span v-else-if="loading">Loading...</span>
 
-        <h3 class="grey--text mt-5">Other services</h3>
+        <h3 class="white--text mt-5">Other services</h3>
         <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
         <v-divider v-else></v-divider>
         <v-layout row wrap v-if="otherServices.length">
             <v-flex v-for="item in otherServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
-                    <v-card class="ma-1 pointer" :elevation="hover ? 12 : 2" @click="addOtherService(item)">
+                    <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="addOtherService(item)">
                         <v-card-text>
                             <v-responsive v-if="item.img_path">
                                 <v-img height="100px" :src="item.img_path" max-height="100px" ></v-img>
@@ -92,13 +92,13 @@
         <span v-if="!loading && otherServices.length == 0">No data</span>
         <span v-else-if="loading">Loading...</span>
 
-        <h3 class="grey--text mt-5">Full services</h3>
+        <h3 class="white--text mt-5">Full services</h3>
         <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
         <v-divider v-else></v-divider>
         <v-layout row wrap v-if="fullServices.length">
             <v-flex v-for="item in fullServices" :key="item.id" xs6 sm4 lg3 xl2>
                 <v-hover v-slot:default="{ hover }">
-                    <v-card class="ma-1 pointer" :elevation="hover ? 12 : 2" @click="addFullService(item)">
+                    <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="addFullService(item)">
                         <v-card-text>
                             <v-responsive v-if="item.img_path">
                                 <v-img height="100px" :src="item.img_path" max-height="100px" ></v-img>

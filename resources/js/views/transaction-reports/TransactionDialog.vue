@@ -1,138 +1,189 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
-        <v-card>
-            <v-card-title class="title grey--text">Preview transaction</v-card-title>
+        <v-card class="rounded-card">
+            <v-card-title>
+                <span class="title grey--text">Preview transaction</span>
+                <v-spacer></v-spacer>
+                <v-btn icon @click="close">
+                    <v-icon>close</v-icon>
+                </v-btn>
+            </v-card-title>
             <v-progress-linear class="my-0" v-if="loading" indeterminate height="1" />
             <v-divider class="my-0" v-else></v-divider>
-            <v-card-text v-if="tempTransaction">
-                <dl>
-                    <dt class="caption font-weight-bold grey--text">Date</dt>
-                    <dd class="ml-3">{{moment(tempTransaction.date).format('LLL')}}</dd>
+            <div class="transaction-container">
+                <v-card-text v-if="tempTransaction" class="transaction-wrapper">
+                    <v-layout>
+                        <v-flex xs5><span class="data-term font-weight-bold">Date:</span></v-flex>
+                        <v-flex xs7><span class="data-value font-weight-bold">{{moment(tempTransaction.date).format('LLL')}}</span></v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs5><span class="data-term font-weight-bold">Job order #:</span></v-flex>
+                        <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.job_order}}</span></v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs5><span class="data-term font-weight-bold">Customer name:</span></v-flex>
+                        <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.customer_name}}</span></v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs5><span class="data-term font-weight-bold">Staff name:</span></v-flex>
+                        <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.staff_name}}</span></v-flex>
+                    </v-layout>
+                    <template>
+                        <v-card v-if="tempTransaction.remarks && tempTransaction.remarks.length" class="rounded-card" color="#beb60024">
+                            <v-card-text>
+                                <h3 class="grey--text font-italic">Remarks</h3>
+                                <ul>
+                                    <li v-for="remarks in tempTransaction.remarks" :key="remarks.id">
+                                        {{remarks.remarks}}
+                                    </li>
+                                </ul>
+                            </v-card-text>
+                        </v-card>
+                    </template>
+                    <v-btn block flat outline @click="viewRemarks" round>
+                        <v-icon small left>edit</v-icon>
+                        remarks
 
-                    <dt class="caption font-weight-bold grey--text">Job Order</dt>
-                    <dd class="ml-3">{{tempTransaction.job_order}}</dd>
+                    </v-btn>
 
-                    <dt class="caption font-weight-bold grey--text">Customer Name</dt>
-                    <dd class="ml-3">{{tempTransaction.customer_name}}</dd>
+                    <table class="v-table" v-if="tempTransaction.posServiceItems.length">
+                        <tr>
+                            <th colspan="4">Services</th>
+                        </tr>
+                        <tr>
+                            <th class="name">NAME</th>
+                            <th class="unit-price">UNIT PRICE</th>
+                            <th class="quantity">QUANTITY</th>
+                            <th class="total">TOTAL</th>
+                        </tr>
+                        <tr v-for="item in tempTransaction.posServiceItems" :key="item.id">
+                            <td class="pl-1">{{item.name}}</td>
+                            <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                            <td class="text-xs-center">
+                                {{item.quantity}}
+                            </td>
+                            <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        </tr>
+                        <tr class=" font-weight-bold">
+                            <td colspan="2" class="pl-1">Total</td>
+                            <td class="text-xs-center">{{tempTransaction.posServiceSummary.total_quantity}}</td>
+                            <td class="text-xs-center">P {{parseFloat(tempTransaction.posServiceSummary.total_price).toFixed(2)}}</td>
+                        </tr>
+                    </table>
 
-                    <dt class="caption font-weight-bold grey--text">Staff Name</dt>
-                    <dd class="ml-3">{{tempTransaction.staff_name}}</dd>
-                </dl>
+                    <v-divider class="my-2 transparent"></v-divider>
 
+                    <table class="v-table" v-if="tempTransaction.posProductItems.length">
+                        <tr>
+                            <th colspan="4">Products</th>
+                        </tr>
+                        <tr>
+                            <th class="name">NAME</th>
+                            <th class="unit-price">UNIT PRICE</th>
+                            <th class="quantity">QUANTITY</th>
+                            <th class="total">TOTAL</th>
+                        </tr>
+                        <tr v-for="item in tempTransaction.posProductItems" :key="item.id">
+                            <td class="pl-1">{{item.name}}</td>
+                            <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                            <td class="text-xs-center">
+                                {{item.quantity}}
+                            </td>
+                            <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        </tr>
+                        <tr class=" font-weight-bold">
+                            <td colspan="2" class="pl-1">Total</td>
+                            <td class="text-xs-center">{{tempTransaction.posProductSummary.total_quantity}}</td>
+                            <td class="text-xs-center">P {{parseFloat(tempTransaction.posProductSummary.total_price).toFixed(2)}}</td>
+                        </tr>
+                    </table>
+                    <v-divider class="my-1 transparent"></v-divider>
+                    <table class="v-table">
+                        <tr class="font-weight-bold title">
+                            <td>Grand total</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td class="text-xs-center">{{tempTransaction.posProductSummary.total_quantity + tempTransaction.posServiceSummary.total_quantity}}</td>
+                            <td class="text-xs-center">P {{parseFloat(tempTransaction.total_price).toFixed(2)}}</td>
+                        </tr>
+                    </table>
 
-                <template>
-                    <v-card v-if="tempTransaction.remarks && tempTransaction.remarks.length">
+                    <v-divider class="my-3 transparent"></v-divider>
+
+                    <v-card v-if="!!tempTransaction.date_paid" class="rounded-card">
+                        <v-card-title>
+                            Payment details
+                        </v-card-title>
+                        <v-divider></v-divider>
                         <v-card-text>
-                            <h3 class="grey--text font-italic">Remarks</h3>
-                            <ul>
-                                <li v-for="remarks in tempTransaction.remarks" :key="remarks.id">
-                                    {{remarks.remarks}}
-                                </li>
-                            </ul>
+                            <v-layout>
+                                <v-flex xs5><span class="data-term font-weight-bold">Date paid:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">{{moment(tempTransaction.date_paid).format('LLL')}}</span></v-flex>
+                            </v-layout>
+                            <v-layout>
+                                <v-flex xs5><span class="data-term font-weight-bold">Paid to:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.payment.paid_to}}</span></v-flex>
+                            </v-layout>
+                            <v-layout>
+                                <v-flex xs5><span class="data-term font-weight-bold">Cash:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.cash).toFixed(2)}}</span></v-flex>
+                            </v-layout>
+                            <v-layout v-if="tempTransaction.payment.points">
+                                <v-flex xs5><span class="data-term font-weight-bold">Points used:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.points_in_peso).toFixed(2)}} ({{tempTransaction.payment.points}} points)</span></v-flex>
+                            </v-layout>
+                            <v-layout v-if="tempTransaction.payment.discount">
+                                <v-flex xs5><span class="data-term font-weight-bold">Discount:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.discount_in_peso).toFixed(2)}} ({{tempTransaction.payment.discount}}%)</span></v-flex>
+                            </v-layout>
+                            <v-layout v-if="tempTransaction.payment.rfid">
+                                <v-flex xs5><span class="data-term font-weight-bold">RFID:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.card_load_used).toFixed(2)}} ({{tempTransaction.payment.rfid}})</span></v-flex>
+                            </v-layout>
+                            <v-layout>
+                                <v-flex xs5><span class="data-term font-weight-bold">Change:</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.change).toFixed(2)}}</span></v-flex>
+                            </v-layout>
                         </v-card-text>
                     </v-card>
-                </template>
-                <v-btn block flat outline @click="viewRemarks">
-                    <v-icon small left>edit</v-icon>
-                    remarks
+                    <v-card v-else class="rounded-card" color="red">
+                        <v-card-text class="text-xs-center white--text">
+                            Unpaid!
+                        </v-card-text>
+                    </v-card>
 
-                </v-btn>
+                    <!-- <dl v-if="!!tempTransaction.date_paid">
+                        <dt class="caption font-weight-bold grey--text">Date paid</dt>
+                        <dd class="ml-3">{{moment(tempTransaction.date_paid).format('LLL')}}</dd>
 
-                <table class="v-table" v-if="tempTransaction.posServiceItems.length">
-                    <tr>
-                        <th colspan="4">Services</th>
-                    </tr>
-                    <tr>
-                        <th>NAME</th>
-                        <th>UNIT PRICE</th>
-                        <th>QUANTITY</th>
-                        <th>TOTAL</th>
-                    </tr>
-                    <tr v-for="item in tempTransaction.posServiceItems" :key="item.id">
-                        <td class="pl-1">{{item.name}}</td>
-                        <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
-                        <td class="text-xs-center">
-                            {{item.quantity}}
-                        </td>
-                        <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
-                    </tr>
-                    <tr class=" font-weight-bold">
-                        <td colspan="2" class="pl-1">Total</td>
-                        <td class="text-xs-center">{{tempTransaction.posServiceSummary.total_quantity}}</td>
-                        <td class="text-xs-center">P {{parseFloat(tempTransaction.posServiceSummary.total_price).toFixed(2)}}</td>
-                    </tr>
-                </table>
+                        <dt class="caption font-weight-bold grey--text">Paid to</dt>
+                        <dd class="ml-3">{{tempTransaction.payment.paid_to}}</dd>
 
-                <v-divider class="my-2"></v-divider>
+                        <dt class="caption font-weight-bold grey--text">Cash</dt>
+                        <dd class="ml-3">P {{parseFloat(tempTransaction.payment.cash).toFixed(2)}}</dd>
 
-                <table class="v-table" v-if="tempTransaction.posProductItems.length">
-                    <tr>
-                        <th colspan="4">Products</th>
-                    </tr>
-                    <tr>
-                        <th>NAME</th>
-                        <th>UNIT PRICE</th>
-                        <th>QUANTITY</th>
-                        <th>TOTAL</th>
-                    </tr>
-                    <tr v-for="item in tempTransaction.posProductItems" :key="item.id">
-                        <td class="pl-1">{{item.name}}</td>
-                        <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
-                        <td class="text-xs-center">
-                            {{item.quantity}}
-                        </td>
-                        <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
-                    </tr>
-                    <tr class=" font-weight-bold">
-                        <td colspan="2" class="pl-1">Total</td>
-                        <td class="text-xs-center">{{tempTransaction.posProductSummary.total_quantity}}</td>
-                        <td class="text-xs-center">P {{parseFloat(tempTransaction.posProductSummary.total_price).toFixed(2)}}</td>
-                    </tr>
-                </table>
-                <v-divider class="my-1"></v-divider>
-                <table class="v-table">
-                    <tr class="font-weight-bold title">
-                        <td>Grand total</td>
-                        <td>&nbsp;&nbsp;&nbsp;</td>
-                        <td class="text-xs-center">{{tempTransaction.posProductSummary.total_quantity + tempTransaction.posServiceSummary.total_quantity}}</td>
-                        <td class="text-xs-center">P {{parseFloat(tempTransaction.total_price).toFixed(2)}}</td>
-                    </tr>
-                </table>
+                        <template v-if="tempTransaction.payment.points">
+                            <dt class="caption font-weight-bold grey--text">Points used</dt>
+                            <dd class="ml-3">P {{parseFloat(tempTransaction.payment.points_in_peso).toFixed(2)}} ({{tempTransaction.payment.points}} points)</dd>
+                        </template>
 
-                <v-divider class="my-3 transparent"></v-divider>
+                        <template v-if="tempTransaction.payment.discount">
+                            <dt class="caption font-weight-bold grey--text">Discount</dt>
+                            <dd class="ml-3">P {{parseFloat(tempTransaction.payment.discount_in_peso).toFixed(2)}} ({{tempTransaction.payment.discount}}%)</dd>
+                        </template>
 
-                <dl v-if="!!tempTransaction.date_paid">
-                    <dt class="caption font-weight-bold grey--text">Date paid</dt>
-                    <dd class="ml-3">{{moment(tempTransaction.date_paid).format('LLL')}}</dd>
+                        <template v-if="tempTransaction.payment.rfid">
+                            <dt class="caption font-weight-bold grey--text">RFID</dt>
+                            <dd class="ml-3">P {{parseFloat(tempTransaction.payment.card_load_used).toFixed(2)}} ({{tempTransaction.payment.rfid}})</dd>
+                        </template>
 
-                    <dt class="caption font-weight-bold grey--text">Paid to</dt>
-                    <dd class="ml-3">{{tempTransaction.payment.paid_to}}</dd>
+                        <template v-if="tempTransaction.payment.change">
+                            <dt class="caption font-weight-bold grey--text">Change</dt>
+                            <dd class="ml-3">P {{parseFloat(tempTransaction.payment.change).toFixed(2)}}</dd>
+                        </template>
+                    </dl> -->
 
-                    <dt class="caption font-weight-bold grey--text">Cash</dt>
-                    <dd class="ml-3">P {{parseFloat(tempTransaction.payment.cash).toFixed(2)}}</dd>
-
-                    <template v-if="tempTransaction.payment.points">
-                        <dt class="caption font-weight-bold grey--text">Points used</dt>
-                        <dd class="ml-3">P {{parseFloat(tempTransaction.payment.points_in_peso).toFixed(2)}} ({{tempTransaction.payment.points}} points)</dd>
-                    </template>
-
-                    <template v-if="tempTransaction.payment.discount">
-                        <dt class="caption font-weight-bold grey--text">Discount</dt>
-                        <dd class="ml-3">P {{parseFloat(tempTransaction.payment.discount_in_peso).toFixed(2)}} ({{tempTransaction.payment.discount}}%)</dd>
-                    </template>
-
-                    <template v-if="tempTransaction.payment.rfid">
-                        <dt class="caption font-weight-bold grey--text">RFID</dt>
-                        <dd class="ml-3">P {{parseFloat(tempTransaction.payment.card_load_used).toFixed(2)}} ({{tempTransaction.payment.rfid}})</dd>
-                    </template>
-
-                    <template v-if="tempTransaction.payment.change">
-                        <dt class="caption font-weight-bold grey--text">Change</dt>
-                        <dd class="ml-3">P {{parseFloat(tempTransaction.payment.change).toFixed(2)}}</dd>
-                    </template>
-                </dl>
-
-            </v-card-text>
+                </v-card-text>
+            </div>
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
                 <v-tooltip top v-if="isOwner">
@@ -252,3 +303,28 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .v-table tr {
+        border: 1px solid silver;
+    }
+    .name {
+        width: 40%;
+    }
+    .unit-price {
+        width: 20%;
+    }
+    .quantity {
+        width: 20%;
+    }
+    .total {
+        width: 20%;
+    }
+    .transaction-container {
+        overflow-y: auto;
+    }
+    .transaction-wrapper {
+        max-height: 70vh;
+        margin-bottom: 20px;
+    }
+</style>

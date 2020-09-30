@@ -18,7 +18,7 @@
         } */
     </style>
     <body>
-        <v-app id="app" color="#f23">
+        <v-app id="app" style="background-color: transparent">
             <main-body />
         </v-app>
         <script src="{{ asset('js/app.js') }}"></script>

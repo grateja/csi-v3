@@ -1,25 +1,31 @@
 <template>
     <div>
         <flash-message />
-        <v-toolbar flat dark app class="green lighten-1">
-            <v-toolbar-side-icon v-if="!!user" @click="drawer = !drawer"></v-toolbar-side-icon>
-
+        <v-toolbar flat app class="translucent">
+            <!-- <v-toolbar-side-icon v-if="!!user" @click="drawer = !drawer"></v-toolbar-side-icon> -->
+            <v-btn icon @click="drawer = !drawer" class="translucent">
+                <v-icon v-if="!drawer" color="white">keyboard_arrow_right</v-icon>
+                <v-icon v-else color="white">keyboard_arrow_left</v-icon>
+            </v-btn>
             <v-toolbar-title v-if="!!user">
-                <v-btn large to="/" flat class="ml-0 pl-0">
-                    <v-icon left large>apps</v-icon> MENU
+                <v-btn large to="/" round class="translucent">
+                    <!-- <v-icon left large>apps</v-icon> MENU -->
+                    <v-img src="/img/dos-icons/menu.png" width="30" />
+                    <span class="mx-3">menu</span>
                 </v-btn>
             </v-toolbar-title>
 
             <v-spacer></v-spacer>
 
             <template v-if="!!user">
-                <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 580">
-                    <v-icon :left="$vuetify.breakpoint.width > 580">store</v-icon>
-                    <span v-if="$vuetify.breakpoint.width > 580">
+                <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 720" class="translucent" round>
+                    <!-- <v-icon :left="$vuetify.breakpoint.width > 720">store</v-icon> -->
+                    <v-img src="/img/dos-icons/preferences.png" width="25" :left="$vuetify.breakpoint.width > 720" class="mx-2" />
+                    <span v-if="$vuetify.breakpoint.width > 720">
                         shop preferences
                     </span>
                 </v-btn>
-                <v-btn to="/account">
+                <v-btn to="/account" class="translucent" round>
                     <span>{{user.roles[0] | uppercase}}</span>
                 </v-btn>
                 <v-btn flat small @click="logout" :loading="isLoggingOut">
@@ -33,24 +39,22 @@
 
         </v-toolbar>
 
-
-
-        <v-navigation-drawer app v-model="drawer" :stateless="!needsToHide" fixed v-if="!!user" class="white">
-            <v-card v-if="!!user" flat class="pa-1 my-2 text-xs-center white"  router to="/account">
-                <v-responsive>
+        <v-navigation-drawer app v-model="drawer" :stateless="!needsToHide" fixed v-if="!!user" :class="{'transparent' : $vuetify.breakpoint.width > 800}">
+            <v-card v-if="!!user" flat class="pa-1 my-2 text-xs-center transparent"  router to="/account">
+                <!-- <v-responsive>
                     <v-avatar size="40" class="grey">
                         <img src="/img/Abstract.jpg" alt="">
                     </v-avatar>
-                </v-responsive>
+                </v-responsive> -->
 
                 <v-card-text>
                     <div class="text-xs-center">{{user.fullname}}</div>
                 </v-card-text>
 
             </v-card>
-            <v-divider></v-divider>
+            <!-- <v-divider></v-divider> -->
 
-            <v-list>
+            <!-- <v-list>
             <template v-for="(link, i) in filterLinks">
                 <v-list-group :key="i" v-if="link.childrenFiltered">
                     <v-list-tile slot="activator" :to="link.to" active-class="black--text darken-4" class="">
@@ -102,7 +106,21 @@
                     </v-list-tile-action>
                 </v-list-tile>
             </template>
-        </v-list>
+        </v-list> -->
+
+        <v-divider class="my-4 transparent"></v-divider>
+        <div v-for="(link, i) in filterLinks" :key="i" class="pl-4 ml-4">
+            <v-btn round class="menu-iddle" :to="link.to" active-class="menu-active" flat>
+                <!-- <v-responsive> -->
+                    <!-- <v-avatar size="20" class="transparent mx-2"> -->
+                        <img :src="`/img/dos-icons/${link.icon}.png`" alt="" width="20" class="mt-1 mx-2" />
+                    <!-- </v-avatar> -->
+                <!-- </v-responsive> -->
+                <span class="mx-2">
+                    {{link.text}}
+                </span>
+            </v-btn>
+        </div>
 
         </v-navigation-drawer>
         <shop-preferences-dialog v-model="openShopPreferences" />
@@ -132,113 +150,113 @@ export default {
                     to: '/clients'
                 },
                 {
-                    text: 'New transaction',
-                    icon: 'computer',
+                    text: 'New Job Order',
+                    icon: 'new-transaction',
                     roles: ['admin', 'staff'],
                     color: '#a7a1e6',
                     to: '/new-transaction/services'
                 },
                 {
                     text: 'Remote panel',
-                    icon: 'cast_connected',
+                    icon: 'remote-panel',
                     roles: ['admin', 'staff'],
                     color: '#a7a1e6',
                     to: '/remote-panel'
                 },
                 {
                     text: 'Sales report',
-                    icon: 'event_note',
+                    icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
                     to: '/sales-report/calendar'
                 },
                 {
-                    text: 'Transactions',
-                    icon: 'receipt',
+                    text: 'Job Orders',
+                    icon: 'job-orders',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
                     to: '/transaction-reports/by-job-orders'
                 },
                 {
-                    text: 'Unpaid Transactions',
-                    icon: 'announcement',
+                    text: 'Unpaid',
+                    icon: 'unpaid-transactions',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',
                     to: '/unpaid-transactions'
                 },
                 {
                     text: 'Pending services',
-                    icon: 'format_list_numbered',
+                    icon: 'pending-services',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',
                     to: '/pending-services'
                 },
                 {
                     text: 'Customers',
-                    icon: 'people',
+                    icon: 'customers',
                     roles: ['staff', 'admin'],
                     color: '#a1e6d9',
                     to: '/customers'
                 },
                 {
                     text: 'Users',
-                    icon: 'people',
+                    icon: 'users',
                     roles: ['admin'],
                     color: '#a1e6d9',
                     to: '/users'
                 },
                 {
                     text: 'Services',
-                    icon: 'toc',
+                    icon: 'services',
                     roles: ['staff', 'admin'],
                     color: '#95b9fb',
                     to: '/services/washing-services'
                 },
                 {
                     text: 'Products',
-                    icon: 'list_alt',
+                    icon: 'products',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
                     to: '/products'
                 },
                 {
                     text: 'Product Purchases',
-                    icon: 'playlist_add',
+                    icon: 'product-purchases',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
                     to: '/product-purchases'
                 },
                 {
                     text: 'Expenses',
-                    icon: 'toc',
+                    icon: 'expenses',
                     roles: ['staff', 'admin'],
                     color: '#95b9fb',
                     to: '/expenses'
                 },
                 {
                     text: 'RFID',
-                    icon: 'phonelink_ring',
+                    icon: 'rfid',
                     roles: ['staff', 'admin'],
                     color: '#83fba8',
                     to: '/rfid/transactions'
                 },
                 {
                     text: 'Machines',
-                    icon: 'local_laundry_service',
+                    icon: 'machines',
                     roles: ['admin', 'staff'],
                     color: '#e4dfdd',
                     to: '/machines'
                 },
                 {
                     text: 'Loyalty points',
-                    icon: 'star',
+                    icon: 'loyalty-points',
                     roles: ['admin'],
                     color: '#e4dfdd',
                     to: '/loyalty-points'
                 },
                 {
                     text: 'Discounts',
-                    icon: 'loyalty',
+                    icon: 'discounts',
                     roles: ['admin'],
                     color: '#e4dfdd',
                     to: '/discounts'

@@ -1,9 +1,26 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Expenses</h3>
+        <h3 class="title white--text">Expenses</h3>
         <v-divider class="my-3"></v-divider>
 
-        <v-card>
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="ml-1 translucent-input round-input" label="Search expenses" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex style="max-width: 220px">
+                <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'staff_name']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+
+        <!-- <v-card>
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -20,28 +37,30 @@
                     </v-flex>
                 </v-layout>
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
         <v-btn class="success ml-0 my-3" round @click="addNewExpense"><v-icon left>add</v-icon> Add new expense</v-btn>
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{props.index + 1}}</td>
-                <td>{{ moment(props.item.date).format('LL') }}</td>
-                <td>{{ props.item.remarks }}</td>
-                <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
-                <td>{{ props.item.staff_name }}</td>
-                <td>
-                    <v-btn icon small @click="editExpense(props.item)">
-                        <v-icon small>edit</v-icon>
-                    </v-btn>
-                    <v-btn icon small @click="deleteExpense(props.item)" :loading="props.item.isDeleting">
-                        <v-icon small>delete</v-icon>
-                    </v-btn>
-                </td>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{props.index + 1}}</td>
+                    <td>{{ moment(props.item.date).format('LL') }}</td>
+                    <td>{{ props.item.remarks }}</td>
+                    <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
+                    <td>{{ props.item.staff_name }}</td>
+                    <td>
+                        <v-btn icon small @click="editExpense(props.item)" outline>
+                            <v-icon small>edit</v-icon>
+                        </v-btn>
+                        <v-btn icon small @click="deleteExpense(props.item)" outline :loading="props.item.isDeleting">
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <expense-dialog v-model="openExpenseDialog" :expense="activeExpese" @save="save" />
     </v-container>
 </template>

@@ -1,6 +1,6 @@
 <template>
     <form @submit.prevent="save">
-        <v-card>
+        <v-card class="rounded-card">
             <v-card-title class="title grey--text">Update email</v-card-title>
             <v-divider class="py-3"></v-divider>
 
@@ -10,10 +10,10 @@
             </v-card-text>
 
             <v-card-actions>
-                <v-btn type="submit" class="primary" :loading="loading">
+                <v-btn type="submit" class="primary" :loading="loading" round>
                     save
                 </v-btn>
-                <v-btn @click="cancel">
+                <v-btn @click="cancel" round>
                     Cancel
                 </v-btn>
             </v-card-actions>

@@ -1,32 +1,36 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Users</h3>
+        <h3 class="title white--text">Users</h3>
 
         <v-divider class="my-3"></v-divider>
 
-        <v-btn round class="primary" @click="addUser">
+        <v-btn round class="primary tranlucent ma-0" @click="addUser">
             <v-icon left>add</v-icon>
             add user
         </v-btn>
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{ props.item.name }}</td>
-                <td>{{ props.item.email }}</td>
-                <td>{{ props.item.contact_number }}</td>
-                <td>
-                    <v-btn small icon @click="edit(props.item)">
-                        <v-icon small>edit</v-icon>
-                    </v-btn>
-                    <v-btn small icon @click="deleteUser(props.item)" :loading="props.item.isDeleting">
-                        <v-icon small>delete</v-icon>
-                    </v-btn>
-                    <v-btn small @click="changePassword(props.item)" flat outline>
-                        <v-icon small left>sms</v-icon> change password
-                    </v-btn>
-                </td>
-            </template>
-        </v-data-table>
+        <v-divider class="transparent my-4"></v-divider>
+
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{ props.item.name }}</td>
+                    <td>{{ props.item.email }}</td>
+                    <td>{{ props.item.contact_number }}</td>
+                    <td>
+                        <v-btn small icon @click="edit(props.item)" outline>
+                            <v-icon small>edit</v-icon>
+                        </v-btn>
+                        <v-btn small icon @click="deleteUser(props.item)" :loading="props.item.isDeleting" outline>
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
+                        <v-btn small @click="changePassword(props.item)" flat outline round>
+                            <v-icon small left>sms</v-icon> change password
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
         <user-dialog :user="activeUser" v-model="openUserDialog" @save="updateUsers" />
         <password-dialog :user="activeUser" v-model="openPasswordDialog" />
     </v-container>

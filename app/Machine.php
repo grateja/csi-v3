@@ -16,6 +16,7 @@ class Machine extends Model
 
     protected $fillable = [
         'ip_address',
+        'mac_address',
         'machine_type',
         'total_minutes',
         'time_activated',

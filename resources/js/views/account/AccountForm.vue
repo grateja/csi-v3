@@ -1,6 +1,6 @@
 <template>
     <form method="post" @submit.prevent="save">
-        <v-card>
+        <v-card class="rounded-card">
             <v-card-title class="title">Profile</v-card-title>
             <v-progress-linear v-if="loading" height="3" indeterminate></v-progress-linear>
             <v-divider v-else></v-divider>
@@ -9,8 +9,8 @@
                 <v-text-field v-model="formData.contactNumber" label="Contact number" :error-messages="errors.get('contactNumber')"></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn class="primary" type="submit" :loading="saving">Save</v-btn>
-                <v-btn @click="cancel">Cancel</v-btn>
+                <v-btn class="primary" type="submit" :loading="saving" round>Save</v-btn>
+                <v-btn @click="cancel" round>Cancel</v-btn>
             </v-card-actions>
         </v-card>
     </form>

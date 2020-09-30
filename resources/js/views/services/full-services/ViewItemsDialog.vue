@@ -1,6 +1,6 @@
 <template>
     <v-dialog :value="value" max-width="720" persistent>
-        <v-card v-if="!!service">
+        <v-card v-if="!!service" class="rounded-card">
             <v-card-title class="title grey--text">{{service.name}}</v-card-title>
 
             <v-divider></v-divider>

@@ -1,8 +1,24 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Unpaid transactions</h3>
+        <h3 class="title white--text">Unpaid transactions</h3>
         <v-divider class="my-3"></v-divider>
-        <v-card>
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="translucent-input round-input" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex style="max-width: 220px">
+                <v-text-field class="translucent-input round-input mx-2" label="Specify date created" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="translucent-input round-input mx-2" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex style="max-width: 220px">
+                <v-combobox class="translucent-input round-input mx-2" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+        <!-- <v-card>
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -20,31 +36,33 @@
                 </v-layout>
 
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{ props.index + 1 }}</td>
-                <td>
-                    <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)">
-                        {{ props.item.job_order }}
-                    </v-btn>
-                </td>
-                <td>{{ props.item.customer_name }}</td>
-                <td>{{ moment(props.item.date).format('LLL') }}</td>
-                <td>P {{ parseFloat(props.item.total_price).toLocaleString(2) }}</td>
-            </template>
-            <template slot="footer">
-                <tr v-if="!!summary">
-                    <td colspan="3">
-                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table class="transparent" :headers="headers" :items="items" :loading="loading" hide-actions>
+                <template v-slot:items="props">
+                    <td>{{ props.index + 1 }}</td>
+                    <td>
+                        <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round>
+                            {{ props.item.job_order }}
+                        </v-btn>
                     </td>
-                    <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
-                    <td></td>
-                </tr>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+                    <td>{{ props.item.customer_name }}</td>
+                    <td>{{ moment(props.item.date).format('LLL') }}</td>
+                    <td>P {{ parseFloat(props.item.total_price).toLocaleString(2) }}</td>
+                </template>
+                <template slot="footer">
+                    <tr v-if="!!summary">
+                        <td colspan="3">
+                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                        </td>
+                        <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                        <td></td>
+                    </tr>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <transaction-dialog :transactionId="transactionId" v-model="openTransactionDialog" @savePayment="closePayment" />
     </v-container>
 </template>

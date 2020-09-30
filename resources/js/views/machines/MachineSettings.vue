@@ -1,7 +1,7 @@
 <template>
     <v-dialog :value="value" max-width="500" persistent>
         <form @submit.prevent="submit">
-            <v-card>
+            <v-card class="rounded-card">
                 <v-card-title class="title grey--text">Machine tap card configuration</v-card-title>
                 <v-card-text>
                     <v-text-field outline label="Initial price" v-model="formData.initialPrice" :error-messages="errors.get('initialPrice')"></v-text-field>
@@ -12,8 +12,8 @@
                     <div class="font-italic font-weight-bold caption" v-if="formData.applyToAll">This configuration will be applied to all {{machineType}}</div>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn type="submit" class="primary" :loading="saving">save</v-btn>
-                    <v-btn @click="close">close</v-btn>
+                    <v-btn round type="submit" class="primary" :loading="saving">save</v-btn>
+                    <v-btn round @click="close">close</v-btn>
                 </v-card-actions>
             </v-card>
         </form>

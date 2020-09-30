@@ -43,8 +43,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // /api/tap
 Route::group(['prefix' => 'tap'], function() {
-    // /api/tap/{machineIp}/{rfid}
-    Route::get('{machineIp}/{rfid}', 'TapCardController@tap');
+    // /api/tap/{machineIp}/{rfid}/{macAddress?}
+    Route::get('{machineIp}/{rfid}/{macAddress?}', 'TapCardController@tap');
 });
 
 // /api/reset

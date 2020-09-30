@@ -1,8 +1,15 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
         <form @submit.prevent="submit">
-            <v-card>
-                <v-card-title>Customer info</v-card-title>
+            <v-card class="rounded-card">
+                <v-card-title>
+                    <span class="title">Customer info</span>
+                    <v-spacer></v-spacer>
+                    <v-btn icon small @click="close">
+                        <v-icon>close</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
                 <v-card-text>
                     <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name" ref="name"></v-text-field>
                     <v-text-field v-model="formData.address" :error-messages="errors.get('address')" outline label="Address"></v-text-field>

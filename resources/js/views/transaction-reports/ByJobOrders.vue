@@ -1,6 +1,26 @@
 <template>
     <div>
-        <v-card>
+        <v-layout justify-center>
+            <v-flex style="max-width: 500px">
+                <v-text-field class="translucent-input round-input" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-layout justify-center>
+            <v-flex shrink>
+                <v-text-field label="Specify date created" v-model="date" type="date" append-icon="date" @change="filter" outline class="mr-2 round-input translucent-input" style="width: 200px" dense></v-text-field>
+            </v-flex>
+            <v-flex shrink>
+                <v-text-field label="Specify date paid" v-model="datePaid" type="date" append-icon="date" @change="filter" outline class="mx-1 round-input translucent-input" style="width: 200px" dense></v-text-field>
+            </v-flex>
+            <v-flex shrink>
+                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date', 'date_paid']" @change="filter"></v-combobox>
+            </v-flex>
+            <v-flex shrink>
+                <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+            </v-flex>
+        </v-layout>
+
+        <!-- <v-card class="rounded-card translucent">
             <v-card-text>
                 <v-layout>
                     <v-flex shrink>
@@ -10,7 +30,7 @@
                         <v-text-field label="Specify date paid" v-model="datePaid" type="date" append-icon="date" @change="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex>
-                        <v-text-field class="ml-1" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+                        <v-text-field class="ml-1 translucent-input round-input" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
                     </v-flex>
                     <v-flex shrink>
                         <v-combobox class="ml-1" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date', 'date_paid']" @change="filter"></v-combobox>
@@ -20,34 +40,36 @@
                     </v-flex>
                 </v-layout>
             </v-card-text>
-        </v-card>
+        </v-card> -->
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <tr>
-                    <td>{{props.index + 1}}</td>
-                    <td>
-                        <v-btn small outline class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
-                            {{ props.item.job_order }}
-                        </v-btn>
-                    </td>
-                    <td>{{ props.item.customer_name }}</td>
-                    <td>{{ moment(props.item.date).format('LLL') }}</td>
-                    <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
-                    <td>{{ datePaidStr(props.item) }}</td>
-                </tr>
-            </template>
-            <template slot="footer">
-                <tr v-if="!!summary">
-                    <td colspan="4">
-                        <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
-                    </td>
-                    <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
-                    <td></td>
-                </tr>
-            </template>
-        </v-data-table>
-        <v-btn block @click="loadMore" :loading="loading">Load more</v-btn>
+        <v-card class="translucent-table rounded-card">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <tr>
+                        <td>{{props.index + 1}}</td>
+                        <td>
+                            <v-btn round small outline class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
+                                {{ props.item.job_order }}
+                            </v-btn>
+                        </td>
+                        <td>{{ props.item.customer_name }}</td>
+                        <td>{{ moment(props.item.date).format('LLL') }}</td>
+                        <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
+                        <td>{{ datePaidStr(props.item) }}</td>
+                    </tr>
+                </template>
+                <template slot="footer">
+                    <tr v-if="!!summary">
+                        <td colspan="4">
+                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                        </td>
+                        <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                        <td></td>
+                    </tr>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" @savePayment="savePayment" @deleteTransaction="deleteTransaction" />
     </div>
 </template>

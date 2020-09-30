@@ -1,28 +1,30 @@
 <template>
     <v-container>
-        <h3 class="title grey--text">Discounts</h3>
+        <h3 class="title white--text">Discounts</h3>
 
         <v-divider class="my-3"></v-divider>
 
-        <v-btn round class="primary" @click="addDiscount">
+        <v-btn round class="ml-0 primary" @click="addDiscount">
             <v-icon left>add</v-icon>
             add discount
         </v-btn>
 
-        <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-            <template v-slot:items="props">
-                <td>{{ props.item.name }}</td>
-                <td>{{ props.item.percentage }} %</td>
-                <td>
-                    <v-btn small icon @click="edit(props.item)">
-                        <v-icon small>edit</v-icon>
-                    </v-btn>
-                    <v-btn small icon @click="deleteDiscount(props.item)" :loading="props.item.isDeleting">
-                        <v-icon small>delete</v-icon>
-                    </v-btn>
-                </td>
-            </template>
-        </v-data-table>
+        <v-card class="rounded-card translucent-table">
+            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
+                <template v-slot:items="props">
+                    <td>{{ props.item.name }}</td>
+                    <td>{{ props.item.percentage }} %</td>
+                    <td>
+                        <v-btn small icon @click="edit(props.item)" outline>
+                            <v-icon small>edit</v-icon>
+                        </v-btn>
+                        <v-btn small icon @click="deleteDiscount(props.item)" outline :loading="props.item.isDeleting">
+                            <v-icon small>delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-card>
         <discount-dialog :discount="activeDiscount" v-model="openDiscountDialog" @save="updateDiscounts" />
     </v-container>
 </template>

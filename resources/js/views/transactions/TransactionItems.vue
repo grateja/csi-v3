@@ -1,14 +1,40 @@
 <template>
-    <v-card>
+    <v-card class="rounded-card">
+        <v-card-actions>
+            <span class="title">
+                Current job order
+            </span>
+            <v-spacer></v-spacer>
+            <v-btn icon small @click="removeCustomer">
+                <v-icon small>close</v-icon>
+            </v-btn>
+        </v-card-actions>
+        <v-divider></v-divider>
         <v-card-text>
-            <dl v-if="currentTransaction">
-                <dt>Date :</dt>
-                <dd>{{currentTransaction && currentTransaction.date ? moment(currentTransaction.date).format('MMMM DD, YYYY hh:mm A') : 'Date will appear after saving'}}</dd>
-
-                <dt>Job order :</dt>
-                <dd>{{currentTransaction ? currentTransaction.job_order || 'Job order number will appear after saving' : null}}</dd>
-            </dl>
-
+            <v-layout>
+                <v-flex xs5 class="text-xs-right mr-3">Customer name:</v-flex>
+                <v-flex xs7>{{currentCustomer.name}}</v-flex>
+            </v-layout>
+            <v-layout>
+                <v-flex xs5 class="text-xs-right mr-3">Date :</v-flex>
+                <v-flex xs7>
+                    <span v-if="currentTransaction && currentTransaction.date">
+                        {{moment(currentTransaction.date).format('MMMM DD, YYYY hh:mm A')}}
+                    </span>
+                    <span v-else class="grey--text font-italic">(Date will appear after saving)</span>
+                </v-flex>
+            </v-layout>
+            <v-layout>
+                <v-flex xs5 class="text-xs-right mr-3">Job order # :</v-flex>
+                <v-flex xs7>
+                    <span v-if="currentTransaction && currentTransaction.job_order" class="font-weight-bold">
+                        {{currentTransaction.job_order}}
+                    </span>
+                    <span v-else class="grey--text font-italic">
+                        (Job order number will appear after saving)
+                    </span>
+                </v-flex>
+            </v-layout>
 
             <table class="v-table" border="1">
                 <tr>
@@ -120,9 +146,15 @@ export default {
             if(this.currentTransaction) {
                 return 'P' + parseFloat(this.currentTransaction.total_amount).toFixed(2);
             }
+        },
+        currentCustomer() {
+            return this.$store.getters['postransaction/getCurrentCustomer'];
         }
     },
     methods: {
+        removeCustomer() {
+            this.$store.commit('postransaction/removeCustomer');
+        },
         saveTransaction() {
             this.$store.dispatch('postransaction/saveTransaction', this.currentTransaction.id).then((res, rej) => {
 
