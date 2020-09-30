@@ -1,13 +1,14 @@
 <template>
     <form action="" method="post" @submit.prevent="login">
-        <v-card max-width="400">
-            <v-card-title>
-                <div class="title">Login</div>
+        <v-card color="transparent" flat>
+            <v-card-title class="white--text title">
+                <v-spacer></v-spacer>
+                Laundry Card Management System
+                <v-spacer></v-spacer>
             </v-card-title>
-
-            <v-divider></v-divider>
-
-            <v-card-text>
+        </v-card>
+        <v-card max-width="400" class="rounded-card translucent login-form">
+            <v-card-text class="pa-4">
 
                 <v-text-field
                     name="email"
@@ -28,8 +29,12 @@
                 ></v-text-field>
 
                 <v-checkbox label="Remember me" v-model="rememberMe"></v-checkbox>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                        <v-btn round type="submit" flat class="primary ma-0" :loading="isLoggingIn">Log in</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
 
-                <v-btn type="submit" flat class="primary ma-0" :loading="isLoggingIn">Log in</v-btn>
 
             </v-card-text>
         </v-card>
@@ -62,3 +67,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.login-form {
+    margin: 20px auto;
+}
+</style>
