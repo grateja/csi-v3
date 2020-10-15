@@ -3,7 +3,8 @@
         <h3 class="title white--text">Machines</h3>
 
         <v-divider class="my-3"></v-divider>
-        <v-btn round class="ml-0 translucent" :class="{primary: tab == 'rw'}" @click="tab = 'rw'">Regular washers</v-btn>
+        <v-btn round class="ml-0 translucent" to="/machines/remarks" >Machines remarks <v-icon>chevron_right</v-icon> </v-btn>
+        <v-btn round class="translucent" :class="{primary: tab == 'rw'}" @click="tab = 'rw'">Regular washers</v-btn>
         <v-btn round class="translucent" :class="{primary: tab == 'rd'}" @click="tab = 'rd'">Regular dryers</v-btn>
         <v-btn round class="translucent" :class="{primary: tab == 'tw'}" @click="tab = 'tw'">Titan washers</v-btn>
         <v-btn round class="translucent" :class="{primary: tab == 'td'}" @click="tab = 'td'">Titan dryers</v-btn>

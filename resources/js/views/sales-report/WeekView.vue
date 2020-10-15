@@ -1,67 +1,89 @@
 <template>
     <div>
         <v-divider class="my-2 transparent"></v-divider>
-        <v-card class="rounded-card translucent">
+        <v-card class="rounded-card translucent py-3">
             <v-card v-for="draft in result" :key="draft.label" class="my-4" flat color="transparent">
                 <div class="grey--text ma-1 text-xs-center">{{month}} {{draft.label}}, {{year}}</div>
                 <v-divider></v-divider>
                 <v-layout row wrap>
-                    <v-flex class="pa-3 col5-custom">
-                        <div class="grey--text text-xs-center">Paid Job Orders</div>
+                    <v-flex xs2>
+                        <div class="grey--text text-xs-center">
+                            <v-icon>people</v-icon> New customers</div>
+                        <v-divider class="my-1"></v-divider>
+                        <div class="title text-xs-center">{{draft.newCustomers}}</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="grey--text text-xs-center">
+                            <v-icon>bookmarks</v-icon> Paid Job Orders</div>
                         <v-divider class="my-1"></v-divider>
                         <div class="title text-xs-center">{{draft.paid_jo}}/{{draft.total_jo}}</div>
                     </v-flex>
-                    <v-flex class="pa-3 col5-custom">
-                        <div class="grey--text text-xs-center">Sales</div>
+                    <v-flex xs2>
+                        <div class="grey--text text-xs-center">
+                            <v-icon>collections_bookmark</v-icon> Sales</div>
                         <v-divider class="my-1"></v-divider>
                         <div class="title text-xs-center">P {{parseFloat(draft.amount).toLocaleString()}}</div>
                     </v-flex>
-                    <v-flex class="pa-3 col5-custom">
-                        <div class="grey--text text-xs-center">Collections</div>
+                    <v-flex xs2>
+                        <div class="grey--text text-xs-center">
+                            <v-icon>move_to_inbox</v-icon> Collections</div>
                         <v-divider class="my-1"></v-divider>
                         <div class="title text-xs-center">P {{parseFloat(draft.collections).toLocaleString()}}</div>
                     </v-flex>
-                    <v-flex class="pa-3 col5-custom">
-                        <div class="grey--text text-xs-center">Expenses</div>
+                    <v-flex xs2>
+                        <div class="grey--text text-xs-center">
+                            <v-icon>save</v-icon> Expenses</div>
                         <v-divider class="my-1"></v-divider>
                         <div class="title text-xs-center">P {{parseFloat(draft.expenses).toLocaleString()}}</div>
                     </v-flex>
-                    <v-flex class="pa-3 col5-custom">
-                        <div class="grey--text text-xs-center">New customers</div>
+                    <v-flex xs2>
+                        <div class="grey--text text-xs-center">
+                            <v-icon>account_balance_wallet</v-icon> Total Deposit</div>
                         <v-divider class="my-1"></v-divider>
-                        <div class="title text-xs-center">{{draft.newCustomers}}</div>
+                        <div class="title text-xs-center">P {{parseFloat(draft.totalDeposit).toLocaleString()}}</div>
                     </v-flex>
                 </v-layout>
             </v-card>
         </v-card>
-        <v-card v-if="!!summary" class="rounded-card translucent">
+        <v-card v-if="!!summary" class="rounded-card translucent py-3">
             <div class="grey--text ma-2 text-xs-center font-weight-bold">Summary</div>
             <v-divider></v-divider>
             <v-layout row wrap>
-                <v-flex class="pa-3 col5-custom">
-                    <div class="grey--text text-xs-center">Paid Job Orders</div>
+                <v-flex xs2>
+                    <div class="grey--text text-xs-center">
+                        <v-icon>people</v-icon> New customers</div>
+                    <v-divider class="my-1"></v-divider>
+                    <div class="title text-xs-center">{{summary.totalNewCustomers}}</div>
+                </v-flex>
+                <v-flex xs2>
+                    <div class="grey--text text-xs-center">
+                        <v-icon>bookmarks</v-icon> Paid Job Orders</div>
                     <v-divider class="my-1"></v-divider>
                     <div class="title text-xs-center">{{summary.paid_jo}}/{{summary.total_jo}}</div>
                 </v-flex>
-                <v-flex class="pa-3 col5-custom">
-                    <div class="grey--text text-xs-center">Sales</div>
+                <v-flex xs2>
+                    <div class="grey--text text-xs-center">
+                        <v-icon>collections_bookmark</v-icon> Sales</div>
                     <v-divider class="my-1"></v-divider>
                     <div class="title text-xs-center">P {{parseFloat(summary.totalSales).toLocaleString()}}</div>
                 </v-flex>
-                <v-flex class="pa-3 col5-custom">
-                    <div class="grey--text text-xs-center">Collections</div>
+                <v-flex xs2>
+                    <div class="grey--text text-xs-center">
+                        <v-icon>move_to_inbox</v-icon> Collections</div>
                     <v-divider class="my-1"></v-divider>
                     <div class="title text-xs-center">P {{parseFloat(summary.totalCollections).toLocaleString()}}</div>
                 </v-flex>
-                <v-flex class="pa-3 col5-custom">
-                    <div class="grey--text text-xs-center">Expenses</div>
+                <v-flex xs2>
+                    <div class="grey--text text-xs-center">
+                        <v-icon>save</v-icon> Expenses</div>
                     <v-divider class="my-1"></v-divider>
                     <div class="title text-xs-center">P {{parseFloat(summary.expenses).toLocaleString()}}</div>
                 </v-flex>
-                <v-flex class="pa-3 col5-custom">
-                    <div class="grey--text text-xs-center">New customers</div>
+                <v-flex xs2>
+                    <div class="grey--text text-xs-center">
+                        <v-icon>account_balance_wallet</v-icon> Total Deposit</div>
                     <v-divider class="my-1"></v-divider>
-                    <div class="title text-xs-center">{{summary.totalNewCustomers}}</div>
+                    <div class="title text-xs-center">P {{parseFloat(summary.totalDeposit).toLocaleString()}}</div>
                 </v-flex>
             </v-layout>
         </v-card>

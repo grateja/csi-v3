@@ -19,4 +19,12 @@ class MachineRemarks extends Model
     public function queSynch() {
         return (new AutoSynch('machine_remarks', $this->id))->delay(5);
     }
+
+    public function machine() {
+        return $this->belongsTo('App\Machine');
+    }
+
+    public function user() {
+        return $this->belongsTo('App\User');
+    }
 }

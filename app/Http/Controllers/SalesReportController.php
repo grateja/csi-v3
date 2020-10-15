@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Expense;
 use App\Machine;
+use App\MonthlyTarget;
 use App\ProductPurchase;
 use App\ProductTransactionItem;
 use App\RfidCardTransaction;
@@ -24,7 +25,7 @@ class SalesReportController extends Controller
             ->whereNull('deleted_at')
             ->whereMonth('date', $monthIndex)->whereYear('date', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(IF(date_paid IS NULL, 0, total_price)) as collection, SUM(1) as total_jo, SUM(IF(date_paid IS NULL, 0, 1)) as paid_jo')
+            ->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(1) as total_jo, SUM(IF(date_paid IS NULL, 0, 1)) as paid_jo')
             //->selectRaw('DATE(' . 'date' . ') as day, SUM(total_price) total_price, SUM(IF(date_paid IS NULL, 0,(select (`total_amount` - (`total_amount` /  100 * `discount`)) from `transaction_payments` where `transaction_payments`.`id` = `transactions`.`id`))) as collection')
             ->get();
 
@@ -64,7 +65,7 @@ class SalesReportController extends Controller
         $transactionPayment = TransactionPayment::whereMonth('date', $monthIndex)
             ->whereYear('date', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(date) as day, SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as collection')
+            ->selectRaw('DATE(date) as day, SUM((`total_amount` - (`total_amount` /  100 * `discount`)) - `points_in_peso` - `card_load_used`) as collection')
             ->get();
 
         $result = array_merge(
@@ -78,15 +79,18 @@ class SalesReportController extends Controller
         );
         $result = collect($result)->groupBy('day');
         $result = $result->map(function($item, $key) {
+            $totalCollections = $item->sum('collection');
+            $totalExpenses =  $item->sum('expense') + $item->sum('product_purchase');
             return
             [
                 'date' => $key,
                 'amount' => $item->sum('total_price'),
-                'collection' => $item->sum('collection'),
+                'collection' => $totalCollections,
                 'total_jo' => $item->sum('total_jo'),
                 'paid_jo' => $item->sum('paid_jo'),
-                'expenses' => $item->sum('expense') + $item->sum('product_purchase'),
+                'expenses' => $totalExpenses,
                 'newCustomers' => $item->sum('total_count'),
+                'totalDeposit' => $totalCollections - $totalExpenses,
             ];
         });
 
@@ -97,6 +101,7 @@ class SalesReportController extends Controller
             'totalSales' => $result->sum('amount'),
             'totalCollections' => $result->sum('collection'),
             'totalNewCustomers' => $result->sum('newCustomers'),
+            'totalDeposit' => $result->sum('totalDeposit'),
         ];
 
         return response()->json([
@@ -115,7 +120,7 @@ class SalesReportController extends Controller
         //     ->selectRaw('SUM(total_price) as total_price, COUNT(id) as total_count')->first();
 
         $posCollections = TransactionPayment::whereDate('created_at', $date)
-            ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as total_price, COUNT(id) as total_count')->first();
+            ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`) - `points_in_peso` - `card_load_used`) as total_price, COUNT(id) as total_count')->first();
 
         $rfidCardTransactionSummary = RfidCardTransaction::whereDate('created_at', $date)
             ->selectRaw('SUM(IF(card_type = "u", price, 0)) as users_card, SUM(IF(card_type = "c", price, 0)) as customers_card, SUM(price) as total_price, COUNT(id) AS cycle_count')
@@ -133,6 +138,15 @@ class SalesReportController extends Controller
             ->selectRaw('SUM(amount) as expense')
             ->first();
 
+        $productPurchases = ProductPurchase::whereDate('date', $date)
+            ->selectRaw('SUM(quantity * unit_cost) as total_cost')
+            ->first();
+
+        $totalSales = $posTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $rfidLoadTransactionSummary->total_price;
+        $totalCollections = $posCollections->total_price + $rfidCardTransactionSummary->users_card + $rfidLoadTransactionSummary->total_price;
+        $totalExpenses = $expenses->expenses + $productPurchases->total_cost;
+        $totalDeposit = $totalCollections - $totalExpenses;
+
         $inventory = ProductTransactionItem::whereDate('created_at', $date)
             ->select(DB::raw('COUNT(*) as total_count, product_id, name, SUM(price) as total_price'))
             ->groupBy('product_id', 'name')->get();
@@ -146,6 +160,10 @@ class SalesReportController extends Controller
                 'newCustomers' => $newCustomers,
                 'expenses' => $expenses,
                 'inventory' => $inventory,
+                'totalSales' => $totalSales,
+                'totalCollections' => $totalCollections,
+                'totalExpenses' => $totalExpenses,
+                'totalDeposit' => $totalDeposit,
             ]
         ]);
     }
@@ -260,7 +278,7 @@ class SalesReportController extends Controller
 
             $transactionPayment = TransactionPayment::whereMonth('date', $monthIndex)
                 ->whereYear('date', $year)
-                ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as collection,
+                ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`) - `points_in_peso` - `card_load_used`) as collection,
                 CONCAT(
                     IF(DATE_FORMAT((date - INTERVAL (WEEKDAY(date)) DAY), "%m") <> '.$monthIndex.',
                         DATE_FORMAT(DATE_SUB(date, INTERVAL DAYOFMONTH(date)-1 DAY), "%d"),
@@ -284,15 +302,20 @@ class SalesReportController extends Controller
 
         $result = collect($result)->groupBy('label');
         $result = $result->map(function($item, $key) {
+
+            $totalExpenses = $item->sum('expense') + $item->sum('product_purchase');
+            $totalCollections = $item->sum('collection');
+
             return
             [
                 'label' => $key,
                 'amount' => $item->sum('total_price'),
                 'total_jo' => $item->sum('total_jo'),
                 'paid_jo' => $item->sum('paid_jo'),
-                'expenses' => $item->sum('expense') + $item->sum('product_purchase'),
+                'expenses' => $totalExpenses,
                 'newCustomers' => $item->sum('total_count'),
-                'collections' => $item->sum('collection'),
+                'collections' => $totalCollections,
+                'totalDeposit' => $totalCollections - $totalExpenses,
             ];
         });
 
@@ -303,11 +326,46 @@ class SalesReportController extends Controller
             'totalSales' => $result->sum('amount'),
             'totalCollections' => $result->sum('collections'),
             'totalNewCustomers' => $result->sum('newCustomers'),
+            'totalDeposit' => $result->sum('totalDeposit'),
         ];
 
         return response()->json([
             'result' => array_values($result->toArray()),
             'summary' => $summary,
         ]);
+    }
+
+    public function yearlyCumulative($year) {
+        $posTransactions = Transaction::whereYear('date', $year)
+            ->where('saved', 1)
+            ->selectRaw('MONTH(date) as month, SUM(total_price) as jo_sales, COUNT(*) as jo_count')
+            ->orderBy('month')
+            ->groupBy('month')
+            ->get();
+
+        $total = 0;
+
+        $monthlyTargets = MonthlyTarget::all();
+
+
+        $posTransactions->transform(function($item) use (&$total, $monthlyTargets) {
+            $total = $item->jo_sales + $total;
+            $item['month_to_date'] = $total;
+
+            $target = $monthlyTargets->find('index', $item->month);
+            $item['target'] = $target->target;
+
+            // if($before > 0 && $item->jo_sales > $before) {
+            //     // win
+            //     $item['diff_percentage'] = ($item->jo_sales - $before) / $item->jo_sales * 100;
+            // } else if($before > 0 && $item->jo_sales < $before) {
+            //     // loss
+            //     $item['diff_percentage'] = (($before - $item->jo_sales) / $before * 100) - 100;
+            // }
+            // $before = $item->jo_sales;
+            return $item;
+        });
+
+        return response()->json($posTransactions);
     }
 }

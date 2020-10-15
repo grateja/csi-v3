@@ -156,6 +156,10 @@ const routes = [
         component: require('./views/machines/Index.vue').default
     },
     {
+        path: '/machines/remarks',
+        component: require('./views/machines/MachineRemarks.vue').default
+    },
+    {
         path: '/rfid',
         component: require('./views/rfid/Index.vue').default,
         children: [

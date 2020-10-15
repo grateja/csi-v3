@@ -21,43 +21,91 @@
                                     <template v-if="draft.active">
                                         <v-hover v-slot:default="{ hover }" v-if="draft.active">
                                             <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="dateClick(draft.date)" height="121px">
-                                                <span>{{draft.date}}</span>
+                                                <span class="pa-2 grey--text font-weigth-bold">{{draft.date}}</span>
+                                                <v-tooltip top v-if="draft.newCustomers">
+                                                    <v-layout slot="activator" class="caption">
+                                                        <v-flex xs3 class="text-xs-right pr-1">
+                                                            <v-icon small>people</v-icon>
+                                                        </v-flex>
+                                                        <v-flex xs9 class="pl-1">
+                                                            {{draft.newCustomers}}
+                                                        </v-flex>
+                                                    </v-layout>
+                                                    <span>{{draft.newCustomers}} new customer(s)</span>
+                                                </v-tooltip>
                                                 <v-tooltip top>
-                                                    <div slot="activator" class="title text-xs-center caption" :class="draft.jo_color">{{draft.jo_count}}</div>
+                                                    <v-layout slot="activator" class="caption">
+                                                        <v-flex xs3 class="text-xs-right pr-1">
+                                                            <v-icon small>bookmark</v-icon>
+                                                        </v-flex>
+                                                        <v-flex xs9 class="pl-1">
+                                                            <div :class="draft.jo_color">{{draft.jo_count}}</div>
+                                                        </v-flex>
+                                                    </v-layout>
                                                     <span>Total number of Job Orders</span>
                                                 </v-tooltip>
                                                 <v-tooltip top>
-                                                    <div slot="activator" class="title text-xs-center">
-                                                        <v-icon small>collections_bookmark</v-icon>
-                                                        {{draft.amount}}</div>
+                                                    <v-layout slot="activator" class="caption">
+                                                        <v-flex xs3 class="text-xs-right pr-1">
+                                                            <v-icon small>collections_bookmark</v-icon>
+                                                        </v-flex>
+                                                        <v-flex xs9 class="pl-1">
+                                                            {{draft.amount}}
+                                                        </v-flex>
+                                                    </v-layout>
                                                     <span>Total sales</span>
                                                 </v-tooltip>
                                                 <v-tooltip top>
-                                                    <div slot="activator" class="text-xs-center blue--text">
-                                                        <v-icon small color="blue">move_to_inbox</v-icon>
-                                                        {{draft.collection}}</div>
-                                                    <span>Total collections</span>
-                                                </v-tooltip>
-                                                <v-tooltip top>
-                                                    <div slot="activator" class="text-xs-center grey--text">
-                                                        <v-icon small>save</v-icon>
-                                                        {{draft.expenses}}</div>
+                                                    <v-layout slot="activator" class="caption">
+                                                        <v-flex xs3 class="text-xs-right pr-1">
+                                                            <v-icon small>save</v-icon>
+                                                        </v-flex>
+                                                        <v-flex xs9 class="pl-1">
+                                                            {{draft.expenses}}
+                                                        </v-flex>
+                                                    </v-layout>
                                                     <span>Total expenses</span>
                                                 </v-tooltip>
                                                 <v-tooltip top>
-                                                    <div slot="activator" class="text-xs-center">{{draft.newCustomers}}</div>
-                                                    <span>Total number of customer</span>
+                                                    <v-layout slot="activator" class="caption">
+                                                        <v-flex xs3 class="text-xs-right pr-1">
+                                                            <v-icon small>move_to_inbox</v-icon>
+                                                        </v-flex>
+                                                        <v-flex xs9 class="pl-1">
+                                                            {{draft.collection}}
+                                                        </v-flex>
+                                                    </v-layout>
+                                                    <span>Total collections</span>
+                                                </v-tooltip>
+                                                <v-tooltip top>
+                                                    <v-layout slot="activator" class="caption">
+                                                        <v-flex xs3 class="text-xs-right pr-1">
+                                                            <v-icon small>account_balance_wallet</v-icon>
+                                                        </v-flex>
+                                                        <v-flex xs9 class="pl-1">
+                                                            {{draft.totalDeposit}}
+                                                        </v-flex>
+                                                    </v-layout>
+                                                    <span>Total Deposit</span>
                                                 </v-tooltip>
                                             </v-card>
                                         </v-hover>
                                         <v-progress-linear :background-color="draft.background" color="green" v-if="draft.active && draft.profitPercentage" :value="draft.value" class="ma-0" height="20px">
-                                            <div class="white--text text-xs-center">{{draft.profitStr}} ({{Math.round(draft.profitPercentage)}} %)</div>
+                                            <v-layout>
+                                                <v-flex xs3 class="text-xs-right pr-1">
+                                                    {{Math.round(draft.profitPercentage)}}%
+                                                </v-flex>
+                                                <v-flex xs9 class="pl-1">
+                                                    {{draft.profitStr}}
+                                                </v-flex>
+                                            </v-layout>
                                         </v-progress-linear>
                                     </template>
                                     <template v-else>
                                         <v-card class="ma-0 translucent day" color="#f6f6f6" flat height="141px">
                                             <div>
-                                                <span class="day ma-1">{{draft.date}}</span>
+                                                <span class="pa-2 grey--text font-weigth-bold">{{draft.date}}</span>
+                                                <!-- <span class="day ma-1">{{draft.date}}</span> -->
                                             </div>
                                         </v-card>
                                     </template>
@@ -73,6 +121,14 @@
                     <v-divider color="grey"></v-divider>
                     <v-card-text class="my-0 py-0">
                         <v-list>
+                            <v-list-tile>
+                                <v-icon left>people</v-icon>
+                                <v-list-tile-content>
+                                    {{summary.totalNewCustomers}}
+                                    <span class="caption grey--text">New customers</span>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                            <v-divider />
                             <v-list-tile>
                                 <v-icon left>bookmarks</v-icon>
                                 <v-list-tile-content>
@@ -90,6 +146,14 @@
                             </v-list-tile>
                             <v-divider />
                             <v-list-tile>
+                                <v-icon left>save</v-icon>
+                                <v-list-tile-content>
+                                    ₱ {{parseFloat(summary.expenses).toLocaleString()}}
+                                    <span class="caption grey--text">Expenses</span>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                            <v-divider />
+                            <v-list-tile>
                                 <v-icon left>move_to_inbox</v-icon>
                                 <v-list-tile-content>
                                     ₱ {{parseFloat(summary.totalCollections).toLocaleString()}}
@@ -98,21 +162,13 @@
                             </v-list-tile>
                             <v-divider />
                             <v-list-tile>
-                                <v-icon left>save</v-icon>
+                                <v-icon left>account_balance_wallet</v-icon>
                                 <v-list-tile-content>
-                                    ₱ {{parseFloat(summary.expenses).toLocaleString()}}
-                                    <span class="caption grey--text">Expenses</span>
+                                    ₱ {{parseFloat(summary.totalDeposit).toLocaleString()}}
+                                    <span class="caption grey--text">Total Deposit</span>
                                 </v-list-tile-content>
                             </v-list-tile>
                             <v-divider />
-                            <v-divider />
-                            <v-list-tile>
-                                <v-icon left>people</v-icon>
-                                <v-list-tile-content>
-                                    {{summary.totalNewCustomers}}
-                                    <span class="caption grey--text">New customers</span>
-                                </v-list-tile-content>
-                            </v-list-tile>
                         </v-list>
                         <v-divider class="grey"></v-divider>
                     </v-card-text>
@@ -186,10 +242,11 @@ export default {
                             profitPercentage: profit > 1 ? profit : -loss,
                             value: (!i.amount && !i.expenses) ? 0 : profit > 1 ? profit : 100 - loss || 0,
                             background: profit > 1 ? 'blue' : 'pink',
-                            newCustomers: i.newCustomers ? i.newCustomers + ' new customer' + (i.newCustomers > 1 ? 's' : '') : '',
+                            newCustomers: i.newCustomers ? i.newCustomers + ' customer' + (i.newCustomers > 1 ? 's' : '') : '',
                             jo_color: i.total_jo == i.paid_jo ? 'green--text' : 'grey--text',
                             jo_count: 'J.O.' + i.paid_jo + '/' + i.total_jo + ' Paid',
                             collection: '₱' + parseFloat(i.collection).toLocaleString(),
+                            totalDeposit: i.totalDeposit
                         };
                     } else if(index != 0) {
                         days[index] = {

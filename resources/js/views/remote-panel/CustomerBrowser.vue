@@ -1,7 +1,14 @@
 <template>
     <v-dialog :value="value" max-width="480px" persistent>
         <v-card v-if="!!machine">
-            <v-card-title class="grey--text title">Select customer for {{machine.machine_name}}</v-card-title>
+            <v-card-title class="grey--text title">Select customer for {{machine.machine_name}}
+                <v-spacer></v-spacer>
+                <div>
+                    <v-progress-circular v-if="ping.requesting" size="24" indeterminate />
+                    <v-icon v-else :class="ping">rss_feed</v-icon>
+                    {{ping.requesting}}
+                </div>
+            </v-card-title>
             <v-card-text>
                 <v-text-field v-model="keyword" append-icon="search" label="Filter customer name" :loading="loading" @keyup="loadCustomers" ref="keyword"></v-text-field>
                 <div v-if="loading">
@@ -45,7 +52,11 @@ export default {
             keyword: null,
             loading: false,
             openServiceBrowser: false,
-            activeCustomer: null
+            activeCustomer: null,
+            ping: {
+                requesting: false,
+                color: 'grey--text'
+            }
         }
     },
     methods: {
@@ -72,6 +83,16 @@ export default {
         machineActivated(data) {
             this.$emit('machineActivated', data);
             this.close();
+        },
+        requestPing() {
+            this.ping.requesting = true;
+            axios.get('http://' + this.machine.ip_address, {timeout: 3000}).then((res, rej) => {
+                this.ping.requesting = false;
+                console.log('done');
+            }).catch(err => {
+                this.ping.requesting = false;
+                console.log('error');
+            });
         }
     },
     // computed: {
@@ -96,6 +117,7 @@ export default {
                 setTimeout(() => {
                     this.$refs.keyword.$el.querySelector('input').select();
                 }, 500);
+                this.requestPing();
             } else {
                 this.customers = [];
             }

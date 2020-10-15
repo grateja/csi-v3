@@ -117,7 +117,11 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
 
     // /api/sales-report/{monthIndex}/{year}/pos-transactions
     Route::get('{monthIndex}/{year}/pos-transactions', 'SalesReportController@posTransactions');
+
+    // /api/sales-report/cumulative/{year}
+    Route::get('cumulative/{year}', 'SalesReportController@yearlyCumulative');
 });
+Route::get('cumulative/{year}', 'SalesReportController@yearlyCumulative');
 
 // /api/sales-report/{monthIndex}/{year}/weekly
 // Route::get('/sales-report/{monthIndex}/{year}/weekly', 'SalesReportController@weekly');
@@ -447,6 +451,9 @@ Route::group(['prefix' => 'payments', 'middleware' => 'auth:api'], function() {
 Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() {
     // /api/machines
     Route::get('/', 'MachinesController@index');
+
+    // /api/machines/remarks
+    Route::get('remarks', 'MachinesController@remarks');
 
     // /api/machines/{machineId}/history
     Route::get('{machineId}/history', 'MachinesController@history');

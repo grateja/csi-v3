@@ -10,6 +10,7 @@ use App\CompletedServiceTransaction;
 use Illuminate\Support\Facades\DB;
 use App\CompletedProductTransaction;
 use App\RfidLoadTransaction;
+use Illuminate\Support\Facades\File;
 
 class PrinterController extends Controller
 {

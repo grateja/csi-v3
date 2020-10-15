@@ -182,6 +182,19 @@ class MachinesController extends Controller
         });
     }
 
+    public function remarks(Request $request) {
+        $result = MachineRemarks::with('machine', 'user')
+            ->where('title', 'like' , "%$request->keyword%")
+            ->orWhere('remarks', 'like', "%$request->keyword%")
+            ->orWhereHas('machine', function($query) use ($request) {
+                $query->where('machine_name', 'like', "%$request->keyword%");
+            });
+
+        return response()->json([
+            'result' => $result->paginate(10),
+        ]);
+    }
+
     public function forceStop(Request $request) {
         $rules = [
             'remarks' => 'required',

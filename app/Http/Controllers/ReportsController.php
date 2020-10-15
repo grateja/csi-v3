@@ -131,7 +131,7 @@ class ReportsController extends Controller
             ->get();
 
         $posCollections = TransactionPayment::whereDate('created_at', $request->date)
-            ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`)) as total_price, COUNT(id) as total_count')->first();
+            ->selectRaw('SUM(`total_amount` - (`total_amount` /  100 * `discount`) - `points_in_peso` - `card_load_used`) as total_price, COUNT(id) as total_count')->first();
 
         $summary = [
             'totalCount' => $posCollections->total_count,

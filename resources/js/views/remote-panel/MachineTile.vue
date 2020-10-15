@@ -1,6 +1,7 @@
 <template>
     <v-flex class="machine-tile__flex">
-        <div class="text-xs-center white--text">{{machine.machine_name}}</div>
+        <div class="text-xs-center white--text">{{machine.machine_name}}
+        </div>
         <v-hover v-slot:default="{ hover }" v-if="machine">
             <v-card :elevation="hover ? 12 : 2" class="ma-1 pa-3 pointer rounded-card translucent machine-tile__card" @click="open(machine)" :class="{'running': machine.is_running}" >
                 <!-- <div class="text-xs-center">{{machine.machine_name}}</div>
@@ -89,7 +90,7 @@ export default {
         // }
     },
     created() {
-        this.timer = setInterval(this.refreshTime, 1000)
+        this.timer = setInterval(this.refreshTime, 1000);
     },
     beforeDestroy() {
         this.cancelUpdate();
