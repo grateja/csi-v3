@@ -13,6 +13,7 @@ use App\Product;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
+use App\TransactionRemarks;
 use App\WashingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -181,6 +182,12 @@ class PosTransactionController extends Controller
 
             $product->decrement('current_stock');
 
+            TransactionRemarks::create([
+                'transaction_id' => $transaction->id,
+                'remarks' => 'Item removed(' . $product->name . ')',
+                'added_by' => auth('api')->user()->name,
+            ]);
+
             if($transaction) {
                 $transaction->refreshAll();
             }
@@ -201,6 +208,14 @@ class PosTransactionController extends Controller
                 'product_id' => $request->productId,
                 'transaction_id' => $request->transactionId,
             ])->orderByDesc('created_at')->first();
+
+            if(!$productItem->created_at->isToday()) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot remove item. Transaction if from previous day']
+                    ],
+                ], 422);
+            }
 
             if($productItem->forceDelete()) {
                 $product = Product::withTrashed()->find($request->productId);

@@ -14,7 +14,7 @@
                     <v-spacer></v-spacer>
                 </v-card-actions>
                 <div class="text-xs-center">{{machine.user_name}}</div>
-                <div class="text-xs-center" v-if="machine.is_running">{{remainingTime()}}</div>
+                <div class="text-xs-center" v-if="machine.is_running" :key="timeKey">{{remainingTime()}}</div>
                 <div class="text-xs-center font-italic caption grey--text" v-else>Used {{moment(machine.time_ends_in).fromNow()}}</div>
 
                 <!-- <div v-if="machine.is_running" class="text-xs-center">

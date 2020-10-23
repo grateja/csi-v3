@@ -20,7 +20,7 @@
                                 <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == dateContext &amp;&amp; month == initialMonth && year == initialYear}">
                                     <template v-if="draft.active">
                                         <v-hover v-slot:default="{ hover }" v-if="draft.active">
-                                            <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="dateClick(draft.date)" height="121px">
+                                            <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="dateClick(draft.date)" height="131px">
                                                 <span class="pa-2 grey--text font-weigth-bold">{{draft.date}}</span>
                                                 <v-tooltip top v-if="draft.newCustomers">
                                                     <v-layout slot="activator" class="caption">
@@ -36,10 +36,10 @@
                                                 <v-tooltip top>
                                                     <v-layout slot="activator" class="caption">
                                                         <v-flex xs3 class="text-xs-right pr-1">
-                                                            <v-icon small>bookmark</v-icon>
+                                                            <v-icon small :color="draft.jo_color">bookmark</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
-                                                            <div :class="draft.jo_color">{{draft.jo_count}}</div>
+                                                            <div :class="draft.jo_color+ '--text'">{{draft.jo_count}}</div>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>Total number of Job Orders</span>
@@ -56,7 +56,7 @@
                                                     <span>Total sales</span>
                                                 </v-tooltip>
                                                 <v-tooltip top>
-                                                    <v-layout slot="activator" class="caption">
+                                                    <v-layout slot="activator" class="caption red--text">
                                                         <v-flex xs3 class="text-xs-right pr-1">
                                                             <v-icon small>save</v-icon>
                                                         </v-flex>
@@ -78,12 +78,12 @@
                                                     <span>Total collections</span>
                                                 </v-tooltip>
                                                 <v-tooltip top>
-                                                    <v-layout slot="activator" class="caption">
+                                                    <v-layout slot="activator" class="font-weight-bold">
                                                         <v-flex xs3 class="text-xs-right pr-1">
                                                             <v-icon small>account_balance_wallet</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
-                                                            {{draft.totalDeposit}}
+                                                            <span class="font-italic">{{draft.totalDeposit}}</span>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>Total Deposit</span>
@@ -92,17 +92,17 @@
                                         </v-hover>
                                         <v-progress-linear :background-color="draft.background" color="green" v-if="draft.active && draft.profitPercentage" :value="draft.value" class="ma-0" height="20px">
                                             <v-layout>
-                                                <v-flex xs3 class="text-xs-right pr-1">
-                                                    {{Math.round(draft.profitPercentage)}}%
+                                                <v-flex xs5 class="text-xs-right pr-1">
+                                                    ({{Math.round(draft.profitPercentage)}}%)
                                                 </v-flex>
-                                                <v-flex xs9 class="pl-1">
+                                                <v-flex xs7 class="pl-1">
                                                     {{draft.profitStr}}
                                                 </v-flex>
                                             </v-layout>
                                         </v-progress-linear>
                                     </template>
                                     <template v-else>
-                                        <v-card class="ma-0 translucent day" color="#f6f6f6" flat height="141px">
+                                        <v-card class="ma-0 translucent day" color="#f6f6f6" flat height="151px">
                                             <div>
                                                 <span class="pa-2 grey--text font-weigth-bold">{{draft.date}}</span>
                                                 <!-- <span class="day ma-1">{{draft.date}}</span> -->
@@ -243,7 +243,7 @@ export default {
                             value: (!i.amount && !i.expenses) ? 0 : profit > 1 ? profit : 100 - loss || 0,
                             background: profit > 1 ? 'blue' : 'pink',
                             newCustomers: i.newCustomers ? i.newCustomers + ' customer' + (i.newCustomers > 1 ? 's' : '') : '',
-                            jo_color: i.total_jo == i.paid_jo ? 'green--text' : 'grey--text',
+                            jo_color: i.total_jo == i.paid_jo ? 'green' : 'grey',
                             jo_count: 'J.O.' + i.paid_jo + '/' + i.total_jo + ' Paid',
                             collection: '₱' + parseFloat(i.collection).toLocaleString(),
                             totalDeposit: i.totalDeposit

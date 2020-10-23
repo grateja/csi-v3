@@ -41,7 +41,7 @@ export default {
                     route: '/remote-panel'
                 },
                 {
-                    text: 'Sales report',
+                    text: 'Transaction report',
                     icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',

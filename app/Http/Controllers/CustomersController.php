@@ -47,11 +47,18 @@ class CustomersController extends Controller
 
     public function checkPoints($customerId) {
         $customer = Customer::findOrFail($customerId);
-        $pointsInPeso = LoyaltyPoint::first()->amount_in_peso;
+        $loyaltyPoint = LoyaltyPoint::first();
+        if(!$loyaltyPoint) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Loyalty points not yet setup']
+                ]
+            ], 422);
+        }
 
         return response()->json([
             'customer' => $customer,
-            'pointsInPeso' => $customer->earned_points * $pointsInPeso,
+            'pointsInPeso' => $customer->earned_points * $loyaltyPoint->amount_in_peso,
         ]);
     }
 

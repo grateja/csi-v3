@@ -1,12 +1,11 @@
 <template>
     <v-dialog :value="value" max-width="480px" persistent>
         <v-card v-if="!!machine">
-            <v-card-title class="grey--text title">Select customer for {{machine.machine_name}}
+            <v-card-title class="grey--text"> <span class="title"> Select customer for {{machine.machine_name}}</span>
                 <v-spacer></v-spacer>
                 <div>
                     <v-progress-circular v-if="ping.requesting" size="24" indeterminate />
-                    <v-icon v-else :class="ping">rss_feed</v-icon>
-                    {{ping.requesting}}
+                    <v-icon v-else :class="ping">rss_feed</v-icon> <span class="caption" :class="ping.color">{{ping.ms}} ms</span>
                 </div>
             </v-card-title>
             <v-card-text>
@@ -55,7 +54,8 @@ export default {
             activeCustomer: null,
             ping: {
                 requesting: false,
-                color: 'grey--text'
+                color: 'grey--text',
+                ms: 0
             }
         }
     },
@@ -85,14 +85,35 @@ export default {
             this.close();
         },
         requestPing() {
-            this.ping.requesting = true;
-            axios.get('http://' + this.machine.ip_address, {timeout: 3000}).then((res, rej) => {
-                this.ping.requesting = false;
-                console.log('done');
-            }).catch(err => {
-                this.ping.requesting = false;
-                console.log('error');
-            });
+            let startTime = new Date().getTime();
+            let ping = this.ping;
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    ping.ms = new Date().getTime() - startTime;
+                    if(ping.ms < 1000) {
+                        ping.color = 'green--text';
+                    } else if(ping.ms < 2000) {
+                        ping.color = 'yellow--text';
+                    } else if(ping.ms < 3000) {
+                        ping.color = 'orange--text';
+                    } else {
+                        ping.color = 'red--text';
+                    }
+                }
+            };
+            xhttp.open("GET", this.machine.ip_address, true);
+            xhttp.send();
+
+            // this.ping.requesting = true;
+            // axios.get('http://' + this.machine.ip_address, {timeout: 3000, crossdomain: true}).then((res, rej) => {
+            //     this.ping.requesting = false;
+            //     console.log('done');
+            // }).catch(err => {
+            //     this.ping.requesting = false;
+            //     console.log('error');
+            // });
         }
     },
     // computed: {
