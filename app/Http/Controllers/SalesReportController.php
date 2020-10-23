@@ -97,7 +97,7 @@ class SalesReportController extends Controller
         $summary = [
             'total_jo' => $posTransactions->sum('total_jo'),
             'paid_jo' => $posTransactions->sum('paid_jo'),
-            'expenses' => $expenses->sum('expense') + $productPurchases->sum('product_purchase'),
+            'expenses' => $expenses->sum('expenses'),// + $productPurchases->sum('product_purchase'),
             'totalSales' => $result->sum('amount'),
             'totalCollections' => $result->sum('collection'),
             'totalNewCustomers' => $result->sum('newCustomers'),
@@ -144,7 +144,7 @@ class SalesReportController extends Controller
 
         $totalSales = $posTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $rfidLoadTransactionSummary->total_price;
         $totalCollections = $posCollections->total_price + $rfidCardTransactionSummary->users_card + $rfidLoadTransactionSummary->total_price;
-        $totalExpenses = $expenses->expenses + $productPurchases->total_cost;
+        $totalExpenses = $expenses->expense + $productPurchases->total_cost;
         $totalDeposit = $totalCollections - $totalExpenses;
 
         $inventory = ProductTransactionItem::whereDate('created_at', $date)
@@ -164,6 +164,7 @@ class SalesReportController extends Controller
                 'totalCollections' => $totalCollections,
                 'totalExpenses' => $totalExpenses,
                 'totalDeposit' => $totalDeposit,
+                'productPurchases' => $productPurchases,
             ]
         ]);
     }
