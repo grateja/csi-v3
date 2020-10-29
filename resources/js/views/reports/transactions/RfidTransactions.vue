@@ -33,7 +33,7 @@
                             </v-btn>
                         </td> -->
                     </template>
-                    <tr slot="footer" v-if="!!summary" class="font-weight-bold grey lighten-3">
+                    <tr slot="footer" v-if="!!summary" class="font-weight-bold">
                         <td>Total </td>
                         <td></td>
                         <td></td>

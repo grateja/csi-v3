@@ -76,6 +76,8 @@ class TapCardController extends Controller
                 $this->dispatch($machine->machineUsage->queSynch());
                 $this->dispatch($machine->rfidCardTransaction->queSynch());
 
+                //sleep(10);
+
                 return response()->json([
                     'rfid' => $rfidCard->rfid,
                     'balance' => $rfidCard->balance,

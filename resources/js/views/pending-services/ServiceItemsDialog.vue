@@ -16,7 +16,7 @@
                                     <td>{{props.item.minutes}}</td>
                                     <td>{{moment(props.item.created_at).format('LLL')}}</td>
                                     <td>
-                                        <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)">
+                                        <v-btn small class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
                                             {{ props.item.job_order }}
                                         </v-btn>
                                     </td>
@@ -41,7 +41,7 @@
                                     <td>{{props.item.minutes}}</td>
                                     <td>{{moment(props.item.created_at).format('LLL')}}</td>
                                     <td>
-                                        <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round>
+                                        <v-btn small class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round>
                                             {{ props.item.job_order }}
                                         </v-btn>
                                     </td>

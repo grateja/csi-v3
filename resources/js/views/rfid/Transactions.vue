@@ -86,7 +86,7 @@
                 <template slot="footer">
                     <tr v-if="!!summary">
                         <td colspan="4">
-                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
                         </td>
                         <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
                         <td class="font-weight-bold">{{summary.total_minutes}} Mins</td>

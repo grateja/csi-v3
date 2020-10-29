@@ -97,7 +97,7 @@ class SalesReportController extends Controller
         $summary = [
             'total_jo' => $posTransactions->sum('total_jo'),
             'paid_jo' => $posTransactions->sum('paid_jo'),
-            'expenses' => $expenses->sum('expenses'),// + $productPurchases->sum('product_purchase'),
+            'expenses' => $result->sum('expenses'),// + $productPurchases->sum('product_purchase'),
             'totalSales' => $result->sum('amount'),
             'totalCollections' => $result->sum('collection'),
             'totalNewCustomers' => $result->sum('newCustomers'),

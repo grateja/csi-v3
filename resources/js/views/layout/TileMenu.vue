@@ -27,7 +27,7 @@ export default {
         return {
             links: [
                 {
-                    text: 'New transaction',
+                    text: 'New Job Order',
                     icon: 'new-transaction',
                     roles: ['staff', 'admin'],
                     color: '#33cbff',
@@ -48,14 +48,14 @@ export default {
                     route: '/sales-report/calendar'
                 },
                 {
-                    text: 'Transactions',
+                    text: 'Job orders',
                     icon: 'job-orders',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
                     route: '/transaction-reports/by-job-orders'
                 },
                 {
-                    text: 'Unpaid Transactions',
+                    text: 'Unpaid',
                     icon: 'unpaid-transactions',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',

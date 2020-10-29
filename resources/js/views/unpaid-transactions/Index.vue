@@ -43,7 +43,7 @@
                 <template v-slot:items="props">
                     <td>{{ props.index + 1 }}</td>
                     <td>
-                        <v-btn small outline class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round>
+                        <v-btn small class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round>
                             {{ props.item.job_order }}
                         </v-btn>
                     </td>
@@ -53,8 +53,8 @@
                 </template>
                 <template slot="footer">
                     <tr v-if="!!summary">
-                        <td colspan="3">
-                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                        <td colspan="4">
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
                         </td>
                         <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
                         <td></td>

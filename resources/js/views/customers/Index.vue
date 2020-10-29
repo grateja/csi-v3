@@ -41,7 +41,7 @@
                             <span>Edit details</span>
                         </v-tooltip>
                         <v-tooltip top v-if="props.item.rfid_cards_count > 0">
-                            <v-btn slot="activator" small icon @click="viewCards" outline>
+                            <v-btn slot="activator" small icon @click="viewCards(props.item)" outline>
                                 <v-icon small>credit_card</v-icon>
                                 {{props.item.rfid_cards_count}}
                             </v-btn>
@@ -52,7 +52,7 @@
                 <template slot="footer">
                     <tr v-if="!!summary">
                         <td colspan="10">
-                            <div class="font-italic grey--text">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
                         </td>
                     </tr>
                 </template>
@@ -60,16 +60,19 @@
         </v-card>
         <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <customer-dialog v-model="openCustomerDialog" :customer="activeCustomer" @save="editContinue"></customer-dialog>
+        <rfid-card-preview v-model="openCardPreview" :customer="activeCustomer"></rfid-card-preview>
     </v-container>
 </template>
 
 <script>
 import CustomerDialog from './CustomerDialog.vue';
 import moment from 'moment';
+import RfidCardPreview from './RfidCardPreview.vue';
 
 export default {
     components: {
-        CustomerDialog
+        CustomerDialog,
+        RfidCardPreview
     },
     data() {
         return {
@@ -83,6 +86,7 @@ export default {
             summary: null,
             activeCustomer: null,
             openCustomerDialog: false,
+            openCardPreview: false,
             headers: [
                 {
                     text: '',
@@ -105,15 +109,15 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'First visit',
+                    text: 'Birthday',
                     sortable: false
                 },
                 {
-                    text: 'Available wash',
+                    text: 'Total wash',
                     sortable: false
                 },
                 {
-                    text: 'Available dry',
+                    text: 'Total dry',
                     sortable: false
                 },
                 {
@@ -211,7 +215,8 @@ export default {
             }
         },
         viewCards(customer) {
-
+            this.activeCustomer = customer;
+            this.openCardPreview = true;
         }
     },
     computed: {

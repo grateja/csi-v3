@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Expense;
+use App\ProductPurchase;
 use Illuminate\Support\Facades\DB;
 
 class ExpensesController extends Controller
@@ -28,14 +29,22 @@ class ExpensesController extends Controller
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $result = Expense::where(function($query) use ($request) {
+        $result = Expense::select(['id', 'remarks', 'staff_name', 'date', 'amount', 'created_at', DB::raw('"exp" as type')])->where(function($query) use ($request) {
             $query->where('remarks', 'like', "%$request->keyword%")
+                ->orWhere('staff_name', 'like', "%$request->keyword%");
+        });
+
+        $productPurchases = ProductPurchase::select(DB::raw('id, CONCAT("Purchase of \"", product_name, "\"") as remarks, staff_name, date, product_purchases.quantity * product_purchases.unit_cost as amount, created_at, "prd" as type'))->where(function($query) use ($request) {
+            $query->where('product_name', 'like', "%$request->keyword%")
                 ->orWhere('staff_name', 'like', "%$request->keyword%");
         });
 
         if($request->date) {
             $result = $result->whereDate('date', $request->date);
+            $productPurchases = $productPurchases->whereDate('date', $request->date);
         }
+
+        $result = $result->union($productPurchases);
 
         $result = $result->orderBy($sortBy, $order);
 

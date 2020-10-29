@@ -37,6 +37,14 @@ class Transaction extends Model
         return $this->hasMany('App\ProductTransactionItem')->orderBy('name');
     }
 
+    public function customerWashes() {
+        return $this->hasManyThrough('App\CustomerWash', 'App\ServiceTransactionItem');
+    }
+
+    public function customerDries() {
+        return $this->hasManyThrough('App\CustomerDry', 'App\ServiceTransactionItem');
+    }
+
     public function customer() {
         return $this->belongsTo('App\Customer');
     }

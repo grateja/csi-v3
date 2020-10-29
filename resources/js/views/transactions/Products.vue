@@ -56,6 +56,9 @@ export default {
                 alert('Please specify customer first');
                 return;
             }
+            if(this.products.find(i => i.isAdding)) {
+                return;
+            }
             Vue.set(item, 'isAdding', true);
             this.$store.dispatch(`postransaction/addProduct`, {
                 itemId: item.id,

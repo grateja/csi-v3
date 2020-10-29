@@ -45,27 +45,36 @@
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
-                    <td>{{ props.index + 1 }}</td>
-                    <td>{{ moment(props.item.enrolled).format('LLL') }}</td>
-                    <td>{{ props.item.fullname }}</td>
-                    <td>{{ props.item.rfid }}</td>
-                    <td>{{ props.item.card_type == 'u' ? 'Unlimited' : 'P ' + parseFloat(props.item.balance).toFixed(2) }}
-                        <v-tooltip top v-if="props.item.card_type == 'c'">
-                            <v-btn outline icon small slot="activator" color="green" dark @click="loadACard(props.item)">
-                                <v-icon small>how_to_vote</v-icon>
+                    <tr>
+                        <td>{{ props.index + 1 }}</td>
+                        <td>{{ moment(props.item.enrolled).format('LLL') }}</td>
+                        <td>{{ props.item.fullname }}</td>
+                        <td>{{ props.item.rfid }}</td>
+                        <td>{{ props.item.card_type == 'u' ? 'Unlimited' : 'P ' + parseFloat(props.item.balance).toFixed(2) }}
+                            <v-tooltip top v-if="props.item.card_type == 'c'">
+                                <v-btn outline icon small slot="activator" color="green" dark @click="loadACard(props.item)">
+                                    <v-icon small>how_to_vote</v-icon>
+                                </v-btn>
+                                <span>Top up/ Load a card</span>
+                            </v-tooltip>
+                        </td>
+                        <td>{{ cardType(props.item) }}</td>
+                        <td>
+                            <v-btn icon outline v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="edit(props.item)">
+                                <v-icon small>edit</v-icon>
                             </v-btn>
-                            <span>Top up/ Load a card</span>
-                        </v-tooltip>
-                    </td>
-                    <td>{{ cardType(props.item) }}</td>
-                    <td>
-                        <v-btn icon outline v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="edit(props.item)">
-                            <v-icon small>edit</v-icon>
-                        </v-btn>
-                        <v-btn icon outline v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="deleteCard(props.item)" :loading="props.item.isDeleting">
-                            <v-icon small>delete</v-icon>
-                        </v-btn>
-                    </td>
+                            <v-btn icon outline v-if="isOwner || !isOwner && props.item.card_type == 'c'" small @click="deleteCard(props.item)" :loading="props.item.isDeleting">
+                                <v-icon small>delete</v-icon>
+                            </v-btn>
+                        </td>
+                    </tr>
+                </template>
+                <template slot="footer">
+                    <tr>
+                        <td colspan="10">
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{total}}</span> result(s)</div>
+                        </td>
+                    </tr>
                 </template>
             </v-data-table>
         </v-card>
@@ -94,6 +103,7 @@ export default {
             orderBy: 'asc',
             cancelSource: null,
             items: [],
+            total: 0,
             loading: false,
             reset: true,
             openRfidCardDialog: false,
@@ -163,6 +173,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.total = res.data.result.total;
             }).finally(() => {
                 this.loading = false;
             });

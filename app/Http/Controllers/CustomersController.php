@@ -13,9 +13,9 @@ class CustomersController extends Controller
 
         $customers = Customer::withCount(['rfidCards',
             'customerDries' => function($query) {
-                $query->whereNull('used');
+                //$query->whereNotNull('used');
             }, 'customerWashes' => function($query) {
-                $query->whereNull('used');
+                //$query->whereNotNull('used');
             }
         ])->where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
@@ -83,7 +83,7 @@ class CustomersController extends Controller
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
-                    'first_visit' => $request->firstVisit,
+                    'first_visit' => $request->birthday,
                 ]);
 
                 $this->dispatch($customer->queSynch());
@@ -114,7 +114,7 @@ class CustomersController extends Controller
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
-                    'first_visit' => $request->firstVisit,
+                    'first_visit' => $request->birthday,
                 ]);
 
                 $this->dispatch($customer->queSynch());

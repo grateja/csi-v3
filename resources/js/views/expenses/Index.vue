@@ -13,7 +13,7 @@
                 <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
             </v-flex>
             <v-flex style="max-width: 220px">
-                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'staff_name']" @change="filter"></v-combobox>
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'staff_name', 'created_at']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex style="max-width: 220px">
                 <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -44,19 +44,29 @@
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
-                    <td>{{props.index + 1}}</td>
-                    <td>{{ moment(props.item.date).format('LL') }}</td>
-                    <td>{{ props.item.remarks }}</td>
-                    <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
-                    <td>{{ props.item.staff_name }}</td>
-                    <td>
-                        <v-btn icon small @click="editExpense(props.item)" outline>
-                            <v-icon small>edit</v-icon>
-                        </v-btn>
-                        <v-btn icon small @click="deleteExpense(props.item)" outline :loading="props.item.isDeleting">
-                            <v-icon small>delete</v-icon>
-                        </v-btn>
-                    </td>
+                    <tr>
+                        <td>{{props.index + 1}}</td>
+                        <td>{{ moment(props.item.date).format('LL') }}</td>
+                        <td>{{ moment(props.item.created_at).format('M-DD-YYYY h:mm a') }}</td>
+                        <td>{{ props.item.remarks }}</td>
+                        <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
+                        <td>{{ props.item.staff_name }}</td>
+                        <td class="text-xs-right">
+                            <v-btn icon small @click="editExpense(props.item)" v-if="props.item.type == 'exp'" outline>
+                                <v-icon small>edit</v-icon>
+                            </v-btn>
+                            <v-btn icon small @click="deleteExpense(props.item)" outline :loading="props.item.isDeleting">
+                                <v-icon small>delete</v-icon>
+                            </v-btn>
+                        </td>
+                    </tr>
+                </template>
+                <template slot="footer">
+                    <tr>
+                        <td colspan="10">
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{total}}</span> result(s)</div>
+                        </td>
+                    </tr>
                 </template>
             </v-data-table>
         </v-card>
@@ -77,6 +87,7 @@ export default {
             openExpenseDialog: false,
             cancelSource: null,
             keyword: null,
+            total: 0,
             sortBy: 'date',
             orderBy: 'desc',
             date: null,
@@ -91,6 +102,10 @@ export default {
                 },
                 {
                     text: 'Date',
+                    sortable: false
+                },
+                {
+                    text: 'Encoded',
                     sortable: false
                 },
                 {
@@ -144,6 +159,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.total = res.data.result.total;
             }).finally(() => {
                 this.loading = false;
             });

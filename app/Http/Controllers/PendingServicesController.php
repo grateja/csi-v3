@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\CustomerDry;
 use App\CustomerWash;
+use App\Transaction;
 use Illuminate\Http\Request;
 
 class PendingServicesController extends Controller
@@ -45,21 +46,39 @@ class PendingServicesController extends Controller
     }
 
     public function index(Request $request) {
-        $result = Customer::withCount([
-            'customerWashes' => function($query) {
-                $query->whereNull('used')->whereHas('serviceTransactionItem');
-            },
-            'customerDries' => function($query) {
-                $query->whereNull('used')->whereHas('serviceTransactionItem');
-            }
-        ])->whereHas('customerWashes', function($query) {
+
+        $result = Transaction::withCount(['customerDries' => function($query) {
             $query->whereNull('used');
-        })->orWhereHas('customerDries', function($query) {
+        }, 'customerWashes' => function($query) {
             $query->whereNull('used');
-        })->orderBy('name');
+        }])
+            ->whereHas('customerDries', function($query) {
+                $query->whereNull('used');
+            })->orWhereHas('customerWashes', function($query) {
+                $query->whereNull('used');
+            })->orderBy('job_order');
+
+        // $result = Customer::whereHas('customerWashes', function($query) {
+        //     $query->whereNull('used');//->whereHas('serviceTransactionItem');
+        // })->orWhereHas('customerDries', function($query) {
+        //     $query->whereNull('used');//->whereHas('serviceTransactionItem');
+        // })->join('customer_washes', 'customer_washes.customer_id', '=', 'customers.id');
+
+        // $result = Customer::withCount([
+        //     'customerWashes' => function($query) {
+        //         $query->whereNull('used')->whereHas('serviceTransactionItem');
+        //     },
+        //     'customerDries' => function($query) {
+        //         $query->whereNull('used')->whereHas('serviceTransactionItem');
+        //     }
+        // ])->whereHas('customerWashes', function($query) {
+        //     $query->whereNull('used');
+        // })->orWhereHas('customerDries', function($query) {
+        //     $query->whereNull('used');
+        // })->orderBy('name');
 
         return response()->json([
-            'result' => $result->get(),
+            'result' => $result->paginate(10),
         ]);
     }
 

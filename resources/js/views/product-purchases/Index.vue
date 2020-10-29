@@ -44,18 +44,27 @@
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
-                    <td>{{props.index + 1}}</td>
-                    <td>{{ moment(props.item.date).format('LL') }}</td>
-                    <td>{{ props.item.product_name }}</td>
-                    <td>{{ props.item.quantity }}</td>
-                    <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
-                    <td>{{ props.item.remarks }}</td>
-                    <td>{{ props.item.staff_name }}</td>
-                    <td v-if="isOwner">
-                        <v-btn small outline icon @click="deletePurchase(props.item)" :loading="props.item.isDeleting">
-                            <v-icon>delete</v-icon>
-                        </v-btn>
-                    </td>
+                    <tr>
+                        <td>{{props.index + 1}}</td>
+                        <td>{{ moment(props.item.date).format('LL') }}</td>
+                        <td>{{ props.item.product_name }}</td>
+                        <td>{{ props.item.quantity }}</td>
+                        <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
+                        <td>{{ props.item.remarks }}</td>
+                        <td>{{ props.item.staff_name }}</td>
+                        <td v-if="isOwner">
+                            <v-btn small outline icon @click="deletePurchase(props.item)" :loading="props.item.isDeleting">
+                                <v-icon small>delete</v-icon>
+                            </v-btn>
+                        </td>
+                    </tr>
+                </template>
+                <template slot="footer">
+                    <tr>
+                        <td colspan="10">
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{total}}</span> result(s)</div>
+                        </td>
+                    </tr>
                 </template>
             </v-data-table>
         </v-card>
@@ -81,6 +90,7 @@ export default {
             date: null,
             page: 1,
             reset: false,
+            total: 0,
             items: [],
             loading: false,
             headers: [
@@ -151,6 +161,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.total = res.data.result.total;
             }).finally(() => {
                 this.loading = false;
             });

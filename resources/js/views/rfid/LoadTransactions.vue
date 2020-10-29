@@ -41,20 +41,29 @@
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
-                    <td>{{props.index + 1}}</td>
-                    <td>{{ props.item.customer_name }}</td>
-                    <td>{{ props.item.amount }}</td>
-                    <td>{{ props.item.rfid }}</td>
-                    <td>{{ props.item.remarks }}</td>
-                    <td>{{ moment(props.item.created_at).format('LLL') }}</td>
-                    <td>
-                        <v-btn icon small v-if="isOwner" @click="printTransaction(props.item)" :loading="props.item.isPrinting" outline>
-                            <v-icon small>print</v-icon>
-                        </v-btn>
-                        <v-btn icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting" outline>
-                            <v-icon small>delete</v-icon>
-                        </v-btn>
-                    </td>
+                    <tr>
+                        <td>{{props.index + 1}}</td>
+                        <td>{{ props.item.customer_name }}</td>
+                        <td>{{ props.item.amount }}</td>
+                        <td>{{ props.item.rfid }}</td>
+                        <td>{{ props.item.remarks }}</td>
+                        <td>{{ moment(props.item.created_at).format('LLL') }}</td>
+                        <td>
+                            <v-btn icon small v-if="isOwner" @click="printTransaction(props.item)" :loading="props.item.isPrinting" outline>
+                                <v-icon small>print</v-icon>
+                            </v-btn>
+                            <v-btn icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting" outline>
+                                <v-icon small>delete</v-icon>
+                            </v-btn>
+                        </td>
+                    </tr>
+                </template>
+                <template slot="footer">
+                    <tr>
+                        <td colspan="10">
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{total}}</span> result(s)</div>
+                        </td>
+                    </tr>
                 </template>
             </v-data-table>
         </v-card>
@@ -73,6 +82,7 @@ export default {
             orderBy: 'desc',
             cancelSource: null,
             items: [],
+            total: 0,
             loading: false,
             reset: true,
             openRfidCardDialog: false,
@@ -141,6 +151,7 @@ export default {
                         });
                     }, 10);
                 }
+                this.total = res.data.result.total;
             }).finally(() => {
                 this.loading = false;
             });

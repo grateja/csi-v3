@@ -28,7 +28,7 @@
                                                             <v-icon small>people</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
-                                                            {{draft.newCustomers}}
+                                                            <span class="font-weight-bold">{{draft.newCustomers}}</span>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>{{draft.newCustomers}} new customer(s)</span>
@@ -39,7 +39,7 @@
                                                             <v-icon small :color="draft.jo_color">bookmark</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
-                                                            <div :class="draft.jo_color+ '--text'">{{draft.jo_count}}</div>
+                                                            <div :class="draft.jo_color+ '--text font-weight-bold'">{{draft.jo_count}}</div>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>Total number of Job Orders</span>
@@ -50,7 +50,7 @@
                                                             <v-icon small>collections_bookmark</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
-                                                            {{draft.amount}}
+                                                            <span class="font-weight-bold">{{draft.amount}}</span>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>Total sales</span>
@@ -61,7 +61,9 @@
                                                             <v-icon small>save</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
-                                                            {{draft.expenses}}
+                                                            <span class="font-weight-bold">
+                                                                {{draft.expenses}}
+                                                            </span>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>Total expenses</span>
@@ -72,7 +74,9 @@
                                                             <v-icon small>move_to_inbox</v-icon>
                                                         </v-flex>
                                                         <v-flex xs9 class="pl-1">
+                                                            <span class="font-weight-bold">
                                                             {{draft.collection}}
+                                                            </span>
                                                         </v-flex>
                                                     </v-layout>
                                                     <span>Total collections</span>

@@ -171,6 +171,19 @@ export default {
                 alert('Please specify customer first');
                 return;
             }
+            if(this.washingServices.find(i => i.isAdding)) {
+                return;
+            }
+            if(this.dryingServices.find(i => i.isAdding)) {
+                return;
+            }
+            if(this.otherServices.find(i => i.isAdding)) {
+                return;
+            }
+            if(this.fullServices.find(i => i.isAdding)) {
+                return;
+            }
+
             Vue.set(item, 'isAdding', true);
             this.$store.dispatch(`postransaction/addService`, {
                 itemId: item.id,

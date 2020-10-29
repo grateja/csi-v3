@@ -15,7 +15,7 @@
                     <v-text-field v-model="formData.address" :error-messages="errors.get('address')" outline label="Address"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>
-                    <v-text-field v-model="formData.firstVisit" :error-messages="errors.get('firstVisit')" outline label="Birthday" type="date"></v-text-field>
+                    <v-text-field v-model="formData.birthday" :error-messages="errors.get('birthday')" outline label="Birthday" type="date"></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn class="primary" type="submit" round :loading="saving">Save</v-btn>
@@ -39,7 +39,7 @@ export default {
                 address: null,
                 contactNumber: null,
                 email: null,
-                firstVisit: moment().format('YYYY-MM-DD')
+                birthday: moment().format('YYYY-MM-DD')
             }
         }
     },
@@ -76,14 +76,14 @@ export default {
                 this.formData.address = this.customer.address;
                 this.formData.contactNumber = this.customer.contact_number;
                 this.formData.email = this.customer.email;
-                this.formData.firstVisit = moment(this.customer.first_visit).format('YYYY-MM-DD');
+                this.formData.birthday = moment(this.customer.first_visit).format('YYYY-MM-DD');
             } else {
                 this.mode = 'insert';
                 this.formData.name = this.initialName;
                 this.formData.address = null;
                 this.formData.contactNumber = null;
                 this.formData.email = null;
-                this.formData.firstVisit = moment().format('YYYY-MM-DD');
+                this.formData.birthday = moment().format('YYYY-MM-DD');
             }
             setTimeout(() => {
                 this.$refs.name.$el.querySelector('input').select();
