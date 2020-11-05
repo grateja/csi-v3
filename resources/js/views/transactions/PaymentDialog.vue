@@ -10,7 +10,16 @@
                     </v-btn>
                 </v-card-title>
                 <v-divider></v-divider>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-tooltip top v-if="transaction.birthdayToday">
+                        <v-icon slot="activator" class="pointer red--text">cake</v-icon>
+                        <span>It's customer's birthday today</span>
+                    </v-tooltip>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
                 <v-card-text>
+
                     <v-layout>
                         <v-flex xs5><span class="data-term">Customer name:</span></v-flex>
                         <v-flex xs7><span class="data-value">{{transaction.customer_name}}</span></v-flex>

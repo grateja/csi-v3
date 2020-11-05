@@ -18,6 +18,22 @@ class Transaction extends Model
         'id', 'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid', 'synched', 'updated_at', 'created_at',
     ];
 
+    public static function filterKeys($val) {
+        $keys = [
+            'customer_name' => 'Customer name',
+            'job_order' => 'Job order number',
+            'staff_name' => 'Staff name',
+            'date' => 'Date created',
+            'date_paid' => 'Date paid',
+            'default' => 'date',
+        ];
+
+        $filter = collect($keys)->filter(function($value) use ($val, $keys) {
+            return strcasecmp($value, $val) == 0 && $keys['default'] != $val;
+        })->keys();
+        return $filter->first() ?? $keys['default'];
+    }
+
     // public $timestamps = false;
 
     // public $appends = [

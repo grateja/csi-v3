@@ -7,7 +7,17 @@
             Create new customer
         </v-btn>
         <form @submit.prevent="filter">
-            <v-text-field outline v-model="keyword" label="Search" append-icon="search" @input="filter" class="round-input translucent-input"></v-text-field>
+            <v-layout row>
+                <v-flex grow>
+                    <v-text-field outline v-model="keyword" label="Search" append-icon="search" @input="filter" class="round-input translucent-input"></v-text-field>
+                </v-flex>
+                <v-flex shrink>
+                    <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['name', 'birthday', 'first visit']" @change="filter"></v-combobox>
+                </v-flex>
+                <v-flex shrink>
+                    <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+                </v-flex>
+            </v-layout>
         </form>
 
 
@@ -15,11 +25,17 @@
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
                     <td>{{props.index + 1}}</td>
-                    <td>{{ props.item.name }}</td>
-                    <td>{{ props.item.contact_number }}</td>
-                    <td>{{ props.item.email }}</td>
-                    <td>{{ props.item.address }}</td>
+                    <td><div class="font-weight-bold">{{ props.item.name }}</div>
+                        <div class="ml-4 mb-2">
+                            <div class="font-italic caption">{{ props.item.contact_number || '[no-contact-number]' }} / {{ props.item.email || '[no-email]' }}</div>
+                            <div>{{ props.item.address || '[no-address]' }}</div>
+                        </div>
+                    </td>
+                    <!-- <td>{{ props.item.contact_number }}</td> -->
+                    <!-- <td>{{ props.item.email }}</td> -->
+                    <!-- <td>{{ props.item.address }}</td> -->
                     <td>{{ date(props.item.first_visit) }}</td>
+                    <td>{{ date(props.item.created_at) }}</td>
                     <td>{{props.item.customer_washes_count}}</td>
                     <td>{{props.item.customer_dries_count}}</td>
                     <td>
@@ -79,6 +95,8 @@ export default {
             reset: true,
             cancelSource: null,
             keyword: this.$route.query.keyword,
+            orderBy: 'asc',
+            sortBy: 'name',
             page: parseInt(this.$route.query.page) || 1,
             loading: false,
             totalPage: 0,
@@ -96,20 +114,24 @@ export default {
                     text: 'Name',
                     sortable: false
                 },
-                {
-                    text: 'Contact No.',
-                    sortable: false
-                },
-                {
-                    text: 'Email',
-                    sortable: false
-                },
-                {
-                    text: 'Address',
-                    sortable: false
-                },
+                // {
+                //     text: 'Contact No.',
+                //     sortable: false
+                // },
+                // {
+                //     text: 'Email',
+                //     sortable: false
+                // },
+                // {
+                //     text: 'Address',
+                //     sortable: false
+                // },
                 {
                     text: 'Birthday',
+                    sortable: false
+                },
+                {
+                    text: 'First visit',
                     sortable: false
                 },
                 {
@@ -145,7 +167,9 @@ export default {
             axios.get('/api/customers', {
                 params: {
                     keyword: this.keyword,
-                    page: this.page
+                    page: this.page,
+                    orderBy: this.orderBy,
+                    sortBy: this.sortBy
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {

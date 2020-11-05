@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 class CustomersController extends Controller
 {
     public function index(Request $request) {
+        $sortBy = Customer::filterKeys($request->sortBy);
+        $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $customers = Customer::withCount(['rfidCards',
             'customerDries' => function($query) {
@@ -19,9 +21,9 @@ class CustomersController extends Controller
             }
         ])->where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
-        })->orderBy('name');
+        });
 
-
+        $customers = $customers->orderBy($sortBy, $order);
 
         $count = Customer::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");

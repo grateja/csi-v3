@@ -315,8 +315,8 @@ div.day {
     border-radius:10px !important;
     box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
 }
-.sunday > h3 > span {
-}
+/* .sunday > h3 > span {
+} */
 
 ul.dates{
     display: flex;

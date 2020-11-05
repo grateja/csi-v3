@@ -31,9 +31,10 @@ class PosTransactionController extends Controller
             $transaction->refreshAll();
         }
 
+        $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
 
         return response()->json([
-            'transaction' => $transaction
+            'transaction' => $transaction,
         ]);
     }
 

@@ -48,8 +48,10 @@ class TransactionsController extends Controller
         )->findOrfail($transactionId);
         $transaction->refreshAll();
 
+        $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
+
         return response()->json([
-            'transaction' => $transaction
+            'transaction' => $transaction,
         ]);
     }
 
@@ -114,8 +116,10 @@ class TransactionsController extends Controller
     }
 
     public function byJobOrders(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'date';
+        // $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
+
+        $sortBy = Transaction::filterKeys($request->sortBy);
 
         $result = Transaction::with(['payment' => function($query) {
             $query->select('id', 'date');

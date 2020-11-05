@@ -1,5 +1,7 @@
 <template>
     <div>
+        <v-progress-linear indeterminate v-if="loading" height="1" class="ma-0"></v-progress-linear>
+        <v-divider v-else></v-divider>
         <calendar :results="results" :year="year" @month-changed="monthChanged" @input="preview" :summary="monthlySummary" :date-context="dateContext" />
         <daily-summary v-model="openDailySummary" :date="date" />
     </div>

@@ -42,7 +42,7 @@ export default {
     methods: {
         search(e) {
             this.formData.id = null;
-            axios.get('/api/products/all', {
+            axios.get('/api/products', {
                 params: {
                     keyword: e.target.value
                 }

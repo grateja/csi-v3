@@ -16,6 +16,20 @@ class Customer extends Model
         'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points', 'synched',
     ];
 
+    public static function filterKeys($val) {
+        $keys = [
+            'name' => 'name',
+            'first_visit' => 'birthday',
+            'created_at' => 'first visit',
+            'default' => 'name',
+        ];
+
+        $filter = collect($keys)->filter(function($value) use ($val, $keys) {
+            return strcasecmp($value, $val) == 0 && $keys['default'] != $val;
+        })->keys();
+        return $filter->first() ?? $keys['default'];
+    }
+
     public function setNameAttribute($value) {
         $this->attributes['name'] = ucwords($value);
     }

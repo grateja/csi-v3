@@ -13,7 +13,7 @@
                 <v-text-field label="Specify date paid" v-model="datePaid" type="date" append-icon="date" @change="filter" outline class="mx-1 round-input translucent-input" style="width: 200px" dense></v-text-field>
             </v-flex>
             <v-flex shrink>
-                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date', 'date_paid']" @change="filter"></v-combobox>
+                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['job order number', 'customer name', 'date created', 'date paid']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex shrink>
                 <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -85,7 +85,7 @@ export default {
         return {
             cancelSource: null,
             keyword: null,
-            sortBy: 'job_order',
+            sortBy: 'job order number',
             orderBy: 'desc',
             date: null,
             datePaid: null,

@@ -13,7 +13,12 @@
         <v-card-text>
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Customer name:</v-flex>
-                <v-flex xs7>{{currentCustomer.name}}</v-flex>
+                <v-flex xs7>{{currentCustomer.name}}
+                    <v-tooltip top v-if="currentTransaction.birthdayToday">
+                        <v-icon slot="activator" class="pointer red--text" small right>cake</v-icon>
+                        <span>It's customer's birthday today</span>
+                    </v-tooltip>
+                </v-flex>
             </v-layout>
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Date :</v-flex>
