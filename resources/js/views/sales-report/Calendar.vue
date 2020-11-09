@@ -273,7 +273,7 @@ export default {
             return this.dateContext.daysInMonth();
         },
         firstDayOfMonth() {
-            return moment(this.dateContext).set('date', 1).day() - 1;
+            return moment(this.dateContext).set('date', 1).isoWeekday() - 1;
         },
         initialMonth() {
             return moment(this.dateContext).format('MMMM');
