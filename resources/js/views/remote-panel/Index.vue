@@ -4,12 +4,12 @@
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
         <v-divider v-else class="my-3"></v-divider>
 
-        <v-btn to="/remote-panel" exact active-class="primary" round>Giant C+</v-btn>
-        <v-btn to="/remote-panel/titan" active-class="primary" round exact>Titan C+</v-btn>
+        <v-btn to="/remote-panel" exact active-class="primary" round>8 Kilo Capacity</v-btn>
+        <v-btn to="/remote-panel/titan" active-class="primary" round exact>10 Kilo Capacity</v-btn>
 
         <template>
             <div v-if="machines.dryers && !loading && !titan">
-                <h4 class="white--text mt-4">Regular Dryers</h4>
+                <h4 class="white--text mt-4">Dryers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout class="panel">
                     <machine-tile v-for="machine in machines.dryers" :key="machine.id" :machine="machine" @open="open" />
@@ -19,7 +19,7 @@
 
         <template>
             <div v-if="machines.washers && !loading && !titan">
-                <h4 class="white--text mt-4">Regular Washers</h4>
+                <h4 class="white--text mt-4">Washers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout class="panel">
                     <machine-tile v-for="machine in machines.washers" :key="machine.id" :machine="machine" @open="open" />
@@ -29,7 +29,7 @@
 
         <template>
             <div v-if="machines.titan_dryers && !loading && titan">
-                <h4 class="white--text mt-4">Titan Dryers</h4>
+                <h4 class="white--text mt-4">Dryers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout class="panel">
                     <machine-tile v-for="machine in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" />
@@ -38,7 +38,7 @@
         </template>
         <template>
             <div v-if="machines.titan_washers && !loading && titan">
-                <h4 class="white--text mt-4">Titan Washers</h4>
+                <h4 class="white--text mt-4">Washers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout  class="panel">
                     <machine-tile v-for="machine in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" />

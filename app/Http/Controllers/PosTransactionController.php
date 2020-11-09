@@ -29,9 +29,8 @@ class PosTransactionController extends Controller
 
         if($transaction) {
             $transaction->refreshAll();
+            $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
         }
-
-        $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
 
         return response()->json([
             'transaction' => $transaction,
