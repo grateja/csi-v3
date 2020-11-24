@@ -147,7 +147,7 @@ class MachinesController extends Controller
             $url = "$machine->ip_address/activate?pulse=$pulse";
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 15);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 35);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($curl);
             curl_close($curl);
@@ -188,7 +188,7 @@ class MachinesController extends Controller
             ->orWhere('remarks', 'like', "%$request->keyword%")
             ->orWhereHas('machine', function($query) use ($request) {
                 $query->where('machine_name', 'like', "%$request->keyword%");
-            });
+            })->orderByDesc('created_at');
 
         return response()->json([
             'result' => $result->paginate(10),
@@ -214,7 +214,7 @@ class MachinesController extends Controller
 
                 $machine->update([
                     'total_minutes' => 0,
-                    'remarks' => $machine->customer->name . '(Force Stopped)',
+                    'remarks' => $machine->user_name . '(Force Stopped)',
                     'customer_id' => null,
                 ]);
 

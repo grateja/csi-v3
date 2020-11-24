@@ -240,6 +240,7 @@ class PosTransactionController extends Controller
     public function saveTransaction($transactionId) {
 
         return DB::transaction(function () use ($transactionId) {
+            $earningPoints = 0;
 
             $transaction = Transaction::with('customer')->findOrFail($transactionId);
             if(!$transaction->job_order) {

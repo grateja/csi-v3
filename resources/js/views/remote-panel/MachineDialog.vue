@@ -24,7 +24,7 @@
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn round @click="forceStop">
+                <v-btn v-if="isOwner" round @click="forceStop">
                     <v-icon small left>warning</v-icon>
                     force stop
                 </v-btn>
@@ -73,6 +73,13 @@ export default {
         }
     },
     computed: {
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            console.log('admin', user);
+            if(user) {
+                return user.roles.some(r => r == 'admin');
+            }
+        },
         remainingTime() {
             if(!!this.machine) {
                 var t = Date.parse(this.machine.time_ends_in) - Date.parse(new Date());
