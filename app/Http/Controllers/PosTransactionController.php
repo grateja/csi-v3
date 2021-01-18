@@ -182,11 +182,11 @@ class PosTransactionController extends Controller
 
             $product->decrement('current_stock');
 
-            TransactionRemarks::create([
-                'transaction_id' => $transaction->id,
-                'remarks' => 'Item removed(' . $product->name . ')',
-                'added_by' => auth('api')->user()->name,
-            ]);
+            // TransactionRemarks::create([
+            //     'transaction_id' => $transaction->id,
+            //     'remarks' => 'Item removed(' . $product->name . ')',
+            //     'added_by' => auth('api')->user()->name,
+            // ]);
 
             if($transaction) {
                 $transaction->refreshAll();
@@ -217,7 +217,7 @@ class PosTransactionController extends Controller
                 ], 422);
             }
 
-            if($productItem->forceDelete()) {
+            if($productItem->delete()) {
                 $product = Product::withTrashed()->find($request->productId);
                 if($product) {
                     $product->increment('current_stock');

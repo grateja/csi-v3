@@ -8,6 +8,7 @@
         <v-btn round class="translucent" :class="{primary: tab == 'rd'}" @click="tab = 'rd'">Regular dryers</v-btn>
         <v-btn round class="translucent" :class="{primary: tab == 'tw'}" @click="tab = 'tw'">Titan washers</v-btn>
         <v-btn round class="translucent" :class="{primary: tab == 'td'}" @click="tab = 'td'">Titan dryers</v-btn>
+        <v-btn round class="translucent" :class="{primary: tab == 'undefined'}" @click="tab = 'undefined'">Unregistered</v-btn>
 
         <v-divider class="my-3"></v-divider>
         <date-navigator v-model="date" />

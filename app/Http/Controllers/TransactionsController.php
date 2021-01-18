@@ -57,7 +57,7 @@ class TransactionsController extends Controller
 
     public function unpaidTransactions(Request $request) {
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
-        $order = $request->orderBy ? $request->orderBy : 'asc';
+        $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $result = Transaction::where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")

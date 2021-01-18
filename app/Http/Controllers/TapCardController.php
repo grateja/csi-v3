@@ -15,8 +15,22 @@ class TapCardController extends Controller
     public function tap($ip, $rfid, $macAddress = null) {
         $machine = Machine::where('ip_address', $ip)->first();
         if($machine == null) {
+            Machine::create([
+                'ip_address' => $ip,
+                'mac_address' => $macAddress,
+                'machine_name' => $ip,
+                'initial_price' => 0,
+                'additional_price' => 0,
+                'initial_time' => 0,
+                'additional_time' => 0,
+                'machine_type' => 'undefined',
+            ]);
             return response()->json([
-                'message' => 'Machine IP ' . $ip . ' not registered'
+                'message' => 'Machine IP ' . $ip . ' not registered. Autoregistered.'
+            ], 422);
+        } else if($machine->machine_type == 'undefined') {
+            return response()->json([
+                'message' => 'Machine IP ' . $ip . ' undefined machine type'
             ], 422);
         } else {
             $machine->update([

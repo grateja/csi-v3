@@ -21,6 +21,7 @@ class Machine extends Model
         'total_minutes',
         'time_activated',
         'machine_name',
+        'minutes',
         'synched',
         'created_at',
         'updated_at',

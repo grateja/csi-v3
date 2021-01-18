@@ -147,7 +147,7 @@
                     </v-card>
                     <v-card v-else class="rounded-card" color="red">
                         <v-card-text class="text-xs-center white--text">
-                            Unpaid!
+                            Not paid!
                         </v-card-text>
                     </v-card>
 

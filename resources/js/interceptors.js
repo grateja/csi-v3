@@ -12,7 +12,7 @@ axios.interceptors.response.use(null, err => {
     console.log('keme lang');
     if(err && err.response && err.response.status == 401) {
         store.commit('setFlash', {
-            message: 'Anauthorized',
+            message: 'Unauthorized',
             color: 'error'
         });
     // alert('Unauthorized');
