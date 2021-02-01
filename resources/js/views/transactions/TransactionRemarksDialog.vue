@@ -5,7 +5,7 @@
                 <v-card-title class="title grey--text">Add remarks</v-card-title>
 
                 <v-card-text>
-                    <v-list v-if="transaction && transaction.remarks.length">
+                    <v-list v-if="transaction && transaction.remarks && transaction.remarks.length">
                         <v-list-tile v-for="remarks in transaction.remarks" :key="remarks.id">
                             <v-list-tile-content>
                                 <v-list-tile-title>{{remarks.remarks}}</v-list-tile-title>

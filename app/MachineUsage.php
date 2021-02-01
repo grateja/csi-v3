@@ -12,7 +12,7 @@ class MachineUsage extends Model
     use UsesUuid, UsesSynch, UsesSynch;
 
     protected $fillable = [
-        'machine_id', 'customer_name', 'minutes', 'activation_type', 'synched', 'price',
+        'machine_id', 'customer_name', 'minutes', 'activation_type', 'remarks', 'synched', 'price',
     ];
 
     public function queSynch() {

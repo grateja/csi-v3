@@ -156,6 +156,10 @@ const routes = [
         component: require('./views/machines/Index.vue').default
     },
     {
+        path: '/reworks',
+        component: require('./views/reworks/Index.vue').default
+    },
+    {
         path: '/machines/remarks',
         component: require('./views/machines/MachineRemarks.vue').default
     },

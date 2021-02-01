@@ -38,15 +38,15 @@ class TransactionsController extends Controller
     }
 
     public function show($transactionId) {
-        $transaction = Transaction::with(
-            'user',
-            'serviceTransactionItems',
-            'productTransactionItems',
-            'customer',
+        $transaction = Transaction::withTrashed()
+            ->with(
             'payment.user',
-            'remarks'
-        )->findOrfail($transactionId);
-        $transaction->refreshAll();
+            'partialPayment.user'
+            )
+        ->findOrfail($transactionId);
+
+        $transaction->refreshAll($transaction->deleted_at);
+
 
         $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
 
@@ -59,7 +59,11 @@ class TransactionsController extends Controller
         $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $result = Transaction::where(function($query) use ($request) {
+        $result = Transaction::with([
+            'partialPayment' => function($query) {
+                $query->select('id', 'transaction_id', 'balance');
+            }
+        ])->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
         })
@@ -123,6 +127,8 @@ class TransactionsController extends Controller
 
         $result = Transaction::with(['payment' => function($query) {
             $query->select('id', 'date');
+        }, 'partialPayment' => function($query) {
+            $query->select('id', 'transaction_id', 'date', 'total_amount', 'balance');
         }])->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
@@ -138,7 +144,12 @@ class TransactionsController extends Controller
             $result = $result->whereDate('date_paid', $request->datePaid);
         }
 
-        $result = $result->paginate(10);
+        if($request->hideDeleted == 'false') {
+            $result = $result->withTrashed()->paginate(10);
+        } else {
+            $result = $result->paginate(10);
+        }
+
 
         // $result->getCollection()->transform(function($item) {
         //     return [

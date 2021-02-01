@@ -66,20 +66,42 @@ class Transaction extends Model
     }
 
     public function payment() {
-        return $this->hasOne('App\TransactionPayment', 'id', 'id');
+        return $this->hasOne('App\TransactionPayment', 'id', 'id')->withTrashed();
+    }
+
+    public function partialPayment() {
+        return $this->hasOne('App\PartialPayment');
     }
 
     public function remarks() {
         return $this->hasMany('App\TransactionRemarks')->orderBy('created_at');
     }
 
-    public function posServiceItems() {
-        return $this->serviceTransactionItems()->groupBy('name', 'price')->selectRaw('name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
+    public function posServiceItems($withTrashed = false) {
+        $items = $this->serviceTransactionItems()->groupBy('name', 'price')->selectRaw('name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+        if($withTrashed) {
+            $items = $items->withTrashed();
+        }
+        return $items->get();
     }
 
-    public function posProductItems() {
-        return $this->productTransactionItems()->groupBy('name', 'price', 'product_id')->selectRaw('product_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
+    public function posProductItems($withTrashed = false) {
+        $items = $this->productTransactionItems()->groupBy('name', 'price', 'product_id')->selectRaw('product_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+
+        if($withTrashed) {
+            $items = $items->withTrashed();
+        }
+
+        return $items->get();
     }
+
+    // public function posServiceItemsWithTrashed() {
+    //     return $this->serviceTransactionItems()->withTrashed()->groupBy('name', 'price')->selectRaw('name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
+    // }
+
+    // public function posProductItemsWithTrashed() {
+    //     return $this->productTransactionItems()->withTrashed()->groupBy('name', 'price', 'product_id')->selectRaw('product_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
+    // }
 
     public function getDateStrAttribute() {
         return Carbon::createFromDate($this->date)->format('M-d, Y H:i A');
@@ -91,18 +113,18 @@ class Transaction extends Model
         }
     }
 
-    public function posServiceSummary() {
+    public function posServiceSummary($withTrashed = false) {
         // total quantity, total price
         return [
-            'total_price' => $this->posServiceItems()->sum('total_price'),
-            'total_quantity' => $this->posServiceItems()->sum('quantity'),
+            'total_price' => $this->posServiceItems($withTrashed)->sum('total_price'),
+            'total_quantity' => $this->posServiceItems($withTrashed)->sum('quantity'),
         ];
     }
 
-    public function posProductSummary() {
+    public function posProductSummary($withTrashed = false) {
         return [
-            'total_price' => $this->posProductItems()->sum('total_price'),
-            'total_quantity' => $this->posProductItems()->sum('quantity'),
+            'total_price' => $this->posProductItems($withTrashed)->sum('total_price'),
+            'total_quantity' => $this->posProductItems($withTrashed)->sum('quantity'),
         ];
     }
 
@@ -122,19 +144,35 @@ class Transaction extends Model
         return $pTotal + $sTotal;
     }
 
-    public function refreshAll() {
+    // public function refreshAllWithTrashed() {
+    //     $this['posServiceItems'] = $this->posServiceItemsWithTrashed();
+    //     $this['posProductItems'] = $this->posProductItemsWithTrashed();
+    //     $this['posServiceSummary'] = $this->posServiceSummary();
+    //     $this['posProductSummary'] = $this->posProductSummary();
+    //     $this['total_amount'] = $this->posProductSummary()['total_price'] + $this->posServiceSummary()['total_price'];
+    //     $this['paidTo'] = $this->user;
+    //     $this['customer'] = $this->customer;
+    // }
+
+    public function refreshAll($withTrashed = false) {
         // $this['customer_name'] = $this->customer->name;
-        $this['posServiceItems'] = $this->posServiceItems();
-        $this['posProductItems'] = $this->posProductItems();
-        $this['posServiceSummary'] = $this->posServiceSummary();
-        $this['posProductSummary'] = $this->posProductSummary();
-        $this['total_amount'] = $this->posProductSummary()['total_price'] + $this->posServiceSummary()['total_price'];
+        $this['posServiceItems'] = $this->posServiceItems($withTrashed);
+        $this['posProductItems'] = $this->posProductItems($withTrashed);
+        $this['posServiceSummary'] = $this->posServiceSummary($withTrashed);
+        $this['posProductSummary'] = $this->posProductSummary($withTrashed);
+        $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'];
         $this['paidTo'] = $this->user;
         $this['customer'] = $this->customer;
+
+        if($this->total_price != $totalAmount) {
+            $this->update(['total_price' => $totalAmount]);
+            $this->refreshAll($withTrashed);
+        }
     }
 
     public function withPayment() {
         $this['payment'] = $this->payment;
+        $this['partial_payment'] = $this->partialPayment;
         return $this;
     }
 
@@ -142,8 +180,18 @@ class Transaction extends Model
     {
         static::deleting(function($model) {
             $model->payment()->delete();
+            $model->partialPayment()->delete();
 
             foreach ($model->serviceTransactionItems as $value) {
+                if($value->category == 'full') {
+                    $productItems = $value->fullService->fullServiceProducts;
+                    foreach($productItems as $productItem) {
+                        $product = Product::find($productItem->product_id);
+                        if($product) {
+                            $product->increment('current_stock', $productItem->quantity);
+                        }
+                    }
+                }
                 $value->delete();
             }
 

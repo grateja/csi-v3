@@ -21,7 +21,8 @@ const actions = {
     proceedToPayment(context, data) {
         context.commit('setSavingStatus', true);
         context.commit('clearErrors');
-        return axios.post(`/api/payments/${data.transactionId}/proceed`, data.formData).then((res, rej) => {
+        // method = full, partial
+        return axios.post(`/api/payments/${data.transactionId}/${data.method}`, data.formData).then((res, rej) => {
             context.commit('setSavingStatus', false);
             return res;
         }).catch(err => {

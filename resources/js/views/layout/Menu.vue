@@ -248,6 +248,13 @@ export default {
                     to: '/machines'
                 },
                 {
+                    text: 'Reworks',
+                    icon: 'reworks',
+                    roles: ['admin', 'staff'],
+                    color: '#e4dfdd',
+                    to: '/reworks'
+                },
+                {
                     text: 'Loyalty points',
                     icon: 'loyalty-points',
                     roles: ['admin'],

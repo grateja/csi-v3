@@ -112,18 +112,25 @@ body {
     margin-bottom: 5px;
 }
 .machine-tile__flex {
-    max-width: 200px!important;
-    min-width: 200px!important;
-    max-height: 180px!important;
-    min-height: 180px!important;
-    height: 180px!important;
-    margin: 25px;
+    max-width: 120px!important;
+    min-width: 120px!important;
+    max-height: 120px!important;
+    min-height: 120px!important;
+    height: 120px!important;
+    margin: 10px;
+}
+.machine-tile__card.selected {
+    border: 3px solid blue !important;
+    // border-radius: 20px;
 }
 .machine-tile__card {
-    width: 100%;
-    height: 100%;
+    width: 95%;
+    height: 95%;
 }
 .machine-tile__card.running {
     color: white!important;
     background: rgba(0, 68, 255, 0.4)!important;
+}
+.machine-tile-name {
+    text-shadow: 1px 1px 1px white;
 }

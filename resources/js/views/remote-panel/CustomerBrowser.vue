@@ -29,6 +29,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
+                <v-btn @click="$emit('rework', machine)" round>Rework</v-btn>
             </v-card-actions>
         </v-card>
         <service-browser v-model="openServiceBrowser" :customer="activeCustomer" :machine="machine" @activated="machineActivated" />

@@ -117,6 +117,8 @@ class MachinesController extends Controller
                     'remarks' => 'Additional ' . $totalMinutes,
                     'user_name' => $customer->name,
                     'customer_id' => $customer->id,
+                    'customer_wash_id' => $customerWash ? $customerWash->id : null,
+                    'customer_dry_id' => $customerDry ? $customerDry->id : null,
                 ]);
 
                 $machineUsage = MachineUsage::where('machine_id', $machine->id)->orderByDesc('updated_at')->first();
@@ -132,6 +134,8 @@ class MachinesController extends Controller
                     'remarks' => 'Remotely activated',
                     'user_name' => $customer->name,
                     'customer_id' => $customer->id,
+                    'customer_wash_id' => $customerWash ? $customerWash->id : null,
+                    'customer_dry_id' => $customerDry ? $customerDry->id : null,
                 ]);
 
                 $machineUsage = MachineUsage::create([

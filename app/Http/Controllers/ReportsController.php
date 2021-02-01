@@ -221,4 +221,10 @@ class ReportsController extends Controller
             'summary' => $summary,
         ]);
     }
+
+    public function printDailySale($date) {
+        return view('printer.daily', [
+            'date' => $date,
+        ]);
+    }
 }

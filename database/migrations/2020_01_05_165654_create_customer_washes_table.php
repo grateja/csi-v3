@@ -26,6 +26,7 @@ class CreateCustomerWashesTable extends Migration
             $table->float('price')->default(0);
             $table->dateTime('used')->nullable();
             $table->string('staff_name')->nullable()->comment('staff who activates the service');
+            $table->string('job_order');
 
             $table->timestamps();
             $table->softDeletes();

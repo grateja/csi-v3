@@ -54,17 +54,25 @@
         <v-card v-if="!currentCustomer && !loading && unpaidTransactions.length" class="my-3 rounded-card">
             <v-card-title class="grey--text">Customers with unpaid transaction</v-card-title>
             <v-divider class="my-1"></v-divider>
-            <v-list dense>
-                <v-list-tile v-for="transaction in unpaidTransactions" :key="transaction.id" @click="selectUnpaidCustomer(transaction)">
-                    <v-list-tile-action class="grey--text caption">{{transaction.job_order}}</v-list-tile-action>
-                    <v-list-tile-content>
-                        <div>{{transaction.customer_name}}</div>
-                        <div class="caption grey--text">{{moment(transaction.date).format('LLL')}}</div>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
-                        P{{parseFloat(transaction.total_price).toFixed(2)}}
-                    </v-list-tile-action>
-                </v-list-tile>
+            <v-list dense three-line>
+                <template v-for="transaction in unpaidTransactions">
+                    <v-list-tile :key="transaction.id" @click="selectUnpaidCustomer(transaction)">
+                        <v-list-tile-action class="grey--text caption">{{transaction.job_order}}</v-list-tile-action>
+                        <v-list-tile-content>
+                            <div>{{transaction.customer_name}}</div>
+                            <div class="caption grey--text">{{moment(transaction.date).format('LLL')}}</div>
+                            <div v-if="transaction.date_paid == null && transaction.partial_payment">
+                                <v-chip color="#eeb" small class="ml-0">
+                                    Balance: P{{parseFloat(transaction.partial_payment.balance).toFixed(2)}}
+                                </v-chip>
+                            </div>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            P{{parseFloat(transaction.total_price).toFixed(2)}}
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-divider :key="'div'+transaction.id"></v-divider>
+                </template>
             </v-list>
         </v-card>
         <customer-dialog v-model="openCustomerDialog" @save="setCustomer" :initialName="keyword" />

@@ -4,6 +4,9 @@
             <v-flex style="max-width: 500px">
                 <v-text-field class="translucent-input round-input" label="Search customer or Job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
             </v-flex>
+            <v-flex>
+                <v-checkbox v-model="hideDeleted" class="ml-4 font-weight-bold" color="primary" label="Hide deleted"></v-checkbox>
+            </v-flex>
         </v-layout>
         <v-layout justify-center>
             <v-flex shrink>
@@ -48,9 +51,13 @@
                     <tr>
                         <td>{{props.index + 1}}</td>
                         <td>
-                            <v-btn round small class="font-weight-bold" :color="props.item.date_paid == null ? `primary` : 'green'" @click="previewTransaction(props.item)">
+                            <v-btn round small class="font-weight-bold" :color="props.item.date_paid != null ? `#31f239` : !!props.item.partial_payment ? '#eeb' : '#f766c2'" @click="previewTransaction(props.item)">
                                 {{ props.item.job_order }}
                             </v-btn>
+                            <div class="caption red--text" v-if="props.item.deleted_at">
+                                DELETED:
+                                {{ moment(props.item.deleted_at).format('LLL')}}
+                            </div>
                         </td>
                         <td>{{ props.item.customer_name }}</td>
                         <td>{{ moment(props.item.date).format('LLL') }}</td>
@@ -59,7 +66,7 @@
                     </tr>
                 </template>
                 <template slot="footer">
-                    <tr v-if="!!summary">
+                    <tr v-if="!!summary && hideDeleted">
                         <td colspan="4">
                             <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
                         </td>
@@ -90,6 +97,7 @@ export default {
             date: null,
             datePaid: null,
             page: 1,
+            hideDeleted: true,
             reset: false,
             items: [],
             summary: null,
@@ -141,7 +149,8 @@ export default {
                     date: this.date,
                     datePaid: this.datePaid,
                     sortBy: this.sortBy,
-                    orderBy: this.orderBy
+                    orderBy: this.orderBy,
+                    hideDeleted: this.hideDeleted
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
@@ -178,6 +187,8 @@ export default {
         datePaidStr(item) {
             if(item.date_paid) {
                 return moment(item.date_paid).format('LLL');
+            } else if(item.partial_payment) {
+                return moment(item.partial_payment.date).format('LLL') + ' [PARTIAL PAYMENT]';
             } else {
                 return "(Not paid)";
             }
@@ -186,6 +197,7 @@ export default {
             let t = this.items.find(tr => tr.id == transaction.id);
             if(t) {
                 t.date_paid = transaction.date_paid;
+                t.partial_payment = transaction.partial_payment;
             }
         },
         deleteTransaction(transaction) {
@@ -194,6 +206,12 @@ export default {
     },
     created() {
         this.load();
+    },
+    watch: {
+        hideDeleted(val) {
+            this.reset = true;
+            this.load();
+        }
     }
 }
 </script>

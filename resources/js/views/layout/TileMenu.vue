@@ -125,6 +125,13 @@ export default {
                     route: '/machines'
                 },
                 {
+                    text: 'Reworks',
+                    icon: 'reworks',
+                    roles: ['admin', 'staff'],
+                    color: '#e4dfdd',
+                    route: '/reworks'
+                },
+                {
                     text: 'Loyalty points',
                     icon: 'loyalty-points',
                     roles: ['admin'],

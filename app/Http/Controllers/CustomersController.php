@@ -67,6 +67,7 @@ class CustomersController extends Controller
     public function store(Request $request) {
         $rules = [
             'name' => 'required',
+            'crn' => 'unique:customers',
         ];
 
         $customer = Customer::where('name', $request->name)->first();
@@ -82,6 +83,8 @@ class CustomersController extends Controller
             return DB::transaction(function () use ($request) {
                 $customer = Customer::create([
                     'name' => $request->name,
+                    'crn' => $request->crn,
+                    'remarks' => $request->remarks,
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
@@ -108,10 +111,16 @@ class CustomersController extends Controller
         if($customer->name != $request->name) {
             $rules['name'] = 'required|unique:customers';
         }
+        if($customer->crn != $request->crn) {
+            $rules['crn'] = 'required|unique:customers';
+        }
+
 
         if($request->validate($rules)) {
             return DB::transaction(function () use ($customer, $request) {
                 $customer->update([
+                    'crn' => $request->crn,
+                    'remarks' => $request->remarks,
                     'name' => $request->name,
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
@@ -135,6 +144,16 @@ class CustomersController extends Controller
             return response()->json([
                 'customer' => $customer,
             ]);
+        }
+    }
+
+    public function getCRN() {
+        $customer = Customer::orderByDesc('created_at')->first();
+        if($customer) {
+            $num = (int) $customer->crn;
+            return str_pad(++$num, 4, '0', STR_PAD_LEFT);
+        } else {
+            return '0001';
         }
     }
 }

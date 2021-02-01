@@ -109,7 +109,30 @@
 
                     <v-divider class="my-3 transparent"></v-divider>
 
-                    <v-card v-if="!!tempTransaction.date_paid" class="rounded-card">
+                    <v-card v-if="!!tempTransaction.partial_payment && !tempTransaction.date_paid" class="rounded-card">
+                        <v-card-title>Partial payment</v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-text>
+                            <v-layout v-if="tempTransaction.partial_payment">
+                                <v-flex xs5><span class="data-term font-weight-bold">Partial payment:</span></v-flex>
+                                <v-flex xs7>
+                                    <span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.partial_payment.total_paid).toFixed(2)}}
+                                        <v-tooltip top>
+                                            <span>View partial<br /> payment</span>
+                                            <v-btn slot="activator" icon small class="ma-0" @click="openPartialPayment = true"><v-icon>open_in_new</v-icon></v-btn>
+                                        </v-tooltip>
+                                    </span>
+                                </v-flex>
+                            </v-layout>
+                            <v-layout v-if="tempTransaction.partial_payment">
+                                <v-flex xs5><span class="data-term font-weight-bold">Balance:</span></v-flex>
+                                <v-flex xs7>
+                                    <span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.partial_payment.balance).toFixed(2)}}</span>
+                                </v-flex>
+                            </v-layout>
+                        </v-card-text>
+                    </v-card>
+                    <v-card v-else-if="!!tempTransaction.date_paid" class="rounded-card">
                         <v-card-title>
                             Payment details
                         </v-card-title>
@@ -122,6 +145,17 @@
                             <v-layout>
                                 <v-flex xs5><span class="data-term font-weight-bold">Paid to:</span></v-flex>
                                 <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.payment.paid_to}}</span></v-flex>
+                            </v-layout>
+                            <v-layout v-if="tempTransaction.partial_payment">
+                                <v-flex xs5><span class="data-term font-weight-bold">Partial payment:</span></v-flex>
+                                <v-flex xs7>
+                                    <span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.partial_payment.total_paid).toFixed(2)}}
+                                        <v-tooltip top>
+                                            <span>View partial<br /> payment</span>
+                                            <v-btn slot="activator" icon small class="ma-0" @click="openPartialPayment = true"><v-icon>open_in_new</v-icon></v-btn>
+                                        </v-tooltip>
+                                    </span>
+                                </v-flex>
                             </v-layout>
                             <v-layout>
                                 <v-flex xs5><span class="data-term font-weight-bold">Cash:</span></v-flex>
@@ -186,41 +220,46 @@
             </div>
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
-                <v-tooltip top v-if="isOwner">
-                    <v-btn slot="activator" icon @click="deleteTransaction" :loading="isDeleting">
-                        <v-icon>delete</v-icon>
-                    </v-btn>
-                    <span>Delete job order</span>
-                </v-tooltip>
-                <v-spacer></v-spacer>
-                <v-btn class="primary" round @click="viewPayment" v-if="tempTransaction && tempTransaction.payment == null">View payment</v-btn>
-                <v-tooltip top>
-                    <v-btn slot="activator" class="primary" round @click="printJobOrder" v-if="tempTransaction && !!tempTransaction.payment" :loading="jobOrderLoading" icon>
-                        <v-icon>print</v-icon>
-                    </v-btn>
-                    <span>Print job order</span>
-                </v-tooltip>
-                <v-tooltip top>
-                    <v-btn slot="activator" round @click="printClaimStub" v-if="tempTransaction" :loading="claimStubLoading" icon>
-                        <v-icon>print</v-icon>
-                    </v-btn>
-                    <span>Print claim stub</span>
-                </v-tooltip>
+                <template v-if="!!tempTransaction && !tempTransaction.deleted_at">
+                    <v-tooltip top v-if="isOwner">
+                        <v-btn slot="activator" icon @click="deleteTransaction" :loading="isDeleting">
+                            <v-icon>delete</v-icon>
+                        </v-btn>
+                        <span>Delete job order</span>
+                    </v-tooltip>
+                    <v-spacer></v-spacer>
+                    <v-btn class="primary" round @click="viewPayment" v-if="tempTransaction && tempTransaction.payment == null">View payment</v-btn>
+                    <v-tooltip top>
+                        <v-btn slot="activator" class="primary" round @click="printJobOrder" v-if="tempTransaction && !!tempTransaction.payment" :loading="jobOrderLoading" icon>
+                            <v-icon>print</v-icon>
+                        </v-btn>
+                        <span>Print job order</span>
+                    </v-tooltip>
+                    <v-tooltip top>
+                        <v-btn slot="activator" round @click="printClaimStub" v-if="tempTransaction" :loading="claimStubLoading" icon>
+                            <v-icon>print</v-icon>
+                        </v-btn>
+                        <span>Print claim stub</span>
+                    </v-tooltip>
+                </template>
             </v-card-actions>
         </v-card>
         <payment-dialog v-model="openPaymentDialog" :transaction="tempTransaction" @save="savePayment" />
         <transaction-remarks-dialog v-model="openRemarksDialog" :transaction="tempTransaction" />
+        <partial-payment-dialog v-if="tempTransaction && tempTransaction.partial_payment" v-model="openPartialPayment" :partialPaymentId="tempTransaction.partial_payment.id"></partial-payment-dialog>
     </v-dialog>
 </template>
 
 <script>
 import PaymentDialog from '../transactions/PaymentDialog.vue';
 import TransactionRemarksDialog from '../transactions/TransactionRemarksDialog.vue';
+import PartialPaymentDialog from '../transactions/PartialPaymentDialog.vue'
 
 export default {
     components: {
         PaymentDialog,
-        TransactionRemarksDialog
+        TransactionRemarksDialog,
+        PartialPaymentDialog
     },
     props: [
         'value', 'transactionId'
@@ -231,6 +270,7 @@ export default {
             tempTransaction: null,
             openPaymentDialog: false,
             openRemarksDialog: false,
+            openPartialPayment: false,
             isDeleting: false
         }
     },

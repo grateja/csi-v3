@@ -31,12 +31,16 @@ class CreateMachinesTable extends Migration
             $table->string('user_name')->nullable();
             $table->text('remarks')->nullable();
             $table->uuid('customer_id')->nullable()->comment('Used only for reference for dryer, for additional dry');
+            $table->uuid('customer_wash_id')->nullable()->comment('last activated wash');
+            $table->uuid('customer_dry_id')->nullable()->comment('last activated dry');
 
             $table->timestamps();
             $table->softDeletes();
             $table->timestamp('synched')->nullable();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('CASCADE')->onDelete('SET NULL');
+            // $table->foreign('customer_wash_id')->references('id')->on('customer_washes')->onUpdate('CASCADE')->onDelete('SET NULL');
+            // $table->foreign('customer_dry_id')->references('id')->on('customer_dries')->onUpdate('CASCADE')->onDelete('SET NULL');
         });
     }
 

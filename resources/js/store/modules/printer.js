@@ -148,6 +148,21 @@ const actions = {
             context.commit('setLoadingJobOrder', false);
             return Promise.reject(err);
         });
+    },
+    printDailySale(context, date) {
+        return axios.get(`/api/reports/print/daily-sale/${date}/true`).then((res, rej) => {
+            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            console.log(params)
+            let w = window.open('about:blank', 'print', params);
+
+            w.document.write(res.data);
+            w.document.close();
+
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            return Promise.reject(err);
+        });
     }
 };
 

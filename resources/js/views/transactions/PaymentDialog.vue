@@ -34,7 +34,7 @@
                     </v-layout>
                     <v-layout>
                         <v-flex xs5><span class="data-term font-weight-bold">Total amount:</span></v-flex>
-                        <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(transaction.total_amount).toFixed(2)}}</span></v-flex>
+                        <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(transaction.total_price).toFixed(2)}}</span></v-flex>
                     </v-layout>
                     <v-layout v-if="discount">
                         <v-flex xs5><span class="data-term font-weight-bold">Discount:</span></v-flex>
@@ -69,15 +69,26 @@
                             </span>
                         </v-flex>
                     </v-layout>
+                    <v-layout v-if="transaction.partial_payment">
+                        <v-flex xs5><span class="data-term font-weight-bold">Partial payment:</span></v-flex>
+                        <v-flex xs7>
+                            <span class="data-value">{{`P ${parseFloat(transaction.partial_payment.total_paid).toFixed(2)}`}}
+                                <v-tooltip top>
+                                    <span>View partial<br /> payment</span>
+                                    <v-btn slot="activator" icon small class="ma-0" @click="openPartialPayment = true"><v-icon>open_in_new</v-icon></v-btn>
+                                </v-tooltip>
+                            </span>
+                        </v-flex>
+                    </v-layout>
                     <v-divider class="transparent my-2"></v-divider>
                         <v-card class="pa-4 rounded-card text-xs-center" color="#ff00e2">
                             <!-- <h4 class="grey--text">Total amount:</h4>
                             <v-divider></v-divider>
-                            <span class="title">P {{parseFloat(transaction.total_amount).toFixed(2)}}</span> -->
+                            <span class="title">P {{parseFloat(transaction.total_price).toFixed(2)}}</span> -->
 
                             <h4 class="white--text">Amount to pay:</h4>
                             <v-divider color="red"></v-divider>
-                            <span class="display-1">P {{parseFloat(transaction.total_amount - discountInPeso - formData.rfidCardLoad - formData.pointsInPeso).toFixed(2)}}</span>
+                            <span class="display-1">P {{amountToPay.toFixed(2)}}</span>
                         </v-card>
                         <v-text-field class="round-input mt-3 text-xs-center" outline v-model="formData.cash" label="Cash" ref="cash" :error-messages="errors.get('cash')"></v-text-field>
                         <!-- <template v-if="formData.rfidCardId && formData.rfidCardLoad">
@@ -94,9 +105,14 @@
                                 <v-text-field :value="discountInPeso" :label="`Discount: ${discount.name} ${discount.percentage}%`" readonly></v-text-field>
                             </v-card>
                         </template> -->
-                    <v-layout>
+                    <v-layout v-if="change > 0">
                         <v-flex xs5><span class="data-term font-weight-bold">Change:</span></v-flex>
                         <v-flex xs7><span class="data-value font-weight-bold">P {{change}}</span></v-flex>
+                    </v-layout>
+                    <v-layout v-if="balance > 0">
+                        <v-flex xs5><span class="data-term font-weight-bold">Balance:</span></v-flex>
+                        <v-flex xs7><span class="data-value font-weight-bold">P {{balance}}</span>
+                        </v-flex>
                     </v-layout>
                 </v-card-text>
                 <v-card-text>
@@ -109,16 +125,15 @@
                 </v-card-actions> -->
                 <v-divider></v-divider>
                 <v-card-actions>
-                    <v-btn type="submit" class="primary" round :loading="saving">Save</v-btn>
-                    <v-btn round :loading="saving" @click="saveAndPrint">Save and print</v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn @click="close" round>close</v-btn>
+                    <v-btn type="submit" class="primary" round :loading="saving && !printJobOrder">{{balance > 0 ? 'Partial payment' : 'Save'}}</v-btn>
+                    <v-btn round :loading="saving && printJobOrder" @click="saveAndPrint">Save and print</v-btn>
                 </v-card-actions>
             </v-card>
         </form>
         <rfid-card-dialog v-model="openRfidCardDialog" :customerId="transaction.customer_id" v-if="transaction" @setCard="setCard" />
         <points-dialog v-model="openPointsDialog" :customer="transaction.customer" @setPoints="setPoints"  v-if="transaction" />
         <discount-dialog v-model="openDiscountDialog" @setDiscount="selectDiscount" />
+        <partial-payment-dialog v-if="transaction && transaction.partial_payment" v-model="openPartialPayment" :partialPaymentId="transaction.partial_payment.id"></partial-payment-dialog>
     </v-dialog>
 </template>
 
@@ -126,12 +141,14 @@
 import RfidCardDialog from './RfidCardDialog.vue';
 import PointsDialog from './PointsDialog.vue';
 import DiscountDialog from './DiscountDialog.vue';
+import PartialPaymentDialog from './PartialPaymentDialog.vue';
 
 export default {
     components: {
         RfidCardDialog,
         PointsDialog,
-        DiscountDialog
+        DiscountDialog,
+        PartialPaymentDialog
     },
     props: [
         'transaction', 'value'
@@ -141,6 +158,7 @@ export default {
             openRfidCardDialog: false,
             openPointsDialog: false,
             openDiscountDialog: false,
+            openPartialPayment: false,
             discount: null,
             printJobOrder: false,
             formData: {
@@ -157,10 +175,17 @@ export default {
             this.$emit('input', false);
         },
         submit() {
+            let method = 'full';
+            if(this.balance > 0){
+                if(!confirm("Proceed with partial payment?")) return;
+                method = 'partial';
+            }
+
             this.formData.discountId = this.discount ? this.discount.id : null;
             this.$store.dispatch('payment/proceedToPayment', {
                 transactionId: this.transaction.id,
-                formData: this.formData
+                formData: this.formData,
+                method
             }).then((res, rej) => {
                 if(this.printJobOrder) {
                     this.$store.dispatch('printer/printJobOrder', res.data.transaction.id);
@@ -199,8 +224,8 @@ export default {
             let discount = parseFloat(this.discountInPeso) || 0;
             let points = parseFloat(this.formData.pointsInPeso) || 0;
             let load = parseFloat(this.formData.rfidCardLoad) || 0;
-            let total_amount = parseFloat(this.transaction.total_amount) || 0;
-            let change = cash + discount + points + load - total_amount;
+            let total_price = parseFloat(this.transaction.total_price) || 0;
+            let change = this.partialPayment + cash + discount + points + load - total_price;
             if(change <= 0) {
                 return 0.00;
             }
@@ -211,18 +236,41 @@ export default {
         },
         discountInPeso() {
             if(this.transaction && this.discount) {
-                return  parseFloat(this.transaction.total_amount * this.discount.percentage / 100).toFixed(2);
+                return  parseFloat(this.transaction.total_price * this.discount.percentage / 100).toFixed(2);
             }
             return 0;
         },
         errors() {
             return this.$store.getters['payment/getErrors'];
+        },
+        balance() {
+            let cash = parseFloat(this.formData.cash) || 0;
+            let discount = parseFloat(this.discountInPeso) || 0;
+            let points = parseFloat(this.formData.pointsInPeso) || 0;
+            let load = parseFloat(this.formData.rfidCardLoad) || 0;
+            let total_price = parseFloat(this.transaction.total_price) || 0;
+            let bal = total_price - cash - discount - points - load - this.partialPayment;
+            if(bal >= 0) {
+                return parseFloat(bal).toFixed(2);
+            }
+            return 0.00;
+        },
+        partialPayment() {
+            if(this.transaction.partial_payment) {
+                return this.transaction.partial_payment.total_paid;
+            }
+            return 0;
+        },
+        amountToPay() {
+            if(this.transaction) {
+                return parseFloat(this.transaction.total_price - this.discountInPeso - this.formData.rfidCardLoad - this.formData.pointsInPeso - this.partialPayment);
+            }
         }
     },
     watch: {
         value(val) {
             if(val && this.transaction) {
-                this.formData.cash = this.transaction.total_amount;
+                this.formData.cash = this.amountToPay;
                 setTimeout(() => {
                     this.$refs.cash.$el.querySelector('input').select();
                 }, 500);

@@ -15,6 +15,8 @@ axios.interceptors.response.use(null, err => {
             message: 'Unauthorized',
             color: 'error'
         });
+        router.push('/login');
+        return;
     // alert('Unauthorized');
         // store.commit('setFlash', {message: 'Unauthorized', color: 'error'});
     } else if(err && err.response && err.response.status == 422) {

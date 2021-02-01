@@ -33,6 +33,8 @@ class Machine extends Model
         'remarks',
         'user_name',
         'customer_id',
+        'customer_wash_id',
+        'customer_dry_id',
         'synched',
     ];
 
@@ -166,6 +168,8 @@ class Machine extends Model
             'total_minutes' => $minutes,
             'user_name' => $rfidCard->owner_name,
             'remarks' => 'Activated by card: ' . $rfidCard->owner_name,
+            'customer_wash_id' => null,
+            'customer_dry_id' => null,
         ]);
 
         $this['price'] = $price;

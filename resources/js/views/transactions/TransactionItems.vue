@@ -105,6 +105,46 @@
                 </tr>
             </table>
 
+            <v-divider class="my-3"></v-divider>
+
+            <v-card v-if="currentTransaction && currentTransaction.partial_payment" class="rounded-card">
+                <v-card-title>
+                    <span class="grey--text font-weight-bold">Partial payment</span>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                    <v-layout>
+                        <v-flex xs5 class="text-xs-right mr-3">Date:</v-flex>
+                        <v-flex xs7>{{moment(currentTransaction.partial_payment.date).format('MMMM DD, YYYY hh:mm A')}}</v-flex>
+                    </v-layout>
+
+                    <v-layout class="font-weight-bold">
+                        <v-flex xs5 class="text-xs-right mr-3">Amount to pay:</v-flex>
+                        <v-flex xs7>P{{parseFloat(currentTransaction.total_price).toFixed(2)}}</v-flex>
+                    </v-layout>
+                    <v-layout v-if="currentTransaction.partial_payment.points_in_peso">
+                        <v-flex xs5 class="text-xs-right mr-3">Points:</v-flex>
+                        <v-flex xs7>P{{parseFloat(currentTransaction.partial_payment.points_in_peso).toFixed(2)}}</v-flex>
+                    </v-layout>
+                    <v-layout v-if="currentTransaction.partial_payment.card_load_used">
+                        <v-flex xs5 class="text-xs-right mr-3">RFID Load:</v-flex>
+                        <v-flex xs7>P{{parseFloat(currentTransaction.partial_payment.card_load_used).toFixed(2)}}</v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs5 class="text-xs-right mr-3">Cash:</v-flex>
+                        <v-flex xs7>P{{parseFloat(currentTransaction.partial_payment.cash).toFixed(2)}}</v-flex>
+                    </v-layout>
+                    <v-layout class="font-weight-bold">
+                        <v-flex xs5 class="text-xs-right mr-3">Balance:</v-flex>
+                        <v-flex xs7>P{{parseFloat(currentTransaction.partial_payment.balance).toFixed(2)}}</v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs5 class="text-xs-right mr-3">Staff name:</v-flex>
+                        <v-flex xs7>{{currentTransaction.partial_payment.paid_to}}</v-flex>
+                    </v-layout>
+                </v-card-text>
+            </v-card>
+
             <v-card-actions v-if="currentTransaction && !currentTransaction.saved">
                 <v-spacer></v-spacer>
                 <v-btn class="title" color="#cf0" @click="saveTransaction" round :loading="saving"> <span class="font-weight-bold">{{totalPrice}} </span> &nbsp; confirm</v-btn>
@@ -149,7 +189,7 @@ export default {
         },
         totalPrice() {
             if(this.currentTransaction) {
-                return 'P' + parseFloat(this.currentTransaction.total_amount).toFixed(2);
+                return 'P' + parseFloat(this.currentTransaction.total_price).toFixed(2);
             }
         },
         currentCustomer() {

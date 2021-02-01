@@ -46,8 +46,9 @@
             </div>
         </template>
 
-        <customer-browser v-model="openCustomerBrowserDialog" :machine="activeMachine" @machineActivated="updateMachine" />
-        <machine-dialog :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" @activated="updateMachine" />
+        <customer-browser @rework="rework" v-model="openCustomerBrowserDialog" :machine="activeMachine" @machineActivated="updateMachine" />
+        <machine-dialog @rework="rework" :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" @activated="updateMachine" @transfered="transfered" />
+        <rework-dialog @reworkConfirm="reworkConfirm" :machine="activeMachine" v-model="openReworkDialog"></rework-dialog>
     </v-card>
 </template>
 
@@ -56,17 +57,20 @@
 import CustomerBrowser from './CustomerBrowser.vue';
 import MachineTile from './MachineTile.vue';
 import MachineDialog from './MachineDialog.vue';
+import ReworkDialog from './ReworkDialog.vue';
 
 export default {
     components: {
         CustomerBrowser,
         MachineTile,
-        MachineDialog
+        MachineDialog,
+        ReworkDialog
     },
     data() {
         return {
             openCustomerBrowserDialog: false,
             openMachineDialog: false,
+            openReworkDialog: false,
             activeMachine: null,
             machines: [],
             interval: null,
@@ -103,9 +107,29 @@ export default {
             this.activeMachine.total_minutes = data.machine.total_minutes;
             this.activeMachine.is_running = data.machine.is_running;
             this.activeMachine.remarks = data.machine.remarks;
+            this.activeMachine.time_activated = data.machine.time_activated;
+            this.activeMachine.customer_dry_id = data.machine.customer_dry_id;
+            this.activeMachine.customer_wash_id = data.machine.customer_wash_id;
+        },
+        reworkConfirm() {
+            this.openCustomerBrowserDialog = false;
+            this.openMachineDialog = false;
+            console.log('done');
+        },
+        transfered(data) {
+            // this.activeMachine.time_ends_in = data.from.time_ends_in;
+            // this.activeMachine.customer = data.from.customer;
+            // this.activeMachine.user_name = data.from.user_name;
+            // this.activeMachine.total_minutes = data.from.total_minutes;
+            // this.activeMachine.is_running = data.from.is_running;
+            // this.activeMachine.remarks = data.from.remarks;
+            // this.activeMachine.time_activated = data.from.time_activated;
+            // this.activeMachine.customer_dry_id = data.from.customer_dry_id;
+            // this.activeMachine.customer_wash_id = data.from.customer_wash_id;
+
+            // var transferedTo =
         },
         getUpdate() {
-            console.log('get update');
             if(this.$refs.machines) {
                 axios.get('/api/machines').then((res, rej) => {
                     this.machines = res.data.result;
@@ -124,6 +148,10 @@ export default {
                     setTimeout(this.startTimer, 4000)
                 });
             }
+        },
+        rework(machine) {
+            this.activeMachine = machine;
+            this.openReworkDialog = true;
         }
     },
     created() {

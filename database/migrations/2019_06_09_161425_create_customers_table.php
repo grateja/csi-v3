@@ -16,12 +16,14 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
+            $table->string('crn')->comment('customer reference number')->nullable()->default('0000');
             $table->string('name')->nullable();
             $table->string('address')->nullable();
             $table->string('contact_number')->nullable();
             $table->string('email')->nullable();
             $table->double('earned_points')->default(0)->nullable();
             $table->date('first_visit')->nullable();
+            $table->text('remarks')->nullable();
 
             $table->softDeletes();
             $table->timestamps();

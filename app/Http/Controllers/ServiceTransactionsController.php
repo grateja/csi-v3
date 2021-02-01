@@ -9,6 +9,7 @@ use App\ServiceTransactionItem;
 use App\TransactionRemarks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Product;
 
 class ServiceTransactionsController extends Controller
 {
@@ -70,6 +71,16 @@ class ServiceTransactionsController extends Controller
 
                 $serviceTransactionItem->customerDry()->delete();
                 $serviceTransactionItem->customerWash()->delete();
+
+                if($serviceTransactionItem->category == 'full') {
+                    $productItems = $serviceTransactionItem->fullService->fullServiceProducts;
+                    foreach($productItems as $productItem) {
+                        $product = Product::find($productItem->product_id);
+                        if($product) {
+                            $product->increment('current_stock', $productItem->quantity);
+                        }
+                    }
+                }
 
                 TransactionRemarks::create([
                     'transaction_id' => $serviceTransactionItem->transaction_id,

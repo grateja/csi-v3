@@ -21,6 +21,7 @@ class CreateMachineUsagesTable extends Migration
             $table->double('minutes');
             $table->string('activation_type')->conmment('card, remote')->nullable();
             $table->float('price')->default(0);
+            $table->text('remarks')->nullable();
             $table->timestamp('synched')->nullable();
 
             $table->timestamps();

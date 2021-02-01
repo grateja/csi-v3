@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 class PosTransactionController extends Controller
 {
     public function currentTransaction($customerId) {
-        $transaction = Transaction::with('customer')
+        $transaction = Transaction::with('customer', 'partialPayment')
             ->whereNull('date_paid')
             ->where('customer_id', $customerId)
             ->first();
@@ -97,7 +97,16 @@ class PosTransactionController extends Controller
                     $item = OtherService::find($request->itemId);
                     break;
                 case 'full':
-                    $item = FullService::find($request->itemId);
+                    $item = FullService::with('fullServiceProducts')->find($request->itemId);
+                    if($item) {
+                        $fullserviceProducts = $item->fullServiceProducts;
+                        foreach($fullserviceProducts as $productItem) {
+                            $productInventory = Product::find($productItem->product_id);
+                            if($productInventory) {
+                                $productInventory->decrement('current_stock', $productItem->quantity);
+                            }
+                        }
+                    }
                     break;
             }
 
@@ -180,7 +189,12 @@ class PosTransactionController extends Controller
                 'product_id' => $product->id,
             ]);
 
-            $product->decrement('current_stock');
+            // $product->decrement('current_stock');
+
+            $product->update([
+                'synched' => null,
+                'current_stock' => DB::raw('current_stock - 1')
+            ]);
 
             // TransactionRemarks::create([
             //     'transaction_id' => $transaction->id,
@@ -197,7 +211,7 @@ class PosTransactionController extends Controller
 
             return response()->json([
                 'transaction' => $transaction,
-                'product' => $product,
+                'product' => $product->fresh(),
             ]);
         });
     }
@@ -294,6 +308,7 @@ class PosTransactionController extends Controller
                     'minutes' => $item->washingService['regular_minutes'] + $item->washingService['additional_minutes'],
                     'pulse_count' => $item->washingService['additional_minutes'] ? 2 : 1,
                     'price' => $item->washingService->price,
+                    'job_order' => $transaction->job_order,
                 ]);
 
                 $item->update([
@@ -311,6 +326,7 @@ class PosTransactionController extends Controller
                     'minutes' => $item->dryingService['minutes'],
                     'pulse_count' => $item->dryingService['minutes'] / 10,
                     'price' => $item->dryingService->price,
+                    'job_order' => $transaction->job_order,
                 ]);
 
                 $item->update([

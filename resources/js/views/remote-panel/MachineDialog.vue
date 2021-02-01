@@ -24,25 +24,30 @@
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn v-if="isOwner" round @click="forceStop">
+                <v-btn @click="$emit('rework', machine)" round>Rework</v-btn>
+                <v-btn round @click="openTransferDialog = true">Transfer</v-btn>
+                <!-- <v-btn v-if="isOwner" round @click="forceStop">
                     <v-icon small left>warning</v-icon>
                     force stop
-                </v-btn>
+                </v-btn> -->
             </v-card-actions>
         </v-card>
         <force-stop-dialog v-model="openForceStopDialog" :machine="machine" @forceStop="forceStopContinue" />
         <service-browser v-if="machine" v-model="openServiceBrowser" :customer="machine.customer" :machine="machine" :additional="true" @activated="activated" />
+        <transfer-dialog v-model="openTransferDialog" :machine="machine" @transfered="transfered"></transfer-dialog>
     </v-dialog>
 </template>
 
 <script>
 import ForceStopDialog from './ForceStopDialog.vue';
 import ServiceBrowser from './ServiceBrowser.vue';
+import TransferDialog from './TransferDialog.vue';
 
 export default {
     components: {
         ForceStopDialog,
-        ServiceBrowser
+        ServiceBrowser,
+        TransferDialog
     },
     props: [
         'value', 'machine'
@@ -50,7 +55,8 @@ export default {
     data() {
         return {
             openForceStopDialog: false,
-            openServiceBrowser: false
+            openServiceBrowser: false,
+            openTransferDialog: false
         }
     },
     methods: {
@@ -69,6 +75,10 @@ export default {
         },
         activated(data) {
             this.$emit('activated', data);
+            this.close();
+        },
+        transfered(data) {
+            this.$emit('transfered', data);
             this.close();
         }
     },

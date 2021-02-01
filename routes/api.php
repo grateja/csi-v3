@@ -151,6 +151,9 @@ Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
 
     // /api/customers/{customerId}/update
     Route::post('{customerId}/update', 'CustomersController@update');
+
+    // /api/customers/get-crn
+    Route::get('get-crn', 'CustomersController@getCRN');
 });
 
 // /api/products
@@ -433,6 +436,9 @@ Route::group(['prefix' => 'reports', 'middleware' => 'auth:api'], function () {
 
         // /api/reports/print/rfid-load-transactions
         Route::get('rfid-load-transactions', 'ReportsController@printRfidLoadTransactions');
+
+        // /api/reports/print/daily-sale/{date}/{print?=true}
+        Route::get('daily-sale/{date}/{print?}', 'SalesReportController@summary');
     });
 
 });
@@ -443,7 +449,13 @@ Route::group(['prefix' => 'payments', 'middleware' => 'auth:api'], function() {
     Route::get('{transactionId}', 'PaymentsController@transactionPayment');
 
     // /api/payments/{transactionId}/proceed
-    Route::post('{transactionId}/proceed', 'PaymentsController@proceedToPayment');
+    Route::post('{transactionId}/full', 'PaymentsController@fullPayment');
+
+    // /api/payments/{transactionId}/partial
+    Route::post('{transactionId}/partial', 'PaymentsController@partialPayment');
+
+    // /api/payments/partial-payments/{partialPaymentId}
+    Route::get('partial-payments/{partialPaymentId}', 'PartialPaymentsController@show');
 });
 
 
@@ -489,6 +501,24 @@ Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
 
     // /api/machines/force-stop
     Route::post('machines/force-stop', 'MachinesController@forceStop');
+});
+
+// /api/re-works
+Route::group(['prefix' => 're-works', 'middleware' => ['auth:api']], function() {
+    // /api/re-works
+    Route::get('/', 'ReworksController@index');
+
+    // /api/re-works/transfer/{from}/{to}
+    Route::post('transfer/{from}/{to}', 'ReworksController@transfer');
+
+    // /api/re-works/{machineId}
+    Route::post('{machineId}', 'ReworksController@reWork');
+
+    // /api/re-works/customer-wash/{customerWashId}
+    Route::get('customer-wash/{customerWashId}', 'ReworksController@customerWash');
+
+    // /api/re-works/customer-dry/{customerDryId}
+    Route::get('customer-dry/{customerDryId}', 'ReworksController@customerDry');
 });
 
 // /api/pending-services

@@ -43,7 +43,8 @@
                 <template v-slot:items="props">
                     <td>{{ props.index + 1 }}</td>
                     <td>
-                        <v-btn small class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round>
+                        <v-btn round small class="font-weight-bold" :color="props.item.date_paid != null ? `#31f239` : !!props.item.partial_payment ? '#eeb' : '#f766c2'" @click="previewTransaction(props.item)">
+                        <!-- <v-btn small class="font-weight-bold" color="primary" @click="previewTransaction(props.item)" round> -->
                             {{ props.item.job_order }}
                         </v-btn>
                     </td>

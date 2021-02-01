@@ -13,11 +13,13 @@ class Customer extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points', 'synched',
+        'remarks','crn', 'name', 'address', 'contact_number', 'email', 'first_visit', 'earned_points', 'synched',
     ];
 
     public static function filterKeys($val) {
         $keys = [
+            'crn' => 'crn',
+            'remarks' => 'remarks',
             'name' => 'name',
             'first_visit' => 'birthday',
             'created_at' => 'first visit',

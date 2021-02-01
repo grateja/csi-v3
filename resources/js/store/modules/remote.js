@@ -2,12 +2,16 @@ import FormHelper from '../../helpers/FormHelper.js';
 
 const state = {
     errors: FormHelper,
-    isSaving: false
+    isSaving: false,
+    isActivating: false
 };
 
 const mutations = {
     setSavingStatus(state, status) {
         state.isSaving = status;
+    },
+    setActivatingStatus(state, status) {
+        state.isActivating = status;
     },
     setErrors(state, errors) {
         state.errors.errors = errors;
@@ -38,6 +42,31 @@ const actions = {
             context.commit('setSavingStatus', false);
             return Promise.reject(err);
         });
+    },
+    reWork(context, data) {
+        context.commit('clearErrors');
+        context.commit('setActivatingStatus', true);
+        // data.action = transfer|repeat
+        return axios.post(`/api/re-works/${data.action}`, data.formData).then((res, rej) => {
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            return Promise.reject(err);
+        }).finally(() => {
+            context.commit('setActivatingStatus', false);
+        });
+    },
+    transfer(context, data) {
+        context.commit('clearErrors');
+        context.commit('setActivatingStatus', true);
+        return axios.post(`/api/re-works/transfer/${data.from}/${data.to}`, data.formData).then((res, rej) => {
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            return Promise.reject(err);
+        }).finally(() => {
+            context.commit('setActivatingStatus', false);
+        });
     }
 };
 
@@ -47,6 +76,9 @@ const getters = {
     },
     isSaving(state) {
         return state.isSaving;
+    },
+    isReactivating() {
+        return state.isActivating;
     }
 };
 

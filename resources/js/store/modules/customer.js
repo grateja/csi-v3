@@ -57,6 +57,9 @@ const actions = {
     },
     deleteCustomer(context, customerId) {
         return axios.post(`/api/customers/${customerId}/delete-customer`);
+    },
+    getCRN(context) {
+        return axios.get('/api/customers/get-crn');
     }
 };
 
