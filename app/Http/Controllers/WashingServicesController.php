@@ -98,6 +98,7 @@ class WashingServicesController extends Controller
             'regularMinutes' => 'numeric',
             'additionalMinutes' => 'numeric',
             'points' => 'numeric',
+            'machineType' => 'required|in:TITAN,REGULAR',
         ];
 
         if($request->validate($rules)) {
@@ -157,6 +158,7 @@ class WashingServicesController extends Controller
             'regularMinutes' => 'numeric',
             'additionalMinutes' => 'numeric',
             'points' => 'numeric',
+            'machineType' => 'required|in:TITAN,REGULAR',
         ];
 
         if($request->validate($rules)) {

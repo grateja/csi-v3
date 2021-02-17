@@ -171,10 +171,11 @@ export default {
         },
         updatePrice() {
             this.service.price =
-                parseFloat(this.service.full_service_items.reduce((sum, item) => sum + item.price, 0)) +
+                parseFloat(this.service.full_service_items.reduce((sum, item) => sum + parseFloat(item.price * item.quantity), 0)) +
                 parseFloat(this.service.additional_charge) -
                 parseFloat(this.service.discount) +
-                parseFloat(this.service.full_service_products.reduce((sum, item) => sum + item.price, 0));
+                parseFloat(this.service.full_service_products.reduce((sum, item) => sum + parseFloat(item.price * item.quantity), 0));
+                console.log(this.service.price);
         },
         updateItems(data) {
             if(data.mode == 'insert') {

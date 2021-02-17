@@ -12,7 +12,7 @@
                     <v-text-field outline v-model="keyword" label="Search" append-icon="search" @input="filter" class="round-input translucent-input"></v-text-field>
                 </v-flex>
                 <v-flex shrink>
-                    <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['name', 'birthday', 'first visit']" @change="filter"></v-combobox>
+                    <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['Name', 'Birthday','Birthday w/o Year', 'First Visit', 'Total Washes', 'Total Dries', 'Current points']" @change="filter"></v-combobox>
                 </v-flex>
                 <v-flex shrink>
                     <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -29,6 +29,7 @@
                         <div class="ml-4 mb-2">
                             <div class="font-italic caption">{{ props.item.contact_number || '[no-contact-number]' }} / {{ props.item.email || '[no-email]' }}</div>
                             <div>{{ props.item.address || '[no-address]' }}</div>
+                            <div>{{ props.item.remarks }}</div>
                         </div>
                     </td>
                     <!-- <td>{{ props.item.contact_number }}</td> -->
@@ -66,9 +67,9 @@
                     </td>
                 </template>
                 <template slot="footer">
-                    <tr v-if="!!summary">
+                    <tr v-if="totalResult">
                         <td colspan="10">
-                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{totalResult}}</span> result(s)</div>
                         </td>
                     </tr>
                 </template>
@@ -101,7 +102,7 @@ export default {
             loading: false,
             totalPage: 0,
             items: [],
-            summary: null,
+            totalResult: 0,
             activeCustomer: null,
             openCustomerDialog: false,
             openCardPreview: false,
@@ -184,7 +185,7 @@ export default {
                         });
                     }, 10);
                 }
-                this.summary = res.data.summary;
+                this.totalResult = res.data.result.total;
                 this.totalPage = res.data.result.last_page;
                 this.loading = false;
             }).catch(err => {
@@ -208,6 +209,8 @@ export default {
                 this.activeCustomer.email = data.customer.email;
                 this.activeCustomer.address = data.customer.address;
                 this.activeCustomer.first_visit = data.customer.first_visit;
+                this.activeCustomer.crn = data.customer.crn;
+                this.activeCustomer.remarks = data.customer.remarks;
             }
         },
         addCustomer() {
@@ -216,7 +219,7 @@ export default {
         },
         date(date) {
             let _date = moment(date);
-            return _date.isValid() ? _date.format('MMM D, YY') : date;
+            return _date.isValid() ? _date.format('MMM D, YYYY') : date;
         },
         cancelSearch() {
             if(this.cancelSource) {

@@ -7,6 +7,7 @@ use App\Traits\UsesSynch;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class FullService extends Model
 {
@@ -29,7 +30,7 @@ class FullService extends Model
     }
 
     public function getPriceAttribute() {
-        return $this->fullServiceItems()->sum('price') + $this->additional_charge - $this->discount + $this->fullServiceProducts()->sum('price');
+        return $this->fullServiceItems()->sum(DB::raw('price*quantity')) + $this->additional_charge - $this->discount + $this->fullServiceProducts()->sum(DB::raw('price*quantity'));
     }
 
     public function serviceTransactionItems() {

@@ -58,12 +58,20 @@ const routes = [
             //     component: require('./views/sales-report/PosTransactions.vue').default
             // },
             {
-                path: 'calendar',
-                component: require('./views/sales-report/CalendarView.vue').default
+                path: 'calendar-view',
+                component: require('./views/sales-report/calendar/Index.vue').default
             },
             {
-                path: 'week',
+                path: 'weekly-view',
                 component: require('./views/sales-report/WeekView.vue').default
+            },
+            {
+                path: 'monthly-view',
+                component: require('./views/sales-report/montly-view/Index.vue').default
+            },
+            {
+                path: 'yearly-view',
+                component: require('./views/sales-report/yearly-view/Index.vue').default
             }
         ]
     },

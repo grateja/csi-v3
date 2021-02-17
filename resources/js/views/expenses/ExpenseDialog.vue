@@ -47,6 +47,9 @@ export default {
                     mode: this.mode
                 });
             });
+        },
+        clear() {
+            this.$store.commit('expense/clearErrors');
         }
     },
     computed: {
@@ -70,6 +73,7 @@ export default {
                 this.formData.remarks = null;
                 this.formData.amount = 0;
             }
+            this.clear();
             setTimeout(() => {
                 this.$refs.remarks.$el.querySelector('input').select();
             }, 500);

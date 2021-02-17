@@ -11,7 +11,7 @@
                 <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
             </v-flex>
             <v-flex style="max-width: 220px">
-                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['customer_name', 'rfid', 'created_at', 'amount']" @change="filter"></v-combobox>
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['Customer name', 'RFID', 'Date', 'Load amount']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex style="max-width: 220px">
                 <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -78,7 +78,7 @@ export default {
             keyword: null,
             page: 1,
             date: null,
-            sortBy: 'created_at',
+            sortBy: 'Date',
             orderBy: 'desc',
             cancelSource: null,
             items: [],

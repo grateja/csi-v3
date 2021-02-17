@@ -27,7 +27,7 @@ class PaymentsController extends Controller
             return DB::transaction(function () use ($transactionId, $request) {
                 $discountInPeso = 0;
                 $pointsToDeduct = 0;
-                $percentageDiscount = 0;
+                // $percentageDiscount = 0;
                 $rfid = null;
                 $transaction = Transaction::findOrFail($transactionId);
                 $customer = Customer::findOrFail($transaction->customer_id);
@@ -110,7 +110,7 @@ class PaymentsController extends Controller
                         'cash' => $request->cash,
                         'points' => $pointsToDeduct,
                         'points_in_peso' => $request->pointsInPeso,
-                        'discount' => $percentageDiscount,
+                        // 'discount' => $percentageDiscount,
                         'total_amount' => $transaction->total_price,
                         'total_cash' => $totalCash,
                         'user_id' => auth('api')->id(),
@@ -143,6 +143,7 @@ class PaymentsController extends Controller
 
             return DB::transaction(function () use ($transactionId, $request) {
                 $discountInPeso = 0;
+                $discountName = '';
                 $pointsToDeduct = 0;
                 $percentageDiscount = 0;
                 $rfid = null;
@@ -166,6 +167,7 @@ class PaymentsController extends Controller
 
                 if($request->discountId) {
                     $discount = Discount::findOrFail($request->discountId);
+                    $discountName = $discount->name;
                     $discountInPeso = $transaction->total_price * $discount->percentage / 100;
                     $percentageDiscount = $discount->percentage;
                 }
@@ -217,6 +219,7 @@ class PaymentsController extends Controller
                         'points' => $pointsToDeduct,
                         'points_in_peso' => $request->pointsInPeso,
                         'discount' => $percentageDiscount,
+                        'discount_name' => $discountName,
                         'total_amount' => $transaction->total_price,
                         'total_cash' => $totalCash,
                         'user_id' => auth('api')->id(),

@@ -167,7 +167,7 @@
                             </v-layout>
                             <v-layout v-if="tempTransaction.payment.discount">
                                 <v-flex xs5><span class="data-term font-weight-bold">Discount:</span></v-flex>
-                                <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.discount_in_peso).toFixed(2)}} ({{tempTransaction.payment.discount}}%)</span></v-flex>
+                                <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.payment.discount_name}}: P {{parseFloat(tempTransaction.payment.discount_in_peso).toFixed(2)}} ({{tempTransaction.payment.discount}}%)</span></v-flex>
                             </v-layout>
                             <v-layout v-if="tempTransaction.payment.rfid">
                                 <v-flex xs5><span class="data-term font-weight-bold">RFID:</span></v-flex>

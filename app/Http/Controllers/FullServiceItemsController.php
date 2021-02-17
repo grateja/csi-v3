@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\DryingService;
 use App\FullServiceItem;
 use App\OtherService;
+use App\ServiceTransactionItem;
 use App\WashingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FullServiceItemsController extends Controller
 {
@@ -195,14 +197,31 @@ class FullServiceItemsController extends Controller
      */
     public function deleteService($id)
     {
-        $fullServiceItem = FullServiceItem::findOrFail($id);
-        if($fullServiceItem->delete()) {
+        return DB::transaction(function () use ($id) {
+            $fullServiceItem = FullServiceItem::with('fullService')->findOrFail($id);
 
-            $this->dispatch($fullServiceItem->queSynch());
+            if($fullServiceItem) {
+                $serviceTransactioItems = ServiceTransactionItem::where(function($query) use ($fullServiceItem) {
+                    $query->where('full_service_id', $fullServiceItem->full_service_id)
+                        ->where('saved', false);
+                })//->get();
+                    ->update([
+                    'price' => DB::raw('price-'.$fullServiceItem->price),
+                ]);
+            }
 
-            return response()->json([
-                'fullServiceItem' => $fullServiceItem,
-            ]);
-        }
+            // DB::rollback();
+
+            // return $serviceTransactioItems;
+
+            if($fullServiceItem->delete()) {
+
+                $this->dispatch($fullServiceItem->queSynch());
+
+                return response()->json([
+                    'fullServiceItem' => $fullServiceItem,
+                ]);
+            }
+        });
     }
 }

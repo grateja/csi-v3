@@ -26,7 +26,8 @@ class ExpensesController extends Controller
      */
     public function index(Request $request)
     {
-        $sortBy = $request->sortBy ? $request->sortBy : 'date';
+        $sortBy = Expense::filterKeys($request->sortBy);
+        // $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $result = Expense::select(['id', 'remarks', 'staff_name', 'date', 'amount', 'created_at', DB::raw('"exp" as type')])->where(function($query) use ($request) {
@@ -87,6 +88,8 @@ class ExpensesController extends Controller
                 ]);
 
                 $this->dispatch($expense->queSynch());
+
+                $expense['type'] = 'exp';
 
                 return response()->json([
                     'expense' => $expense,

@@ -159,7 +159,7 @@ export default {
                 {
                     text: 'Remote panel',
                     icon: 'remote-panel',
-                    roles: ['admin', 'staff'],
+                    roles: ['admin', 'staff', 'developer'],
                     color: '#a7a1e6',
                     to: '/remote-panel'
                 },
@@ -168,7 +168,7 @@ export default {
                     icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    to: '/sales-report/calendar'
+                    to: '/sales-report/calendar-view'
                 },
                 {
                     text: 'Job Orders',
@@ -243,7 +243,7 @@ export default {
                 {
                     text: 'Machines',
                     icon: 'machines',
-                    roles: ['admin', 'staff'],
+                    roles: ['admin', 'staff', 'developer'],
                     color: '#e4dfdd',
                     to: '/machines'
                 },

@@ -20,19 +20,22 @@ class CustomersController extends Controller
                 //$query->whereNotNull('used');
             }
         ])->where(function($query) use ($request) {
-            $query->where('name', 'like', "%$request->keyword%");
+            $query->where('name', 'like', "%$request->keyword%")
+                ->orWhere('crn', 'like', "%$request->keyword%")
+                ->orWhere('remarks', 'like', "%$request->keyword%");
         });
 
-        $customers = $customers->orderBy($sortBy, $order);
+        $customers = $customers->orderBy(DB::raw($sortBy), $order);
+        // $customers = $customers->orderBy('customer_washes_count');
 
-        $count = Customer::where(function($query) use ($request) {
-            $query->where('name', 'like', "%$request->keyword%");
-        })->count();
+        // $count = Customer::where(function($query) use ($request) {
+        //     $query->where('name', 'like', "%$request->keyword%");
+        // })->count();
 
         return response()->json([
             'result' => $customers->paginate(10),
             'summary' => [
-                'total_items' => $count,
+                // 'total_items' => $count,
             ]
         ], 200);
     }
@@ -67,7 +70,7 @@ class CustomersController extends Controller
     public function store(Request $request) {
         $rules = [
             'name' => 'required',
-            'crn' => 'unique:customers',
+            'crn' => 'required|unique:customers|digits:4',
         ];
 
         $customer = Customer::where('name', $request->name)->first();
@@ -112,7 +115,7 @@ class CustomersController extends Controller
             $rules['name'] = 'required|unique:customers';
         }
         if($customer->crn != $request->crn) {
-            $rules['crn'] = 'required|unique:customers';
+            $rules['crn'] = 'required|unique:customers|digits:4';
         }
 
 

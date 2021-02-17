@@ -45,7 +45,7 @@ export default {
                     icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    route: '/sales-report/calendar'
+                    route: '/sales-report/calendar-view'
                 },
                 {
                     text: 'Job orders',

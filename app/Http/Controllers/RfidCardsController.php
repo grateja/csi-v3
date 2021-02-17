@@ -38,8 +38,8 @@ class RfidCardsController extends Controller
     // }
 
     public function index(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'fullname';
         $order = $request->orderBy ? $request->orderBy : 'asc';
+        $sortBy = RfidCard::filterKeys($request->sortBy);
 
         $result = DB::table('rfid_cards')
             ->leftjoin('customers', 'customers.id', '=', 'rfid_cards.customer_id')

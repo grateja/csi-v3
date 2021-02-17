@@ -18,9 +18,10 @@ class ReworksController extends Controller
         $sortBy = Rework::filterKeys($request->sortBy);
         $order = $request->orderBy ? $request->orderBy : 'desc';
         $reworks = Rework::where(function($query) use ($request) {
-            $query->where('job_order', 'like', "%$request->keyword%");
+            $query->where(DB::raw('reworks.job_order'), 'like', "%$request->keyword%");
         })->join('machines', 'machines.id', '=', 'reworks.machine_id')
-            ->selectRaw('reworks.id, reworks.remarks, customer_name, tag, job_order, account_name, reworks.created_at, machine_name');
+            ->join('transactions', 'transactions.job_order', '=', 'reworks.job_order')
+            ->selectRaw('transactions.id as transaction_id, reworks.id, reworks.remarks, reworks.customer_name, tag, reworks.job_order, account_name, reworks.created_at, machine_name');
 
         if($request->date) {
             $reworks = $reworks->whereDate('reworks.created_at', $request->date);

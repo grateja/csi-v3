@@ -14,10 +14,10 @@
                 </v-card-actions>
 
                 <v-card-text>
-                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline ref="name"></v-text-field>
+                    <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" @keydown.native="clear('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Description" v-model="formData.description" outline></v-text-field>
-                    <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
-                    <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" v-model="formData.machineType" outline></v-combobox>
+                    <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" @keydown.native="clear('price')" outline></v-text-field>
+                    <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" :error-messages="errors.get('machineType')" v-model="formData.machineType" outline></v-combobox>
                     <v-text-field type="number" label="Minutes" v-model="formData.minutes" :error-messages="errors.get('minutes')" outline hint="Must be divisible by 10."></v-text-field>
                     <v-text-field label="Points" v-model="formData.points" :error-messages="errors.get('points')" outline></v-text-field>
                 </v-card-text>
@@ -84,6 +84,9 @@ export default {
                     this.$emit('setPicture', '');
                 });
             }
+        },
+        clear(key) {
+            this.$store.commit('dryingservice/clearErrors', key);
         }
     },
     computed: {

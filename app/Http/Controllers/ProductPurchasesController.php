@@ -52,7 +52,8 @@ class ProductPurchasesController extends Controller
     // }
 
     public function index(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'date';
+        $sortBy = ProductPurchase::filterKeys($request->sortBy);
+        // $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $result = ProductPurchase::where(function($query) use ($request) {

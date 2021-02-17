@@ -78,11 +78,56 @@ class Transaction extends Model
     }
 
     public function posServiceItems($withTrashed = false) {
-        $items = $this->serviceTransactionItems()->groupBy('name', 'price')->selectRaw('name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+        $items = $this->serviceTransactionItems()
+            ->with('fullService.fullServiceItems', 'fullService.fullServiceProducts')
+            ->groupBy('name', 'price', 'full_service_id', 'category')
+            ->selectRaw('full_service_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price, category');
+
         if($withTrashed) {
             $items = $items->withTrashed();
         }
-        return $items->get();
+        return $items->get()->transform(function($item) {
+            $fullServiceItems = null;
+            $fullServiceProducts = null;
+            $additionalCharge = 0;
+            $discount = 0;
+            if($item->fullService) {
+                $fullServiceItems = $item->fullService->fullServiceItems->transform(function($_item) use ($item) {
+                    return [
+                        'id' => $_item->id,
+                        'name' => $_item->name,
+                        'price' => $_item->price,
+                        'quantity' => $_item->quantity * $item->quantity,
+                        'total_price' => $_item->price * $item->quantity * $_item->quantity,
+                    ];
+                });
+
+                $fullServiceProducts = $item->fullService->fullServiceProducts->transform(function($_item) use ($item) {
+                    return [
+                        'id' => $_item->id,
+                        'name' => $_item->name,
+                        'price' => $_item->price,
+                        'quantity' => $_item->quantity * $item->quantity,
+                        'total_price' => $_item->price * $item->quantity * $_item->quantity,
+                    ];
+                });
+
+                $additionalCharge = $item->fullService->additional_charge;
+                $discount = $item->fullService->discount;
+            }
+            return [
+                'name' => $item->name,
+                'quantity' => $item->quantity,
+                'total_price' => $item->total_price,
+                'unit_price' => $item->unit_price,
+                'full_service_items' => $fullServiceItems,
+                'full_service_products' => $fullServiceProducts,
+                'additional_charge' => $additionalCharge,
+                'discount' => $discount,
+                'category' => $item->category,
+            ];
+        });
+        // return $items->get();
     }
 
     public function posProductItems($withTrashed = false) {

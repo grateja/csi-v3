@@ -24,8 +24,12 @@
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
-                    <tr @click="view(props.item)">
-                        <td>{{ props.item.job_order }}</td>
+                    <tr>
+                        <td>
+                            <v-btn round small class="font-weight-bold" @click="previewTransaction(props.item.transaction_id)">
+                                {{ props.item.job_order }}
+                            </v-btn>
+                        </td>
                         <td>{{ props.item.machine_name }}</td>
                         <td>{{ props.item.customer_name }}</td>
                         <td>{{ moment(props.item.created_at).format('LLL') }}</td>
@@ -47,14 +51,20 @@
             </v-data-table>
         </v-card>
         <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
-
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" />
     </v-container>
 </template>
 
 <script>
+import TransactionDialog from '../transaction-reports/TransactionDialog.vue';
 export default {
+    components: {
+        TransactionDialog
+    },
     data() {
         return {
+            transactionId: null,
+            openTransactionDialog: false,
             cancelSource: null,
             keyword: null,
             sortBy: 'job order number',
@@ -88,7 +98,8 @@ export default {
                     text: 'Activated by',
                     sortable: false
                 }
-            ]
+            ],
+            date: null
         }
     },
     methods: {
@@ -106,10 +117,8 @@ export default {
                     keyword: this.keyword,
                     page: this.page,
                     date: this.date,
-                    datePaid: this.datePaid,
                     sortBy: this.sortBy,
-                    orderBy: this.orderBy,
-                    hideDeleted: this.hideDeleted
+                    orderBy: this.orderBy
                 },
                 cancelToken: this.cancelSource.token
             }).then((res, rej) => {
@@ -138,6 +147,10 @@ export default {
         loadMore() {
             this.page += 1;
             this.load();
+        },
+        previewTransaction(item) {
+            this.transactionId = item;
+            this.openTransactionDialog = true;
         }
     },
     created() {

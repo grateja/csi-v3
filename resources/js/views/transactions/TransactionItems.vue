@@ -40,8 +40,163 @@
                     </span>
                 </v-flex>
             </v-layout>
+        </v-card-text>
 
-            <table class="v-table" border="1">
+            <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posServiceItems.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>SERVICES</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">QTY</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <template v-for="(item, i) in currentTransaction.posServiceItems">
+                    <template>
+                        <v-divider :key="i + '-div-services'"></v-divider>
+                        <v-layout class="pa-1 pointer transaction-item" :key="i + 'services'" @click="viewServiceItems(item)">
+                            <v-flex xs4>
+                                <div>{{item.name}}</div>
+                            </v-flex>
+                            <v-flex xs3>
+                                <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                            </v-flex>
+                            <v-flex xs2>
+                                <div class="text-xs-center">{{item.quantity}}</div>
+                            </v-flex>
+                            <v-flex xs3>
+                                <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
+                            </v-flex>
+                        </v-layout>
+                    </template>
+                    <template v-if="item.category == 'full'">
+                        <div :key="i + 'services'" class="transaction-item" @click="viewServiceItems(item)">
+                            <v-layout class="px-1 caption font-italic grey--text pointer transaction-item" v-for="(fullServiceItem, fsi) in item.full_service_items" :key="fsi">
+                                <v-flex xs4>
+                                    <div>- {{fullServiceItem.name}}</div>
+                                </v-flex>
+                                <v-flex xs3>
+                                    <div class="text-xs-right">{{fullServiceItem.price ? 'P ' + parseFloat(fullServiceItem.price).toFixed(2) : 'FREE'}}</div>
+                                </v-flex>
+                                <v-flex xs2>
+                                    <div class="text-xs-center">{{fullServiceItem.quantity}}</div>
+                                </v-flex>
+                                <v-flex xs3>
+                                    <div class="text-xs-right">{{fullServiceItem.total_price ? 'P ' + parseFloat(fullServiceItem.total_price).toFixed(2) : 'FREE'}}</div>
+                                </v-flex>
+                            </v-layout>
+                            <v-layout class="px-1 caption font-italic grey--text pointer transaction-item" v-for="(fullServiceProduct, fsi) in item.full_service_products" :key="fsi">
+                                <v-flex xs4>
+                                    <div>- {{fullServiceProduct.name}}</div>
+                                </v-flex>
+                                <v-flex xs3>
+                                    <div class="text-xs-right">{{fullServiceProduct.price ? 'P ' + parseFloat(fullServiceProduct.price).toFixed(2) : 'FREE'}}</div>
+                                </v-flex>
+                                <v-flex xs2>
+                                    <div class="text-xs-center">{{fullServiceProduct.quantity}}</div>
+                                </v-flex>
+                                <v-flex xs3>
+                                    <div class="text-xs-right">{{fullServiceProduct.total_price ? 'P ' + parseFloat(fullServiceProduct.total_price).toFixed(2) : 'FREE'}}</div>
+                                </v-flex>
+                            </v-layout>
+                        </div>
+                    </template>
+                </template>
+                <v-divider class="black"></v-divider>
+                <v-layout class="pa-1 font-weight-bold">
+                    <v-flex xs4>
+                        <div>Total</div>
+                    </v-flex>
+                    <v-flex xs3>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="text-xs-center">{{currentTransaction.posServiceSummary.total_quantity}}</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="text-xs-right">P {{parseFloat(currentTransaction.posServiceSummary.total_price).toFixed(2)}}</div>
+                    </v-flex>
+                </v-layout>
+            </v-card>
+
+
+<!-- Products -->
+
+            <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posProductItems.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>PRODUCTS</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">QTY</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <template v-for="(item, i) in currentTransaction.posProductItems">
+                    <v-layout :key="i + 'products'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                <v-btn icon small class="ma-0 red" outline @click="reduceItems(item)" :loading="item.reducing">
+                                    <v-icon small class="red--text">remove</v-icon>
+                                </v-btn>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-products'"></v-divider>
+                </template>
+                <v-divider class="black"></v-divider>
+                <v-layout class="pa-1 font-weight-bold" >
+                    <v-flex xs4>
+                        <div>Total</div>
+                    </v-flex>
+                    <v-flex xs3>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="text-xs-center">{{currentTransaction.posProductSummary.total_quantity}}</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="text-xs-right">P {{parseFloat(currentTransaction.posProductSummary.total_price).toFixed(2)}}</div>
+                    </v-flex>
+                </v-layout>
+            </v-card>
+
+<!-- End -->
+
+
+            <!-- <table class="v-table top transaction-items" border="1">
                 <tr>
                     <th colspan="4">Services</th>
                 </tr>
@@ -53,16 +208,40 @@
                 </tr>
                 <template v-if="currentTransaction">
                     <tr v-for="item in currentTransaction.posServiceItems" :key="item.id" @click="viewServiceItems(item)">
-                        <td class="pl-1">{{item.name}}</td>
-                        <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
-                        <td class="text-xs-center">
-                            {{item.quantity}}
-                            <v-tooltip top>
-                                <v-btn slot="activator" small icon><v-icon small>list</v-icon></v-btn>
-                                <span>View all</span>
-                            </v-tooltip>
-                        </td>
-                        <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        <template v-if="item.category == 'full'">
+                            <td class="pl-1" colspan="4">{{item.name}}
+                                <table class="caption v-table">
+                                    <tr v-for="fullService in item.full_service_items" :key="fullService.id">
+                                        <td>- {{fullService.name}}</td>
+                                        <td>{{fullService.price}}</td>
+                                        <td>{{fullService.quantity}}</td>
+                                        <td>{{fullService.total_price}}</td>
+                                    </tr>
+                                    <tr v-for="fullService in item.full_service_products" :key="fullService.id">
+                                        <td>- {{fullService.name}}</td>
+                                        <td>{{fullService.price}}</td>
+                                        <td>{{fullService.quantity}}</td>
+                                        <td>{{fullService.total_price}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"></td>
+                                        <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </template>
+                        <template v-else>
+                            <td class="pl-1">{{item.name}}</td>
+                            <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                            <td class="text-xs-center">
+                                {{item.quantity}}
+                                <v-tooltip top>
+                                    <v-btn slot="activator" small icon><v-icon small>list</v-icon></v-btn>
+                                    <span>View all</span>
+                                </v-tooltip>
+                            </td>
+                            <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        </template>
                     </tr>
                 </template>
                 <tr class=" font-weight-bold" v-if="currentTransaction">
@@ -105,7 +284,7 @@
                 </tr>
             </table>
 
-            <v-divider class="my-3"></v-divider>
+            <v-divider class="my-3"></v-divider> -->
 
             <v-card v-if="currentTransaction && currentTransaction.partial_payment" class="rounded-card">
                 <v-card-title>
@@ -156,7 +335,6 @@
                 <v-btn @click="printClaimStub" round :loading="claimStubLoading">Print claim stub</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
-        </v-card-text>
         <service-item-dialog v-if="currentTransaction" v-model="openServiceItemDialog" :serviceName="activeServiceItemName" :transactionId="currentTransaction.id"></service-item-dialog>
         <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" />
     </v-card>
@@ -231,3 +409,15 @@ export default {
     }
 }
 </script>
+<style lang="scss" scoped>
+.transaction-item {
+    color: black;
+    background-color: white;
+    transition: .2s;
+}
+.transaction-item:hover {
+    color: #698fff;
+    background-color: #d1ffff;
+    transition: .2s;
+}
+</style>

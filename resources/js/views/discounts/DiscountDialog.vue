@@ -32,6 +32,7 @@ export default {
     },
     methods: {
         close() {
+            this.clear();
             this.$emit('input', false);
         },
         submit() {
@@ -45,6 +46,9 @@ export default {
                     mode: this.mode
                 });
             });
+        },
+        clear() {
+            this.$store.commit('discount/clearErrors');
         }
     },
     computed: {

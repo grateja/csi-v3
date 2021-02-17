@@ -33,6 +33,7 @@ import fullserviceitem from './modules/fullserviceitem.js';
 import fullserviceproduct from './modules/fullserviceproduct.js';
 import productpurchase from './modules/productpurchase.js';
 import machine from './modules/machine.js';
+import transactionreport from './modules/transactionreport.js';
 
 import storehour from './modules/storehour.js';
 
@@ -47,6 +48,11 @@ export default new  Vuex.Store({
         },
         getFlashMessage(state) {
             return state.flashMessage;
+        },
+        isDeveloper(state) {
+            if(state.currentUser) {
+                return state.currentUser.roles[0] == 'developer';
+            }
         }
     },
     actions: {
@@ -114,6 +120,7 @@ export default new  Vuex.Store({
         fullserviceproduct,
         productpurchase,
         machine,
-        storehour
+        storehour,
+        transactionreport
     }
 });

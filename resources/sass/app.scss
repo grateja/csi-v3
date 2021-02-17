@@ -30,6 +30,13 @@ a {
     max-width: 20%;
     flex-basis: 20%;
 }
+
+.flex.col7-custom {
+    width: 14.28571428571429%;
+    max-width: 14.28571428571429%;
+    flex-basis: 14.28571428571429%;
+}
+
 body {
     background: url('/img/background-main.jpg');
     background-attachment: fixed;
@@ -112,20 +119,23 @@ body {
     margin-bottom: 5px;
 }
 .machine-tile__flex {
+    width: 120px;
     max-width: 120px!important;
-    min-width: 120px!important;
-    max-height: 120px!important;
-    min-height: 120px!important;
-    height: 120px!important;
-    margin: 10px;
+    // min-width: 120px!important;
+    // max-height: 120px!important;
+    // min-height: 120px!important;
+    // height: 120px!important;
+    // margin: 10px;
 }
 .machine-tile__card.selected {
     border: 3px solid blue !important;
     // border-radius: 20px;
 }
 .machine-tile__card {
-    width: 95%;
-    height: 95%;
+    // width: 95%;
+    // height: 95%;
+    // height: 120px;
+    // width: 120px;
 }
 .machine-tile__card.running {
     color: white!important;
@@ -133,4 +143,16 @@ body {
 }
 .machine-tile-name {
     text-shadow: 1px 1px 1px white;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.2s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0
 }

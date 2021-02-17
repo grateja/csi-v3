@@ -99,7 +99,10 @@ class DryingServicesController extends Controller
             'price' => 'numeric',
             'minutes' => 'numeric',
             'points' => 'numeric',
+            'machineType' => 'required|in:TITAN,REGULAR',
         ];
+
+
 
         if($request->validate($rules)) {
             $service = DryingService::create([
@@ -156,6 +159,7 @@ class DryingServicesController extends Controller
             'price' => 'numeric',
             'minutes' => 'numeric',
             'points' => 'numeric',
+            'machineType' => 'required|in:TITAN,REGULAR',
         ];
 
         if($request->validate($rules)) {

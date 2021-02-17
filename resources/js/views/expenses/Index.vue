@@ -13,7 +13,7 @@
                 <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
             </v-flex>
             <v-flex style="max-width: 220px">
-                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['amount', 'date', 'remarks', 'staff_name', 'created_at']" @change="filter"></v-combobox>
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['Amount', 'Date', 'Remarks', 'Encoded by', 'Date encoded']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex style="max-width: 220px">
                 <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -47,7 +47,7 @@
                     <tr>
                         <td>{{props.index + 1}}</td>
                         <td>{{ moment(props.item.date).format('LL') }}</td>
-                        <td>{{ moment(props.item.created_at).format('M-DD-YYYY h:mm a') }}</td>
+                        <td>{{ moment(props.item.created_at).format('MMM DD, YYYY h:mm A') }}</td>
                         <td>{{ props.item.remarks }}</td>
                         <td>P {{ parseFloat(props.item.amount).toFixed(2) }}</td>
                         <td>{{ props.item.staff_name }}</td>

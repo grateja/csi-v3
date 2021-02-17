@@ -25,6 +25,9 @@ class UsersController extends Controller
     public function autocomplete(Request $request) {
         $data = User::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
+        })->whereHas('roles', function($query) {
+            $query->where('name', 'staff')
+                ->orWhere('name', 'admin');
         })->limit(10)->get();
 
         return response()->json([

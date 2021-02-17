@@ -13,7 +13,7 @@
                 <v-text-field class="translucent-input round-input" label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
             </v-flex>
             <v-flex style="max-width: 220px">
-                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['product_name', 'date', 'remarks', 'receipt']" @change="filter"></v-combobox>
+                <v-combobox class="ml-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['Product name', 'Date', 'Remarks', 'Receipt', 'Encoded by']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex style="max-width: 220px">
                 <v-combobox class="ml-1 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -85,7 +85,7 @@ export default {
             openPurchaseDialog: false,
             cancelSource: null,
             keyword: null,
-            sortBy: 'date',
+            sortBy: 'Date',
             orderBy: 'desc',
             date: null,
             page: 1,

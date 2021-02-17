@@ -10,8 +10,8 @@
                     <v-divider></v-divider>
                     <v-card-text>
                         <ol>
-                            <li v-for="item in service.full_service_items" :key="item.id">{{item.name}} - <span class="font-weight-bold">P {{ parseFloat(item.price).toFixed(2)}}</span> </li>
-                            <li v-for="item in service.full_service_products" :key="item.id">{{item.name}} - <span class="font-weight-bold">P {{parseFloat(item.price).toFixed(2)}}</span></li>
+                            <li v-for="item in service.full_service_items" :key="item.id"> (*{{item.quantity}}) {{item.name}} - <span class="font-weight-bold">P {{ parseFloat(item.price).toFixed(2)}}</span> </li>
+                            <li v-for="item in service.full_service_products" :key="item.id"> (*{{item.quantity}}) {{item.name}} - <span class="font-weight-bold">P {{parseFloat(item.price).toFixed(2)}}</span></li>
                             <li class="font-italic grey--text" v-if="service.additional_charge > 0">Additional charge: P {{ parseFloat(service.additional_charge).toFixed(2)}}</li>
                             <li class="font-italic grey--text" v-if="service.discount > 0">Discount: P {{ parseFloat(service.discount).toFixed(2)}}</li>
                         </ol>

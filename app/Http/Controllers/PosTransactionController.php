@@ -97,16 +97,7 @@ class PosTransactionController extends Controller
                     $item = OtherService::find($request->itemId);
                     break;
                 case 'full':
-                    $item = FullService::with('fullServiceProducts')->find($request->itemId);
-                    if($item) {
-                        $fullserviceProducts = $item->fullServiceProducts;
-                        foreach($fullserviceProducts as $productItem) {
-                            $productInventory = Product::find($productItem->product_id);
-                            if($productInventory) {
-                                $productInventory->decrement('current_stock', $productItem->quantity);
-                            }
-                        }
-                    }
+                    $item = FullService::with('fullServiceProducts', 'fullServiceItems')->find($request->itemId);
                     break;
             }
 
@@ -118,17 +109,66 @@ class PosTransactionController extends Controller
                 ], 422);
             }
 
-            $transactionItem = ServiceTransactionItem::create([
-                'transaction_id' => $transaction->id,
-                'name' => $item->name,
-                'price' => $item->price,
-                'category' => $category,
-                'saved' => false,
-                'washing_service_id' => $category == 'washing' ? $request->itemId : null,
-                'drying_service_id' => $category == 'drying' ? $request->itemId : null,
-                'other_service_id' => $category == 'other' ? $request->itemId : null,
-                'full_service_id' => $category == 'full' ? $request->itemId : null,
-            ]);
+            if($category == 'full') {
+                if($item) {
+
+                    $fullServiceItems = $item->fullServiceItems;
+                    $fullServiceProducts = $item->fullServiceProducts;
+
+                    $_fullServiceItems = null;
+                    $_fullServiceProducts = null;
+
+                    foreach($fullServiceItems as $fullServiceItem) {
+                        for($i = 1; $i <= $fullServiceItem->quantity; $i++) {
+                            $_fullServiceItems[] = ServiceTransactionItem::create([
+                                'transaction_id' => $transaction->id,
+                                'name' => $fullServiceItem->name . ' (' . $item->name . ')',
+                                'price' => $fullServiceItem->price,
+                                'category' => $fullServiceItem->category,
+                                'earning_points' => $fullServiceItem->points,
+                                'washing_service_id' => $fullServiceItem->washing_service_id,
+                                'drying_service_id' => $fullServiceItem->drying_service_id,
+                                'other_service_id' => $fullServiceItem->other_service_id,
+                            ]);
+                        }
+                    }
+
+                    foreach($fullServiceProducts as $fullServiceProduct) {
+                        for($i = 1; $i <= $fullServiceProduct->quantity; $i++) {
+                            $_fullServiceProducts[] = ProductTransactionItem::create([
+                                'transaction_id' => $transaction->id,
+                                'name' => $fullServiceProduct->name . ' (' . $item->name . ')',
+                                'price' => $fullServiceProduct->price,
+                                'product_id' => $fullServiceProduct->product_id,
+                            ]);
+                        }
+                        $product = Product::find($fullServiceProduct->product_id);
+                        if($product) {
+                            $product->decrement('current_stock', $fullServiceProduct->quantity);
+                            if($product->current_stock < 0) {
+                                DB::rollback();
+                                return response()->json([
+                                    'errors' => [
+                                        'message' => ["Not enough stock in inventory for $product->name"]
+                                    ]
+                                ], 422);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $transactionItem = ServiceTransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'name' => $item->name,
+                    'price' => $item->price,
+                    'category' => $category,
+                    'saved' => false,
+                    'washing_service_id' => $category == 'washing' ? $request->itemId : null,
+                    'drying_service_id' => $category == 'drying' ? $request->itemId : null,
+                    'other_service_id' => $category == 'other' ? $request->itemId : null,
+                    'full_service_id' => $category == 'full' ? $request->itemId : null,
+                ]);
+            }
 
             if($transaction) {
                 $transaction->refreshAll();
@@ -167,6 +207,13 @@ class PosTransactionController extends Controller
                 ], 422);
             }
 
+            if($transaction->partialPayment) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item to partially paid Job Order.'],
+                    ]
+                ], 422);
+            }
 
             if($transaction == null) {
                 $transaction = Transaction::create([
@@ -345,6 +392,7 @@ class PosTransactionController extends Controller
                         for ($i=0; $i < $fullServiceItem->quantity; $i++) {
 
                             CustomerDry::create([
+                                'job_order' => $transaction->job_order,
                                 'service_name' => $dryingService->name . ' (Full service)',
                                 'customer_id' => $transaction->customer_id,
                                 'service_transaction_item_id' => $item['id'],
@@ -364,6 +412,7 @@ class PosTransactionController extends Controller
                         for ($i=0; $i < $fullServiceItem->quantity; $i++) {
 
                             CustomerWash::create([
+                                'job_order' => $transaction->job_order,
                                 'service_name' => $washingService->name . '(Full service)',
                                 'customer_id' => $transaction->customer_id,
                                 'service_transaction_item_id' => $item['id'],

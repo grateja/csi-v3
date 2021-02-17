@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 class RfidTapController extends Controller
 {
     public function index(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'created_at';
+        // $sortBy = $request->sortBy ? $request->sortBy : 'created_at';
         $order = $request->orderBy ? $request->orderBy : 'desc';
+
+        $sortBy = RfidCardTransaction::filterKeys($request->sortBy);
 
         $result = RfidCardTransaction::where(function($query) use ($request) {
             $query->where('owner_name', 'like', "%$request->keyword%")

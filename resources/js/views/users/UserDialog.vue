@@ -4,7 +4,7 @@
             <v-card class="rounded-card">
                 <v-card-title class="title grey--text">User info</v-card-title>
                 <v-card-text>
-                    <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name"></v-text-field>
+                    <v-text-field v-model="formData.name" :error-messages="errors.get('name')" @keydown.native="clear('name')" outline label="Name"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>
                     <template>
@@ -55,6 +55,9 @@ export default {
                     mode: this.mode
                 });
             });
+        },
+        clear(key) {
+            this.$store.commit('user/clearErrors', key);
         }
     },
     computed: {
@@ -79,6 +82,7 @@ export default {
                 this.formData.email = null;
                 this.formData.password = null;
                 this.formData.password_confirmation = null;
+                this.clear();
             }
         }
     }

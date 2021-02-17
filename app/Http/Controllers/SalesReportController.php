@@ -46,10 +46,10 @@ class SalesReportController extends Controller
             ->selectRaw('DATE(created_at) as day, SUM(amount) as total_price, SUM(amount) as collection')
             ->get();
 
-        $newCustomers = Customer::whereMonth('first_visit', $monthIndex)
-            ->whereYear('first_visit', $year)
+        $newCustomers = Customer::whereMonth('created_at', $monthIndex)
+            ->whereYear('created_at', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(first_visit) as day, COUNT(id) as total_count')
+            ->selectRaw('DATE(created_at) as day, COUNT(id) as total_count')
             ->get();
 
         $expenses = Expense::whereMonth('date', $monthIndex)
@@ -104,26 +104,27 @@ class SalesReportController extends Controller
             ];
         });
 
-        $summary = [
-            'total_jo' => $posTransactions->sum('total_jo'),
-            'paid_jo' => $posTransactions->sum('paid_jo'),
-            'expenses' => $result->sum('expenses'),// + $productPurchases->sum('product_purchase'),
-            'totalSales' => $result->sum('amount'),
-            'totalCollections' => $result->sum('collection'),
-            'totalNewCustomers' => $result->sum('newCustomers'),
-            'totalDeposit' => $result->sum('totalDeposit'),
-        ];
+        // $summary = [
+        //     'total_jo' => $posTransactions->sum('total_jo'),
+        //     'paid_jo' => $posTransactions->sum('paid_jo'),
+        //     'expenses' => $result->sum('expenses'),// + $productPurchases->sum('product_purchase'),
+        //     'totalSales' => $result->sum('amount'),
+        //     'totalCollections' => $result->sum('collection'),
+        //     'totalNewCustomers' => $result->sum('newCustomers'),
+        //     'totalDeposit' => $result->sum('totalDeposit'),
+        // ];
 
         return response()->json([
             'result' => array_values($result->toArray()),
-            'summary' => $summary
+            // 'summary' => $summary
         ]);
     }
 
     public function summary($date, $print = false) {
-        $newCustomers = Customer::whereDate('first_visit', $date)->count();
+        $newCustomers = Customer::whereDate('created_at', $date)->count();
 
-        $posTransactions = Transaction::whereDate('date', $date)
+        $posTransactions = Transaction::where('saved', true)
+            ->whereDate('date', $date)
             ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
             ->first();
 
@@ -161,7 +162,16 @@ class SalesReportController extends Controller
             ->first();
 
         $collPartialPayments = PartialPayment::whereDate('date', $date)
+            ->whereHas('transaction', function($query) {
+                $query->whereDoesntHave('payment');
+            })
             ->sum('cash');
+
+        $colFullPartialPayment = PartialPayment::whereDate('date', $date)
+            ->whereHas('transaction', function($query) {
+                $query->whereHas('payment');
+            })->sum('cash');
+
         $collFullyPaid = TransactionPayment::whereDate('date', $date)
             ->select(DB::raw('SUM(`cash` - `change`) as collection'))->first();
 
@@ -174,10 +184,10 @@ class SalesReportController extends Controller
 
         $collections = [
             'partiallyPaid' => $collPartialPayments,
-            'fullyPaid' => $collFullyPaid->collection,
+            'fullyPaid' => $collFullyPaid->collection + $colFullPartialPayment,
             'rfidLoad' => $rfidLoadTransactionSummary->total_price,
             'rfidTap' => $rfidCardTransactionSummary->users_card,
-            'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card,
+            'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $colFullPartialPayment,
         ];
 
         $productPurchases = ProductPurchase::whereDate('date', $date)
@@ -190,15 +200,17 @@ class SalesReportController extends Controller
         $expenses = [
             'productPurchases' => $productPurchases,
             'otherExpenses' => $otherExpenses,
-            'total' => $otherExpenses->total_expense, + $productPurchases->total_cost,
+            'total' => $otherExpenses->total_expense + $productPurchases->total_cost,
         ];
 
         $usedProducts = ProductTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date);
+            $query->whereDate('date', $date)
+                ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('count(*) as quantity, name, sum(price) as total_price')->get();
 
         $usedServices = ServiceTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date);
+            $query->whereDate('date', $date)
+                ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
         $data = [
@@ -223,24 +235,20 @@ class SalesReportController extends Controller
 
     }
 
-    public function posTransactions($monthIndex, $year, Request $request) {
-        $groupBy = $request->groupBy == 'payment' ? 'transaction_payments.date' : 'transactions.date';
+    // public function posTransactions($monthIndex, $year, Request $request) {
+    //     $groupBy = $request->groupBy == 'payment' ? 'transaction_payments.date' : 'transactions.date';
 
-        $posTransactions = Transaction::whereHas('payment')
-            ->join('transaction_payments', 'transaction_payments.transaction_id', '=', 'transactions.id')
-            ->whereMonth($groupBy, $monthIndex)->whereYear($groupBy, $year)
-            ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE('.$groupBy.') as day, SUM(total_price) as total')
-            ->get();
+    //     $posTransactions = Transaction::whereHas('payment')
+    //         ->join('transaction_payments', 'transaction_payments.transaction_id', '=', 'transactions.id')
+    //         ->whereMonth($groupBy, $monthIndex)->whereYear($groupBy, $year)
+    //         ->groupBy(DB::raw('day'))
+    //         ->selectRaw('DATE('.$groupBy.') as day, SUM(total_price) as total')
+    //         ->get();
 
-        return response()->json([
-            'result' => $posTransactions,
-        ]);
-    }
-
-    public function rangeSummary($dateFrom, $dateTo) {
-
-    }
+    //     return response()->json([
+    //         'result' => $posTransactions,
+    //     ]);
+    // }
 
     public function weekly($monthIndex, $year, Request $request) {
         $posTransactions = Transaction::whereMonth('date', $monthIndex)
@@ -290,16 +298,16 @@ class SalesReportController extends Controller
                 ->groupBy(DB::raw('label'))
                 ->get();
 
-            $newCustomers = Customer::whereMonth('first_visit', $monthIndex)
-                ->whereYear('first_visit', $year)
+            $newCustomers = Customer::whereMonth('created_at', $monthIndex)
+                ->whereYear('created_at', $year)
                 ->selectRaw('COUNT(id) as total_count,
                 CONCAT(
-                    IF(DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)) DAY), "%m") <> '.$monthIndex.',
-                        DATE_FORMAT(DATE_SUB(first_visit, INTERVAL DAYOFMONTH(first_visit)-1 DAY), "%d"),
-                        DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)) DAY), "%d")), "-",
-                    IF(DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)-6) DAY), "%m") <> '.$monthIndex.',
-                        DATE_FORMAT(LAST_DAY(first_visit), "%d"),
-                        DATE_FORMAT((first_visit - INTERVAL (WEEKDAY(first_visit)-6) DAY), "%d"))
+                    IF(DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(DATE_SUB(created_at, INTERVAL DAYOFMONTH(created_at)-1 DAY), "%d"),
+                        DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)) DAY), "%d")), "-",
+                    IF(DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)-6) DAY), "%m") <> '.$monthIndex.',
+                        DATE_FORMAT(LAST_DAY(created_at), "%d"),
+                        DATE_FORMAT((created_at - INTERVAL (WEEKDAY(created_at)-6) DAY), "%d"))
                 ) as label')
                 ->groupBy(DB::raw('label'))
                 ->get();
@@ -390,37 +398,170 @@ class SalesReportController extends Controller
         ]);
     }
 
-    public function yearlyCumulative($year) {
-        $posTransactions = Transaction::whereYear('date', $year)
-            ->where('saved', 1)
-            ->selectRaw('MONTH(date) as month, SUM(total_price) as jo_sales, COUNT(*) as jo_count')
-            ->orderBy('month')
-            ->groupBy('month')
+    public function monthy($year) {
+        $posTransactions = DB::table('transactions')
+            ->where('saved', true)
+            ->whereNull('deleted_at')
+            ->whereYear('date', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(total_price) as total_price, SUM(1) as total_jo, SUM(IF(date_paid IS NULL, 0, 1)) as paid_jo')
             ->get();
 
-        $total = 0;
+        $rfidCardTransactions = DB::table('rfid_card_transactions')
+            ->where('card_type', 'u')
+            ->whereNull('deleted_at')
+            ->whereYear('created_at', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(price) as total_price, SUM(IF(card_type = "u", price, 0)) as collection')
+            ->get();
 
-        $monthlyTargets = MonthlyTarget::all();
+        $rfidLoadTransactions = DB::table('rfid_load_transactions')
+            ->whereYear('created_at', $year)
+            ->whereNull('deleted_at')
+            ->groupBy(DB::raw('month, year'))
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(amount) as total_price, SUM(amount) as collection')
+            ->get();
+
+        $newCustomers = Customer::whereYear('created_at', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(id) as total_count')
+            ->get();
+
+        $expenses = Expense::whereYear('date', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(amount) as expense')
+            ->get();
+
+        $productPurchases = ProductPurchase::whereYear('date', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(unit_cost * quantity) as product_purchase')
+            ->get();
+
+        $partialPayments = PartialPayment::whereYear('date', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->select(DB::raw('YEAR(date) as year, MONTH(date) as month, SUM(`cash` - `change`) as collection'))
+            ->get();
+
+        $transactionPayment = TransactionPayment::whereYear('date', $year)
+            ->groupBy(DB::raw('month, year'))
+            ->select(DB::raw('YEAR(date) as year, MONTH(date) as month, SUM(`cash` - `change`) as collection'))
+            ->get();
 
 
-        $posTransactions->transform(function($item) use (&$total, $monthlyTargets) {
-            $total = $item->jo_sales + $total;
-            $item['month_to_date'] = $total;
-
-            $target = $monthlyTargets->find('index', $item->month);
-            $item['target'] = $target->target;
-
-            // if($before > 0 && $item->jo_sales > $before) {
-            //     // win
-            //     $item['diff_percentage'] = ($item->jo_sales - $before) / $item->jo_sales * 100;
-            // } else if($before > 0 && $item->jo_sales < $before) {
-            //     // loss
-            //     $item['diff_percentage'] = (($before - $item->jo_sales) / $before * 100) - 100;
-            // }
-            // $before = $item->jo_sales;
-            return $item;
+        $result = array_merge(
+            $posTransactions->toArray(),
+            $rfidCardTransactions->toArray(),
+            $rfidLoadTransactions->toArray(),
+            $expenses->toArray(),
+            $productPurchases->toArray(),
+            $newCustomers->toArray(),
+            $transactionPayment->toArray(),
+            $partialPayments->toArray()
+        );
+        $result = collect($result)->groupBy('month');
+        $result = $result->map(function($item, $key) {
+            $totalCollections = $item->sum('collection');
+            $totalExpenses =  $item->sum('expense') + $item->sum('product_purchase');
+            return
+            [
+                'year' => $item->first()->year,
+                'monthIndex' => $key,
+                'amount' => $item->sum('total_price'),
+                'collection' => $totalCollections,
+                'total_jo' => $item->sum('total_jo'),
+                'paid_jo' => $item->sum('paid_jo'),
+                'expenses' => $totalExpenses,
+                'newCustomers' => $item->sum('total_count'),
+                'totalDeposit' => $totalCollections - $totalExpenses,
+            ];
         });
 
-        return response()->json($posTransactions);
+
+        return response()->json([
+            'result' => array_values($result->toArray()),
+        ]);
+    }
+
+    public function yearly($yearFrom, $yearUntil) {
+        $posTransactions = DB::table('transactions')
+            ->where('saved', true)
+            ->whereNull('deleted_at')
+            ->whereBetween(DB::raw('YEAR(date)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->selectRaw('YEAR(date) as year, SUM(total_price) as total_price, SUM(1) as total_jo, SUM(IF(date_paid IS NULL, 0, 1)) as paid_jo')
+            ->get();
+
+        $rfidCardTransactions = DB::table('rfid_card_transactions')
+            ->where('card_type', 'u')
+            ->whereNull('deleted_at')
+            ->whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->selectRaw('YEAR(created_at) as year, SUM(price) as total_price, SUM(IF(card_type = "u", price, 0)) as collection')
+            ->get();
+
+        $rfidLoadTransactions = DB::table('rfid_load_transactions')
+            ->whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->whereNull('deleted_at')
+            ->groupBy(DB::raw('year'))
+            ->selectRaw('YEAR(created_at) as year, SUM(amount) as total_price, SUM(amount) as collection')
+            ->get();
+
+        $newCustomers = Customer::whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->selectRaw('YEAR(created_at) as year, COUNT(id) as total_count')
+            ->get();
+
+        $expenses = Expense::whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->selectRaw('YEAR(date) as year, SUM(amount) as expense')
+            ->get();
+
+        $productPurchases = ProductPurchase::whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->selectRaw('YEAR(date) as year, SUM(unit_cost * quantity) as product_purchase')
+            ->get();
+
+        $partialPayments = PartialPayment::whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->select(DB::raw('YEAR(date) as year, SUM(`cash` - `change`) as collection'))
+            ->get();
+
+        $transactionPayment = TransactionPayment::whereBetween(DB::raw('YEAR(created_at)'), [$yearFrom, $yearUntil])
+            ->groupBy(DB::raw('year'))
+            ->select(DB::raw('YEAR(date) as year, SUM(`cash` - `change`) as collection'))
+            ->get();
+
+
+        $result = array_merge(
+            $posTransactions->toArray(),
+            $rfidCardTransactions->toArray(),
+            $rfidLoadTransactions->toArray(),
+            $expenses->toArray(),
+            $productPurchases->toArray(),
+            $newCustomers->toArray(),
+            $transactionPayment->toArray(),
+            $partialPayments->toArray()
+        );
+        $result = collect($result)->groupBy('year');
+        $result = $result->map(function($item, $key) {
+            $totalCollections = $item->sum('collection');
+            $totalExpenses =  $item->sum('expense') + $item->sum('product_purchase');
+            return
+            [
+                'year' => $key,
+                'amount' => $item->sum('total_price'),
+                'collection' => $totalCollections,
+                'total_jo' => $item->sum('total_jo'),
+                'paid_jo' => $item->sum('paid_jo'),
+                'expenses' => $totalExpenses,
+                'newCustomers' => $item->sum('total_count'),
+                'totalDeposit' => $totalCollections - $totalExpenses,
+            ];
+        });
+
+
+        return response()->json([
+            'result' => array_values($result->toArray()),
+        ]);
     }
 }

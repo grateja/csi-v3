@@ -21,6 +21,20 @@ class RfidCard extends Model
         'rfid', 'balance', 'customer_id', 'user_id', 'card_type', 'unlimited', 'synched',
     ];
 
+    public static function filterKeys($val) {
+        $keys = [
+            'fullname' => 'Owner name',
+            'rfid' => 'RFID',
+            'enrolled' => 'Date enrolled',
+            'default' => 'enrolled',
+        ];
+
+        $filter = collect($keys)->filter(function($value) use ($val, $keys) {
+            return strcasecmp($value, $val) == 0 && $keys['default'] != $val;
+        })->keys();
+        return $filter->first() ?? $keys['default'];
+    }
+
     public function customer() {
         return $this->belongsTo('App\Customer');
     }

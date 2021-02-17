@@ -243,7 +243,7 @@ class ClientsController extends Controller
                 Machine::create([
                     'ip_address' => $request->gateWay . '.' . ($request->wStartIp + $i - 1),
                     'machine_type' => 'rw',
-                    'machine_name' => 'W' . $i,
+                    'machine_name' => 'Washer ' . $i,
                     'initial_time' => $request->wInitialTime,
                     'additional_time' => $request->wAdditionalTime,
                     'initial_price' => $request->wInitialPrice,
@@ -254,7 +254,7 @@ class ClientsController extends Controller
                 Machine::create([
                     'ip_address' => $request->gateWay . '.' . ($request->dStartIp + $i - 1),
                     'machine_type' => 'rd',
-                    'machine_name' => 'D' . $i,
+                    'machine_name' => 'Dryer ' . $i,
                     'initial_time' => $request->dInitialTime,
                     'additional_time' => $request->dAdditionalTime,
                     'initial_price' => $request->dInitialPrice,
@@ -265,7 +265,7 @@ class ClientsController extends Controller
                 Machine::create([
                     'ip_address' => $request->gateWay . '.' . ($request->twStartIp + $i - 1),
                     'machine_type' => 'tw',
-                    'machine_name' => 'TW' . $i,
+                    'machine_name' => 'Titan Washer ' . $i,
                     'initial_time' => $request->twInitialTime,
                     'additional_time' => $request->twAdditionalTime,
                     'initial_price' => $request->twInitialPrice,
@@ -276,7 +276,7 @@ class ClientsController extends Controller
                 Machine::create([
                     'ip_address' => $request->gateWay . '.' . ($request->tdStartIp + $i - 1),
                     'machine_type' => 'td',
-                    'machine_name' => 'TD' . $i,
+                    'machine_name' => 'Titan Dryer ' . $i,
                     'initial_time' => $request->tdInitialTime,
                     'additional_time' => $request->tdAdditionalTime,
                     'initial_price' => $request->tdInitialPrice,

@@ -6,13 +6,17 @@
 
         <v-btn to="/remote-panel" exact active-class="primary" round>8 Kilo Capacity</v-btn>
         <v-btn to="/remote-panel/titan" active-class="primary" round exact>10 Kilo Capacity</v-btn>
+        <template v-if="isDeveloper">
+            <v-divider></v-divider>
+            <v-btn @click="stopAll" round :loading="resetting">stop all</v-btn>
+        </template>
 
         <template>
             <div v-if="machines.dryers && !loading && !titan">
                 <h4 class="white--text mt-4">Dryers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout class="panel">
-                    <machine-tile v-for="machine in machines.dryers" :key="machine.id" :machine="machine" @open="open" />
+                <v-layout class="panel" row wrap justify-start>
+                    <machine-tile v-for="(machine, i) in machines.dryers" :key="machine.id" :machine="machine" @open="open" :index="i" />
                 </v-layout>
             </div>
         </template>
@@ -21,8 +25,8 @@
             <div v-if="machines.washers && !loading && !titan">
                 <h4 class="white--text mt-4">Washers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout class="panel">
-                    <machine-tile v-for="machine in machines.washers" :key="machine.id" :machine="machine" @open="open" />
+                <v-layout class="panel" row wrap justify-start>
+                    <machine-tile v-for="(machine, i) in machines.washers" :key="machine.id" :machine="machine" @open="open" :index="i" />
                 </v-layout>
             </div>
         </template>
@@ -31,8 +35,8 @@
             <div v-if="machines.titan_dryers && !loading && titan">
                 <h4 class="white--text mt-4">Dryers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout class="panel">
-                    <machine-tile v-for="machine in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" />
+                <v-layout class="panel" row wrap justify-start>
+                    <machine-tile v-for="(machine, i) in machines.titan_dryers" :key="machine.id" :machine="machine" @open="open" :index="i" />
                 </v-layout>
             </div>
         </template>
@@ -40,8 +44,8 @@
             <div v-if="machines.titan_washers && !loading && titan">
                 <h4 class="white--text mt-4">Washers</h4>
                 <v-divider class="my-2"></v-divider>
-                <v-layout  class="panel">
-                    <machine-tile v-for="machine in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" />
+                <v-layout  class="panel" row wrap>
+                    <machine-tile v-for="(machine, i) in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" :index="i" />
                 </v-layout>
             </div>
         </template>
@@ -49,6 +53,7 @@
         <customer-browser @rework="rework" v-model="openCustomerBrowserDialog" :machine="activeMachine" @machineActivated="updateMachine" />
         <machine-dialog @rework="rework" :machine="activeMachine" v-model="openMachineDialog" @forceStop="updateMachine" @activated="updateMachine" @transfered="transfered" />
         <rework-dialog @reworkConfirm="reworkConfirm" :machine="activeMachine" v-model="openReworkDialog"></rework-dialog>
+        <developer-dialog v-model="openDeveloperDialog" :machine="activeMachine" />
     </v-card>
 </template>
 
@@ -58,26 +63,30 @@ import CustomerBrowser from './CustomerBrowser.vue';
 import MachineTile from './MachineTile.vue';
 import MachineDialog from './MachineDialog.vue';
 import ReworkDialog from './ReworkDialog.vue';
+import DeveloperDialog from './DeveloperDialog.vue';
 
 export default {
     components: {
         CustomerBrowser,
         MachineTile,
         MachineDialog,
-        ReworkDialog
+        ReworkDialog,
+        DeveloperDialog
     },
     data() {
         return {
             openCustomerBrowserDialog: false,
             openMachineDialog: false,
             openReworkDialog: false,
+            openDeveloperDialog: false,
             activeMachine: null,
             machines: [],
             interval: null,
             componentKey: 1,
             loading: false,
             timer: null,
-            lastTimeStamp: null
+            lastTimeStamp: null,
+            resetting: false
         }
     },
     methods: {
@@ -92,6 +101,11 @@ export default {
         },
         open(machine) {
             this.activeMachine = machine;
+            if(this.isDeveloper) {
+                // show developer options
+                this.openDeveloperDialog = true;
+                return;
+            }
             if(machine.is_running) {
                 // show options instead
                 this.openMachineDialog = true;
@@ -152,6 +166,14 @@ export default {
         rework(machine) {
             this.activeMachine = machine;
             this.openReworkDialog = true;
+        },
+        stopAll() {
+            this.resetting = true;
+            axios.get('/api/reset/machines').then((res, rej) => {
+
+            }).finally(() => {
+                this.resetting = false;
+            });
         }
     },
     created() {
@@ -167,6 +189,9 @@ export default {
     computed: {
         titan() {
             return !!this.$route.params.mt;
+        },
+        isDeveloper() {
+            return this.$store.getters.isDeveloper;
         }
     }
 }
@@ -175,9 +200,5 @@ export default {
 <style scoped>
     .machines-container {
         border: 1px solid red;
-    }
-    .panel {
-        overflow-y: auto;
-        padding: 30px;
     }
 </style>

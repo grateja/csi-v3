@@ -56,7 +56,8 @@ class TransactionsController extends Controller
     }
 
     public function unpaidTransactions(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'date';
+        $sortBy = Transaction::filterKeys($request->sortBy);
+        // $sortBy = $request->sortBy ? $request->sortBy : 'date';
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $result = Transaction::with([

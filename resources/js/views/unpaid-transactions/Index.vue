@@ -12,7 +12,7 @@
                 <v-text-field class="translucent-input round-input mx-2" label="Specify date created" v-model="date" type="date" append-icon="date" @change="filter" outline></v-text-field>
             </v-flex>
             <v-flex style="max-width: 220px">
-                <v-combobox class="translucent-input round-input mx-2" label="Sort by" v-model="sortBy" outline :items="['job_order', 'customer_name', 'date']" @change="filter"></v-combobox>
+                <v-combobox class="translucent-input round-input mx-2" label="Sort by" v-model="sortBy" outline :items="['Job order number', 'Customer name', 'Date created']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex style="max-width: 220px">
                 <v-combobox class="translucent-input round-input mx-2" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -82,7 +82,7 @@ export default {
             keyword: null,
             date: null,
             cancelSource: null,
-            sortBy: 'job_order',
+            sortBy: 'Job Order Number',
             orderBy: 'asc',
             page: 1,
             reset: false,

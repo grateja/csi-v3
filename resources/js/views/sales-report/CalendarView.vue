@@ -3,13 +3,13 @@
         <v-progress-linear indeterminate v-if="loading" height="1" class="ma-0"></v-progress-linear>
         <v-divider v-else></v-divider>
         <calendar :results="results" :year="year" @month-changed="monthChanged" @input="preview" :summary="monthlySummary" :date-context="dateContext" />
-        <daily-summary v-model="openDailySummary" :date="date" />
+        <!-- <daily-summary v-model="openDailySummary" :date="date" /> -->
     </div>
 </template>
 
 <script>
 import Calendar from './Calendar.vue';
-import DailySummary from './DailySummary.vue';
+// import DailySummary from './DailySummary.vue';
 
 export default {
     components: {
@@ -63,7 +63,8 @@ export default {
         },
         monthIndex() {
             return moment(this.dateContext).format('M')
-        }
+        },
+
     },
     watch: {
         dateContext: {

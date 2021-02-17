@@ -27,7 +27,7 @@
                 <v-text-field label="Specify date" v-model="date" type="date" append-icon="date" @change="filter" outline class="mr-2 round-input translucent-input" style="width: 200px" dense></v-text-field>
             </v-flex>
             <v-flex shrink>
-                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['owner_name', 'rfid', 'created_at', 'machine_name']" @change="filter"></v-combobox>
+                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['Customer name', 'RFID', 'Date', 'Machine name']" @change="filter"></v-combobox>
             </v-flex>
             <v-flex shrink>
                 <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
@@ -107,7 +107,7 @@ export default {
             keyword: null,
             page: 1,
             date: null,
-            sortBy: 'created_at',
+            sortBy: 'Customer name',
             orderBy: 'desc',
             cardType: null,
             cancelSource: null,

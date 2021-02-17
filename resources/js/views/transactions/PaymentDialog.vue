@@ -39,7 +39,7 @@
                     <v-layout v-if="discount">
                         <v-flex xs5><span class="data-term font-weight-bold">Discount:</span></v-flex>
                         <v-flex xs7>
-                            <span class="data-value">{{`P ${discountInPeso} (${discount.percentage}%)`}}
+                            <span class="data-value">{{discount.name}}: {{`P ${discountInPeso} (${discount.percentage}%)`}}
                                 <v-tooltip top>
                                     <span>Remove discount</span>
                                     <v-btn slot="activator" outline icon small class="ma-0" @click="discount = null"><v-icon>close</v-icon></v-btn>

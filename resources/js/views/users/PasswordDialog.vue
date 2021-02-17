@@ -4,7 +4,7 @@
             <v-card v-if="user" class="rounded-card">
                 <v-card-title class="title grey--text">Change password</v-card-title>
                 <v-card-text>
-                    <v-text-field :value="user.name" outline label="Name"></v-text-field>
+                    <v-text-field :value="user.name" readonly outline label="Name"></v-text-field>
                     <v-text-field v-model="formData.password" :error-messages="errors.get('password')" outline label="Password" type="password"></v-text-field>
                     <v-text-field v-model="formData.password_confirmation" :error-messages="errors.get('password_confirmation')" outline label="Retype password" type="password"></v-text-field>
                 </v-card-text>
@@ -45,6 +45,9 @@ export default {
                     mode: this.mode
                 });
             });
+        },
+        clear() {
+            this.$store.commit('user/clearErrors');
         }
     },
     computed: {
@@ -61,6 +64,7 @@ export default {
                 this.formData.name = this.user.name;
             } else {
                 this.formData.name = null;
+                this.clear();
             }
             this.formData.password = null;
             this.formData.password_confirmation = null;

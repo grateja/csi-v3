@@ -28,8 +28,8 @@ class TransactionsSeeder extends Seeder
     public function run()
     {
         DB::transaction(function () {
-            for ($i=0; $i < 5000; $i++) {
-                $date = Carbon::now()->subDay(rand(0, 90));
+            for ($i=0; $i < 1000; $i++) {
+                $date = Carbon::now()->subDay(rand(0, 1000));
                 $customer = Customer::inRandomOrder()->first();
                 $user = User::inRandomOrder()->first();
 
@@ -76,6 +76,7 @@ class TransactionsSeeder extends Seeder
                         'created_at' => $date,
                     ]);
                     $customerWash = CustomerWash::create([
+                        'job_order' => $transaction->job_order,
                         'customer_id' => $customer->id,
                         'service_transaction_item_id' => $serviceItem->id,
                         'service_name' => $wService->name,
@@ -99,7 +100,8 @@ class TransactionsSeeder extends Seeder
                         'saved' => 1,
                         'created_at' => $date,
                     ]);
-                    $customerWash = CustomerDry::create([
+                    $customerDry = CustomerDry::create([
+                        'job_order' => $transaction->job_order,
                         'customer_id' => $customer->id,
                         'service_transaction_item_id' => $serviceItem->id,
                         'service_name' => $wService->name,

@@ -32,6 +32,10 @@ class FullServiceItem extends Model
         return $this->hasOne('App\CustomerWash');
     }
 
+    public function fullService() {
+        return $this->belongsTo('App\FullService');
+    }
+
     public function name() {
         if($this->category == 'washing') {
             return $this->washingService->name;

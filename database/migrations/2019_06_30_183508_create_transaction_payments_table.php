@@ -24,6 +24,7 @@ class CreateTransactionPaymentsTable extends Migration
             $table->double('card_load_used')->nullable()->comment('Amount of card load used')->default(0);
             $table->string('rfid')->nullable()->comment('Card used');
             $table->double('discount')->nullable()->comment('Percentage')->default(0);
+            $table->string('discount_name')->nullable()->comment('Static name of discount');
             $table->double('total_amount')->nullable()->default(0);
             $table->double('balance')->nullable()->default(0);
             $table->double('change')->nullable()->default(0);

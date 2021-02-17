@@ -17,7 +17,7 @@
                     <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Description" v-model="formData.description" outline></v-text-field>
                     <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
-                    <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" v-model="formData.machineType" outline></v-combobox>
+                    <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" :error-messages="errors.get('machineType')" v-model="formData.machineType" outline></v-combobox>
                     <v-text-field type="number" label="Regular minutes" v-model="formData.regularMinutes" :error-messages="errors.get('regularMinutes')" outline></v-text-field>
                     <v-text-field type="number" label="Additional minutes" v-model="formData.additionalMinutes" :error-messages="errors.get('additionalMinutes')" outline hint="For add super wash. Set to 0 to disable."></v-text-field>
                     <v-text-field label="Points" v-model="formData.points" :error-messages="errors.get('points')" outline></v-text-field>
@@ -86,6 +86,9 @@ export default {
                     this.$emit('setPicture', '');
                 });
             }
+        },
+        clear() {
+            this.$store.commit('washingservice/clearErrors');
         }
     },
     computed: {
@@ -117,6 +120,7 @@ export default {
                 this.formData.additionalMinutes = 0;
                 this.formData.points = 1;
             }
+            this.clear();
             setTimeout(() => {
                 this.$refs.name.$el.querySelector('input').select();
             }, 500);

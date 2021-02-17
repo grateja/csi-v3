@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\DB;
 class RfidLoadController extends Controller
 {
     public function index(Request $request) {
-        $sortBy = $request->sortBy ? $request->sortBy : 'created_at';
+        // $sortBy = $request->sortBy ? $request->sortBy : 'created_at';
+        $sortBy = RfidLoadTransaction::filterKeys($request->sortBy);
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
         $result = RfidLoadTransaction::where(function($query) use ($request) {

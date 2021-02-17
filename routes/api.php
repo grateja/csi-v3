@@ -115,6 +115,12 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
     // /api/sales-report/{monthIndex}/{year}/week-view
     Route::get('{monthIndex}/{year}/week-view', 'SalesReportController@weekly');
 
+    // /api/sales-report/{year}/monthly
+    Route::get('{year}/monthly', 'SalesReportController@monthy');
+
+    // /api/sales-report/{yearFrom}/{yearUntil}/yearly
+    Route::get('{yearFrom}/{yearUntil}/yearly', 'SalesReportController@yearly');
+
     // /api/sales-report/{monthIndex}/{year}/pos-transactions
     Route::get('{monthIndex}/{year}/pos-transactions', 'SalesReportController@posTransactions');
 

@@ -9,7 +9,8 @@
 
                     <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline></v-text-field>
                     <v-text-field label="Quantity" v-model="formData.quantity" :error-messages="errors.get('quantity')" outline></v-text-field>
-                    <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
+                    <v-text-field label="Unit Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
+                    <v-text-field label="Total price" readonly outline :value="formData.price * formData.quantity" hint="Automatically generated" persistentHint></v-text-field>
                     <v-text-field label="Points" v-model="formData.points" :error-messages="errors.get('points')" outline></v-text-field>
                 </v-card-text>
                 <v-card-actions>

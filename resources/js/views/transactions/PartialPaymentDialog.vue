@@ -8,8 +8,28 @@
                     <v-icon>close</v-icon>
                 </v-btn>
             </v-card-title>
-            <v-card-text>
-                <pre>{{partialPayment}}</pre>
+            <v-card-text v-if="!!partialPayment">
+                <!-- <pre>{{partialPayment}}</pre> -->
+                <v-layout>
+                    <v-flex xs5><span class="data-term">Date:</span></v-flex>
+                    <v-flex xs7><span class="data-value">{{moment(partialPayment.date).format('LLL')}}</span></v-flex>
+                </v-layout>
+                <v-layout>
+                    <v-flex xs5><span class="data-term">Total amount:</span></v-flex>
+                    <v-flex xs7><span class="data-value">P {{parseFloat(partialPayment.total_amount).toLocaleString(2)}}</span></v-flex>
+                </v-layout>
+                <v-layout>
+                    <v-flex xs5><span class="data-term">Cash:</span></v-flex>
+                    <v-flex xs7><span class="data-value">P {{parseFloat(partialPayment.cash).toLocaleString(2)}}</span></v-flex>
+                </v-layout>
+                <v-layout>
+                    <v-flex xs5><span class="data-term">Balance:</span></v-flex>
+                    <v-flex xs7><span class="data-value">P {{parseFloat(partialPayment.balance).toLocaleString(2)}}</span></v-flex>
+                </v-layout>
+                <v-layout>
+                    <v-flex xs5><span class="data-term">Paid to:</span></v-flex>
+                    <v-flex xs7><span class="data-value">{{partialPayment.paid_to}}</span></v-flex>
+                </v-layout>
             </v-card-text>
         </v-card>
     </v-dialog>

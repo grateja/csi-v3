@@ -22,7 +22,11 @@ class Customer extends Model
             'remarks' => 'remarks',
             'name' => 'name',
             'first_visit' => 'birthday',
+            'DATE_FORMAT(first_visit, "%m-%d")' => 'Birthday w/o Year',
+            'customer_washes_count' => 'Total Washes',
+            'customer_dries_count' => 'Total Dries',
             'created_at' => 'first visit',
+            'earned_points' => 'Current points',
             'default' => 'name',
         ];
 

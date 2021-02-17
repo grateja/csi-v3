@@ -16,6 +16,21 @@ class RfidLoadTransaction extends Model
         'customer_name', 'rfid', 'rfid_card_id', 'amount', 'remaining_balance', 'current_balance', 'staff_name', 'remarks', 'cash', 'change', 'synched',
     ];
 
+    public static function filterKeys($val) {
+        $keys = [
+            'customer_name' => 'Customer name',
+            'rfid' => 'RFID',
+            'created_at' => 'Date',
+            'amount' => 'Load amount',
+            'default' => 'created_at',
+        ];
+
+        $filter = collect($keys)->filter(function($value) use ($val, $keys) {
+            return strcasecmp($value, $val) == 0 && $keys['default'] != $val;
+        })->keys();
+        return $filter->first() ?? $keys['default'];
+    }
+
     public function user() {
         return $this->belongsTo('App\User');
     }

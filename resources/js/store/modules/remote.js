@@ -3,7 +3,12 @@ import FormHelper from '../../helpers/FormHelper.js';
 const state = {
     errors: FormHelper,
     isSaving: false,
-    isActivating: false
+    isActivating: false,
+    ping: {
+        machine: null,
+        active: false,
+        responseTime: -1
+    }
 };
 
 const mutations = {
@@ -18,6 +23,11 @@ const mutations = {
     },
     clearErrors(state, key) {
         state.errors.clear(key);
+    },
+    setActivePing(state, data) {
+        state.ping.machine = data.machine;
+        state.ping.active = data.active;
+        state.ping.responseTime = data.responseTime;
     }
 };
 
@@ -67,6 +77,31 @@ const actions = {
         }).finally(() => {
             context.commit('setActivatingStatus', false);
         });
+    },
+    ping(context, machine) {
+        let startTime = new Date().getTime();
+        let responseTime = -1;
+        context.commit('setActivePing', {
+            machine,
+            active: true,
+            responseTime
+        });
+        return axios.get(`http://${machine.ip_address}`).then((res, rej) => {
+            responseTime = new Date().getTime() - startTime;
+            context.commit('setActivePing', {
+                machine,
+                active: false,
+                response: res.data
+            });
+        }).catch(err => {
+            responseTime = new Date().getTime() - startTime;
+        }).finally(() => {
+            context.commit('setActivePing', {
+                machine,
+                active: false,
+                responseTime
+            });
+        })
     }
 };
 
@@ -77,8 +112,11 @@ const getters = {
     isSaving(state) {
         return state.isSaving;
     },
-    isReactivating() {
+    isReactivating(state) {
         return state.isActivating;
+    },
+    getActivePing(state) {
+        return state.ping;
     }
 };
 

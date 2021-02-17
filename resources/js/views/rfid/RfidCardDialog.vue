@@ -31,7 +31,7 @@
                                 <v-radio value="u" label="Master card"></v-radio>
                                 <v-radio value="c" label="Customer card"></v-radio>
                             </v-radio-group>
-                            <v-text-field label="RFID" v-model="formData.rfid" :error-messages="errors.get('rfid')" outline ref="rfid"></v-text-field>
+                            <v-text-field label="RFID" v-model="formData.rfid" :error-messages="errors.get('rfid')" outline ref="rfid" @keydown.native="clear('rfid')"></v-text-field>
                         </v-card-text>
                     </v-flex>
                 </v-layout>
@@ -90,9 +90,10 @@ export default {
         },
         close() {
             this.$emit('input', false);
+            this.clear();
         },
         search() {
-            this.$store.commit('rfidcard/clearErrors');
+            this.clear();
             this.results = [];
             if(this.keyword.length == 0) {
                 this.cancelSearch();
@@ -124,6 +125,9 @@ export default {
         selectOwner(item) {
             this.formData.ownerId = item.id;
             this.currentOwner = item;
+        },
+        clear(key) {
+            this.$store.commit('rfidcard/clearErrors', key);
         }
     },
     computed: {

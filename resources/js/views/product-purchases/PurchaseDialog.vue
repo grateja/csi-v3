@@ -85,6 +85,9 @@ export default {
         },
         computeUnitCost() {
             this.formData.unitCost = this.formData.totalCost / this.formData.quantity;
+        },
+        clear() {
+            this.$store.commit('productpurchase/clearErrors');
         }
     },
     computed: {
@@ -109,6 +112,7 @@ export default {
                 this.formData.totalCost = 0;
                 this.formData.remarks = null;
             }
+            this.clear();
             setTimeout(() => {
                 this.$refs.keyword.$el.querySelector('input').select();
             }, 500);

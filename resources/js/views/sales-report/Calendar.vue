@@ -17,10 +17,10 @@
                                 <li v-for="(blank, i) in firstDayOfMonth" :key="i + 'd'" class="blank">&nbsp;</li>
                             </template>
                             <template v-for="draft in drafts">
-                                <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == dateContext &amp;&amp; month == initialMonth && year == initialYear}">
+                                <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == 'dateContext' &amp;&amp; month == initialMonth && year == initialYear}">
                                     <template v-if="draft.active">
                                         <v-hover v-slot:default="{ hover }" v-if="draft.active">
-                                            <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="dateClick(draft.date)" height="131px">
+                                            <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="preview(draft.date)" height="131px">
                                                 <span class="pa-2 grey--text font-weigth-bold">{{draft.date}}</span>
                                                 <v-tooltip top v-if="draft.newCustomers">
                                                     <v-layout slot="activator" class="caption">
@@ -179,17 +179,19 @@
                 </v-card>
             </v-flex>
         </v-layout>
-        <month-selector v-model="openMonthSelector" @select="selectMonth" :year="year" @selectYear="selectYear" />
+        <!-- <month-selector v-model="openMonthSelector" @select="selectMonth" :year="year" @selectYear="selectYear" /> -->
     </v-card>
 </template>
 <script>
-import MonthSelector from './MonthSelector.vue';
+// import MonthSelector from './MonthSelector.vue';
 export default {
     components: {
-        MonthSelector
+        // MonthSelector
     },
     props: [
-        'results', 'summary', 'dateContext'
+        'results',
+        'summary',
+        // 'dateContext'
     ],
     data(){
         return {
@@ -200,29 +202,29 @@ export default {
         }
     },
     methods: {
-        addMonth() {
-            this.dateContext = moment(this.dateContext).add(1, 'month');
-            this.emitMonth();
-        },
-        subtractMonth() {
-            this.dateContext = moment(this.dateContext).subtract(1, 'month');
-            this.emitMonth();
-        },
-        emitMonth() {
-            this.$emit('month-changed', this.dateContext);
-        },
+        // addMonth() {
+        //     this.dateContext = moment(this.dateContext).add(1, 'month');
+        //     this.emitMonth();
+        // },
+        // subtractMonth() {
+        //     this.dateContext = moment(this.dateContext).subtract(1, 'month');
+        //     this.emitMonth();
+        // },
+        // emitMonth() {
+        //     this.$emit('month-changed', this.dateContext);
+        // },
         dateClick(date) {
             console.log(date)
             this.$emit('input', date);
         },
-        selectMonth(monthIndex) {
-            this.dateContext = moment(this.dateContext).set('month',monthIndex);
-            this.emitMonth();
-        },
-        selectYear(year) {
-            this.dateContext = moment(this.dateContext).set('year', year);
-            this.emitMonth();
-        }
+        // selectMonth(monthIndex) {
+        //     this.dateContext = moment(this.dateContext).set('month',monthIndex);
+        //     this.emitMonth();
+        // },
+        // selectYear(year) {
+        //     this.dateContext = moment(this.dateContext).set('year', year);
+        //     this.emitMonth();
+        // }
     },
     computed: {
         drafts() {
@@ -264,19 +266,20 @@ export default {
             return [];
         },
         year() {
-            return this.$route.query.year;
+            return this.$store.getters['transactionreport/activeYear'];
         },
         month() {
-            return this.dateContext.format('MMMM');
+            // return this.dateContext.format('MMMM');
         },
         daysInMonth() {
-            return this.dateContext.daysInMonth();
+            return this.$store.getters['transactionreport/getDaysInMonth'];
         },
         firstDayOfMonth() {
-            return moment(this.dateContext).set('date', 1).isoWeekday() - 1;
-        },
-        initialMonth() {
-            return moment(this.dateContext).format('MMMM');
+            return this.$store.getters['transactionreport/getFirstDayOfMonth'];
+            // return moment(this.dateContext).set('date', 1).isoWeekday() - 1;
+        // },
+        // initialMonth() {
+            // return moment(this.dateContext).format('MMMM');
         }
     }
 }

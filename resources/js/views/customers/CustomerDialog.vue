@@ -11,8 +11,8 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
-                    <v-text-field v-model="formData.crn" :error-messages="errors.get('crn')" outline label="CRN" ref="crn" hint="Customer Reference Number" :disabled="loadingCRN" :loading="loadingCRN"></v-text-field>
-                    <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name" ref="name"></v-text-field>
+                    <v-text-field v-model="formData.crn" :error-messages="errors.get('crn')" @keydown.native="clear('crn')" outline label="CRN" ref="crn" hint="Customer Reference Number" :disabled="loadingCRN" :loading="loadingCRN"></v-text-field>
+                    <v-text-field v-model="formData.name" :error-messages="errors.get('name')" @keydown.native="clear('name')" outline label="Name" ref="name"></v-text-field>
                     <v-text-field v-model="formData.address" :error-messages="errors.get('address')" outline label="Address"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>
@@ -73,6 +73,9 @@ export default {
             }).finally(() => {
                 this.loadingCRN = false;
             });
+        },
+        clear(key) {
+            this.$store.commit('customer/clearErrors', key);
         }
     },
     computed: {
@@ -110,6 +113,7 @@ export default {
             if(val && !this.customer) {
                 this.getCRN();
             }
+            this.clear();
         },
         customer(val) {
             if(!!val) {
