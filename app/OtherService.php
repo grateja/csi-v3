@@ -13,11 +13,15 @@ class OtherService extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'description', 'img_path', 'price', 'points',
+        'name', 'description', 'img_path', 'price', 'points', 'deleted_at',
     ];
 
     public function fullServiceItems() {
         return $this->hasMany('App\FullServiceItem');
+    }
+
+    public function serviceTransactionItems() {
+        return $this->hasMany('App\ServiceTranactionItem');
     }
 
     protected static function boot() {

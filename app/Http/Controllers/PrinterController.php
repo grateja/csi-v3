@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\DB;
 use App\CompletedProductTransaction;
 use App\RfidLoadTransaction;
 use Illuminate\Support\Facades\File;
+use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
+use Mike42\Escpos\Printer;
+use App\ThermalPrinter;
 
 class PrinterController extends Controller
 {
+    public function test(Request $request) {
+        if($thermalPrinter = new ThermalPrinter) {
+            $thermalPrinter->test($request->text);
+        }
+    }
     public function printReceipt($transactionId) {
         $transaction = Transaction::with(['customer' => function($query) {
             $query->select('id', 'name');
@@ -81,8 +89,21 @@ class PrinterController extends Controller
 
 
     public function claimStub($transactionId) {
+        $transaction = Transaction::with('partialPayment.user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
+        $transaction->refreshAll();
+        // $transaction->withPayment();
+        $thermalPrinter = new ThermalPrinter;
+        if($printerError = $thermalPrinter->hasError()) {
+            return response()->json([
+                'errors' => $printerError
+            ], 422);
+        } else {
+            $thermalPrinter->claimStub($transaction);
+            return response()->json([
+                'success' => 'Claim stub printed successfully'
+            ]);
+        }
         $client = Client::firstOrFail();
-        $transaction = Transaction::with('payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
 
         if(!$transaction->saved) {
             return response()->json([
@@ -112,12 +133,26 @@ class PrinterController extends Controller
 
         $transaction = Transaction::with('user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
 
+
         if($transaction->date_paid == null) {
             return response()->json([
                 'errors' => [
                     'message' => ['Cannot print unpaid job order']
                 ]
             ], 422);
+        }
+
+        $transaction->refreshAll();
+        $thermalPrinter = new ThermalPrinter;
+        if($printerError = $thermalPrinter->hasError()) {
+            return response()->json([
+                'errors' => $printerError
+            ], 422);
+        } else {
+            $thermalPrinter->jobOrder($transaction);
+            return response()->json([
+                'success' => 'Job Order Printed successfully'
+            ]);
         }
 
         $data = [
@@ -152,6 +187,18 @@ class PrinterController extends Controller
     public function loadTransaction($transactionId) {
         $client = Client::firstOrFail();
         $rfidLoadTransaction = RfidLoadTransaction::findOrFail($transactionId);
+
+        $thermalPrinter = new ThermalPrinter;
+        if($printerError = $thermalPrinter->hasError()) {
+            return response()->json([
+                'errors' => $printerError
+            ], 422);
+        } else {
+            $thermalPrinter->loadTransaction($rfidLoadTransaction);
+            return response()->json([
+                'success' => 'RFID Tap up Printed successfully'
+            ]);
+        }
 
         $data = [
             'shop_name' => $client->shop_name,

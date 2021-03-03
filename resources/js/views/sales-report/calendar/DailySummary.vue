@@ -537,7 +537,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="close" round>close</v-btn>
-                <!-- <v-btn @click="printAll" round>print</v-btn> -->
+                <v-btn @click="printAll" round>print</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card>

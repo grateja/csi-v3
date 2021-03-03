@@ -65,6 +65,8 @@ class WashingServicesController extends Controller
         $service = WashingService::findOrFail($id);
         if($service->delete()) {
 
+            $service->serviceTransactionItems()->where('saved', false)->delete();
+
             $this->dispatch($service->queSynch());
 
             File::delete(public_path() . $service->img_path);
@@ -93,7 +95,7 @@ class WashingServicesController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|unique:washing_services,name,NULL,id,deleted_at,NULL',
             'price' => 'numeric',
             'regularMinutes' => 'numeric',
             'additionalMinutes' => 'numeric',
@@ -102,21 +104,41 @@ class WashingServicesController extends Controller
         ];
 
         if($request->validate($rules)) {
-            $service = WashingService::create([
+
+            $service = WashingService::withTrashed()->where([
                 'name' => $request->name,
-                'description' => $request->description,
-                'machine_type' => $request->machineType,
-                'regular_minutes' => $request->regularMinutes,
-                'additional_minutes' => $request->additionalMinutes,
-                'price' => $request->price,
-                'points' => $request->points,
-                'img_path' => null,
-            ]);
+            ])->first();
+
+            if($service) {
+                $service->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'machine_type' => $request->machineType,
+                    'regular_minutes' => $request->regularMinutes,
+                    'additional_minutes' => $request->additionalMinutes,
+                    'price' => $request->price,
+                    'points' => $request->points,
+                    'img_path' => null,
+                    'deleted_at' => null,
+                ]);
+            } else {
+                $service = WashingService::create([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'machine_type' => $request->machineType,
+                    'regular_minutes' => $request->regularMinutes,
+                    'additional_minutes' => $request->additionalMinutes,
+                    'price' => $request->price,
+                    'points' => $request->points,
+                    'img_path' => null,
+                ]);
+            }
 
             $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
+                'success' => 'Service saved successfully'
             ]);
         }
     }
@@ -161,8 +183,13 @@ class WashingServicesController extends Controller
             'machineType' => 'required|in:TITAN,REGULAR',
         ];
 
+        $service = WashingService::findOrFail($id);
+
+        if($service->name != $request->name) {
+            $rules['name'] = 'required|unique:washing_services,name,NULL,id,deleted_at,NULL';
+        }
+
         if($request->validate($rules)) {
-            $service = WashingService::findOrFail($id);
             $service->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -171,12 +198,14 @@ class WashingServicesController extends Controller
                 'additional_minutes' => $request->additionalMinutes,
                 'price' => $request->price,
                 'points' => $request->points,
+                'deleted_at' => null
             ]);
 
             $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
+                'success' => 'Service saved successfully'
             ]);
         }
     }

@@ -8,7 +8,15 @@ store.dispatch('auth/checkToken').then((res, rej) => {
     console.log(err);
 });
 
-axios.interceptors.response.use(null, err => {
+axios.interceptors.response.use((res, rej) => {
+    if(res.data && res.data.success) {
+        store.commit('setFlash', {
+            message: res.data.success,
+            color: 'success'
+        });
+    }
+    return res;
+}, err => {
     console.log('keme lang');
     if(err && err.response && err.response.status == 401) {
         store.commit('setFlash', {

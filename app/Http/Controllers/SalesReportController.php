@@ -12,6 +12,7 @@ use App\ProductTransactionItem;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\ServiceTransactionItem;
+use App\ThermalPrinter;
 use App\Transaction;
 use App\TransactionPayment;
 use Carbon\Carbon;
@@ -227,12 +228,22 @@ class SalesReportController extends Controller
         ];
 
         if($print) {
-            $data['date'] = Carbon::createFromDate($date)->format("l jS F Y");
-            return view('printer.daily', $data);
+            $data['date'] = Carbon::createFromDate($date)->format("D m/d/Y");
+            // return view('printer.daily', $data);
+            $thermalPrinter = new ThermalPrinter;
+            if($printerError = $thermalPrinter->hasError()) {
+                return response()->json([
+                    'errors' => $printerError
+                ], 422);
+            } else {
+                $thermalPrinter->dailySummary($data);
+                return response()->json([
+                    'success' => 'Daily sales Printed successfully'
+                ]);
+            }
         } else {
             return response()->json($data);
         }
-
     }
 
     // public function posTransactions($monthIndex, $year, Request $request) {

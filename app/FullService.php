@@ -18,7 +18,7 @@ class FullService extends Model
     ];
 
     protected $fillable = [
-        'name', 'additional_charge', 'discount',
+        'name', 'additional_charge', 'discount', 'deleted_at', 'updated_at', 'created_at'
     ];
 
     public function fullServiceItems() {

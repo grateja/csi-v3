@@ -20,21 +20,36 @@ class ProductsController extends Controller
 
     public function store(Request $request) {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|unique:products,name,NULL,id,deleted_at,NULL',
             'sellingPrice' => 'numeric',
             'currentStock' => 'numeric',
         ];
 
         if($request->validate($rules)) {
+
+
+
             return DB::transaction(function () use ($request) {
 
-                $product = Product::create([
-                    'name' => $request->name,
-                    'description' => $request->description,
-                    'selling_price' => $request->sellingPrice,
-                    'current_stock' => $request->currentStock,
-                    'img_path' => $request->imgPath,
-                ]);
+                $product = Product::withTrashed()->where('name', $request->name)->first();
+                if($product) {
+                    $product->update([
+                        'name' => $request->name,
+                        'description' => $request->description,
+                        'selling_price' => $request->sellingPrice,
+                        'current_stock' => $request->currentStock,
+                        'img_path' => $request->imgPath,
+                        'deleted_at' => null,
+                    ]);
+                } else {
+                    $product = Product::create([
+                        'name' => $request->name,
+                        'description' => $request->description,
+                        'selling_price' => $request->sellingPrice,
+                        'current_stock' => $request->currentStock,
+                        'img_path' => $request->imgPath,
+                    ]);
+                }
 
                 $this->dispatch($product->queSynch());
 
@@ -93,6 +108,7 @@ class ProductsController extends Controller
 
             return response()->json([
                 'product' => $product,
+                'success' => 'Product saved successfully',
             ]);
         }
     }
@@ -103,11 +119,14 @@ class ProductsController extends Controller
             'sellingPrice' => 'numeric',
             'currentStock' => 'numeric',
         ];
+        $product = Product::findOrFail($id);
+        if($product->name != $request->name) {
+            // name was changed
+            $rules['name'] = 'required|unique:products,name,NULL,id,deleted_at,NULL';
+        }
 
         if($request->validate($rules)) {
-            return DB::transaction(function () use ($request, $id) {
-                $product = Product::findOrFail($id);
-
+            return DB::transaction(function () use ($request, $product) {
                 $product->update([
                     'name' => $request->name,
                     'description' => $request->description,
@@ -120,6 +139,7 @@ class ProductsController extends Controller
 
                 return response()->json([
                     'product' => $product,
+                    'success' => 'Product saved successfully',
                 ], 200);
             });
         }

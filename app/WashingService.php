@@ -20,6 +20,10 @@ class WashingService extends Model
         return $this->hasMany('App\FullServiceItem');
     }
 
+    public function serviceTransactionItems() {
+        return $this->hasMany('App\ServiceTransactionItem');
+    }
+
     protected static function boot() {
         static::deleting(function($model) {
             $model->fullServiceItems()->delete();

@@ -41,6 +41,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// /api/thermal/print
+Route::group(['prefix' => 'thermal/print'], function() {
+    // /api/thermal/print
+    Route::post('claim-stub', 'ThermalPrinterController@claimStub');
+});
+
+
 // /api/tap
 Route::group(['prefix' => 'tap'], function() {
     // /api/tap/{machineIp}/{rfid}/{macAddress?}

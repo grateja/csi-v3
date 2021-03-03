@@ -13,11 +13,15 @@ class DryingService extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'description', 'img_path', 'price', 'machine_type', 'minutes', 'points',
+        'name', 'description', 'img_path', 'price', 'machine_type', 'minutes', 'points', 'deleted_at',
     ];
 
     public function fullServiceItems() {
         return $this->hasMany('App\FullServiceItem');
+    }
+
+    public function serviceTransactionItems() {
+        return $this->hasMany('App\ServiceTransactionItem');
     }
 
     protected static function boot() {

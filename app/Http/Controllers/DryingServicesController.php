@@ -66,6 +66,9 @@ class DryingServicesController extends Controller
         return DB::transaction(function () use ($id) {
             $service = DryingService::findOrFail($id);
             if($service->delete()) {
+
+                $service->serviceTransactionItems()->where('saved', false)->delete();
+
                 $this->dispatch($service->queSynch());
 
                 File::delete(public_path() . $service->img_path);
@@ -95,7 +98,7 @@ class DryingServicesController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|unique:drying_services,name,NULL,id,deleted_at,NULL',
             'price' => 'numeric',
             'minutes' => 'numeric',
             'points' => 'numeric',
@@ -105,20 +108,39 @@ class DryingServicesController extends Controller
 
 
         if($request->validate($rules)) {
-            $service = DryingService::create([
+            $service = DryingService::withTrashed()->where([
                 'name' => $request->name,
-                'description' => $request->description,
-                'machine_type' => $request->machineType,
-                'minutes' => $request->minutes,
-                'price' => $request->price,
-                'points' => $request->points,
-                'img_path' => null,
-            ]);
+            ])->first();
+
+            if($service) {
+                $service->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'machine_type' => $request->machineType,
+                    'minutes' => $request->minutes,
+                    'price' => $request->price,
+                    'points' => $request->points,
+                    'img_path' => null,
+                    'deleted_at' => null,
+                ]);
+            } else {
+                $service = DryingService::create([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'machine_type' => $request->machineType,
+                    'minutes' => $request->minutes,
+                    'price' => $request->price,
+                    'points' => $request->points,
+                    'img_path' => null,
+                ]);
+            }
+
 
             $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
+                'success' => 'Service saved successfully',
             ]);
         }
     }
@@ -162,8 +184,13 @@ class DryingServicesController extends Controller
             'machineType' => 'required|in:TITAN,REGULAR',
         ];
 
+        $service = DryingService::findOrFail($id);
+
+        if($service->name != $request->name) {
+            $rules['name'] = 'required|unique:drying_services,name,NULL,id,deleted_at,NULL';
+        }
+
         if($request->validate($rules)) {
-            $service = DryingService::findOrFail($id);
             $service->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -177,6 +204,7 @@ class DryingServicesController extends Controller
 
             return response()->json([
                 'service' => $service,
+                'success' => 'Service saved successfully',
             ]);
         }
     }

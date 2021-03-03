@@ -92,22 +92,37 @@ class OtherServicesController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|unique:other_services,name,NULL,id,deleted_at,NULL',
             'price' => 'numeric',
         ];
 
         if($request->validate($rules)) {
-            $service = OtherService::create([
+            $service = OtherService::withTrashed()->where([
                 'name' => $request->name,
-                'description' => $request->description,
-                'price' => $request->price,
-                'img_path' => null,
-            ]);
+            ])->first();
+
+            if($service) {
+                $service->update([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'price' => $request->price,
+                    'img_path' => null,
+                    'deleted_at' => null,
+                ]);
+            } else {
+                $service = OtherService::create([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                    'price' => $request->price,
+                    'img_path' => null,
+                ]);
+            }
 
             $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
+                'success' => 'Service saved successfully',
             ]);
         }
     }
@@ -147,9 +162,13 @@ class OtherServicesController extends Controller
             'name' => 'required',
             'price' => 'numeric',
         ];
+        $service = OtherService::findOrFail($id);
+
+        if($service->name != $request->name) {
+            $rules['name'] = 'required|unique:other_services,name,NULL,id,deleted_at,NULL';
+        }
 
         if($request->validate($rules)) {
-            $service = OtherService::findOrFail($id);
             $service->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -160,6 +179,7 @@ class OtherServicesController extends Controller
 
             return response()->json([
                 'service' => $service,
+                'success' => 'Service saved successfully',
             ]);
         }
     }
