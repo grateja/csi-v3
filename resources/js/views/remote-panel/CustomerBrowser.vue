@@ -3,19 +3,19 @@
         <v-card v-if="!!machine">
             <v-card-title class="grey--text"> <span class="title"> Select customer for {{machine.machine_name}}</span>
                 <v-spacer></v-spacer>
-                <div>
+                <!-- <div>
                     <v-progress-circular v-if="ping.requesting" size="24" indeterminate />
                     <div v-else>
                         <v-tooltip left v-if="ping.ms < 5000 && ping.ms > 0">
                             <v-icon class="pointer" slot="activator" :class="ping.color">rss_feed</v-icon>
-                            <span class="caption">{{ping.ms}} ms {{ping.color}} </span>
+                            <span class="caption">{{ping.ms}} ms </span>
                         </v-tooltip>
                         <v-tooltip left v-else>
                             <v-icon class="pointer red--text" slot="activator">rss_feed</v-icon>
                             <span class="caption">{{machine.machine_name}} failed to respond</span>
                         </v-tooltip>
                     </div>
-                </div>
+                </div> -->
             </v-card-title>
             <v-card-text>
                 <v-text-field v-model="keyword" append-icon="search" label="Filter customer name" :loading="loading" @keyup="loadCustomers" ref="keyword"></v-text-field>
@@ -138,7 +138,7 @@ export default {
                 //     ping.color = 'red--text';
                 // }
             };
-            this.ping.xhttp.open("GET", 'http://' + this.machine.ip_address, true);
+            this.ping.xhttp.open("GET", this.machine.ip_address, true);
             this.ping.xhttp.send();
 
             // this.ping.requesting = true;
@@ -173,7 +173,7 @@ export default {
                 setTimeout(() => {
                     this.$refs.keyword.$el.querySelector('input').select();
                 }, 500);
-                this.requestPing();
+                //this.requestPing();
             } else {
                 this.customers = [];
                 if(this.ping.xhttp) {

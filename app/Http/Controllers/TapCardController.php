@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Machine;
+use App\MachineUsage;
 use App\RfidCard;
 use App\RfidCardTransaction;
 use App\UnregisteredCard;
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\DB;
 
 class TapCardController extends Controller
 {
-    public function tap($ip, $rfid, $macAddress = null) {
+    public function tap($ip, $rfid, $macAddress = null, Request $request) {
+        $token = $request->token;
         $machine = Machine::where('ip_address', $ip)->first();
         if($machine == null) {
             Machine::create([
@@ -72,8 +74,22 @@ class TapCardController extends Controller
             ], 422);
         }
 
-        return DB::transaction(function () use ($rfidCard, $machine) {
-            $machine = $machine->tapActivate($rfidCard);
+        $machineUsage = MachineUsage::find($token);
+        if($machineUsage) {
+            if($machineUsage->created_at->isToday()) {
+                // Connection lost from ESP8266
+                // Reactivation
+                return response()->json([
+                    'pulse' => 1,
+                    'token' => $token,
+                    'message' => 'Reactivation',
+                ]);
+            }
+            $token = null;
+        }
+
+        return DB::transaction(function () use ($rfidCard, $machine, $token) {
+            $machine = $machine->tapActivate($rfidCard, $token);
 
             if($machine) {
                 if($rfidCard->card_type == 'c' && $rfidCard->balance - $machine->price < 0) {
@@ -90,13 +106,13 @@ class TapCardController extends Controller
                 $this->dispatch($machine->machineUsage->queSynch());
                 $this->dispatch($machine->rfidCardTransaction->queSynch());
 
-                //sleep(10);
+                //sleep(50);
 
                 return response()->json([
-                    'rfid' => $rfidCard->rfid,
-                    'balance' => $rfidCard->balance,
-                    'price' => $machine->price,
-                    'pulse' => 1,
+                   'rfid' => $rfidCard->rfid,
+                   'balance' => $rfidCard->balance,
+                   'price' => $machine->price,
+                   'pulse' => 1,
                 ]);
             }
 

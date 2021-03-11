@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use App\Traits\UsesUuid;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Machine extends Model
 {
@@ -100,7 +101,7 @@ class Machine extends Model
         return $output;
     }
 
-    public function tapActivate($rfidCard) {
+    public function tapActivate($rfidCard, $tapToken = null) {
         if($this->is_running) {
             $minutes = $this->total_minutes + $this->additional_time;
             $price = $this->additional_price;
@@ -120,6 +121,7 @@ class Machine extends Model
 
             $machineUsage = MachineUsage::where('machine_id', $this->id)->orderByDesc('updated_at')->first();
             $machineUsage->update([
+                'id' => $tapToken ? $tapToken : $machineUsage->id,
                 'minutes' => $minutes,
                 'price' => DB::raw('price+' . $price),
             ]);
@@ -144,6 +146,7 @@ class Machine extends Model
             $timeActivated = Carbon::now();
 
             $machineUsage = MachineUsage::create([
+                'id' => $tapToken,// ? $tapToken : Str::uuid(),
                 'machine_id' => $this->id,
                 'customer_name' => $rfidCard->owner_name,
                 'minutes' => $minutes,

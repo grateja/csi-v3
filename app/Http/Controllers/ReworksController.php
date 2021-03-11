@@ -11,6 +11,7 @@ use App\ServiceTransactionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ReworksController extends Controller
 {
@@ -83,7 +84,9 @@ class ReworksController extends Controller
     private function rewash($machine, $customerWash, $remarks) {
         return DB::transaction(function () use ($machine, $customerWash, $remarks) {
 
-            $url = "$machine->ip_address/activate?pulse=$customerWash->pulse_count";
+            $reToken = Str::random(5);
+
+            $url = "$machine->ip_address/activate?pulse=$customerWash->pulse_count&token=$customerWash->id" . $reToken;
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_TIMEOUT, 35);
@@ -142,8 +145,9 @@ class ReworksController extends Controller
 
     private function redry($machine, $customerDry, $remarks) {
         return DB::transaction(function () use ($machine, $customerDry, $remarks) {
+            $reToken = Str::random(5);
 
-            $url = "$machine->ip_address/activate?pulse=$customerDry->pulse_count";
+            $url = "$machine->ip_address/activate?pulse=$customerDry->pulse_count&token=$customerDry->id" . $reToken;
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_TIMEOUT, 35);
@@ -298,7 +302,8 @@ class ReworksController extends Controller
 
     private function transferDry($customerDry, $transferFrom, $transferTo, $remarks) {
         return DB::transaction(function () use ($customerDry, $transferFrom, $transferTo, $remarks) {
-            $url = "$transferTo->ip_address/activate?pulse=$customerDry->pulse_count";
+            $reToken = Str::random(5);
+            $url = "$transferTo->ip_address/activate?pulse=$customerDry->pulse_count&token=$customerDry->id" . $reToken;
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_TIMEOUT, 35);
@@ -369,7 +374,8 @@ class ReworksController extends Controller
 
     private function transferWash($customerWash, $transferFrom, $transferTo, $remarks) {
         return DB::transaction(function () use ($customerWash, $transferFrom, $transferTo, $remarks){
-            $url = "$transferTo->ip_address/activate?pulse=$customerWash->pulse_count";
+            $reToken = Str::random(5);
+            $url = "$transferTo->ip_address/activate?pulse=$customerWash->pulse_count&token=$customerWash->id" . $reToken;
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_TIMEOUT, 35);

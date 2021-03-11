@@ -138,7 +138,7 @@ class PosTransactionController extends Controller
                             $_fullServiceProducts[] = ProductTransactionItem::create([
                                 'transaction_id' => $transaction->id,
                                 'name' => $fullServiceProduct->name . ' (' . $item->name . ')',
-                                'price' => $fullServiceProduct->price,
+                                'price' => $fullServiceProduct->price / $fullServiceProduct->quantity,
                                 'product_id' => $fullServiceProduct->product_id,
                             ]);
                         }
