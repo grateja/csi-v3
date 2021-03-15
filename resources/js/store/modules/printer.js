@@ -30,10 +30,10 @@ const actions = {
         context.commit('setLoadingClaimStub', true);
         context.commit('clearErrors');
         return axios.get(`/api/transactions/${data.transactionId}/print-claim-stub`).then((res, rej) => {
-            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            //let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-            w.document.write(res.data);
-            w.document.close();
+            //w.document.write(res.data);
+            //w.document.close();
 
             context.commit('setLoadingClaimStub', false);
             return res;
@@ -47,10 +47,10 @@ const actions = {
         context.commit('setLoadingJobOrder', true);
         context.commit('clearErrors');
         return axios.get(`/api/transactions/${transactionId}/print-job-order`).then((res, rej) => {
-            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            //let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-            w.document.write(res.data);
-            w.document.close();
+            //w.document.write(res.data);
+            //w.document.close();
 
             context.commit('setLoadingJobOrder', false);
             return res;
@@ -63,10 +63,10 @@ const actions = {
     rfidLoadTransaction(context, transactionId) {
         context.commit('clearErrors');
         return axios.get(`/api/rfid-cards/load-transactions/${transactionId}/print-load-transaction`).then((res, rej) => {
-            let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            //let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-            w.document.write(res.data);
-            w.document.close();
+            //w.document.write(res.data);
+            //w.document.close();
             return res;
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);
@@ -78,12 +78,12 @@ const actions = {
         return axios.get('/api/reports/print/pos-collections', {
             params: query
         }).then((res, rej) => {
-            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
-            console.log(params)
-            let w = window.open('about:blank', 'print', params);
+            //let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            //console.log(params)
+            //let w = window.open('about:blank', 'print', params);
 
-            w.document.write(res.data);
-            w.document.close();
+            //w.document.write(res.data);
+            //w.document.close();
 
             return res;
         }).catch(err => {
@@ -151,12 +151,12 @@ const actions = {
     },
     printDailySale(context, date) {
         return axios.get(`/api/reports/print/daily-sale/${date}/true`).then((res, rej) => {
-            let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
-            console.log(params)
-            let w = window.open('about:blank', 'print', params);
+            //let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
+            //console.log(params)
+            //let w = window.open('about:blank', 'print', params);
 
-            w.document.write(res.data);
-            w.document.close();
+            //w.document.write(res.data);
+            //w.document.close();
 
             return res;
         }).catch(err => {

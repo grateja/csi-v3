@@ -103,8 +103,8 @@ class LiveHostController extends Controller
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
-        // $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId, [
-        $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId, [
+        $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId, [
+        // $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId, [
             'json' => $data,
             'headers' => [
                 'Content-Type' => 'application/json',

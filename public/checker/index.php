@@ -2,7 +2,7 @@
 
 try {
     header('Content-type: application/json');
-    $con = new PDO('mysql:host=localhost;dbname=csi_v3_1', 'root', 'CSI_2019');
+    $con = new PDO('mysql:host=localhost;dbname=csi_v3_1', 'csiv3', 'CSI_2020');
 
     $stmt = $con->query('SELECT updated_at FROM machines ORDER BY updated_at DESC LIMIT 1');
     $machine = $stmt->fetch();
