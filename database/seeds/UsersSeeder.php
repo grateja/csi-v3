@@ -14,7 +14,6 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
-        $id = Str::uuid();
         $users = [
             [
                 'id' => 'e026cf14-0093-4de3-8ab2-e13086acb7ac',
@@ -23,24 +22,25 @@ class UsersSeeder extends Seeder
                 'password' => bcrypt('admin'),
             ],
             [
-                'id' => $id,
-                'name' => 'Admin',
-                'email' => 'admin@csi.com',
+                'id' => 'lms-demo-v3.1',
+                'name' => 'Jay Grateja',
+                'email' => 'lmsv3@csi.com',
                 'password' => bcrypt('admin'),
             ],
             [
-                'id' => Str::uuid(),
+                'id' => 'lms-demo-staff-v3.1',
                 'name' => 'Staff',
                 'email' => 'staff@csi.com',
                 'password' => bcrypt('admin'),
             ],
         ];
         \App\User::insert($users);
-        User::where('email', 'admin@csi.com')->first()->assignRole(2);
+        User::where('email', 'lmsv3@csi.com')->first()->assignRole(2);
         User::where('email', 'staff@csi.com')->first()->assignRole(3);
         Client::create([
-            'user_id' => $id,
-            'shop_name' => 'Shopname',
+            'user_id' => 'lms-demo-v3.1',
+            'shop_name' => 'LMS Demo',
+            'address' => 'Goldland Tower Eisenhower St. San Juan Metro Manila',
         ]);
     }
 }

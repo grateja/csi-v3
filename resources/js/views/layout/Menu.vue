@@ -147,7 +147,7 @@ export default {
                     icon: '',
                     roles: ['developer'],
                     color: '#a7a1e6',
-                    to: '/clients'
+                    to: '/client'
                 },
                 {
                     text: 'New Job Order',

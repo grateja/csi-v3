@@ -483,8 +483,14 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
     // /api/machines/{machineId}/history
     Route::get('{machineId}/history', 'MachinesController@history');
 
+    // /api/machines/{machineType}/create
+    Route::post('{machineType}/create', 'MachinesController@create');
+
     // /api/machines/{machineId}/update-settings
     Route::post('{machineId}/update-settings', 'MachinesController@updateSettings');
+
+    // /api/machines/{machineId}/delete
+    Route::post('{machineId}/delete', 'MachinesController@destroy');
 
     Route::group(['middleware' => 'role:developer'], function() {
         // /api/machines/{branchId}/store

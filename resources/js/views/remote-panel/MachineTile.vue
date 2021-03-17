@@ -8,6 +8,14 @@
                     <v-spacer></v-spacer> -->
                     <v-hover v-slot:default="{ hover }" v-if="machine">
                         <v-card :elevation="hover ? 12 : 2" class="ma-1 pa-3 pointer rounded-card translucent machine-tile__card" @click="open(machine)" :class="{'running': machine.is_running, 'selected': machine.selected}" >
+                            <!-- <div style="position:absolute; left: 0px; top: 0px">
+                                <v-tooltip top>
+                                    <v-btn icon v-if="isOwner" small slot="activator" @click="changeOrder($event)">
+                                        <v-icon small>compare_arrows</v-icon>
+                                    </v-btn>
+                                    <span>Change order</span>
+                                </v-tooltip>
+                            </div> -->
                             <div class="text-xs-center">{{machine.machine_name}}</div>
                             <!-- <v-divider></v-divider> -->
 
@@ -106,11 +114,19 @@ export default {
         },
         ping() {
             // this.$store.dispatch('remote/ping', this.machine);
+        },
+        changeOrder(e) {
+            e.stopPropagation();
+            this.$emit('changeOrder', this.machine);
         }
     },
     computed: {
         isDeveloper() {
             return this.$store.getters.isDeveloper;
+        },
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            return (!!user && user.roles[0] == 'admin');
         },
         pingResponse() {
             return this.$store.getters['remote/getActivePing'];

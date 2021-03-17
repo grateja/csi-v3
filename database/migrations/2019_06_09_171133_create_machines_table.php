@@ -17,6 +17,7 @@ class CreateMachinesTable extends Migration
         Schema::create('machines', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('ip_address')->nullable();
+            $table->integer('stack_order')->nullable();
             $table->string('mac_address')->nullable();
 
             $table->string('machine_type')->nullable()->comment('rw = regular washer, rd = regular dryer, tw = titan washer, td = titan dryer');

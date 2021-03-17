@@ -11,6 +11,7 @@ use App\MachineRemarks;
 use App\MachineUsage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class MachinesController extends Controller
 {
@@ -21,11 +22,16 @@ class MachinesController extends Controller
      */
     public function index()
     {
+        $order = 'machine_name';
+        if(Schema::hasColumn('machines', 'stack_order')) {
+            $order = 'stack_order';
+        }
+
         $result = [
-            'washers' => Machine::with('customer')->where(['machine_type' => 'rw'])->orderBy('machine_name')->get(),
-            'dryers' => Machine::with('customer')->where(['machine_type' => 'rd'])->orderBy('machine_name')->get(),
-            'titan_washers' => Machine::with('customer')->where(['machine_type' => 'tw'])->orderBy('machine_name')->get(),
-            'titan_dryers' => Machine::with('customer')->where(['machine_type' => 'td'])->orderBy('machine_name')->get(),
+            'washers' => Machine::with('customer')->where(['machine_type' => 'rw'])->orderBy($order)->get(),
+            'dryers' => Machine::with('customer')->where(['machine_type' => 'rd'])->orderBy($order)->get(),
+            'titan_washers' => Machine::with('customer')->where(['machine_type' => 'tw'])->orderBy($order)->get(),
+            'titan_dryers' => Machine::with('customer')->where(['machine_type' => 'td'])->orderBy($order)->get(),
         ];
 
         return response()->json([
@@ -244,7 +250,7 @@ class MachinesController extends Controller
                 $query->whereDate('created_at', $request->date);
             },
             'totalUsage as total_usage'
-        ])->where('machine_type', $machineType)->orderBy('machine_name')->get();
+        ])->where('machine_type', $machineType)->orderBy('stack_order')->get();
         return response()->json([
             'result' => $result,
         ]);
@@ -286,6 +292,8 @@ class MachinesController extends Controller
                     }
                 } else {
                     $machine->update([
+                        'machine_name' => $request->machineName,
+                        'ip_address' => $request->ipAddress,
                         'initial_price' => $request->initialPrice,
                         'additional_price' => $request->additionalPrice,
                         'initial_time' => $request->initialTime,
@@ -307,9 +315,37 @@ class MachinesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request, $machineType)
     {
-        //
+        $rules = [
+            'machineName' => 'required',
+            'ipAddress' => 'required',
+            'initialPrice' => 'required|numeric',
+            'additionalPrice' => 'numeric',
+            'initialTime' => 'required|numeric',
+            'additionalTime' => 'numeric',
+        ];
+        if($request->validate($rules)) {
+            return DB::transaction(function () use ($request, $machineType) {
+                $machine = Machine::create([
+                    'machine_name' => $request->machineName,
+                    'ip_address' => $request->ipAddress,
+                    'initial_price' => $request->initialPrice,
+                    'additional_price' => $request->additionalPrice,
+                    'initial_time' => $request->initialTime,
+                    'additional_time' => $request->additionalTime,
+                    'machine_type' => $machineType,
+                ]);
+
+                return response()->json([
+                    'result' => $machine,
+                ]);
+            });
+        }
+    }
+
+    public function switchOrder(Request $request) {
+
     }
 
     /**
@@ -365,6 +401,11 @@ class MachinesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $machine = Machine::findOrFail($id);
+        if($machine->delete()) {
+            return response()->json([
+                'success_message' => 'Machine Deleted'
+            ]);
+        }
     }
 }

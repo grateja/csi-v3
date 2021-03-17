@@ -4,7 +4,7 @@ try {
     header('Content-type: application/json');
     $con = new PDO('mysql:host=localhost;dbname=csi_v3_1', 'csiv3', 'CSI_2020');
 
-    $stmt = $con->query('SELECT updated_at FROM machines ORDER BY updated_at DESC LIMIT 1');
+    $stmt = $con->query('SELECT updated_at FROM machines WHERE `deleted_at` IS NULL ORDER BY updated_at DESC LIMIT 1');
     $machine = $stmt->fetch();
     echo($machine['updated_at']);
 } catch (PDOException $ex) {

@@ -14,6 +14,11 @@
         <date-navigator v-model="date" />
         <v-divider class="my-3"></v-divider>
 
+        <v-btn round class="translucent" v-if="isDeveloper" @click="add">
+            <v-icon left>add</v-icon>
+            add
+        </v-btn>
+
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="machines" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
@@ -40,7 +45,7 @@
             </v-data-table>
         </v-card>
         <machine-usages :machine="activeMachine" v-model="openMachineDialog" :activeDate="date" />
-        <machine-settings :machine="activeMachine" v-model="openMachineSettings" @save="updateMachines" />
+        <machine-settings :machine="activeMachine" v-model="openMachineSettings" @save="updateMachines" :mt="tab" @machineDeleted="machineDeleted" />
     </v-container>
 </template>
 
@@ -158,11 +163,23 @@ export default {
                 this.load();
                 // this.machines = data.result;
             } else {
-                this.activeMachine.initial_time = data.result.initial_time;
-                this.activeMachine.additional_time = data.result.additional_time;
-                this.activeMachine.initial_price = data.result.initial_price;
-                this.activeMachine.additional_price = data.result.additional_price;
+                if(data.action == 'update') {
+                    this.activeMachine.initial_time = data.result.initial_time;
+                    this.activeMachine.additional_time = data.result.additional_time;
+                    this.activeMachine.initial_price = data.result.initial_price;
+                    this.activeMachine.additional_price = data.result.additional_price;
+                } else {
+                    console.log(data);
+                    this.machines.push(data.result);
+                }
             }
+        },
+        add() {
+            this.activeMachine = null;
+            this.openMachineSettings = true;
+        },
+        machineDeleted(machine) {
+            this.machines = this.machines.filter(m => m.id != machine.id);
         }
     },
     watch: {

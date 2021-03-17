@@ -117,6 +117,8 @@ class ClientsController extends Controller
             ProductPurchase::where(function($query){})->forceDelete();
             Product::where(function($query){})->forceDelete();
 
+            DB::table('jobs')->delete();
+
             User::whereDoesntHave('roles', function($query) {
                 $query->where('name', 'developer');
             })->forceDelete();
@@ -241,6 +243,7 @@ class ClientsController extends Controller
         return DB::transaction(function () use ($request) {
             for ($i=1; $i <= $request->washerCount; $i++) {
                 Machine::create([
+                    'stack_order' => $i,
                     'ip_address' => $request->gateWay . '.' . ($request->wStartIp + $i - 1),
                     'machine_type' => 'rw',
                     'machine_name' => 'Washer ' . $i,
@@ -252,6 +255,7 @@ class ClientsController extends Controller
             }
             for ($i=1; $i <= $request->dryerCount; $i++) {
                 Machine::create([
+                    'stack_order' => $i,
                     'ip_address' => $request->gateWay . '.' . ($request->dStartIp + $i - 1),
                     'machine_type' => 'rd',
                     'machine_name' => 'Dryer ' . $i,
@@ -263,6 +267,7 @@ class ClientsController extends Controller
             }
             for ($i=1; $i <= $request->twasherCount; $i++) {
                 Machine::create([
+                    'stack_order' => $i,
                     'ip_address' => $request->gateWay . '.' . ($request->twStartIp + $i - 1),
                     'machine_type' => 'tw',
                     'machine_name' => 'Titan Washer ' . $i,
@@ -274,6 +279,7 @@ class ClientsController extends Controller
             }
             for ($i=1; $i <= $request->tdryerCount; $i++) {
                 Machine::create([
+                    'stack_order' => $i,
                     'ip_address' => $request->gateWay . '.' . ($request->tdStartIp + $i - 1),
                     'machine_type' => 'td',
                     'machine_name' => 'Titan Dryer ' . $i,

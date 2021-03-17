@@ -113,8 +113,8 @@ export default {
                 dryerCount: 5,
                 dStartIp: '31',
                 dInitialTime: 10,
-                dAdditionalTime: 15,
-                dInitialPrice: 10,
+                dAdditionalTime: 10,
+                dInitialPrice: 15,
                 dAdditionalPrice: 15,
                 twasherCount: 0,
                 twStartIp: '21',
@@ -134,7 +134,8 @@ export default {
     methods: {
         save() {
             this.$store.dispatch('client/setUpMachines', this.formData).then((res, rej) => {
-
+                this.$emit('saved', res.data);
+                this.close();
             });
         },
         close() {

@@ -36,10 +36,11 @@ export default {
         },
         test() {
             if(this.machine) {
+                console.log('testing');
                 this.activating = true;
                 this.cancelSource = axios.CancelToken.source();
 
-                axios.get(`http://${this.machine.ip_address}/activate?pulse=1`, {
+                axios.get(`http://${this.machine.ip_address}/activate?pulse=1&token=${Math.random().toString(36).substring(7)}`, {
                     params: {},
                     cancelToken: this.cancelSource.token
                 }).then((res, rej) => {

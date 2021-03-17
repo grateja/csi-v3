@@ -16,6 +16,7 @@ class Machine extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
+        'stack_order',
         'ip_address',
         'mac_address',
         'machine_type',
