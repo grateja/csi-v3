@@ -54,7 +54,7 @@
                     </v-expand-transition> -->
                     <wash-dry-info :machine="tempMachine"></wash-dry-info>
                     <v-layout row wrap>
-                        <machine-tile v-for="m in machines" :key="m.id" :machine="m" @open="open" />
+                        <machine-tile v-for="(m, i) in machines" :key="m.id" :machine="m" @open="open" :index="i" />
                     </v-layout>
                     <v-expand-transition>
                         <v-card v-if="!!activeMachine">

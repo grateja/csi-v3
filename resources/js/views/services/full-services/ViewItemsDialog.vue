@@ -106,7 +106,7 @@ export default {
                     sortable:false
                 },
                 {
-                    text: 'Price',
+                    text: 'Unit Price',
                     sortable:false
                 },
                 {

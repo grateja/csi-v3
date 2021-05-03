@@ -52,8 +52,9 @@ const actions = {
             if(err.response.status == 401) {
                 context.commit('setErrors', err.response.data.errors);
             }
-            context.commit('setLoggingIn', false);
             return Promise.reject(err);
+        }).finally(() => {
+            context.commit('setLoggingIn', false);
         });
     },
     logout(context) {

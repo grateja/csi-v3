@@ -214,7 +214,7 @@ class ThermalPrinter extends Model
         $this->printItem("Cash", $transaction->payment->cash);
         $this->printItem("Change", $transaction->payment->change);
         $this->printItem("Balance", 0);
-        $this->printItem("Received by", $transaction->paidTo['name']);
+        $this->printItem("Received by", $transaction->payment->user->name);
 
         $this->cut();
     }

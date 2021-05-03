@@ -26,10 +26,10 @@
                 <v-spacer></v-spacer>
                 <v-btn @click="$emit('rework', machine)" round>Rework</v-btn>
                 <v-btn round @click="openTransferDialog = true">Transfer</v-btn>
-                <!-- <v-btn v-if="isOwner" round @click="forceStop">
+                <v-btn v-if="isOwner" round @click="forceStop">
                     <v-icon small left>warning</v-icon>
-                    force stop
-                </v-btn> -->
+                    Reset minutes
+                </v-btn>
             </v-card-actions>
         </v-card>
         <force-stop-dialog v-model="openForceStopDialog" :machine="machine" @forceStop="forceStopContinue" />

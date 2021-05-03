@@ -8,10 +8,18 @@
                 <v-card class="ma-2 rounded-card translucent">
                     <v-card-title class="title grey--">{{service.name}}</v-card-title>
                     <v-divider></v-divider>
+                    <!-- <v-list>
+                        <v-list-tile v-for="item in service.full_service_items" :key="item.id">
+                            <v-list-tile-content>
+                                <div>{{item.name}}</div>
+                                <div>{{item.quantity}}</div>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list> -->
                     <v-card-text>
                         <ol>
-                            <li v-for="item in service.full_service_items" :key="item.id"> (*{{item.quantity}}) {{item.name}} - <span class="font-weight-bold">P {{ parseFloat(item.price).toFixed(2)}}</span> </li>
-                            <li v-for="item in service.full_service_products" :key="item.id"> (*{{item.quantity}}) {{item.name}} - <span class="font-weight-bold">P {{parseFloat(item.price).toFixed(2)}}</span></li>
+                            <li v-for="item in service.full_service_items" :key="item.id"> (*{{item.quantity}}) {{item.name}} - <span class="font-weight-bold">P {{ parseFloat(item.price * item.quantity).toFixed(2)}}</span> </li>
+                            <li v-for="item in service.full_service_products" :key="item.id"> (*{{item.quantity}}) {{item.name}} - <span class="font-weight-bold">P {{parseFloat(item.price * item.quantity).toFixed(2)}}</span></li>
                             <li class="font-italic grey--text" v-if="service.additional_charge > 0">Additional charge: P {{ parseFloat(service.additional_charge).toFixed(2)}}</li>
                             <li class="font-italic grey--text" v-if="service.discount > 0">Discount: P {{ parseFloat(service.discount).toFixed(2)}}</li>
                         </ol>

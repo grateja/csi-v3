@@ -10,8 +10,8 @@
 
                 <v-card-text>
                     <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline ref="name"></v-text-field>
-                    <v-text-field label="Additional charge" v-model="formData.additionalCharge" :error-messages="errors.get('additionalCharge')" outline></v-text-field>
-                    <v-text-field label="Discount" v-model="formData.discount" :error-messages="errors.get('discount')" outline></v-text-field>
+                    <!-- <v-text-field label="Additional charge" v-model="formData.additionalCharge" :error-messages="errors.get('additionalCharge')" outline></v-text-field> -->
+                    <!-- <v-text-field label="Discount" v-model="formData.discount" :error-messages="errors.get('discount')" outline></v-text-field> -->
                 </v-card-text>
                 <v-card-actions>
                     <v-btn class="primary" round :loading="saving" type="submit">save</v-btn>

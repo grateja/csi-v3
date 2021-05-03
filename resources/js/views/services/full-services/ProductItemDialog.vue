@@ -8,9 +8,9 @@
                     <v-combobox :items="results" label="Search product" @input.native="search($event)" ref="keyword" item-text="name" @change="select"></v-combobox>
 
                     <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" outline></v-text-field>
-                    <v-text-field label="Quantity" v-model="formData.quantity" :error-messages="errors.get('quantity')" outline @input="updatePrice"></v-text-field>
-                    <v-text-field label="Unit Price" v-model="unitPrice" outline @input="updatePrice"></v-text-field>
-                    <v-text-field label="Total Price" v-model="formData.price" :error-messages="errors.get('price')" outline></v-text-field>
+                    <v-text-field label="Quantity" v-model="formData.quantity" :error-messages="errors.get('quantity')" outline></v-text-field>
+                    <v-text-field label="Unit Price" v-model="formData.price" outline :error-messages="errors.get('price')"></v-text-field>
+                    <v-text-field label="Total Price" :value="totalPrice" outline readonly></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn class="primary" round :loading="saving" type="submit">save</v-btn>
@@ -35,8 +35,7 @@ export default {
                 price: 0,
                 fullServiceId: null
             },
-            results: [],
-            unitPrice: 0
+            results: []
         }
     },
     methods: {
@@ -55,7 +54,7 @@ export default {
                 this.formData.name = item.name;
                 this.formData.quantity = 1;
                 this.formData.price = item.selling_price;
-                this.unitPrice = item.selling_price;
+                this.price = item.selling_price;
             }
         },
         close() {
@@ -73,10 +72,10 @@ export default {
                 });
                 this.close();
             });
-        },
-        updatePrice() {
-            this.formData.price = this.unitPrice * this.formData.quantity;
         }
+        // updatePrice() {
+        //     this.formData.price = this.unitPrice * this.formData.quantity;
+        // }
     },
     computed: {
         errors() {
@@ -84,6 +83,9 @@ export default {
         },
         saving() {
             return this.$store.getters['fullserviceproduct/isSaving'];
+        },
+        totalPrice() {
+            return this.formData.price * this.formData.quantity;
         }
     },
     watch: {
@@ -93,13 +95,13 @@ export default {
                 this.formData.name = this.productItem.name;
                 this.formData.quantity = this.productItem.quantity;
                 this.formData.price = this.productItem.price;
-                this.unitPrice = this.productItem.price / this.productItem.quantity;
+                this.price = this.productItem.price / this.productItem.quantity;
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
                 this.formData.quantity = 0;
                 this.formData.price = 0;
-                this.unitPrice = 0;
+                this.price = 0;
             }
             setTimeout(() => {
                 this.$refs.keyword.$el.querySelector('input').select();

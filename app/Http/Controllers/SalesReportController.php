@@ -47,10 +47,10 @@ class SalesReportController extends Controller
             ->selectRaw('DATE(created_at) as day, SUM(amount) as total_price, SUM(amount) as collection')
             ->get();
 
-        $newCustomers = Customer::whereMonth('created_at', $monthIndex)
-            ->whereYear('created_at', $year)
+        $newCustomers = Customer::whereMonth('first_visit', $monthIndex)
+            ->whereYear('first_visit', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(created_at) as day, COUNT(id) as total_count')
+            ->selectRaw('DATE(first_visit) as day, COUNT(id) as total_count')
             ->get();
 
         $expenses = Expense::whereMonth('date', $monthIndex)
@@ -486,7 +486,6 @@ class SalesReportController extends Controller
                 'totalDeposit' => $totalCollections - $totalExpenses,
             ];
         });
-
 
         return response()->json([
             'result' => array_values($result->toArray()),

@@ -45,7 +45,7 @@ class TransactionsController extends Controller
             )
         ->findOrfail($transactionId);
 
-        $transaction->refreshAll($transaction->deleted_at);
+            $transaction->refreshAll($transaction->deleted_at);
 
 
         $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
@@ -240,13 +240,24 @@ class TransactionsController extends Controller
     }
 
     public function deleteTransaction($transactionId) {
-        $transaction = Transaction::findOrFail($transactionId);
+        return DB::transaction(function () use ($transactionId) {
+            $transaction = Transaction::findOrFail($transactionId);
 
-        if($transaction->delete()) {
-            $this->dispatch((new SendTransaction($transactionId))->delay(5));
-            return response()->json([
-                'transaction' => $transaction,
-            ]);
-        }
+            if($transaction->delete()) {
+
+                $name = auth('api')->user()->name;
+
+                TransactionRemarks::create([
+                    'transaction_id' => $transactionId,
+                    'remarks' => 'Deleted by ' . $name,
+                    'added_by' => $name,
+                ]);
+
+                $this->dispatch((new SendTransaction($transactionId))->delay(5));
+                return response()->json([
+                    'transaction' => $transaction,
+                ]);
+            }
+        });
     }
 }

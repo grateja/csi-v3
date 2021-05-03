@@ -138,7 +138,7 @@ class PosTransactionController extends Controller
                             $_fullServiceProducts[] = ProductTransactionItem::create([
                                 'transaction_id' => $transaction->id,
                                 'name' => $fullServiceProduct->name . ' (' . $item->name . ')',
-                                'price' => $fullServiceProduct->price / $fullServiceProduct->quantity,
+                                'price' => $fullServiceProduct->price, // $fullServiceProduct->quantity,
                                 'product_id' => $fullServiceProduct->product_id,
                             ]);
                         }
@@ -207,7 +207,7 @@ class PosTransactionController extends Controller
                 ], 422);
             }
 
-            if($transaction->partialPayment) {
+            if($transaction && $transaction->partialPayment) {
                 return response()->json([
                     'errors' => [
                         'message' => ['Cannot add item to partially paid Job Order.'],

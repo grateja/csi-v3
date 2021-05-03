@@ -32,6 +32,7 @@
                                 <span class="grey--text">({{service.minutes}} Min)</span>
                             </div>
                         </v-list-tile-content>
+                        <v-list-tile-action><v-btn round :disabled="activating">{{errors.get('message') ? 'Retry' : 'Activate'}}</v-btn></v-list-tile-action>
                     </v-list-tile>
                 </v-list>
             </v-card-text>
@@ -69,6 +70,9 @@ export default {
             });
         },
         selectService(service) {
+            if(this.activating) {
+                return;
+            }
             this.activating = true;
             this.$store.dispatch('remote/activateMachine', {
                 formData: {

@@ -46,6 +46,7 @@
                         <td>{{ props.item.customer_name }}</td>
                         <td>{{ props.item.amount }}</td>
                         <td>{{ props.item.rfid }}</td>
+                        <td>{{ props.item.staff_name }}</td>
                         <td>{{ props.item.remarks }}</td>
                         <td>{{ moment(props.item.created_at).format('LLL') }}</td>
                         <td>
@@ -102,6 +103,10 @@ export default {
                 },
                 {
                     text: 'RFID',
+                    sortable: false
+                },
+                {
+                    text: 'Staff',
                     sortable: false
                 },
                 {

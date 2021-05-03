@@ -206,8 +206,11 @@ class Transaction extends Model
         $this['posServiceSummary'] = $this->posServiceSummary($withTrashed);
         $this['posProductSummary'] = $this->posProductSummary($withTrashed);
         $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'];
-        $this['paidTo'] = $this->user;
+        if($this->payment) {
+            $this['paidTo'] = $this->payment->user->name;
+        }
         $this['customer'] = $this->customer;
+        $this['remarks'] = $this->transactionRemarks;
 
         if($this->total_price != $totalAmount) {
             $this->update(['total_price' => $totalAmount]);
@@ -273,6 +276,7 @@ class Transaction extends Model
             unset($model['customer']);
             unset($model['total_amount']);
             unset($model['paidTo']);
+            unset($model['remarks']);
             $model['updated_at'] = Carbon::now()->toDateTimeString();
             $model['created_at'] = Carbon::now()->toDateTimeString();
         });
