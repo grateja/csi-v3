@@ -70,7 +70,7 @@ class CustomersController extends Controller
     public function store(Request $request) {
         $rules = [
             'name' => 'required',
-            'crn' => 'required|unique:customers|digits:4',
+            'crn' => 'required|unique:customers|digits:5',
         ];
 
         $customer = Customer::where('name', $request->name)->first();
