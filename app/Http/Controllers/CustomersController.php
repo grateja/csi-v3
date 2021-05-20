@@ -154,9 +154,9 @@ class CustomersController extends Controller
         $customer = Customer::orderByDesc('created_at')->first();
         if($customer) {
             $num = (int) $customer->crn;
-            return str_pad(++$num, 4, '0', STR_PAD_LEFT);
+            return str_pad(++$num, 5, '0', STR_PAD_LEFT);
         } else {
-            return '0001';
+            return '00001';
         }
     }
 }

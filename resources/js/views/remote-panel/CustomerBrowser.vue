@@ -16,6 +16,9 @@
                         </v-tooltip>
                     </div>
                 </div> -->
+                <v-btn small round @click="testConnection" >{{testing ? 'Cancel' : 'Test Connection'}}
+                    <v-progress-circular v-if="testing" indeterminate height="5" class="ml-1"></v-progress-circular>
+                </v-btn>
             </v-card-title>
             <v-card-text>
                 <v-text-field v-model="keyword" append-icon="search" label="Filter customer name" :loading="loading" @keyup="loadCustomers" ref="keyword"></v-text-field>
@@ -38,7 +41,7 @@
             </v-card-text>
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
-                <v-btn @click="$emit('rework', machine)" round>Rework</v-btn>
+                <v-btn @click="$emit('rework', machine)" round :disabled="testing">Rework</v-btn>
             </v-card-actions>
         </v-card>
         <service-browser v-model="openServiceBrowser" :customer="activeCustomer" :machine="machine" @activated="machineActivated" />
@@ -58,8 +61,10 @@ export default {
     data() {
         return {
             customers: [],
+            cancelSource: null,
             keyword: null,
             loading: false,
+            testing: false,
             openServiceBrowser: false,
             activeCustomer: null,
             ping: {
@@ -73,6 +78,7 @@ export default {
     methods: {
         close() {
             this.$emit('input', false);
+            this.cancel();
         },
         loadCustomers() {
             this.loading = true;
@@ -90,10 +96,35 @@ export default {
         selectCustomer(customer) {
             this.activeCustomer = customer;
             this.openServiceBrowser = true;
+            this.cancel();
         },
         machineActivated(data) {
             this.$emit('machineActivated', data);
             this.close();
+        },
+        testConnection() {
+            if(this.testing) {
+                this.cancel();
+                return;
+            }
+            if(this.machine) {
+                this.testing = true;
+                this.cancelSource = axios.CancelToken.source();
+
+                axios.get(`/api/remote/machines/test-connection/${this.machine.id}`, {
+                    cancelToken: this.cancelSource.token
+                }).then((res, rej) => {
+
+                }).finally(() => {
+                    this.testing = false;
+                });
+
+            }
+        },
+        cancel() {
+            if(this.cancelSource) {
+                this.cancelSource.cancel();
+            }
         },
         requestPing() {
             this.ping.requesting = true;
@@ -138,7 +169,7 @@ export default {
                 //     ping.color = 'red--text';
                 // }
             };
-            this.ping.xhttp.open("GET", this.machine.ip_address, true);
+            this.ping.xhttp.open("GET", 'http://' + this.machine.ip_address + '/details', true);
             this.ping.xhttp.send();
 
             // this.ping.requesting = true;
@@ -151,21 +182,6 @@ export default {
             // });
         }
     },
-    // computed: {
-    //     machineSize() {
-    //         if(!!this.machine) {
-    //             return this.machine.machine_type[0] == 'r' ? 'REGULAR' : 'TITAN';
-    //         }
-    //         return null;
-    //     },
-    //     serviceType() {
-    //         if(!!this.machine) {
-    //             console.log(this.machine);
-    //             return this.machine.machine_type[1] == 'w' ? 'washing' : 'drying';
-    //         }
-    //         return null;
-    //     }
-    // },
     watch: {
         value(val) {
             if(val && this.machine) {

@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h3 class="title white--text">Product purchases</h3>
+        <h3 class="title white--text">Inventory Log</h3>
         <v-divider class="my-3"></v-divider>
 
         <v-layout justify-center>
@@ -39,7 +39,7 @@
             </v-card-text>
         </v-card> -->
 
-        <v-btn class="success ml-0 my-3" round @click="addNewPurchase"><v-icon left>add</v-icon> Add new purchase</v-btn>
+        <v-btn class="success ml-0 my-3" round @click="addNewPurchase"><v-icon left>add</v-icon> Add stock</v-btn>
 
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">
@@ -49,7 +49,7 @@
                         <td>{{ moment(props.item.date).format('LL') }}</td>
                         <td>{{ props.item.product_name }}</td>
                         <td>{{ props.item.quantity }}</td>
-                        <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td>
+                        <!-- <td>P{{ parseFloat(props.item.unit_cost * props.item.quantity).toFixed(2) }}</td> -->
                         <td>{{ props.item.remarks }}</td>
                         <td>{{ props.item.staff_name }}</td>
                         <td v-if="isOwner">
@@ -110,10 +110,10 @@ export default {
                     text: 'Quantity',
                     sortable: false
                 },
-                {
-                    text: 'Total cost',
-                    sortable: false
-                },
+                // {
+                //     text: 'Total cost',
+                //     sortable: false
+                // },
                 {
                     text: 'Remarks',
                     sortable: false

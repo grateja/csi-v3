@@ -475,7 +475,7 @@ class SalesReportController extends Controller
             $totalExpenses =  $item->sum('expense') + $item->sum('product_purchase');
             return
             [
-                'year' => $item->first()->year,
+                // 'year' => $item->first()->year,
                 'monthIndex' => $key,
                 'amount' => $item->sum('total_price'),
                 'collection' => $totalCollections,
@@ -573,5 +573,150 @@ class SalesReportController extends Controller
         return response()->json([
             'result' => array_values($result->toArray()),
         ]);
+    }
+
+    public function monthlySummary($monthIndex, $year) {
+
+    }
+
+    public function yearlySummary($year) {
+
+    }
+
+    // $request->dateFrom
+    // $request->dateTo
+    public function customRange(Request $request, $print = false) {
+        $rules = [
+            'dateFrom' => 'required|date',
+            'dateTo' => 'required|date',
+        ];
+
+        if($request->validate($rules)) {
+
+            $newCustomers = Customer::whereBetween(DB::raw('DATE(created_at)'), [$request->dateFrom, $request->dateTo])->count();
+
+            $posTransactions = Transaction::where('saved', true)
+                ->whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
+                ->first();
+
+            $partialPayments = PartialPayment::whereHas('transaction', function($query) use ($request) {
+                $query->whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                    ->whereNull('date_paid');
+            })->selectRaw('COUNT(id) as total_jo, SUM(cash) as total_sales, SUM(balance) as total_balance')
+                ->first();
+
+            $fullyPaid = TransactionPayment::whereHas('transaction', function($query) use ($request) {
+                $query->whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo]);
+            })->selectRaw('COUNT(id) as total_jo, SUM(total_amount) as total_sales, SUM(balance) as total_balance')
+                ->first();
+
+            $unpaid = Transaction::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->whereDoesntHave('partialPayment')
+                ->whereNull('date_paid')
+                ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
+                ->first();
+
+            $posSummary = [
+                'pos_transactions' => $posTransactions,
+                'partial_payments' => $partialPayments,
+                'fully_paid' => $fullyPaid,
+                'unpaid' => $unpaid,
+            ];
+
+
+            $rfidCardTransactionSummary = RfidCardTransaction::whereBetween(DB::raw('DATE(created_at)'), [$request->dateFrom, $request->dateTo])
+                ->selectRaw('SUM(IF(card_type = "u", price, 0)) as users_card, SUM(IF(card_type = "c", price, 0)) as customers_card, SUM(price) as total_price, COUNT(id) AS cycle_count')
+                ->first();
+
+            $rfidLoadTransactionSummary = RfidLoadTransaction::whereBetween(DB::raw('DATE(created_at)'), [$request->dateFrom, $request->dateTo])
+                ->selectRaw('SUM(amount) as total_price, COUNT(id) as total_count')
+                ->first();
+
+            $collPartialPayments = PartialPayment::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->whereHas('transaction', function($query) {
+                    $query->whereDoesntHave('payment');
+                })
+                ->sum('cash');
+
+            $colFullPartialPayment = PartialPayment::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->whereHas('transaction', function($query) {
+                    $query->whereHas('payment');
+                })->sum('cash');
+
+            $collFullyPaid = TransactionPayment::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->select(DB::raw('SUM(`cash` - `change`) as collection'))->first();
+
+            $totalSales = $posTransactions->total_sales + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card;
+
+            // total sales
+            //   job_orders
+            //   rfid load
+            //   rfid transactions
+
+            $collections = [
+                'partiallyPaid' => $collPartialPayments,
+                'fullyPaid' => $collFullyPaid->collection + $colFullPartialPayment,
+                'rfidLoad' => $rfidLoadTransactionSummary->total_price,
+                'rfidTap' => $rfidCardTransactionSummary->users_card,
+                'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $colFullPartialPayment,
+            ];
+
+            $productPurchases = ProductPurchase::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
+                ->first();
+            $otherExpenses = Expense::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                ->selectRaw('SUM(amount) as total_expense, COUNT(id) as total_count')
+                ->first();
+
+            $expenses = [
+                'productPurchases' => $productPurchases,
+                'otherExpenses' => $otherExpenses,
+                'total' => $otherExpenses->total_expense + $productPurchases->total_cost,
+            ];
+
+            $usedProducts = ProductTransactionItem::whereHas('transaction', function($query) use ($request) {
+                $query->whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                    ->where('saved', true);
+            })->where('saved', true)->groupBy('name')->selectRaw('count(*) as quantity, name, sum(price) as total_price')->get();
+
+            $usedServices = ServiceTransactionItem::whereHas('transaction', function($query) use ($request) {
+                $query->whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+                    ->where('saved', true);
+            })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
+
+            $data = [
+                'newCustomers' => $newCustomers,
+                'posSummary' => $posSummary,
+                'rfidCard' => $rfidCardTransactionSummary,
+                'rfidLoad' => $rfidLoadTransactionSummary,
+                'collections' => $collections,
+                'expenses' => $expenses,
+                'usedProducts' => $usedProducts,
+                'usedServices' => $usedServices,
+                'totalSales' => $totalSales,
+                'totalDeposit' => $collections['total'] - $expenses['total'],
+            ];
+
+            if($print) {
+                $data['dateFrom'] = Carbon::createFromDate($request->dateFrom)->format("D m/d/Y");
+                $data['dateTo'] = Carbon::createFromDate($request->dateTo)->format("D m/d/Y");
+                // return view('printer.daily', $data);
+                $thermalPrinter = new ThermalPrinter;
+                if($printerError = $thermalPrinter->hasError()) {
+                    return response()->json([
+                        'errors' => $printerError
+                    ], 422);
+                } else {
+                    $thermalPrinter->dailySummary($data);
+                    return response()->json([
+                        'success' => 'Daily sales Printed successfully'
+                    ]);
+                }
+            } else {
+                return response()->json($data);
+            }
+
+        }
     }
 }

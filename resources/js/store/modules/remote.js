@@ -4,6 +4,8 @@ const state = {
     errors: FormHelper,
     isSaving: false,
     isActivating: false,
+    isTesting: false,
+    cancelSource: null,
     ping: {
         machine: null,
         active: false,

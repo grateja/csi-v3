@@ -208,7 +208,7 @@ export default {
                 {
                     text: 'Services',
                     icon: 'services',
-                    roles: ['staff', 'admin'],
+                    roles: ['admin'],
                     color: '#95b9fb',
                     to: '/services/washing-services'
                 },
@@ -220,7 +220,7 @@ export default {
                     to: '/products'
                 },
                 {
-                    text: 'Product Purchases',
+                    text: 'Inventory Log',
                     icon: 'product-purchases',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
@@ -250,7 +250,7 @@ export default {
                 {
                     text: 'Reworks',
                     icon: 'reworks',
-                    roles: ['admin', 'staff'],
+                    roles: ['admin'],
                     color: '#e4dfdd',
                     to: '/reworks'
                 },
@@ -267,6 +267,18 @@ export default {
                     roles: ['admin'],
                     color: '#e4dfdd',
                     to: '/discounts'
+                },
+                // {
+                //     text: 'LiLo',
+                //     icon: '',
+                //     roles: ['admin'],
+                //     to: '/lilo'
+                // },
+                {
+                    text: 'Time Keeping',
+                    icon: 'time-keeping',
+                    roles: ['admin', 'staff'],
+                    to: '/time-keeping'
                 }
             ]
         }

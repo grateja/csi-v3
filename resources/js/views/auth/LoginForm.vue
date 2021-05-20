@@ -38,6 +38,26 @@
 
             </v-card-text>
         </v-card>
+
+        <v-card class="transparent" flat>
+            <v-card-title>
+                <v-spacer></v-spacer>
+                <!-- <v-tooltip top>
+                    <v-btn flat icon slot="activator" @click="setTime">
+                        <v-icon small>sync</v-icon>
+                    </v-btn>
+                    <span>Sync server time from device</span>
+                </v-tooltip> -->
+                <div>
+                    <span class="caption">Server time</span>
+                    <v-divider></v-divider>
+                    <div>
+                        {{sysDateTime}}
+                    </div>
+                </div>
+                <v-spacer></v-spacer>
+            </v-card-title>
+        </v-card>
     </form>
 </template>
 
@@ -47,7 +67,8 @@ export default {
         return {
             email: '',
             password: '',
-            rememberMe: false
+            rememberMe: false,
+            sysDateTime: null
         }
     },
     methods: {
@@ -55,6 +76,21 @@ export default {
             this.$store.dispatch('auth/loginAttempt', this.$data).then((res, rej) => {
                 this.$router.push('/');
             }).catch(err => {});
+        },
+        getSystemDateTime() {
+            axios.get('/api/developer/system-date-time').then((res, rej) => {
+                this.sysDateTime = new Date(res.data);
+            });
+        },
+        setTime() {
+            var date = moment().format('Y-MM-D H:m:s A');
+            axios.post('/api/developer/set-system-date-time', {
+                date: date
+            }).then((res, rej) => {
+
+            }).finally(() => {
+
+            })
         }
     },
     computed: {
@@ -64,6 +100,9 @@ export default {
         errors() {
             return this.$store.getters['auth/getErrors'];
         }
+    },
+    created() {
+        this.getSystemDateTime();
     }
 }
 </script>

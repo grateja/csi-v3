@@ -78,7 +78,7 @@ class ProductPurchasesController extends Controller
             'productName' => 'required',
             'date' => 'required|date',
             'quantity' => 'required|numeric',
-            'unitCost' => 'required|numeric',
+            // 'unitCost' => 'required|numeric',
         ];
 
         if($request->validate($rules)) {
@@ -98,7 +98,7 @@ class ProductPurchasesController extends Controller
                     'product_id' => $product->id,
                     'receipt' => $request->receipt,
                     'quantity' => $request->quantity,
-                    'unit_cost' => $request->unitCost,
+                    // 'unit_cost' => $request->unitCost,
                     'remarks' => $request->remarks,
                     'staff_name' => auth('api')->user()->name,
                 ]);

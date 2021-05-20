@@ -72,6 +72,10 @@ const routes = [
             {
                 path: 'yearly-view',
                 component: require('./views/sales-report/yearly-view/Index.vue').default
+            },
+            {
+                path: 'custom-date',
+                component: require('./views/sales-report/date-range/Index.vue').default
             }
         ]
     },
@@ -220,6 +224,10 @@ const routes = [
                 }
             }
         ]
+    },
+    {
+        path: '/time-keeping',
+        component: require('./views/time-keeping/Index.vue').default
     },
     {
         path: '/',

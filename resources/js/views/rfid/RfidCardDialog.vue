@@ -14,6 +14,9 @@
                         </v-card-text>
                         <v-card-text v-else>
                             <v-text-field :error-messages="errors.get('ownerId')" :label="`Search ${formData.cardType == 'c' ? 'customer' : 'user'}`"  outline @keyup="search" v-model="keyword" ref="keyword"></v-text-field>
+
+                            <v-btn v-if="formData.cardType == 'c' && currentOwner == null" class="ma-0 success" round @click="openCustomerDialog = true">Create new customer</v-btn>
+
                             <v-card v-if="results.length">
                                 <v-list dense>
                                     <v-list-tile v-for="item in results" :key="item.id" @click="selectOwner(item)">
@@ -46,15 +49,18 @@
             </v-card>
         </form>
         <unregistered-card-dialog v-model="openUnregisteredCardDialog" @select="selectCard" />
+        <customer-dialog v-model="openCustomerDialog" :initialName="keyword" @save="insertCustomer"></customer-dialog>
     </v-dialog>
 </template>
 
 <script>
 import UnregisteredCardDialog from './UnregisteredCardDialog.vue';
+import CustomerDialog from '../customers/CustomerDialog.vue';
 
 export default {
     components: {
-        UnregisteredCardDialog
+        UnregisteredCardDialog,
+        CustomerDialog
     },
     props: [
         'value', 'rfidCard',
@@ -71,6 +77,7 @@ export default {
             loading: false,
             cancelSource: null,
             openUnregisteredCardDialog: false,
+            openCustomerDialog: false,
             keyword: null,
             currentOwner: null
         }
@@ -128,6 +135,9 @@ export default {
         },
         clear(key) {
             this.$store.commit('rfidcard/clearErrors', key);
+        },
+        insertCustomer(data) {
+            this.selectOwner(data.customer);
         }
     },
     computed: {

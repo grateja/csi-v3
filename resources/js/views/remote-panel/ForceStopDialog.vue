@@ -1,10 +1,10 @@
 <template>
     <v-dialog :value="value" max-width="480px" persistent>
         <v-card>
-            <v-card-title class="title grey--text">Force stop machine</v-card-title>
+            <v-card-title class="title grey--text">End machine time</v-card-title>
                 <v-card-text>
                     <ul>
-                        <li>"Force stop" is used for emergency purposes only.</li>
+                        <li>This functionality is used for emergency purposes only.</li>
                         <li>Applying force stop does not actually stop the cycle of the machine.</li>
                         <li>Transaction will not be rolled back.</li>
                     </ul>

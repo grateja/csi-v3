@@ -51,6 +51,7 @@ class LoyaltyPointsController extends Controller
 
         return response()->json([
             'loyaltyPoint' => $loyaltyPoint,
+            'success' => 'Loyalty points saved'
         ], 200);
     }
 
@@ -108,6 +109,7 @@ class LoyaltyPointsController extends Controller
 
             return response()->json([
                 'loyaltyPoint' => $loyaltyPoint,
+                'success' => 'Loyalty points saved'
             ], 200);
         } else {
             return response()->json([

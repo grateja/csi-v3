@@ -83,7 +83,7 @@ export default {
                     route: '/users'
                 },
                 {
-                    text: 'Product Purchases',
+                    text: 'Inventory Log',
                     icon: 'product-purchases',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
@@ -99,7 +99,7 @@ export default {
                 {
                     text: 'Services',
                     icon: 'services',
-                    roles: ['admin', 'staff'],
+                    roles: ['admin'],
                     color: '#fbf783',
                     route: '/services/washing-services'
                 },
@@ -127,7 +127,7 @@ export default {
                 {
                     text: 'Reworks',
                     icon: 'reworks',
-                    roles: ['admin', 'staff'],
+                    roles: ['admin'],
                     color: '#e4dfdd',
                     route: '/reworks'
                 },
@@ -144,6 +144,13 @@ export default {
                     roles: ['admin'],
                     color: '#ddfb83',
                     route: '/discounts'
+                },
+                {
+                    text: 'Time Keeping',
+                    icon: 'time-keeping',
+                    roles: ['admin', 'staff'],
+                    color: '#ddfb83',
+                    route: '/time-keeping'
                 },
                 {
                     text: 'Client',

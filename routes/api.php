@@ -15,6 +15,13 @@ use Illuminate\Http\Request;
 
 // /api/developer
 Route::group(['prefix' => 'developer'], function () {
+    // /api/developer/system-date-time
+    Route::get('system-date-time', function() {
+        return date('Y-m-d h:i:s A');
+    });
+
+    Route::post('set-system-date-time', 'DeveloperController@setSystemDateTime');
+
     // /api/developer/client
     Route::get('client', 'ClientsController@index');
 
@@ -127,6 +134,9 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
 
     // /api/sales-report/{yearFrom}/{yearUntil}/yearly
     Route::get('{yearFrom}/{yearUntil}/yearly', 'SalesReportController@yearly');
+
+    // /api/sales-report/custom-range/{print?}
+    Route::get('custom-range/{print?}', 'SalesReportController@customRange');
 
     // /api/sales-report/{monthIndex}/{year}/pos-transactions
     Route::get('{monthIndex}/{year}/pos-transactions', 'SalesReportController@posTransactions');
@@ -520,7 +530,16 @@ Route::group(['prefix' => 'remote', 'middleware' => ['auth:api']], function() {
 
     // /api/machines/force-stop
     Route::post('machines/force-stop', 'MachinesController@forceStop');
+
+    // /api/remote/machines/test-connection/{machineId}
+    Route::get('machines/test-connection/{machineId}', 'MachinesController@testConnection');
+
+    // /api/remote/confirm-activation/{remoteToken}
+    Route::get('confirm-activation/{remoteToken}', 'MachinesController@confirmActivation');
 });
+
+// /api/remote/confirm-activation/{remoteToken}
+Route::get('/remote/confirm-activation/{remoteToken}/{terminalIP}', 'MachinesController@confirmActivation');
 
 // /api/re-works
 Route::group(['prefix' => 're-works', 'middleware' => ['auth:api']], function() {
@@ -738,6 +757,20 @@ Route::group(['prefix' => 'job-order', 'middleware' => ['auth:api', 'role:admin'
     // /api/job-order/update
     Route::post('update', 'JobOrdersController@update');
 });
+
+// /api/time-keeping
+
+Route::group(['prefix' => 'time-keeping'], function() {
+    // /api/time-keeping
+    Route::get('/', 'TiToController@index');
+
+    // /api/time-keeping/time-in
+    Route::get('time-in', 'TiToController@getTimeIn');
+
+    // /api/time-keeping/time-out
+    Route::post('time-out', 'TiToController@timeOut');
+});
+
 
 // /api/void-transaction
 Route::group(['prefix' => 'void-transaction', 'middleware' => 'auth:api'], function() {

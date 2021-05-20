@@ -48,7 +48,7 @@ class MachinesController extends Controller
 
     public function activate(Request $request) {
         // customer, machineSize, serviceType
-        return DB::transaction(function () use ($request) {
+        $commit = DB::transaction(function () use ($request) {
             $customerWash = null;
             $customerDry = null;
             $avWash = null;
@@ -157,12 +157,13 @@ class MachinesController extends Controller
             $url = "$machine->ip_address/activate?pulse=$pulse&token=$avWash->id";
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 35);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 20);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($curl);
+            $curl_error = curl_error($curl);
             curl_close($curl);
 
-            if($output) {
+            if(!$curl_error) {
                 // DB::rollBack();
 
                 $this->dispatch($machine->queSynch());
@@ -170,26 +171,82 @@ class MachinesController extends Controller
                 $this->dispatch($avWash->queSynch());
 
 
-                return response()->json([
+                return [
                     'machine' => $machine->fresh('customer'),
                     'customerWash' => $customerWash,
                     'customerDry' => $customerDry,
                     'pulse' => $pulse,
                     'output' => $output,
-                ]);
+                ];
             } else {
 
                 DB::rollback();
 
-                return response()->json([
+                return [
                     'errors' => [
                         'message' => ['Cannot connect to ' . $machine->machine_name . ' (' . $machine->ip_address . ')'],
-                        'machine' => $machine,
-                        'output' => $output,
-                    ]
-                ], 422);
+                        // 'machine' => $machine,
+                        // 'output' => $output,
+                    ],
+                    'machine' => $machine,
+                ];
             }
         });
+
+
+        if(array_key_exists('errors', $commit)) {
+            MachineRemarks::create([
+                'title' => 'Connection failed',
+                'remarks' => $commit['errors']['message'][0],
+                'user_id' => auth('api')->user()->id,
+                'machine_id' => $commit['machine']['id'],
+                'remaining_time' => 0,
+            ]);
+            return response()->json($commit, 422);
+        }
+        return response()->json($commit);
+    }
+
+    public function confirmActivation($remoteToken, $terminalIP) {
+        $totalMinutes = 0;
+        $customerName = null;
+        $customerId = null;
+
+        $machine = Machine::where('ip_address', $terminalIP)->first();
+
+        $customerDry = CustomerDry::whereNull('used')->find($remoteToken);
+        if($customerDry) {
+            $customerDry->update([
+                'used' => Carbon::now()->toDateTimeString(),
+                'staff_name' => 'Computer',
+                'dryer_name' => $machine->machine_name,
+            ]);
+            $totalMinutes = $customerDry->minutes;
+            $customerName = $customerDry->customer['name'];
+            $customerId = $customerDry->customer_id;
+        }
+
+        $customerWash = CustomerWash::whereNull('used')->find($remoteToken);
+        if($customerWash) {
+            $customerWash->update([
+                'used' => Carbon::now()->toDateTimeString(),
+                'staff_name' => 'Computer',
+                'washer_name' => $machine->machine_name,
+            ]);
+            $totalMinutes = $customerWash->minutes;
+            $customerName = $customerWash->customer['name'];
+            $customerId = $customerWash->customer_id;
+        }
+
+        $machine->update([
+            'time_activated' => Carbon::now()->toDateTimeString(),
+            'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
+            'remarks' => 'Additional ' . $totalMinutes,
+            'user_name' => $customerName,
+            'customer_id' => $customerId,
+            'customer_wash_id' => $customerWash ? $customerWash->id : null,
+            'customer_dry_id' => $customerDry ? $customerDry->id : null,
+        ]);
     }
 
     public function remarks(Request $request) {
@@ -307,6 +364,29 @@ class MachinesController extends Controller
                     'result' => $result,
                 ]);
             });
+        }
+    }
+
+
+    public function testConnection($machineId) {
+        $machine = Machine::findOrFail($machineId);
+        $url = "{$machine->ip_address}/details";
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        if($output) {
+            return response()->json([
+                'success' => 'Connection OK',
+            ]);
+        } else {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Cannot connect to ' . $machine->machine_name]
+                ]
+            ], 422);
         }
     }
 

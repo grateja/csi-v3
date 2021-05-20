@@ -1,5 +1,10 @@
 <template>
     <div>
+        <v-card-title class="px-0">
+            <v-spacer></v-spacer>
+            <v-btn to="/sales-report/custom-date" class="ma-1 translucent" round>Custom date range</v-btn>
+        </v-card-title>
+
         <v-layout row wrap v-if="result" align-center>
             <v-flex xs6 sm4 lg3 xl2 class="text-xs-left">
                 <v-btn @click="prev" class="ma-1 translucent" round :loading="loading && action == 'prev'">
@@ -10,7 +15,12 @@
             <v-flex xs6 sm4 lg3 xl2 v-for="(draft, i) in drafts" :key="i">
                 <v-hover v-slot:default="{ hover }" v-if="draft.active">
                     <v-card :elevation="hover ? 12 : 2"  @click="setYear(draft.year)" class="pointer ma-1 rounded-card" :class="{'active': draft.current}">
-                        <v-card-title class="px-3 py-2 teal white--text font-weight-bold">{{draft.year}}</v-card-title>
+                        <v-card-title class="px-3 py-2 teal white--text font-weight-bold">{{draft.year}}
+                            <v-spacer></v-spacer>
+                            <v-btn small icon class="ma-0" @click="preview(draft.year, $event)">
+                                <v-icon>open_in_new</v-icon>
+                            </v-btn>
+                        </v-card-title>
 
 
                         <template v-if="draft.active">
@@ -118,15 +128,23 @@
                 </v-btn>
             </v-flex>
         </v-layout>
+        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
     </div>
 </template>
 <script>
+import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
 export default {
+    components: {
+        CustomRangeDialog
+    },
     data() {
         return {
             result: null,
             loading: false,
-            action: 'default'
+            action: 'default',
+            dateFrom: null,
+            dateTo: null,
+            openCustomRange: false
         }
     },
     methods: {
@@ -150,6 +168,12 @@ export default {
             }).finally(() => {
                 this.loading = false;
             });
+        },
+        preview(year, e) {
+            e.stopPropagation();
+            this.dateFrom = moment().set('year', year).set('month', 0).startOf('month').format('YYYY-MM-DD');
+            this.dateTo = moment().set('year', year).set('month', 11).endOf('month').format('YYYY-MM-DD');
+            this.openCustomRange = true;
         }
     },
     computed: {

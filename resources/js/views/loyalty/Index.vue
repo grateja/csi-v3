@@ -44,6 +44,8 @@ export default {
         save() {
             this.$store.dispatch(`point/${this.mode}Point`, {
                 formData: this.formData
+            }).then((res, rej) => {
+                this.mode = 'update';
             });
         }
     },

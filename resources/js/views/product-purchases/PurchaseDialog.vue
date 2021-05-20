@@ -2,15 +2,15 @@
     <v-dialog :value="value" max-width="400" persistent>
         <form @submit.prevent="submit">
             <v-card class="rounded-card">
-                <v-card-title class="grey--text title">Purchase item details</v-card-title>
+                <v-card-title class="grey--text title">Item details</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
-                    <v-combobox :items="results" label="Search product" outline :error-messages="errors.get('productName')" v-model="formData.productName" @input.native="search($event)" ref="keyword" item-value="name" item-text="name"></v-combobox>
+                    <v-combobox :items="results" label="Search item" outline :error-messages="errors.get('productName')" v-model="formData.productName" @input.native="search($event)" ref="keyword" item-value="name" item-text="name"></v-combobox>
 
                     <v-text-field v-model="formData.date" type="date" label="Date" :error-messages="errors.get('date')" outline></v-text-field>
                     <v-text-field v-model="formData.quantity" label="Quantity" :error-messages="errors.get('quantity')" outline></v-text-field>
-                    <v-text-field v-model="formData.unitCost" @keyup="computeTotalCost" label="Unit cost" :error-messages="errors.get('unitCost')" outline></v-text-field>
-                    <v-text-field v-model="formData.totalCost" @keyup="computeUnitCost" label="Total cost" :error-messages="errors.get('totalCost')" outline></v-text-field>
+                    <!-- <v-text-field v-model="formData.unitCost" @keyup="computeTotalCost" label="Unit cost" :error-messages="errors.get('unitCost')" outline></v-text-field> -->
+                    <!-- <v-text-field v-model="formData.totalCost" @keyup="computeUnitCost" label="Total cost" :error-messages="errors.get('totalCost')" outline></v-text-field> -->
                     <v-text-field v-model="formData.remarks" label="Remarks" :error-messages="errors.get('remarks')" outline></v-text-field>
                     <v-text-field v-model="formData.receipt" label="Receipt" :error-messages="errors.get('receipt')" outline></v-text-field>
 
@@ -37,8 +37,8 @@ export default {
                 date: new Date().toISOString().substring(0, 10),
                 receipt: null,
                 quantity: 0,
-                unitCost: 0,
-                totalCost: 0,
+                // unitCost: 0,
+                // totalCost: 0,
                 remarks: null
             },
             results: [],
@@ -80,12 +80,12 @@ export default {
                 this.cancelSource.cancel();
             }
         },
-        computeTotalCost() {
-            this.formData.totalCost = this.formData.quantity * this.formData.unitCost;
-        },
-        computeUnitCost() {
-            this.formData.unitCost = this.formData.totalCost / this.formData.quantity;
-        },
+        // computeTotalCost() {
+        //     this.formData.totalCost = this.formData.quantity * this.formData.unitCost;
+        // },
+        // computeUnitCost() {
+        //     this.formData.unitCost = this.formData.totalCost / this.formData.quantity;
+        // },
         clear() {
             this.$store.commit('productpurchase/clearErrors');
         }
@@ -108,8 +108,8 @@ export default {
                 this.formData.date = new Date().toISOString().substring(0, 10);
                 this.formData.receipt = null;
                 this.formData.quantity = 0;
-                this.formData.unitCost = 0;
-                this.formData.totalCost = 0;
+                // this.formData.unitCost = 0;
+                // this.formData.totalCost = 0;
                 this.formData.remarks = null;
             }
             this.clear();

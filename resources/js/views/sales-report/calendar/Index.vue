@@ -1,13 +1,21 @@
 <template>
     <div>
 
-        <v-btn round class="ml-0 translucent" to="/sales-report/monthly-view">
-            <v-icon left>
-                chevron_left
-            </v-icon>
-            January to December {{year}}
-        </v-btn>
-        <navigator @next="next" @prev="prev" :loading="loading" :action="action" :text="activeMonth + ' ' + year" @browse="browseMonth" />
+        <v-card-title class="px-0">
+            <v-btn round class="ml-0 translucent" to="/sales-report/monthly-view">
+                <v-icon left>
+                    chevron_left
+                </v-icon>
+                January to December {{year}}
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn to="/sales-report/custom-date" class="ma-1 translucent" round>Custom date range</v-btn>
+        </v-card-title>
+        <navigator @next="next" @prev="prev" :loading="loading" :action="action" :text="activeMonth + ' ' + year" @browse="browseMonth">
+            <v-btn icon slot="extraButton" outline class="ml-3" @click="viewMonthSummary">
+                <v-icon>open_in_new</v-icon>
+            </v-btn>
+        </navigator>
         <v-progress-linear indeterminate v-if="loading" height="3" class="my-4"></v-progress-linear>
         <v-divider class="my-4" v-else></v-divider>
 
@@ -226,25 +234,31 @@
             </div>
         </div> -->
         <daily-summary v-model="openDailySummary" :date="date" />
+        <custom-range-dialog v-model="openMonthSummary" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
     </div>
 </template>
 <script>
 import DailySummary from './DailySummary.vue';
 import Navigator from '../Navigator.vue';
+import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
 
 export default {
     components: {
         Navigator,
-        DailySummary
+        DailySummary,
+        CustomRangeDialog
     },
     data() {
         return {
             results: null,
             days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
             openDailySummary: false,
+            openMonthSummary: false,
             loading: false,
             action: 'default',
-            date: null
+            date: null,
+            dateFrom: null,
+            dateTo: null
         }
     },
     methods: {
@@ -271,6 +285,11 @@ export default {
         },
         browseMonth() {
             this.$router.push('/sales-report/monthly-view');
+        },
+        viewMonthSummary() {
+            this.dateFrom = moment().set('month', this.monthIndex - 1).startOf('month').format('YYYY-MM-DD');
+            this.dateTo = moment().set('month', this.monthIndex - 1).endOf('month').format('YYYY-MM-DD');
+            this.openMonthSummary = true;
         }
     },
     computed: {

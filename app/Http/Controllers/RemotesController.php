@@ -58,7 +58,7 @@ class RemotesController extends Controller
         ///  url = regularWash
         ///  url = dryPulse1
 
-        $url = $url = "{$machine->ip_address}/activate?pulse={$completedServiceTransaction->branchService->pulse_count}";
+        $url = "{$machine->ip_address}/activate?pulse={$completedServiceTransaction->branchService->pulse_count}";
         // $url = $url = "{$machine->ip_address}/";
 
         // if($machine->machine_type_id == 1 || $machine->machine_type_id == 3) {

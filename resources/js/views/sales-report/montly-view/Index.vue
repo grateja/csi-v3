@@ -2,13 +2,21 @@
     <v-card class="transparent" flat>
         <!-- <pre>{{drafts}}</pre> -->
         <!-- <pre>{{result}}</pre> -->
-        <v-btn round class="ml-0 translucent" to="/sales-report/yearly-view">
-            <v-icon left>
-                chevron_left
-            </v-icon>
-            Years {{yearsFrom}} to {{yearsUntil}}
-        </v-btn>
-        <navigator @next="next" @prev="prev" :loading="loading" :action="action" :text="year" @browse="browseYear" />
+        <v-card-title class="px-0">
+            <v-btn round class="ml-0 translucent" to="/sales-report/yearly-view">
+                <v-icon left>
+                    chevron_left
+                </v-icon>
+                Years {{yearsFrom}} to {{yearsUntil}}
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn to="/sales-report/custom-date" class="ma-1 translucent" round>Custom date range</v-btn>
+        </v-card-title>
+        <navigator @next="next" @prev="prev" :loading="loading" :action="action" :text="year" @browse="browseYear">
+            <v-btn icon slot="extraButton" outline class="ml-3" @click="viewYearSummary">
+                <v-icon>open_in_new</v-icon>
+            </v-btn>
+        </navigator>
         <!-- <v-card class="rounded-card translucent">
             <v-card-actions>
                 <v-btn icon @click="prev" :loading="loading && action == 'prev'">
@@ -32,7 +40,13 @@
             <v-flex xs6 sm4 lg3 xl2 v-for="(draft, i) in drafts" :key="i">
                 <v-hover v-slot:default="{ hover }" v-if="draft.active">
                     <v-card :elevation="hover ? 12 : 2" @click="setMonth(draft.monthIndex)" class="pointer ma-1 rounded-card" :class="{'active': draft.current}">
-                        <v-card-title class="px-3 py-2 teal white--text font-weight-bold">{{draft.text}}</v-card-title>
+                        <v-card-title class="px-3 py-2 teal white--text font-weight-bold">
+                            <span>{{draft.text}}</span>
+                            <v-spacer></v-spacer>
+                            <v-btn small icon class="ma-0" @click="preview(draft.monthIndex, $event)">
+                                <v-icon>open_in_new</v-icon>
+                            </v-btn>
+                        </v-card-title>
                         <!-- <pre>{{draft}}</pre> -->
                         <!-- <v-card-text> -->
                         <template v-if="draft.active">
@@ -137,20 +151,26 @@
                 </v-card>
             </v-flex>
         </v-layout>
+        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
     </v-card>
 </template>
 
 <script>
 import Navigator from '../Navigator.vue';
+import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
 export default {
     components: {
-        Navigator
+        Navigator,
+        CustomRangeDialog
     },
     data() {
         return {
             result: null,
             loading: false,
-            action: 'default'
+            action: 'default',
+            openCustomRange: false,
+            dateFrom: null,
+            dateTo: null
         }
     },
     computed: {
@@ -236,6 +256,18 @@ export default {
         },
         browseYear() {
             this.$router.push('/sales-report/yearly-view');
+        },
+        preview(monthIndex, e) {
+            e.stopPropagation();
+            console.log(monthIndex);
+            this.dateFrom = moment().set('year', this.year).set('month', monthIndex - 1).startOf('month').format('YYYY-MM-DD');
+            this.dateTo = moment().set('year', this.year).set('month', monthIndex - 1).endOf('month').format('YYYY-MM-DD');
+            this.openCustomRange = true;
+        },
+        viewYearSummary() {
+            this.dateFrom = moment().set('year', this.year).set('month', 0).startOf('month').format('YYYY-MM-DD');
+            this.dateTo = moment().set('year', this.year).set('month', 11).endOf('month').format('YYYY-MM-DD');
+            this.openCustomRange = true;
         }
     },
     created() {

@@ -601,7 +601,6 @@ export default {
         load() {
             this.loading = true;
             axios.get(`/api/sales-report/${this.date}/summary`).then((res, reh) => {
-                this.result = res.data.result;
                 this.posSummary = res.data.posSummary;
                 this.rfidCard = res.data.rfidCard;
                 this.rfidLoad = res.data.rfidLoad;

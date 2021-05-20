@@ -11,6 +11,7 @@
                     open_in_new
                 </v-icon> -->
             <!-- </v-btn> -->
+            <slot name="extraButton"></slot>
             <v-spacer></v-spacer>
             <v-btn icon @click="$emit('next')" :loading="loading && action == 'next'">
                 <v-icon>chevron_right</v-icon>

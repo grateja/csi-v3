@@ -6,6 +6,7 @@ use App\Machine;
 use App\MachineUsage;
 use App\RfidCard;
 use App\RfidCardTransaction;
+use App\ThermalPrinter;
 use App\UnregisteredCard;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -59,6 +60,10 @@ class TapCardController extends Controller
                 ]);
             }
 
+            $thermalPrinter = new ThermalPrinter;
+            if(!$thermalPrinter->hasError()) {
+                $thermalPrinter->printRfid($rfid);
+            }
             return response()->json([
                 'message' => 'RFID Card ' . $rfid . ' not registered'
             ], 422);

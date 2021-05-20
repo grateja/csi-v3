@@ -388,4 +388,10 @@ class ThermalPrinter extends Model
 
         $this->cut();
     }
+
+    public function printRfid($rfid) {
+        $this->printer->feed(2);
+        $this->text($rfid);
+        $this->printer->feed(2);
+    }
 }
