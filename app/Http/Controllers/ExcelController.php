@@ -7,6 +7,8 @@ use App\Expense;
 use App\Exports\ReportTemplate;
 use App\PartialPayment;
 use App\ProductPurchase;
+use App\ProductTransactionItem;
+use App\ServiceTransactionItem;
 use App\TransactionPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,10 +79,64 @@ class ExcelController extends Controller
             $partialPayments->toArray()
         );
         $result = collect($result)->groupBy('day');
-        $result = $result->map(function($item, $key) {
+
+        $productNames = ProductTransactionItem::whereBetween(DB::raw('DATE(created_at)'), [$request['dateFrom'], $request['dateTo']])
+            ->distinct('name')
+            ->select('name')
+            ->orderBy('name')
+            ->pluck('name')
+            ->toArray();
+
+        $products = ProductTransactionItem::whereBetween(DB::raw('DATE(created_at)'), [$request['dateFrom'], $request['dateTo']])
+            ->groupBy('name', DB::raw('day'))
+            ->select(DB::raw('DATE(created_at) as day, name, COUNT(name) as quantity'))
+            ->orderBy('day')
+            ->get();
+
+        $serviceNames = ServiceTransactionItem::whereBetween(DB::raw('DATE(created_at)'), [$request['dateFrom'], $request['dateTo']])
+            ->distinct('name')
+            ->select('name')
+            ->orderBy('name')
+            ->pluck('name')
+            ->toArray();
+
+        $services = ServiceTransactionItem::whereBetween(DB::raw('DATE(created_at)'), [$request['dateFrom'], $request['dateTo']])
+            ->groupBy('name', DB::raw('day'))
+            ->select(DB::raw('DATE(created_at) as day, name, COUNT(name) as quantity'))
+            ->orderBy('day')
+            ->get();
+
+
+        // foreach($dates as $date) {
+        //     $productItem = [];
+        //     $productItem['day'] = $date;
+        //     foreach($productNames as $productName) {
+        //         $productItem[$productName] = $products->filter(function($item) use ($date, $productName) {
+        //             return $item->day == $date && $item->name == $productName;
+        //         })->sum('quantity');
+        //     }
+        //     $productItems[] = $productItem;
+        // }
+
+        $result = $result->transform(function($item, $key) use ($products, $productNames, $services, $serviceNames) {
             $totalCollections = $item->sum('collection');
             $totalExpenses =  $item->sum('expense') + $item->sum('product_purchase');
-            return
+
+            $productItem = [];
+            $serviceItem = [];
+
+            foreach($productNames as $productName) {
+                $productItem[$productName] = $products->filter(function($item) use ($key, $productName) {
+                    return $item->day == $key && $item->name == $productName;
+                })->sum('quantity');
+            }
+            foreach($serviceNames as $serviceName) {
+                $serviceItem[$serviceName] = $services->filter(function($item) use ($key, $serviceName) {
+                    return $item->day == $key && $item->name == $serviceName;
+                })->sum('quantity');
+            }
+
+            return collect(
             [
                 'date' => $key,
                 'newCustomers' => $item->sum('total_count'),
@@ -90,8 +146,8 @@ class ExcelController extends Controller
                 // 'paid_jo' => $item->sum('paid_jo'),
                 'expenses' => $totalExpenses,
                 'totalDeposit' => $totalCollections - $totalExpenses,
-            ];
-        });
+            ])->merge($serviceItem)->merge($productItem);
+        })->sortBy('date');
 
         if(count($result) == 0) {
             return response()->json([
@@ -101,8 +157,10 @@ class ExcelController extends Controller
             ], 422);
         }
 
+        // return response()->json($productItems);
+
         if($download) {
-            return Excel::download(new ReportTemplate($result, [
+            return Excel::download(new ReportTemplate($result, array_merge([
                 'DATE',
                 'NEW CUSTOMER',
                 'JOB ORDERS',
@@ -110,7 +168,7 @@ class ExcelController extends Controller
                 'COLLECTIONS',
                 'EXPENSES',
                 'DEPOSIT',
-            ]), 'parts.xls');
+            ], $serviceNames, $productNames)), 'parts.xls');
         }
 
         return response()->json([
