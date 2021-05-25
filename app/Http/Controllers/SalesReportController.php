@@ -59,7 +59,7 @@ class SalesReportController extends Controller
             ->selectRaw('DATE(date) as day, SUM(amount) as expense')
             ->get();
 
-        $productPurchases = ProductPurchase::whereMonth('date', $monthIndex)
+        $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereMonth('date', $monthIndex)
             ->whereYear('date', $year)
             ->groupBy(DB::raw('day'))
             ->selectRaw('DATE(date) as day, SUM(unit_cost * quantity) as product_purchase')
@@ -191,7 +191,7 @@ class SalesReportController extends Controller
             'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $colFullPartialPayment,
         ];
 
-        $productPurchases = ProductPurchase::whereDate('date', $date)
+        $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereDate('date', $date)
             ->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
             ->first();
         $otherExpenses = Expense::whereDate('date', $date)
@@ -229,6 +229,7 @@ class SalesReportController extends Controller
 
         if($print) {
             $data['date'] = Carbon::createFromDate($date)->format("D m/d/Y");
+            $data['quote'] = '** Daily Sales **';
             // return view('printer.daily', $data);
             $thermalPrinter = new ThermalPrinter;
             if($printerError = $thermalPrinter->hasError()) {
@@ -443,7 +444,7 @@ class SalesReportController extends Controller
             ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(amount) as expense')
             ->get();
 
-        $productPurchases = ProductPurchase::whereYear('date', $year)
+        $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereYear('date', $year)
             ->groupBy(DB::raw('month, year'))
             ->selectRaw('YEAR(date) as year, MONTH(date) as month, SUM(unit_cost * quantity) as product_purchase')
             ->get();
@@ -662,7 +663,7 @@ class SalesReportController extends Controller
                 'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $colFullPartialPayment,
             ];
 
-            $productPurchases = ProductPurchase::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
+            $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
                 ->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
                 ->first();
             $otherExpenses = Expense::whereBetween(DB::raw('DATE(date)'), [$request->dateFrom, $request->dateTo])
@@ -701,6 +702,7 @@ class SalesReportController extends Controller
             if($print) {
                 $data['dateFrom'] = Carbon::createFromDate($request->dateFrom)->format("D m/d/Y");
                 $data['dateTo'] = Carbon::createFromDate($request->dateTo)->format("D m/d/Y");
+                $data['origin'] = $request->origin;
                 // return view('printer.daily', $data);
                 $thermalPrinter = new ThermalPrinter;
                 if($printerError = $thermalPrinter->hasError()) {

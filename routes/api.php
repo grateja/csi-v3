@@ -143,6 +143,13 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
 
     // /api/sales-report/cumulative/{year}
     Route::get('cumulative/{year}', 'SalesReportController@yearlyCumulative');
+
+    // /api/sales-report/excel
+    Route::group(['prefix' => 'excel'], function() {
+        // /api/sales-report/excel/custom-range/{download?}
+        Route::get('custom-range/{download?}', 'ExcelController@customRange');
+    });
+
 });
 Route::get('cumulative/{year}', 'SalesReportController@yearlyCumulative');
 

@@ -234,7 +234,7 @@
             </div>
         </div> -->
         <daily-summary v-model="openDailySummary" :date="date" />
-        <custom-range-dialog v-model="openMonthSummary" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
+        <custom-range-dialog v-model="openMonthSummary" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog>
     </div>
 </template>
 <script>
@@ -258,7 +258,8 @@ export default {
             action: 'default',
             date: null,
             dateFrom: null,
-            dateTo: null
+            dateTo: null,
+            origin: null
         }
     },
     methods: {
@@ -270,6 +271,7 @@ export default {
             }).finally(() => {
                 this.loading = false;
             })
+            this.origin = 'Sales for : ' + moment().set('month', this.monthIndex - 1).format('MMMM') + ', ' + this.year;
         },
         preview(day) {
             this.date = moment(`${this.year}-${this.monthIndex}-${day}`).format('YYYY-MM-DD');

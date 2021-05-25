@@ -9,8 +9,14 @@
 
                     <v-text-field v-model="formData.date" type="date" label="Date" :error-messages="errors.get('date')" outline></v-text-field>
                     <v-text-field v-model="formData.quantity" label="Quantity" :error-messages="errors.get('quantity')" outline></v-text-field>
-                    <!-- <v-text-field v-model="formData.unitCost" @keyup="computeTotalCost" label="Unit cost" :error-messages="errors.get('unitCost')" outline></v-text-field> -->
-                    <!-- <v-text-field v-model="formData.totalCost" @keyup="computeUnitCost" label="Total cost" :error-messages="errors.get('totalCost')" outline></v-text-field> -->
+                    <v-checkbox label="Add as expense" v-model="addAsExpense"></v-checkbox>
+                    <v-expand-transition>
+                        <div v-if="addAsExpense">
+                            <span class="caption grey--text font-weight-bold">Use this function only if the expense comes directly from cash drawer to prevent short</span>
+                            <v-text-field v-model="formData.unitCost" @keyup="computeTotalCost" label="Unit cost" :error-messages="errors.get('unitCost')" outline></v-text-field>
+                            <v-text-field v-model="formData.totalCost" @keyup="computeUnitCost" label="Total cost" :error-messages="errors.get('totalCost')" outline></v-text-field>
+                        </div>
+                    </v-expand-transition>
                     <v-text-field v-model="formData.remarks" label="Remarks" :error-messages="errors.get('remarks')" outline></v-text-field>
                     <v-text-field v-model="formData.receipt" label="Receipt" :error-messages="errors.get('receipt')" outline></v-text-field>
 
@@ -37,10 +43,11 @@ export default {
                 date: new Date().toISOString().substring(0, 10),
                 receipt: null,
                 quantity: 0,
-                // unitCost: 0,
-                // totalCost: 0,
+                unitCost: 0,
+                totalCost: 0,
                 remarks: null
             },
+            addAsExpense: false,
             results: [],
             mode: 'insert'
         }
@@ -80,12 +87,12 @@ export default {
                 this.cancelSource.cancel();
             }
         },
-        // computeTotalCost() {
-        //     this.formData.totalCost = this.formData.quantity * this.formData.unitCost;
-        // },
-        // computeUnitCost() {
-        //     this.formData.unitCost = this.formData.totalCost / this.formData.quantity;
-        // },
+        computeTotalCost() {
+            this.formData.totalCost = this.formData.quantity * this.formData.unitCost;
+        },
+        computeUnitCost() {
+            this.formData.unitCost = this.formData.totalCost / this.formData.quantity;
+        },
         clear() {
             this.$store.commit('productpurchase/clearErrors');
         }

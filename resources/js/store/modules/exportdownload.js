@@ -21,7 +21,7 @@ const actions = {
     download(context, data) {
         context.commit('setLoadingStatus', true);
         context.commit('clearErrors');
-        return axios.get(`/api/reports/excel/${data.uri}`, {
+        return axios.get(`/api/sales-report/excel/${data.uri}/1`, {
             params: data.params,
             responseType: 'blob'
         }).then((res, rej) => {
@@ -29,7 +29,7 @@ const actions = {
             const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.setAttribute('download', 'file.xls'); //any other extension
+            link.setAttribute('download', data.params.origin + '.xls'); //any other extension
             document.body.appendChild(link);
             link.click();
             link.remove();

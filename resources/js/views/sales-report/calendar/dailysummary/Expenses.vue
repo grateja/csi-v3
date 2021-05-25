@@ -10,14 +10,14 @@
         <v-expand-transition>
             <v-card-text v-if="!simplified">
                 <div class="px-2 mx-2">
-                    <!-- <v-layout>
+                    <v-layout>
                         <v-flex xs6>
                             <span>Product purchases</span>
                         </v-flex>
                         <v-flex xs4 class="text-xs-center">{{expenses.productPurchases.total_count}}</v-flex>
                         <v-flex xs6 class="text-xs-right">P{{parseFloat(expenses.productPurchases.total_cost || 0).toFixed(2)}}</v-flex>
-                    </v-layout> -->
-                    <!-- <v-divider></v-divider> -->
+                    </v-layout>
+                    <v-divider></v-divider>
                     <v-layout>
                         <v-flex xs6>
                             <span>Other</span>

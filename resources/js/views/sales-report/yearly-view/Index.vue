@@ -128,7 +128,7 @@
                 </v-btn>
             </v-flex>
         </v-layout>
-        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
+        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog>
     </div>
 </template>
 <script>
@@ -144,7 +144,8 @@ export default {
             action: 'default',
             dateFrom: null,
             dateTo: null,
-            openCustomRange: false
+            openCustomRange: false,
+            origin: null
         }
     },
     methods: {
@@ -173,6 +174,7 @@ export default {
             e.stopPropagation();
             this.dateFrom = moment().set('year', year).set('month', 0).startOf('month').format('YYYY-MM-DD');
             this.dateTo = moment().set('year', year).set('month', 11).endOf('month').format('YYYY-MM-DD');
+            this.origin = 'Sales for : ' + moment().set('year', year).format('YYYY');
             this.openCustomRange = true;
         }
     },

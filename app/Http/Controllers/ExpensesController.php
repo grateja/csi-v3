@@ -35,17 +35,18 @@ class ExpensesController extends Controller
                 ->orWhere('staff_name', 'like', "%$request->keyword%");
         });
 
-        // $productPurchases = ProductPurchase::select(DB::raw('id, CONCAT("Purchase of \"", product_name, "\"") as remarks, staff_name, date, product_purchases.quantity * product_purchases.unit_cost as amount, created_at, "prd" as type'))->where(function($query) use ($request) {
-        //     $query->where('product_name', 'like', "%$request->keyword%")
-        //         ->orWhere('staff_name', 'like', "%$request->keyword%");
-        // });
+        $productPurchases = ProductPurchase::where('unit_cost', '>', '0')
+            ->select(DB::raw('id, CONCAT("Purchase of \"", product_name, "\"") as remarks, staff_name, date, product_purchases.quantity * product_purchases.unit_cost as amount, created_at, "prd" as type'))->where(function($query) use ($request) {
+                $query->where('product_name', 'like', "%$request->keyword%")
+                    ->orWhere('staff_name', 'like', "%$request->keyword%");
+        });
 
         if($request->date) {
             $result = $result->whereDate('date', $request->date);
-            // $productPurchases = $productPurchases->whereDate('date', $request->date);
+            $productPurchases = $productPurchases->whereDate('date', $request->date);
         }
 
-        // $result = $result->union($productPurchases);
+        $result = $result->union($productPurchases);
 
         $result = $result->orderBy($sortBy, $order);
 

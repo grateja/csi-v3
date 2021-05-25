@@ -367,12 +367,29 @@ class ThermalPrinter extends Model
 
     public function dailySummary($data) {
         $this->printHeader();
-        $this->printQuote("** Daily Summary **");
+        if(array_key_exists('quote', $data)) {
+            $this->printQuote($data['quote']);
+        }
 
         $this->printer->initialize();
         $this->printer->feed();
 
-        $this->printDetail("DATE", $data['date']);
+        if(array_key_exists('origin', $data)) {
+            $this->printQuote($data['origin']);
+        }
+
+        if(array_key_exists('dateFrom', $data)) {
+            $this->printDetail("DATE", $data['dateFrom']);
+        }
+
+        if(array_key_exists('dateTo', $data)) {
+            $this->printDetail("DATE", $data['dateTo']);
+        }
+
+        if(array_key_exists('date', $data)) {
+            $this->printDetail("DATE", $data['date']);
+        }
+
         $this->printUnderline();
 
         $this->printSubtitle("{$data['newCustomers']} new customers");

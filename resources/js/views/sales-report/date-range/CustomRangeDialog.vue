@@ -39,6 +39,7 @@
                 <v-btn @click="close" round>close</v-btn>
                 <v-btn @click="printAll" round :loading="printing">print</v-btn>
                 <v-spacer></v-spacer>
+                <v-btn @click="exportExcel" round :loading="exporting">excel</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -70,7 +71,7 @@ export default {
         Customers
     },
     props: [
-        'value', 'dateFrom', 'dateTo',
+        'value', 'dateFrom', 'dateTo', 'origin'
     ],
     data() {
         return {
@@ -128,17 +129,30 @@ export default {
             axios.get(`/api/sales-report/custom-range/1`, {
                 params: {
                     dateFrom: this.dateFrom,
-                    dateTo: this.dateTo
+                    dateTo: this.dateTo,
+                    origin: this.origin
                 }
             }).then((res, rej) => {
 
             }).finally(() => {
                 this.printing = false;
             })
+        },
+        exportExcel() {
+            this.$store.dispatch(`exportdownload/download`, {
+                uri: 'custom-range',
+                params: {
+                    dateFrom: this.dateFrom,
+                    dateTo: this.dateTo,
+                    origin: this.origin
+                }
+            });
         }
     },
     computed: {
-
+        exporting() {
+            return this.$store.getters['exportdownload/isLoading'];
+        }
     },
     watch: {
         value(val) {

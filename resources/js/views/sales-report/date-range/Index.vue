@@ -28,7 +28,7 @@
                 </v-layout>
             </v-card-text>
         </v-card>
-        <custom-range-dialog v-model="openDialog" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
+        <custom-range-dialog v-model="openDialog" :dateFrom="dateFrom" :dateTo="dateTo" :origin="'Custom date'"></custom-range-dialog>
     </v-card>
 </template>
 <script>

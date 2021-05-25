@@ -151,7 +151,7 @@
                 </v-card>
             </v-flex>
         </v-layout>
-        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo"></custom-range-dialog>
+        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog>
     </v-card>
 </template>
 
@@ -170,7 +170,8 @@ export default {
             action: 'default',
             openCustomRange: false,
             dateFrom: null,
-            dateTo: null
+            dateTo: null,
+            origin: null
         }
     },
     computed: {
@@ -259,14 +260,15 @@ export default {
         },
         preview(monthIndex, e) {
             e.stopPropagation();
-            console.log(monthIndex);
             this.dateFrom = moment().set('year', this.year).set('month', monthIndex - 1).startOf('month').format('YYYY-MM-DD');
             this.dateTo = moment().set('year', this.year).set('month', monthIndex - 1).endOf('month').format('YYYY-MM-DD');
             this.openCustomRange = true;
+            this.origin = 'Sales for : ' + moment().set('month', monthIndex - 1).format('MMMM') + ', ' + this.year;
         },
         viewYearSummary() {
             this.dateFrom = moment().set('year', this.year).set('month', 0).startOf('month').format('YYYY-MM-DD');
             this.dateTo = moment().set('year', this.year).set('month', 11).endOf('month').format('YYYY-MM-DD');
+            this.origin = 'Sales for : ' + this.year //moment().set('year', this.year).format('YYYY');
             this.openCustomRange = true;
         }
     },
