@@ -152,7 +152,8 @@ class ClientsController extends Controller
                 $user->assignRole(2);
 
                 return response()->json([
-                    'user' => $user
+                    'user' => $user,
+                    'success' => 'Owner account created'
                 ], 200);
             });
         }
@@ -186,6 +187,7 @@ class ClientsController extends Controller
 
                 return response()->json([
                     'user' => $user,
+                    'success' => 'Owner account updated'
                 ]);
             });
         }
@@ -234,6 +236,7 @@ class ClientsController extends Controller
 
                 return response()->json([
                     'client' => $client,
+                    'success' => 'Shop details created'
                 ]);
             });
         }
@@ -292,7 +295,8 @@ class ClientsController extends Controller
 
             return response()->json([
                 'machines' => Machine::all(),
-            ]);
+                'success' => 'Machines created'
+                ]);
         });
     }
 

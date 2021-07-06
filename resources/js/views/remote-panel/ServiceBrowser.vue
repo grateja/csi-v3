@@ -16,7 +16,7 @@
                     <dd class="ml-2">
                         <span class="red--text" v-if="errors.has('message')">{{errors.get('message')}}</span>
                         <span class="green--text" v-else-if="activating">Connecting to {{machine.machine_name}}...
-                            <v-progress-circular indeterminate height="20px" />
+                            <!-- <v-progress-circular indeterminate height="20px" /> -->
                         </span>
                         <span v-else>
                             {{machine.machine_name}}
@@ -32,7 +32,7 @@
                                 <span class="grey--text">({{service.minutes}} Min)</span>
                             </div>
                         </v-list-tile-content>
-                        <v-list-tile-action><v-btn round :disabled="activating">{{errors.get('message') ? 'Retry' : 'Activate'}}</v-btn></v-list-tile-action>
+                        <v-list-tile-action><v-btn round :disabled="activating" :loading="service.activating">{{errors.get('message') ? 'Retry' : 'Activate'}}</v-btn></v-list-tile-action>
                     </v-list-tile>
                 </v-list>
             </v-card-text>
@@ -51,8 +51,7 @@ export default {
     data() {
         return {
             services: [],
-            loading: false,
-            activating: false
+            loading: false
         }
     },
     methods: {
@@ -73,7 +72,7 @@ export default {
             if(this.activating) {
                 return;
             }
-            this.activating = true;
+            Vue.set(service, 'activating', true);
             this.$store.dispatch('remote/activateMachine', {
                 formData: {
                     customerId: this.customer.id,
@@ -87,7 +86,7 @@ export default {
                 this.$emit('activated', res.data);
                 this.close();
             }).finally(() => {
-                this.activating = false;
+                Vue.set(service, 'activating', false);
             });
         },
         close() {
@@ -110,6 +109,9 @@ export default {
         },
         errors() {
             return this.$store.getters['remote/getErrors'];
+        },
+        activating() {
+            return !!this.services.find(s => s.activating);
         }
     },
     watch: {

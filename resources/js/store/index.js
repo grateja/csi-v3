@@ -40,7 +40,8 @@ import storehour from './modules/storehour.js';
 export default new  Vuex.Store({
     state: {
         currentUser: null,
-        flashMessage: null
+        flashMessage: null,
+        machineActivationMethod: null
     },
     getters: {
         getCurrentUser(state) {
@@ -53,6 +54,10 @@ export default new  Vuex.Store({
             if(state.currentUser) {
                 return state.currentUser.roles[0] == 'developer';
             }
+        },
+        getMachineActivationMethod(state) {
+            return state.machineActivationMethod;
+        //    return localStorage.getItem('machineActivationMethod');
         }
     },
     actions: {
@@ -69,6 +74,7 @@ export default new  Vuex.Store({
         setUser(state, data) {
             // console.log('set user asfsdf sf a', data.user)
             state.currentUser = data.user;
+            state.machineActivationMethod = data.machineActivationMethod;
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${data.token.accessToken}`;
         },
         updateEmail(state, data) {

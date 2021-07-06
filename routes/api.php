@@ -42,6 +42,12 @@ Route::group(['prefix' => 'developer'], function () {
 
     // /api/developer/unsynch
     Route::get('unsynch', 'ClientsController@unsynch');
+
+
+    Route::group(['middleware' => ['auth:api', 'role:developer']], function() {
+        // /login-staff
+        Route::post('login/{userId}', 'DeveloperController@login');
+    });
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -149,7 +155,6 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
         // /api/sales-report/excel/custom-range/{download?}
         Route::get('custom-range/{download?}', 'ExcelController@customRange');
     });
-
 });
 Route::get('cumulative/{year}', 'SalesReportController@yearlyCumulative');
 

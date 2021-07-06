@@ -36,7 +36,7 @@ export default {
                 {
                     text: 'Remote panel',
                     icon: 'remote-panel',
-                    roles: ['staff', 'admin'],
+                    roles: ['staff', 'admin', 'developer'],
                     color: '#fbf9e9',
                     route: '/remote-panel'
                 },
@@ -78,7 +78,7 @@ export default {
                 {
                     text: 'Users',
                     icon: 'users',
-                    roles: ['admin'],
+                    roles: ['admin', 'developer'],
                     color: '#bcefe5',
                     route: '/users'
                 },
@@ -120,7 +120,7 @@ export default {
                 {
                     text: 'Machines',
                     icon: 'machines',
-                    roles: ['admin', 'staff'],
+                    roles: ['admin', 'staff', 'developer'],
                     color: '#e4dfdd',
                     route: '/machines'
                 },

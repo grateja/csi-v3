@@ -157,7 +157,7 @@ class MachinesController extends Controller
             $url = "$machine->ip_address/activate?pulse=$pulse&token=$avWash->id";
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 30);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             $output = curl_exec($curl);
             $curl_error = curl_error($curl);
@@ -211,11 +211,13 @@ class MachinesController extends Controller
         $totalMinutes = 0;
         $customerName = null;
         $customerId = null;
+        $dirty = false;
 
         $machine = Machine::where('ip_address', $terminalIP)->first();
 
         $customerDry = CustomerDry::whereNull('used')->find($remoteToken);
         if($customerDry) {
+            $dirty = true;
             $customerDry->update([
                 'used' => Carbon::now()->toDateTimeString(),
                 'staff_name' => 'Computer',
@@ -228,6 +230,7 @@ class MachinesController extends Controller
 
         $customerWash = CustomerWash::whereNull('used')->find($remoteToken);
         if($customerWash) {
+            $dirty = true;
             $customerWash->update([
                 'used' => Carbon::now()->toDateTimeString(),
                 'staff_name' => 'Computer',
@@ -238,15 +241,17 @@ class MachinesController extends Controller
             $customerId = $customerWash->customer_id;
         }
 
-        $machine->update([
-            'time_activated' => Carbon::now()->toDateTimeString(),
-            'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
-            'remarks' => 'Additional ' . $totalMinutes,
-            'user_name' => $customerName,
-            'customer_id' => $customerId,
-            'customer_wash_id' => $customerWash ? $customerWash->id : null,
-            'customer_dry_id' => $customerDry ? $customerDry->id : null,
-        ]);
+        if($dirty) {
+            $machine->update([
+                'time_activated' => Carbon::now()->toDateTimeString(),
+                'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
+                'remarks' => 'Additional ' . $totalMinutes,
+                'user_name' => $customerName,
+                'customer_id' => $customerId,
+                'customer_wash_id' => $customerWash ? $customerWash->id : null,
+                'customer_dry_id' => $customerDry ? $customerDry->id : null,
+            ]);
+        }
     }
 
     public function remarks(Request $request) {

@@ -352,8 +352,10 @@ class PosTransactionController extends Controller
                     'customer_id' => $transaction->customer_id,
                     'service_transaction_item_id' => $item['id'],
                     'machine_type' => $item->washingService['machine_type'],
-                    'minutes' => $item->washingService['regular_minutes'] + $item->washingService['additional_minutes'],
-                    'pulse_count' => $item->washingService['additional_minutes'] ? 2 : 1,
+                    // 'minutes' => $item->washingService['regular_minutes'] + $item->washingService['additional_minutes'],
+                    'minutes' => $item->washingService['minutes'],
+                    // 'pulse_count' => $item->washingService['additional_minutes'] ? 2 : 1,
+                    'pulse_count' => $item->washingService['pulse_count'],
                     'price' => $item->washingService->price,
                     'job_order' => $transaction->job_order,
                 ]);
@@ -382,54 +384,54 @@ class PosTransactionController extends Controller
                 ]);
             }
 
-            foreach ($fullServices as $item) {
-                foreach ($item->fullService->fullServiceItems as $fullServiceItem) {
-                    $earningPoints = 0;
-                    if($fullServiceItem->category == 'drying') {
+            // foreach ($fullServices as $item) {
+            //     foreach ($item->fullService->fullServiceItems as $fullServiceItem) {
+            //         $earningPoints = 0;
+            //         if($fullServiceItem->category == 'drying') {
 
-                        $dryingService = DryingService::find($fullServiceItem->drying_service_id);
+            //             $dryingService = DryingService::find($fullServiceItem->drying_service_id);
 
-                        for ($i=0; $i < $fullServiceItem->quantity; $i++) {
+            //             for ($i=0; $i < $fullServiceItem->quantity; $i++) {
 
-                            CustomerDry::create([
-                                'job_order' => $transaction->job_order,
-                                'service_name' => $dryingService->name . ' (Full service)',
-                                'customer_id' => $transaction->customer_id,
-                                'service_transaction_item_id' => $item['id'],
-                                'machine_type' => $dryingService['machine_type'],
-                                'minutes' => $dryingService['minutes'],
-                                'pulse_count' => $dryingService['minutes'] / 10,
-                            ]);
-                            $earningPoints += $fullServiceItem->points;
-                        }
+            //                 CustomerDry::create([
+            //                     'job_order' => $transaction->job_order,
+            //                     'service_name' => $dryingService->name . ' (Full service)',
+            //                     'customer_id' => $transaction->customer_id,
+            //                     'service_transaction_item_id' => $item['id'],
+            //                     'machine_type' => $dryingService['machine_type'],
+            //                     'minutes' => $dryingService['minutes'],
+            //                     'pulse_count' => $dryingService['minutes'] / 10,
+            //                 ]);
+            //                 $earningPoints += $fullServiceItem->points;
+            //             }
 
-                    }
+            //         }
 
-                    if($fullServiceItem->category == 'washing') {
+            //         if($fullServiceItem->category == 'washing') {
 
-                        $washingService = WashingService::find($fullServiceItem->washing_service_id);
+            //             $washingService = WashingService::find($fullServiceItem->washing_service_id);
 
-                        for ($i=0; $i < $fullServiceItem->quantity; $i++) {
+            //             for ($i=0; $i < $fullServiceItem->quantity; $i++) {
 
-                            CustomerWash::create([
-                                'job_order' => $transaction->job_order,
-                                'service_name' => $washingService->name . '(Full service)',
-                                'customer_id' => $transaction->customer_id,
-                                'service_transaction_item_id' => $item['id'],
-                                'machine_type' => $washingService['machine_type'],
-                                'minutes' => $washingService['regular_minutes'] + $washingService['additional_minutes'],
-                                'pulse_count' => $washingService['additional_minutes'] ? 2 : 1,
-                            ]);
-                            $earningPoints += $fullServiceItem->points;
-                        }
-                    }
-                }
+            //                 CustomerWash::create([
+            //                     'job_order' => $transaction->job_order,
+            //                     'service_name' => $washingService->name . '(Full service)',
+            //                     'customer_id' => $transaction->customer_id,
+            //                     'service_transaction_item_id' => $item['id'],
+            //                     'machine_type' => $washingService['machine_type'],
+            //                     'minutes' => $washingService['regular_minutes'] + $washingService['additional_minutes'],
+            //                     'pulse_count' => $washingService['additional_minutes'] ? 2 : 1,
+            //                 ]);
+            //                 $earningPoints += $fullServiceItem->points;
+            //             }
+            //         }
+            //     }
 
-                $item->update([
-                    'saved' => true,
-                    'earning_points' => $earningPoints,
-                ]);
-            }
+            //     $item->update([
+            //         'saved' => true,
+            //         'earning_points' => $earningPoints,
+            //     ]);
+            // }
 
             if($transaction) {
                 $transaction->refreshAll();

@@ -201,7 +201,7 @@ export default {
                 {
                     text: 'Users',
                     icon: 'users',
-                    roles: ['admin'],
+                    roles: ['admin', 'developer'],
                     color: '#a1e6d9',
                     to: '/users'
                 },

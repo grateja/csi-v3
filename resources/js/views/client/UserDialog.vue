@@ -4,7 +4,7 @@
             <v-card>
                 <v-card-title class="title grey--text">User info</v-card-title>
                 <v-card-text>
-                    <v-text-field v-model="formData.id" :error-messages="errors.get('id')" outline label="ID" :hint="`${35 - parseInt(formData.id ? formData.id.length : 0)} characters`"></v-text-field>
+                    <v-text-field v-model="formData.id" :error-messages="errors.get('id')" outline label="ID" :hint="`${36 - parseInt(formData.id ? formData.id.length : 0)} characters`"></v-text-field>
                     <v-text-field v-model="formData.name" :error-messages="errors.get('name')" outline label="Name"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>

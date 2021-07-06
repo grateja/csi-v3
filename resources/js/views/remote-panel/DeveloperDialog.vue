@@ -13,7 +13,7 @@
                 <v-btn round @click="cancel" v-if="activating">cancel</v-btn>
             </v-card-actions>
             <v-card-text>
-                <pre>{{machine}}</pre>
+                <!-- <pre>{{machine}}</pre> -->
             </v-card-text>
         </v-card>
     </v-dialog>

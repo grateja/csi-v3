@@ -69,6 +69,7 @@ class OAuthController extends Controller
                 'token' => $token,
                 'activeBranch' => $user->activeBranch,
                 'retainToken' => $request->rememberMe,
+                'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'els'),
             ]);
         }
         return response()->json([
@@ -89,6 +90,7 @@ class OAuthController extends Controller
             'user' => $user,
             'activeBranch' => $user->activeBranch,
             'token' => $token,
+            'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'els'),
         ], 200);
     }
 }

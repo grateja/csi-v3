@@ -27,6 +27,9 @@
                         <v-btn small @click="changePassword(props.item)" flat outline round>
                             <v-icon small left>sms</v-icon> change password
                         </v-btn>
+                        <v-btn v-if="isDeveloper" small @click="login(props.item)" flat outline round>
+                            <v-icon small left>lock</v-icon> Login
+                        </v-btn>
                     </td>
                 </template>
             </v-data-table>
@@ -111,6 +114,19 @@ export default {
                 }).finally(() => {
                     Vue.set(user, 'isDeleting', false);
                 });
+            }
+        },
+        login(user) {
+            this.$store.dispatch('auth/loginStaff', user).then((res, rej) => {
+                this.$router.push('/')
+            });
+        }
+    },
+    computed: {
+        isDeveloper() {
+            let user = this.$store.getters.getCurrentUser;
+            if(user) {
+                return user.roles.some(r => r == 'developer');
             }
         }
     },

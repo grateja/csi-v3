@@ -136,6 +136,7 @@ export default {
             this.$store.dispatch('client/setUpMachines', this.formData).then((res, rej) => {
                 this.$emit('saved', res.data);
                 this.close();
+                this.$router.push('/remote-panel')
             });
         },
         close() {

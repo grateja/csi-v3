@@ -350,7 +350,7 @@ class ThermalPrinter extends Model
         $this->printSubtitle("EXPENSES");
         $this->printer->initialize();
         $this->printItem("Product purchase", $data['productPurchases']['total_cost']);
-        $this->printItem("Other", $data['otherExpenses']['other_expense']);
+        $this->printItem("Other", $data['otherExpenses']['total_expense']);
         $this->printUnderline();
         $this->printer->setEmphasis(true);
         $this->printItem("Total", $data['total']);

@@ -13,7 +13,12 @@ class WashingService extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'name', 'description', 'img_path', 'price', 'machine_type', 'regular_minutes', 'additional_minutes', 'points', 'synched', 'deleted_at', 'updated_at',
+        'name', 'description', 'img_path', 'price', 'machine_type', 'regular_minutes','quick_minutes', 'more_rinse_minutes', 'premium_minutes', 'additional_minutes', 'points', 'synched', 'deleted_at', 'updated_at',
+    ];
+
+    public $appends = [
+        'minutes',
+        'pulse_count',
     ];
 
     public function fullServiceItems() {
@@ -22,6 +27,24 @@ class WashingService extends Model
 
     public function serviceTransactionItems() {
         return $this->hasMany('App\ServiceTransactionItem');
+    }
+
+    public function getMinutesAttribute() {
+        return $this->regular_minutes + $this->quick_minutes + $this->more_rinse_minutes + $this->premium_minutes + $this->additional_minutes;
+    }
+
+    public function getPulseCountAttribute() {
+        if($this->regular_minutes > 0) {
+            return 2;
+        } else if($this->quick_minutes > 0) {
+            return 1;
+        } else if($this->more_rinse_minutes > 0) {
+            return 2;
+        } else if($this->premium_minutes > 0) {
+            return 3;
+        } else if($this->additional_minutes > 0) {
+            return 4;
+        }
     }
 
     protected static function boot() {

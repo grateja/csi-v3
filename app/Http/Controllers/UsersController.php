@@ -14,7 +14,9 @@ class UsersController extends Controller
         $users = User::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
         })->whereHas('roles', function($query) {
-            $query->where('name', 'staff');
+            if(!auth('api')->user()->hasAnyRole(['developer'])) {
+                $query->where('name', 'staff');
+            }
         });
 
         return response()->json([

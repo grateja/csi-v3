@@ -19,8 +19,8 @@
                         </td>
                         <td v-else>P {{ parseFloat(props.item.price).toFixed(2) }}</td>
                         <td>{{props.item.machine_type}}</td>
-                        <td>{{props.item.regular_minutes}}</td>
-                        <td>{{props.item.additional_minutes}}</td>
+                        <td>{{props.item.minutes}}</td>
+                        <!-- <td>{{props.item.additional_minutes}}</td> -->
                         <td>{{props.item.points}}</td>
                         <td>
                             <template v-if="isOwner">
@@ -74,13 +74,13 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Regular minutes',
+                    text: 'Minutes',
                     sortable: false
                 },
-                {
-                    text: 'Additional minutes',
-                    sortable: false
-                },
+                // {
+                //     text: 'Additional minutes',
+                //     sortable: false
+                // },
                 {
                     text: 'Points',
                     sortable: false
@@ -116,7 +116,7 @@ export default {
                 this.activeService.description = data.service.description;
                 this.activeService.price = data.service.price;
                 this.activeService.machine_type = data.service.machine_type;
-                this.activeService.regular_minutes = data.service.regular_minutes;
+                this.activeService.minutes = data.service.minutes;
                 this.activeService.additional_minutes = data.service.additional_minutes;
                 this.activeService.points = data.service.points;
             }

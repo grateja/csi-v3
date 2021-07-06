@@ -13,6 +13,7 @@ class WashingServicesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
         $washingServices = WashingService::where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
@@ -98,9 +99,10 @@ class WashingServicesController extends Controller
             'name' => 'required|unique:washing_services,name,NULL,id,deleted_at,NULL',
             'price' => 'numeric',
             'regularMinutes' => 'numeric',
-            'additionalMinutes' => 'numeric',
+            // 'additionalMinutes' => 'numeric',
             'points' => 'numeric',
             'machineType' => 'required|in:TITAN,REGULAR',
+            'serviceType' => 'required|in:regular,quick,more_rinse,premium,additional'
         ];
 
         if($request->validate($rules)) {
@@ -111,11 +113,17 @@ class WashingServicesController extends Controller
 
             if($service) {
                 $service->update([
+                    'regular_minutes' => 0,
+                    'quick_minutes' => 0,
+                    'more_rinse_minutes' => 0,
+                    'premium_minutes' => 0,
+                    'additional_minutes' => 0,
+                ]);
+                $service->update([
                     'name' => $request->name,
                     'description' => $request->description,
                     'machine_type' => $request->machineType,
-                    'regular_minutes' => $request->regularMinutes,
-                    'additional_minutes' => $request->additionalMinutes,
+                    $request->serviceType . '_minutes' => $request->regularMinutes,
                     'price' => $request->price,
                     'points' => $request->points,
                     'img_path' => null,
@@ -126,8 +134,7 @@ class WashingServicesController extends Controller
                     'name' => $request->name,
                     'description' => $request->description,
                     'machine_type' => $request->machineType,
-                    'regular_minutes' => $request->regularMinutes,
-                    'additional_minutes' => $request->additionalMinutes,
+                    $request->serviceType . '_minutes' => $request->regularMinutes,
                     'price' => $request->price,
                     'points' => $request->points,
                     'img_path' => null,
@@ -178,9 +185,9 @@ class WashingServicesController extends Controller
             'name' => 'required',
             'price' => 'numeric',
             'regularMinutes' => 'numeric',
-            'additionalMinutes' => 'numeric',
             'points' => 'numeric',
             'machineType' => 'required|in:TITAN,REGULAR',
+            'serviceType' => 'required|in:regular,quick,more_rinse,premium,additional'
         ];
 
         $service = WashingService::findOrFail($id);
@@ -191,11 +198,17 @@ class WashingServicesController extends Controller
 
         if($request->validate($rules)) {
             $service->update([
+                'regular_minutes' => 0,
+                'quick_minutes' => 0,
+                'more_rinse_minutes' => 0,
+                'premium_minutes' => 0,
+                'additional_minutes' => 0,
+            ]);
+            $service->update([
                 'name' => $request->name,
                 'description' => $request->description,
                 'machine_type' => $request->machineType,
-                'regular_minutes' => $request->regularMinutes,
-                'additional_minutes' => $request->additionalMinutes,
+                $request->serviceType . '_minutes' => $request->regularMinutes,
                 'price' => $request->price,
                 'points' => $request->points,
                 'deleted_at' => null

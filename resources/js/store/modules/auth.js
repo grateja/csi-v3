@@ -81,6 +81,20 @@ const actions = {
             context.commit('setLoadingStatus', false);
             return Promise.reject(err);
         });
+    },
+    loginStaff(context, user) {
+        return axios.post(`/api/developer/login/${user.id}`).then((res, rej) => {
+            context.dispatch('setAuth', res.data, {root: true});
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err);
+            if(err.response.status == 401) {
+                context.commit('setErrors', err.response.data.errors);
+            }
+            return Promise.reject(err);
+        }).finally(() => {
+            context.commit('setLoggingIn', false);
+        });
     }
 }
 
