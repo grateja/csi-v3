@@ -109,14 +109,14 @@ export default {
             switch(serviceType) {
                 case 'quick':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Quick wash';
+                        this.formData.name = 'Quick Wash';
                     }
                     console.log(this.formData.name);
                     this.formData.regularMinutes = 24;
                     break;
                 case 'regular':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Regular wash';
+                        this.formData.name = 'Regular Wash';
                     }
                     this.formData.regularMinutes = 38;
                     break;
@@ -128,13 +128,13 @@ export default {
                     break;
                 case 'premium':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Premium wash';
+                        this.formData.name = 'Premium Wash';
                     }
                     this.formData.regularMinutes = 46;
                     break;
                 case 'additional':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Super wash';
+                        this.formData.name = 'Super Wash';
                     }
                     this.formData.regularMinutes = 52;
                     break;
@@ -202,7 +202,8 @@ export default {
             }
         },
         'formData.serviceType': function(val) {
-            this.updateTime(val);
+            if(this.mode == 'insert')
+                this.updateTime(val);
         }
     }
 }
