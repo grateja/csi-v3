@@ -75,7 +75,7 @@ class TapCardController extends Controller
 
         if($machine->is_running && $machine->user_name != $rfidCard->owner_name) {
             return response()->json([
-                'message' => 'Machine is already in use by a different customer: ' . $machine->user_name,
+                'message' => 'Machine is already in use by a different user: ' . $machine->user_name,
             ], 422);
         }
 

@@ -34,16 +34,26 @@ class WashingService extends Model
     }
 
     public function getPulseCountAttribute() {
-        if($this->regular_minutes > 0) {
-            return 2;
-        } else if($this->quick_minutes > 0) {
-            return 1;
-        } else if($this->more_rinse_minutes > 0) {
-            return 2;
-        } else if($this->premium_minutes > 0) {
-            return 3;
-        } else if($this->additional_minutes > 0) {
-            return 4;
+        if(env('MACHINE_ACTIVATION_METHOD', 'els') == 'els') {
+            // default els
+            if($this->regular_minutes > 0) {
+                return 1;
+            } else if($this->additional_minutes > 0) {
+                return 2;
+            }
+        } else {
+            // nsfot
+            if($this->regular_minutes > 0) {
+                return 2;
+            } else if($this->quick_minutes > 0) {
+                return 1;
+            } else if($this->more_rinse_minutes > 0) {
+                return 2;
+            } else if($this->premium_minutes > 0) {
+                return 3;
+            } else if($this->additional_minutes > 0) {
+                return 4;
+            }
         }
     }
 

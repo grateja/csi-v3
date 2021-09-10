@@ -6,6 +6,7 @@
     RewriteEngine On
 
     RewriteRule ^(checker)($|/) - [L]
+    RewriteRule ^(activate)($|/) - [L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
