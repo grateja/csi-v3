@@ -31,6 +31,8 @@ class CreateWasherTapCardConfigsTable extends Migration
             $table->timestamp('synched')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            // Testing
         });
     }
 
