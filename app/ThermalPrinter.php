@@ -154,6 +154,15 @@ class ThermalPrinter extends Model
         }
     }
 
+    private function printLagoon($lagoonItems) {
+        if(count($lagoonItems)) {
+            $this->printer->feed();
+            $this->printSubtitle("LAGOON");
+            $this->printer->initialize();
+            $this->printList($lagoonItems);
+        }
+    }
+
     public function claimStub($transaction) {
         $this->printHeader();
         $this->printQuote("*** CLAIM STUB ***");
@@ -162,6 +171,7 @@ class ThermalPrinter extends Model
         $this->printServices($transaction->posServiceItems);
         $this->printProducts($transaction->posProductItems);
         $this->printScarpa($transaction->posScarpaCleaningItems);
+        $this->printLagoon($transaction->posLagoonItems);
 
         $this->printUnderline();
         $this->printItem("TOTAL AMOUNT",$transaction->total_price);
@@ -194,6 +204,7 @@ class ThermalPrinter extends Model
         $this->printServices($transaction->posServiceItems);
         $this->printProducts($transaction->posProductItems);
         $this->printScarpa($transaction->posScarpaCleaningItems);
+        $this->printLagoon($transaction->posLagoonItems);
 
         $this->printUnderline();
         $this->printItem("TOTAL AMOUNT",$transaction->total_price);
@@ -305,6 +316,24 @@ class ThermalPrinter extends Model
             $this->printer->feed();
         } else {
             $this->printCaption("No used products");
+            $this->printer->feed();
+        }
+    }
+
+    private function summaryUsedLagoon($data) {
+        $this->printSubtitle("USED LAGOON");
+        $this->printer->initialize();
+        if(count($data)) {
+            $data = collect($data);
+            foreach($data as $item) {
+                $this->printItem($item->name, $item->total_price, $item->quantity);
+            }
+            $this->printUnderline();
+            $this->printer->setEmphasis(true);
+            $this->printItem("Total", $data->sum('total_price'), $data->sum('quantity'));
+            $this->printer->feed();
+        } else {
+            $this->printCaption("No used services");
             $this->printer->feed();
         }
     }
@@ -428,6 +457,7 @@ class ThermalPrinter extends Model
         $this->summaryUsedServices($data['usedServices']);
         $this->summaryUsedProducts($data['usedProducts']);
         $this->summaryScarpa($data['usedScarpa']);
+        $this->summaryUsedLagoon($data['usedLagoon']);
         $this->summaryRFID($data['rfidCard']);
         $this->summaryRFIDLoad($data['rfidLoad']);
         $this->summaryTotalSales($data['totalSales']);

@@ -54,8 +54,18 @@ export default {
             this.$emit('input', false);
         },
         submit() {
+            this.providerError = null
+            this.amountError = null
+            this.referenceNumberError = null
             var hasError = false
-            if(this.referenceNumber == null) {
+            if(this.provider == null || this.provider == 'Other') {
+                if(this.customProvider == null || this.customProvider == '') {
+                    this.providerError = "This field is required"
+                    this.provider = "Other"
+                    hasError = true
+                }
+            }
+            if(this.referenceNumber == null || this.referenceNumber == '') {
                 this.referenceNumberError = "This field is required"
                 hasError = true
             }
@@ -90,8 +100,17 @@ export default {
                 this.provider = null
                 this.amount  = this.amountToPay || 0
             }
+            if(this.customProvider != null) {
+                this.provider = 'Other'
+            }
             this.referenceNumberError = null
             this.amountError = null
+        },
+        provider(val) {
+            if(val != 'Other') {
+                this.providerError = null
+                this.customProvider = null
+            }
         }
     }
 }
