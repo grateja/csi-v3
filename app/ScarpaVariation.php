@@ -19,4 +19,8 @@ class ScarpaVariation extends Model
     public function scarpaCategory() {
         return $this->belongsTo('App\ScarpaCategory');
     }
+
+    public function queSynch() {
+        return (new AutoSynch('scarpa_variations', $this->id))->delay(5);
+    }
 }

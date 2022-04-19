@@ -103,7 +103,8 @@ class PrinterController extends Controller
         } else {
             $thermalPrinter->claimStub($transaction);
             return response()->json([
-                'success' => 'Claim stub printed successfully'
+                'success' => 'Claim stub printed successfully',
+                'method' => 'rpi'
             ]);
         }
         $client = Client::firstOrFail();

@@ -4,8 +4,10 @@ namespace App\Jobs;
 
 use App\Client;
 use App\Customer;
+use App\LagoonTransactionItem;
 use App\PartialPayment;
 use App\ProductTransactionItem;
+use App\ScarpaCleaningTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
 use App\TransactionPayment;
@@ -52,6 +54,8 @@ class SendTransaction implements ShouldQueue
             'customer' => $customer,
             'service_transaction_items' => ServiceTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'product_transaction_items' => ProductTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
+            'lagoon_transaction_items' => LagoonTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
+            'scarpa_cleaning_transaction_items' => ScarpaCleaningTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'payment' => TransactionPayment::withTrashed()->find($transaction->id),
             'partial_payment' => PartialPayment::withTrashed()->find($transaction->id),
             'remarks' => TransactionRemarks::withTrashed()->where('transaction_id', $transaction->id),
@@ -86,12 +90,23 @@ class SendTransaction implements ShouldQueue
                     'synched' => Carbon::now(),
                 ]);
             }
+            if($result->scarpa_cleaning_transaction_item_ids) {
+                DB::table('scarpa_cleaning_transaction_items')->whereIn('id', $result->scarpa_cleaning_transaction_item_ids)->update([
+                    'synched' => Carbon::now(),
+                ]);
+            }
+            if($result->lagoon_transaction_item_ids) {
+                DB::table('lagoon_transaction_items')->whereIn('id', $result->lagoon_transaction_item_ids)->update([
+                    'synched' => Carbon::now(),
+                ]);
+            }
         }
     }
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
-        $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId . '/transaction', [
+        // $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId . '/transaction', [
+        $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId . '/transaction', [
             'json' => $data,
             'headers' => [
                 'Content-Type' => 'application/json',

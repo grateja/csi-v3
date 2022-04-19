@@ -394,7 +394,6 @@ class PosTransactionController extends Controller
             }
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
-            $this->dispatch($lagoon->queSynch());
 
             return response()->json([
                 'transaction' => $transaction,

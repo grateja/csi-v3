@@ -39,6 +39,11 @@ class LiveHostController extends Controller
             'store_hours',
             'partial_payments',
             'ti_tos',
+            'scarpa_categories',
+            'scarpa_variations',
+            'scarpa_cleaning_transaction_items',
+            'lagoons',
+            'lagoon_transaction_items',
         ];
 
         $collections = [];
@@ -68,7 +73,9 @@ class LiveHostController extends Controller
 
             foreach($tables as $table) {
                 $t = collect($result);
-                $updated = $this->setUpdated($table, $t[$table . '_id']);
+                if(array_key_exists($table . '_id', $t->toArray())) {
+                    $updated = $this->setUpdated($table, $t[$table . '_id']);
+                }
             }
 
             return response()->json($result);

@@ -19,4 +19,8 @@ class ScarpaCleaningTransactionItem extends Model
     public function transaction() {
         return $this->belongsTo('App\Transaction');
     }
+
+    public function queSynch() {
+        return (new AutoSynch('scarpa_cleaning_transaction_items', $this->id))->delay(5);
+    }
 }
