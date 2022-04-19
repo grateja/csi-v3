@@ -111,6 +111,54 @@ const actions = {
 
         });
     },
+    reduceShoeCleaning(context, data) {
+        return axios.post(`/api/pos-transactions/scarpa-cleanings/reduce-scarpa-cleaning`, data).then((res, rej) => {
+
+        });
+    },
+    reduceLagoon(context, data) {
+        return axios.post(`/api/pos-transactions/reduce-lagoon`, data).then((res, rej) => {
+
+        });
+    },
+    addShoeCleaning(context, data) {
+        if(context.getters.isBusy) {
+            alert('Please wait...');
+            return;
+        }
+        context.commit('setAddingItemStatus', true);
+        return axios.post(`/api/pos-transactions/scarpa-cleanings/${data.variationId}/add`, {
+            customerId: data.customerId,
+            transactionId: data.transactionId
+        }).then((res, rej) => {
+            context.commit('setCurrentTransaction', res.data.transaction);
+            context.commit('setAddingItemStatus', false);
+            return res;
+        }).catch(err => {
+            context.commit('setAddingItemStatus', false);
+            return Promise.reject(err);
+        });
+    },
+    addLagoon(context, data) {
+        if(context.getters.isBusy) {
+            alert('Please wait...');
+            return;
+        }
+
+        context.commit('setAddingItemStatus', true);
+        return axios.post(`/api/pos-transactions/add-lagoon`, {
+            customerId: data.customerId,
+            transactionId: data.transactionId,
+            itemId: data.itemId
+        }).then((res, rej) => {
+            context.commit('setCurrentTransaction', res.data.transaction);
+            context.commit('setAddingItemStatus', false);
+            return res;
+        }).catch(err => {
+            context.commit('setAddingItemStatus', false);
+            return Promise.reject(err);
+        });
+    },
     saveTransaction(context, transactionId) {
         context.commit('clearErrors');
         context.commit('setSavingStatus', true);

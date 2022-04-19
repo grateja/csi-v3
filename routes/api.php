@@ -360,6 +360,71 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             Route::post('{id}/delete-product', 'FullServiceProductsController@deleteProduct');
         });
     });
+
+    // /api/services/scarpa-cleanings
+    Route::group(['prefix' => 'scarpa-cleanings'], function() {
+        // /api/services/scarpa-cleanings
+        Route::get('/', 'ScarpaCleaningController@index');
+
+        // /api/services/scarpa-cleanings
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/scarpa-cleanings/create
+            Route::post('create', 'ScarpaCleaningController@store');
+
+            // /api/services/scarpa-cleanings/{id}/update
+            Route::post('{id}/update', 'ScarpaCleaningController@update');
+
+            // /api/services/scarpa-cleanings/{id}/set-picture
+            Route::post('{id}/set-picture', 'ScarpaCleaningController@setPicture');
+
+            // /api/services/scarpa-cleanings/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'ScarpaCleaningController@removePicture');
+
+            // /api/services/scarpa-cleanings/{id}/delete-product
+            Route::post('{id}/delete-product', 'ScarpaCleaningController@deleteProduct');
+        });
+
+        // /api/services/scarpa-cleanings/variations
+        Route::group(['prefix' => 'variations'], function() {
+            // /api/services/scarpa-cleanings/variations/{serviceId}/add
+            Route::post('{serviceId}/add', 'ScarpaCleaningController@addVariation');
+
+            // /api/services/scarpa-cleanings/variations/{serviceId}/{variationId}/update
+            Route::post('{serviceId}/{variationId}/update', 'ScarpaCleaningController@updateVariation');
+
+            // /api/services/scarpa-cleanings/variations/{serviceId}/delete
+            Route::post('{serviceId}/delete', 'ScarpaCleaningController@deleteVariation');
+
+            // /api/services/scarpa-cleanings/variations/{serviceId}
+            Route::get('{serviceId}', 'ScarpaCleaningController@variations');
+        });
+
+    });
+
+    // /api/services/lagoon
+    Route::group(['prefix' => 'lagoon'], function() {
+        // /api/services/lagoon
+        Route::get('/', 'LagoonController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/lagoon/create
+            Route::post('create', 'LagoonController@store');
+
+            // /api/services/lagoon/{id}/update
+            Route::post('{id}/update', 'LagoonController@update');
+
+            // /api/services/lagoon/{id}/set-picture
+            Route::post('{id}/set-picture', 'LagoonController@setPicture');
+
+            // /api/services/lagoon/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'LagoonController@removePicture');
+
+            // /api/services/lagoon/{id}/delete-service
+            Route::post('{id}/delete-service', 'LagoonController@deleteService');
+        });
+    });
+    
+
 });
 
 // /apo/pos-transactions
@@ -369,6 +434,9 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
 
     // /api/pos-transactions/services
     Route::get('services', 'PosTransactionController@services');
+
+    // /api/pos-transactions/lagoon
+    Route::get('lagoon', 'LagoonController@index');
 
     // /api/pos-transactions/add-service/{category}
     Route::post('add-service/{category}', 'PosTransactionController@addService');
@@ -382,8 +450,29 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
     // /api/pos-transactions/add-product
     Route::post('add-product', 'PosTransactionController@addProduct');
 
+    // /api/pos-transactions/add-lagoon
+    Route::post('add-lagoon', 'PosTransactionController@addLagoon');
+
     // /api/pos-transactions/reduce-products
     Route::post('reduce-products', 'PosTransactionController@reduceProducts');
+
+    // /api/pos-transactions/reduce-lagoon
+    Route::post('reduce-lagoon', 'PosTransactionController@reduceLagoon');
+
+    // /api/pos-transactions/scarpa-cleanings
+    Route::group(['prefix' => 'scarpa-cleanings'], function() {
+        // /api/pos-transactions/scarpa-cleanings
+        Route::get('/', 'PosTransactionController@scarpaCleanings');
+
+        // /api/pos-transactions/scarpa-cleanings/{serviceId}/variations/{groupBy}
+        Route::get('{serviceId}/variations/{groupBy}', 'PosTransactionController@scarpaVariations');
+
+        // /api/pos-transactions/scarpa-cleanings/{variationId}/add
+        Route::post('{variationId}/add', 'PosTransactionController@addScarpaCleaning');
+
+        // /api/pos-transactions/scarpa-cleanings/reduce-scarpa-cleaning
+        Route::post('reduce-scarpa-cleaning', 'PosTransactionController@reduceScarpaCleaning');
+    });
 });
 
 // /api/transactions

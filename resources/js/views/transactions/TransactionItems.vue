@@ -45,7 +45,7 @@
             <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posServiceItems.length" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
-                    <h4>SERVICES</h4>
+                    <h4>WASH/DRY SERVICES</h4>
                     <VSpacer/>
                 </v-card-title>
                 <v-layout>
@@ -192,6 +192,131 @@
                     </v-flex>
                 </v-layout>
             </v-card>
+
+
+<!-- Shoe cleanings -->
+
+            <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posScarpaCleaningItems.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>SCARPA</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">QTY</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <template v-for="(item, i) in currentTransaction.posScarpaCleaningItems">
+                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                <v-btn icon small class="ma-0 red" outline @click="reduceShoeCleaning(item)" :loading="item.reducing">
+                                    <v-icon small class="red--text">remove</v-icon>
+                                </v-btn>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                </template>
+                <v-divider class="black"></v-divider>
+                <v-layout class="pa-1 font-weight-bold" >
+                    <v-flex xs4>
+                        <div>Total</div>
+                    </v-flex>
+                    <v-flex xs3>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="text-xs-center">{{currentTransaction.posScarpaCleaningSummary.total_quantity}}</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="text-xs-right">P {{parseFloat(currentTransaction.posScarpaCleaningSummary.total_price).toFixed(2)}}</div>
+                    </v-flex>
+                </v-layout>
+            </v-card>
+
+<!-- LAC -->
+            <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posLagoonItems.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>LAGOON</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">QTY</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <template v-for="(item, i) in currentTransaction.posLagoonItems">
+                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                <v-btn icon small class="ma-0 red" outline @click="reduceLagoon(item)" :loading="item.reducing">
+                                    <v-icon small class="red--text">remove</v-icon>
+                                </v-btn>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                </template>
+                <v-divider class="black"></v-divider>
+                <v-layout class="pa-1 font-weight-bold" >
+                    <v-flex xs4>
+                        <div>Total</div>
+                    </v-flex>
+                    <v-flex xs3>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="text-xs-center">{{currentTransaction.posLagoonSummary.total_quantity}}</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="text-xs-right">P {{parseFloat(currentTransaction.posLagoonSummary.total_price).toFixed(2)}}</div>
+                    </v-flex>
+                </v-layout>
+            </v-card>
+
 
 <!-- End -->
 
@@ -391,6 +516,28 @@ export default {
             Vue.set(item, 'reducing', true);
             this.$store.dispatch('postransaction/reduceProduct', {
                 productId: item.product_id,
+                transactionId: this.currentTransaction.id
+            }).finally(() => {
+                this.$store.dispatch('postransaction/refreshTransaction').finally(() => {
+                    Vue.set(item, 'reducing', false);
+                });
+            });
+        },
+        reduceShoeCleaning(item) {
+            Vue.set(item, 'reducing', true);
+            this.$store.dispatch('postransaction/reduceShoeCleaning', {
+                scarpaVariationId: item.scarpa_variation_id,
+                transactionId: this.currentTransaction.id
+            }).finally(() => {
+                this.$store.dispatch('postransaction/refreshTransaction').finally(() => {
+                    Vue.set(item, 'reducing', false);
+                });
+            });
+        },
+        reduceLagoon(item) {
+            Vue.set(item, 'reducing', true);
+            this.$store.dispatch('postransaction/reduceLagoon', {
+                lagoonId: item.lagoon_id,
                 transactionId: this.currentTransaction.id
             }).finally(() => {
                 this.$store.dispatch('postransaction/refreshTransaction').finally(() => {

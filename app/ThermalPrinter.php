@@ -145,6 +145,15 @@ class ThermalPrinter extends Model
         }
     }
 
+    private function printScarpa($scarpaItems) {
+        if(count($scarpaItems)) {
+            $this->printer->feed();
+            $this->printSubtitle("SCARPA");
+            $this->printer->initialize();
+            $this->printList($scarpaItems);
+        }
+    }
+
     public function claimStub($transaction) {
         $this->printHeader();
         $this->printQuote("*** CLAIM STUB ***");
@@ -152,6 +161,7 @@ class ThermalPrinter extends Model
         $this->printSubHeader($transaction);
         $this->printServices($transaction->posServiceItems);
         $this->printProducts($transaction->posProductItems);
+        $this->printScarpa($transaction->posScarpaCleaningItems);
 
         $this->printUnderline();
         $this->printItem("TOTAL AMOUNT",$transaction->total_price);
@@ -183,6 +193,7 @@ class ThermalPrinter extends Model
 
         $this->printServices($transaction->posServiceItems);
         $this->printProducts($transaction->posProductItems);
+        $this->printScarpa($transaction->posScarpaCleaningItems);
 
         $this->printUnderline();
         $this->printItem("TOTAL AMOUNT",$transaction->total_price);
@@ -298,6 +309,26 @@ class ThermalPrinter extends Model
         }
     }
 
+    private function summaryScarpa($data) {
+        $this->printer->initialize();
+        $this->printer->setEmphasis(true);
+        $this->printSubtitle("SHOE CLEANINGS");
+        $this->printer->initialize();
+        if(count($data)) {
+            $data = collect($data);
+            foreach($data as $item) {
+                $this->printItem($item->name, $item->total_price, $item->quantity);
+            }
+            $this->printUnderline();
+            $this->printer->setEmphasis(true);
+            $this->printItem("Total", $data->sum('total_price'), $data->sum('quantity'));
+            $this->printer->feed();
+        } else {
+            $this->printCaption("No Records");
+            $this->printer->feed();
+        }
+    }
+
     private function summaryRFID($data) {
         $this->printer->initialize();
         $this->printer->setEmphasis(true);
@@ -396,6 +427,7 @@ class ThermalPrinter extends Model
         $this->summaryJO($data['posSummary']);
         $this->summaryUsedServices($data['usedServices']);
         $this->summaryUsedProducts($data['usedProducts']);
+        $this->summaryScarpa($data['usedScarpa']);
         $this->summaryRFID($data['rfidCard']);
         $this->summaryRFIDLoad($data['rfidLoad']);
         $this->summaryTotalSales($data['totalSales']);

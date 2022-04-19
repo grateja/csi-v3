@@ -94,9 +94,12 @@ class PrinterController extends Controller
         // $transaction->withPayment();
         $thermalPrinter = new ThermalPrinter;
         if($printerError = $thermalPrinter->hasError()) {
-            return response()->json([
-                'errors' => $printerError
-            ], 422);
+            if(env('PRINTER_METHOD', 'rpi') == 'rpi') {
+                return response()->json([
+                    'errors' => $printerError,
+                    'method' => 'rpi',
+                ], 422);
+            }
         } else {
             $thermalPrinter->claimStub($transaction);
             return response()->json([
@@ -145,13 +148,17 @@ class PrinterController extends Controller
         $transaction->refreshAll();
         $thermalPrinter = new ThermalPrinter;
         if($printerError = $thermalPrinter->hasError()) {
-            return response()->json([
-                'errors' => $printerError
-            ], 422);
+            if(env('PRINTER_METHOD', 'rpi') == 'rpi') {
+                return response()->json([
+                    'errors' => $printerError,
+                    'method' => 'rpi',
+                ], 422);
+            }
         } else {
             $thermalPrinter->jobOrder($transaction);
             return response()->json([
-                'success' => 'Job Order Printed successfully'
+                'success' => 'Job Order Printed successfully',
+                'method' => 'rpi',
             ]);
         }
 
@@ -190,9 +197,12 @@ class PrinterController extends Controller
 
         $thermalPrinter = new ThermalPrinter;
         if($printerError = $thermalPrinter->hasError()) {
-            return response()->json([
-                'errors' => $printerError
-            ], 422);
+            if(env('PRINTER_METHOD', 'rpi') == 'rpi') {
+                return response()->json([
+                    'errors' => $printerError,
+                    'method' => 'rpi',
+                ], 422);
+            }
         } else {
             $thermalPrinter->loadTransaction($rfidLoadTransaction);
             return response()->json([

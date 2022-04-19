@@ -27,6 +27,8 @@ import serviceprice from './modules/serviceprice.js';
 import washingservice from './modules/washingservice.js';
 import dryingservice from './modules/dryingservice.js';
 import otherservice from './modules/otherservice.js';
+import scarpacleaning from './modules/scarpacleaning.js';
+import lagoon from './modules/lagoon.js'
 import fullservice from './modules/fullservice.js';
 import postransaction from './modules/postransaction.js';
 import fullserviceitem from './modules/fullserviceitem.js';
@@ -120,6 +122,8 @@ export default new  Vuex.Store({
         washingservice,
         dryingservice,
         otherservice,
+        scarpacleaning,
+        lagoon,
         postransaction,
         fullservice,
         fullserviceitem,

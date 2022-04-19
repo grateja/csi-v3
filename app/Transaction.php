@@ -53,6 +53,14 @@ class Transaction extends Model
         return $this->hasMany('App\ProductTransactionItem')->orderBy('name');
     }
 
+    public function scarpaCleaningTransactionItems() {
+        return $this->hasMany('App\ScarpaCleaningTransactionItem')->orderBy('name');
+    }
+
+    public function lagoonTransactionItems() {
+        return $this->hasMany('App\LagoonTransactionItem')->orderBy('name');
+    }
+
     public function customerWashes() {
         return $this->hasManyThrough('App\CustomerWash', 'App\ServiceTransactionItem');
     }
@@ -140,6 +148,27 @@ class Transaction extends Model
         return $items->get();
     }
 
+    public function posLagoonItems($withTrashed = false) {
+        $items = $this->lagoonTransactionItems()->groupBy('name', 'price', 'lagoon_id')->selectRaw('lagoon_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+
+        if($withTrashed) {
+            $items = $items->withTrashed();
+        }
+
+        return $items->get();
+    }
+
+    public function posScarpaCleaningItems($withTrashed = false) {
+        $items = $this->scarpaCleaningTransactionItems()->groupBy('scarpa_variation_id', 'name', 'price')
+            ->selectRaw('scarpa_variation_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+
+        if($withTrashed) {
+            $items->withTrashed();
+        }
+
+        return $items->get();
+    }
+
     // public function posServiceItemsWithTrashed() {
     //     return $this->serviceTransactionItems()->withTrashed()->groupBy('name', 'price')->selectRaw('name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price')->get();
     // }
@@ -173,6 +202,20 @@ class Transaction extends Model
         ];
     }
 
+    public function posScarpaCleaningSummary($withTrashed = false) {
+        return [
+            'total_price' => $this->posScarpaCleaningItems($withTrashed)->sum('total_price'),
+            'total_quantity' => $this->posScarpaCleaningItems($withTrashed)->sum('quantity'),
+        ];
+    }
+
+    public function posLagoonSummary($withTrashed = false) {
+        return [
+            'total_price' => $this->posLagoonItems($withTrashed)->sum('total_price'),
+            'total_quantity' => $this->posLagoonItems($withTrashed)->sum('quantity'),
+        ];
+    }
+
     public function attachJobOrder() {
         $jobOrder = JobOrderFormat::first();
         if(!$jobOrder) {
@@ -186,7 +229,9 @@ class Transaction extends Model
     public function totalPrice() {
         $pTotal = $this->posProductItems()->sum('total_price');
         $sTotal = $this->posServiceItems()->sum('total_price');
-        return $pTotal + $sTotal;
+        $scTotal = $this->posScarpaCleaningItems()->sum('total_price');
+        $lTotal = $this->posLagoonItems()->sum('total_price');
+        return $pTotal + $sTotal + $scTotal + $lTotal; 
     }
 
     // public function refreshAllWithTrashed() {
@@ -203,14 +248,18 @@ class Transaction extends Model
         // $this['customer_name'] = $this->customer->name;
         $this['posServiceItems'] = $this->posServiceItems($withTrashed);
         $this['posProductItems'] = $this->posProductItems($withTrashed);
+        $this['posScarpaCleaningItems'] = $this->posScarpaCleaningItems($withTrashed);
+        $this['posLagoonItems'] = $this->posLagoonItems($withTrashed);
         $this['posServiceSummary'] = $this->posServiceSummary($withTrashed);
         $this['posProductSummary'] = $this->posProductSummary($withTrashed);
-        $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'];
+        $this['posScarpaCleaningSummary'] = $this->posScarpaCleaningSummary($withTrashed);
+        $this['posLagoonSummary'] = $this->posLagoonSummary($withTrashed);
+        $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'] + $this->posScarpaCleaningSummary($withTrashed)['total_price'] + $this->posLagoonSummary($withTrashed)['total_price'];
         if($this->payment) {
             $this['paidTo'] = $this->payment->user->name;
         }
         $this['customer'] = $this->customer;
-        $this['remarks'] = $this->transactionRemarks;
+        $this['remarks'] = $this->remarks;
 
         if($this->total_price != $totalAmount) {
             $this->update(['total_price' => $totalAmount]);
@@ -271,7 +320,11 @@ class Transaction extends Model
         static::updating(function($model) {
             unset($model['posServiceItems']);
             unset($model['posProductItems']);
+            unset($model['posScarpaCleaningItems']);
             unset($model['posServiceSummary']);
+            unset($model['posLagoonItems']);
+            unset($model['posLagoonSummary']);
+            unset($model['posScarpaCleaningSummary']);
             unset($model['posProductSummary']);
             unset($model['customer']);
             unset($model['total_amount']);

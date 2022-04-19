@@ -12,7 +12,7 @@
                                 <div class="caption grey--text">{{moment(remarks.created_at).format('LLL')}}</div>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn small icon @click="deleteRemarks(remarks)" :loading="remarks.isDeleting">
+                                <v-btn v-if="isOwner" small icon @click="deleteRemarks(remarks)" :loading="remarks.isDeleting">
                                     <v-icon small>delete</v-icon>
                                 </v-btn>
                             </v-list-tile-action>
@@ -81,6 +81,13 @@ export default {
     computed: {
         errors() {
             return this.$store.getters['transaction/getErrors'];
+        },
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            console.log('admin', user);
+            if(user) {
+                return user.roles.some(r => r == 'admin');
+            }
         }
     },
     watch: {

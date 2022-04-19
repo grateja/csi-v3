@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Expense;
+use App\LagoonTransactionItem;
 use App\Machine;
 use App\MonthlyTarget;
 use App\PartialPayment;
@@ -12,6 +13,7 @@ use App\ProductTransactionItem;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\ServiceTransactionItem;
+use App\ScarpaCleaningTransactionItem;
 use App\ThermalPrinter;
 use App\Transaction;
 use App\TransactionPayment;
@@ -191,6 +193,12 @@ class SalesReportController extends Controller
             'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $colFullPartialPayment,
         ];
 
+        $cashless = TransactionPayment::whereDate('date', $date)
+            ->where("cash_less_amount", ">", 0)
+            ->select(DB::raw("SUM(cash_less_amount) as amount, COUNT(*) as quantity, cash_less_provider"))
+            ->groupBy('cash_less_provider')
+            ->get();
+
         $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereDate('date', $date)
             ->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
             ->first();
@@ -214,6 +222,16 @@ class SalesReportController extends Controller
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
+        $usedScarpa = ScarpaCleaningTransactionItem::whereHas('transaction', function($query) use ($date) {
+            $query->whereDate('date', $date)
+                ->where('saved', true);
+        })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
+
+        $usedLagoon = LagoonTransactionItem::whereHas('transaction', function($query) use ($date) {
+            $query->whereDate('date', $date)
+                ->where('saved', true);
+        })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
+
         $data = [
             'newCustomers' => $newCustomers,
             'posSummary' => $posSummary,
@@ -223,8 +241,11 @@ class SalesReportController extends Controller
             'expenses' => $expenses,
             'usedProducts' => $usedProducts,
             'usedServices' => $usedServices,
+            'usedScarpa' => $usedScarpa,
+            'usedLagoon' => $usedLagoon,
             'totalSales' => $totalSales,
             'totalDeposit' => $collections['total'] - $expenses['total'],
+            'cashless' => $cashless,
         ];
 
         if($print) {

@@ -2,7 +2,7 @@
     <div v-if="rfidLoad" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
-                <h3 class="title gray--text">RFID LOAD TRANSACTIONS</h3>
+                <h3 class="title gray--text">LOAD TOP UP</h3>
             </v-flex>
             <template v-if="simplified">
                 <v-flex xs1 class="text-xs-right title">{{rfidLoad.total_count}}</v-flex>

@@ -82,11 +82,11 @@ class ServiceTransactionsController extends Controller
                     }
                 }
 
-                // TransactionRemarks::create([
-                //     'transaction_id' => $serviceTransactionItem->transaction_id,
-                //     'remarks' => 'Item removed(' . $serviceTransactionItem->name . ')',
-                //     'added_by' => auth('api')->user()->name,
-                // ]);
+                TransactionRemarks::create([
+                    'transaction_id' => $serviceTransactionItem->transaction_id,
+                    'remarks' => 'Item removed(' . $serviceTransactionItem->name . ')',
+                    'added_by' => auth('api')->user()->name,
+                ]);
 
                 $this->dispatch((new SendTransaction($serviceTransactionItem->transaction_id))->delay(5));
 

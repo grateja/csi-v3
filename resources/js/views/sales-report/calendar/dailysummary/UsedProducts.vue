@@ -2,7 +2,7 @@
     <div v-if="usedProducts" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
-                <h3 class="title gray--text">USED PRODUCTS</h3>
+                <h3 class="title gray--text">PRODUCTS</h3>
             </v-flex>
             <template v-if="simplified">
                 <v-flex xs1 class="text-xs-right title">{{summary.quantity}}</v-flex>

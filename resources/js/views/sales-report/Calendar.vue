@@ -257,7 +257,7 @@ export default {
                     } else if(index != 0) {
                         days[index] = {
                             date: index,
-                            dayOfWeek: moment(`${this.year}-${this.month}-${index}`).format('dddd')
+                            dayOfWeek: moment(`${this.year}-${('0' + this.month).slice(-2)}-${('0' + index).slice(-2)}`).format('dddd')
                         };
                     }
                 }

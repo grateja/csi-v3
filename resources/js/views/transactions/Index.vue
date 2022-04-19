@@ -7,6 +7,8 @@
             <v-flex xs7 lg8>
                 <v-btn to="/new-transaction/services" class="ml-0 translucent" active-class="primary" round>Services</v-btn>
                 <v-btn to="/new-transaction/products" class="translucent" active-class="primary" round>Products</v-btn>
+                <v-btn to="/new-transaction/scarpa-cleanings" class="translucent" active-class="primary" round>Scarpa</v-btn>
+                <v-btn to="/new-transaction/lagoon" class="translucent" active-class="primary" round>Lagoon</v-btn>
                 <router-view></router-view>
             </v-flex>
             <v-flex xs5 lg4>

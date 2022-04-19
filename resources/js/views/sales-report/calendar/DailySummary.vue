@@ -28,10 +28,13 @@
                 <job-orders :posSummary="posSummary" :view="view" />
                 <used-services :usedServices="usedServices" :view="view" />
                 <used-products :usedProducts="usedProducts" :view="view" />
+                <scarpa-cleanings :usedScarpa="usedScarpa" :view="view" />
+                <lagoon :usedLagoon="usedLagoon" :view="view" />
                 <rfid-transactions :rfidCard="rfidCard" :view="view" />
                 <rfid-load :rfidLoad="rfidLoad" :view="view" />
                 <total-sales :totalSales="totalSales" :view="view" />
                 <collections :collections="collections" :view="view" />
+                <cashless :cashless="cashless" :view="view" />
                 <expenses :expenses="expenses" :view="view" />
                 <deposit :deposit="deposit" />
 
@@ -547,10 +550,13 @@
 <script>
 import UsedProducts from './dailysummary/UsedProducts.vue'
 import UsedServices from './dailysummary/UsedServices.vue';
+import ScarpaCleanings from './dailysummary/ScarpaCleanings.vue';
+import Lagoon from './dailysummary/Lagoon.vue';
 import JobOrders from './dailysummary/JobOrders.vue';
 import RfidTransactions from './dailysummary/RfidTransactions.vue';
 import RfidLoad from './dailysummary/RfidLoad.vue';
 import Collections from './dailysummary/Collections.vue';
+import Cashless from './dailysummary/Cashless.vue';
 import Expenses from './dailysummary/Expenses.vue';
 import TotalSales from './dailysummary/TotalSales.vue';
 import Deposit from './dailysummary/Deposit.vue';
@@ -560,10 +566,13 @@ export default {
     components: {
         UsedProducts,
         UsedServices,
+        ScarpaCleanings,
+        Lagoon,
         JobOrders,
         RfidTransactions,
         RfidLoad,
         Collections,
+        Cashless,
         Expenses,
         TotalSales,
         Deposit,
@@ -586,9 +595,12 @@ export default {
             rfidCard: null,
             rfidLoad: null,
             collections: null,
+            cashless: null,
             expenses: null,
             usedProducts: null,
             usedServices: null,
+            usedScarpa: null,
+            usedLagoon: null,
             newCustomers: 0,
             totalSales: null,
             deposit: 0
@@ -605,9 +617,12 @@ export default {
                 this.rfidCard = res.data.rfidCard;
                 this.rfidLoad = res.data.rfidLoad;
                 this.collections = res.data.collections;
+                this.cashless = res.data.cashless;
                 this.expenses = res.data.expenses;
                 this.usedProducts = res.data.usedProducts;
                 this.usedServices = res.data.usedServices;
+                this.usedScarpa = res.data.usedScarpa;
+                this.usedLagoon = res.data.usedLagoon;
                 this.newCustomers = res.data.newCustomers;
                 this.totalSales = res.data.totalSales;
                 this.deposit = res.data.totalDeposit;

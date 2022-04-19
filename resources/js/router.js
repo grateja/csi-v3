@@ -91,8 +91,16 @@ const routes = [
                 component: require('./views/transactions/Services.vue').default
             },
             {
+                path: 'scarpa-cleanings',
+                component: require('./views/transactions/ScarpaCleanings.vue').default
+            },
+            {
                 path: 'products',
                 component: require('./views/transactions/Products.vue').default
+            },
+            {
+                path: 'lagoon',
+                component: require('./views/transactions/Lagoon.vue').default
             }
         ]
     },
@@ -152,6 +160,14 @@ const routes = [
             {
                 path: 'full-services',
                 component: require('./views/services/full-services/Index.vue').default
+            },
+            {
+                path: 'scarpa-cleaning',
+                component: require('./views/services/scarpa-cleaning/Index.vue').default
+            },
+            {
+                path: 'lagoon',
+                component: require('./views/services/lagoon/Index.vue').default
             }
         ]
     },

@@ -33,6 +33,15 @@ class PaymentsController extends Controller
                 $customer = Customer::findOrFail($transaction->customer_id);
                 $transaction->refreshAll();
 
+                if($request->cashlessAmount) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Cash less cannot be used for partial payment']
+                        ]
+                    ], 422);
+                }
+
                 if($request->pointsInPeso) {
                     DB::rollback();
                     return response()->json([
@@ -146,10 +155,22 @@ class PaymentsController extends Controller
                 $discountName = '';
                 $pointsToDeduct = 0;
                 $percentageDiscount = 0;
+                $cashlessAmount = 0;
                 $rfid = null;
                 $transaction = Transaction::findOrFail($transactionId);
                 $customer = Customer::findOrFail($transaction->customer_id);
                 $transaction->refreshAll();
+
+                if($request->cashlessAmount) {
+                    $cashlessAmount = $request->cashlessAmount;
+                    if(!is_numeric($cashlessAmount)) {
+                        return response()->json([
+                            'errors' => [
+                                'message' => ['Not a valid number']
+                            ]
+                        ], 422);
+                    }
+                }
 
                 if($request->pointsInPeso) {
                     $loyaltyPoints = LoyaltyPoint::first();
@@ -193,7 +214,7 @@ class PaymentsController extends Controller
                 $customer->decrement('earned_points', $pointsToDeduct);
 
                 $partialPayment = $transaction->partialPayment ? $transaction->partialPayment->total_paid : 0;
-                $totalCash = $request->cash + $discountInPeso + $request->pointsInPeso + $request->rfidCardLoad + $partialPayment;
+                $totalCash = $request->cash + $discountInPeso + $request->pointsInPeso + $request->rfidCardLoad + $partialPayment + $cashlessAmount;
                 $change = $totalCash - $transaction->total_price;
                 $balance = $transaction->total_price - $totalCash;
 
@@ -220,6 +241,9 @@ class PaymentsController extends Controller
                         'points_in_peso' => $request->pointsInPeso,
                         'discount' => $percentageDiscount,
                         'discount_name' => $discountName,
+                        'cash_less_provider' => $request->cashlessProvider,
+                        'cash_less_amount' => $request->cashlessAmount,
+                        'cash_less_reference_number' => $request->cashlessReferenceNumber,
                         'total_amount' => $transaction->total_price,
                         'total_cash' => $totalCash,
                         'user_id' => auth('api')->id(),

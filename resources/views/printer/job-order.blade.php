@@ -4,40 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <style>
-        body, html {
-            background: #eee;
-        }
-        .button-container {
-            position: fixed;
-            right: 10px;
-            top: 10px;
-        }
-        .large {
-            font-size: 1.5em;
-        }
-        .table td{
-            padding: 0px;
-        }
-        @media print {
-            .button-container {
-                display: none;
-            }
-            .main {
-                min-width: 100%!important;
-                margin: 0px!important;
-            }
-        }
-        .main {
-            background: white;
-            border: 1px solid #eee;
-            box-shadow: 10px 10px 10px #ddd;
-            padding: .5cm;
-            max-width: 80%;
-            margin: 20px auto;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/print.css">
     <title>Print Job Order</title>
 </head>
 <body>
@@ -45,139 +12,128 @@
         <button class="btn btn-primary" onclick="window.print()">PRINT</button>
     </div>
 
-
     <div class="main">
         <div class="header">
             <div class="text-center large">{{$shop_name}}</div>
             <div class="text-center">{{$shop_address}}</div>
             <div class="text-center">{{$shop_number}} / {{$shop_email}}</div>
             <hr>
-            <dl class="row">
-                <dt class="col-sm-4 col-6 text-right">Job order:</dt>
-                <dd class="col-sm-8 col-6">
-                    {{$job_order}}
-                </dd>
-
-                <dt class="col-sm-4 col-6 text-right">Date:</dt>
-                <dd class="col-sm-8 col-6">
-                    {{$date}}
-                </dd>
-
-                <dt class="col-sm-4 col-6 text-right">Customer name:</dt>
-                <dd class="col-sm-8 col-6">
-                    {{$customer_name}}
-                </dd>
-
-                <dt class="col-sm-4 col-6 text-right">Staff name:</dt>
-                <dd class="col-sm-8 col-6">
-                    {{$staff_name}}
-                </dd>
-            </dl>
-        </div>
-        <table class="table-sm table">
-            @if(count($posServiceItems))
+            <h2 class="text-center">*** JOB ORDER ***</h2>
+            <hr>
+            <table>
                 <tr>
-                    <th colspan="4">Services</th>
+                    <td class="text-right">JOB ORDER :</td>
+                    <td>{{$job_order}}</td>
                 </tr>
                 <tr>
-                    <th>NAME</th>
-                    <th class="text-center">UNIT PRICE</th>
-                    <th class="text-center">QUANTITY</th>
-                    <th class="text-center">TOTAL</th>
+                    <td class="text-right">DATE :</td>
+                    <td>{{$date}}</td>
+                </tr>
+                <tr>
+                    <td class="text-right">CUSTOMER :</td>
+                    <td>{{$customer_name}}</td>
+                </tr>
+                <tr>
+                    <td class="text-right">STAFF NAME :</td>
+                    <td>{{$staff_name}}</td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <table>
+            @if(count($posServiceItems))
+                <tr>
+                    <th class="text-left">SERVICES</th>
+                    <th class="text-right">PRICE</th>
                 </tr>
 
                 @foreach($posServiceItems as $item)
                     <tr>
-                        <td class="pl-4">{{$item['name']}}</td>
-                        <td class="text-center">{{$item['unit_price'] ? 'P ' . number_format($item['unit_price'], 2) : 'FREE'}}</td>
-                        <td class="text-center">
-                            {{$item['quantity']}}
-                        </td>
-                        <td class="text-center">{{$item['total_price'] ? 'P ' . number_format($item['total_price'], 2) : 'FREE'}}</td>
+                        <td class="pl-4">({{$item['quantity']}}){{$item['name']}}</td>
+                        <td class="text-right">{{$item['total_price'] ? 'P ' . number_format($item['total_price'], 2) : 'FREE'}}</td>
                     </tr>
                 @endforeach
                 <tr class=" font-weight-bold">
-                    <td colspan="2" class="pl-1">Total</td>
-                    <td class="text-center">{{$posServiceSummary['total_quantity']}}</td>
-                    <td class="text-center">P {{number_format($posServiceSummary['total_price'], 2)}}</td>
+                    <td class="pl-1">Total</td>
+                    <td class="text-right">P {{number_format($posServiceSummary['total_price'], 2)}}</td>
                 </tr>
             @endif
+
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
 
             @if(count($posProductItems))
                 <tr>
-                    <th colspan="4">Products</th>
-                </tr>
-                <tr>
-                    <th>NAME</th>
-                    <th class="text-center">UNIT PRICE</th>
-                    <th class="text-center">QUANTITY</th>
-                    <th class="text-center">TOTAL</th>
+                    <th class="text-left">PRODUCTS</th>
+                    <th class="text-right">PRICE</th>
                 </tr>
                 @foreach($posProductItems as $item)
                     <tr>
-                        <td class="pl-4">{{$item['name']}}</td>
-                        <td class="text-center">{{$item['unit_price'] ? 'P ' . number_format($item['unit_price'], 2) : 'FREE'}}</td>
-                        <td class="text-center">
-                            {{$item['quantity']}}
-                        </td>
-                        <td class="text-center">{{$item['total_price'] ? 'P ' . number_format($item['total_price'], 2) : 'FREE'}}</td>
+                        <td class="pl-4">({{$item['quantity']}}){{$item['name']}}</td>
+                        <td class="text-right">{{$item['total_price'] ? 'P ' . number_format($item['total_price'], 2) : 'FREE'}}</td>
                     </tr>
                 @endforeach
                 <tr class=" font-weight-bold">
-                    <td colspan="2" class="pl-1">Total</td>
-                    <td class="text-center">{{$posProductSummary['total_quantity']}}</td>
-                    <td class="text-center">P {{number_format($posProductSummary['total_price'], 2)}}</td>
+                    <td class="pl-1">Total</td>
+                    <td class="text-right">P {{number_format($posProductSummary['total_price'], 2)}}</td>
                 </tr>
             @endif
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
             <tr class="font-weight-bold large">
                 <td>Grand total</td>
-                <td>&nbsp;&nbsp;&nbsp;</td>
-                <td class="text-center">{{$posProductSummary['total_quantity'] + $posServiceSummary['total_quantity']}}</td>
-                <td class="text-center">P {{number_format($total_amount, 2)}}</td>
+                <td class="text-right">P {{number_format($total_amount, 2)}}</td>
             </tr>
         </table>
 
-        <dl class="row">
-            <dt class="col-sm-4 col-6 text-right">Date paid:</dt>
-            <dd class="col-sm-8 col-6">
-                {{$date_paid}}
-            </dd>
+        <br />
 
-            <dt class="col-sm-4 col-6 text-right">Paid to:</dt>
-            <dd class="col-sm-8 col-6">
-                {{$paid_to}}
-            </dd>
-
-            <dt class="col-sm-4 col-6 text-right">Cash:</dt>
-            <dd class="col-sm-8 col-6">
-                P {{number_format($cash, 2)}}
-            </dd>
-
-            <dt class="col-sm-4 col-6 text-right">Change:</dt>
-            <dd class="col-sm-8 col-6">
-                P {{number_format($change, 2)}}
-            </dd>
+        <table>
+            <tr>
+                <td class="text-right">DATE PAID:</td>
+                <td>{{$date_paid}}</td>
+            </tr>
+            <tr>
+                <td class="text-right">PAID TO:</td>
+                <td>{{$paid_to}}</td>
+            </tr>
+            <tr>
+                <td class="text-right">CASH:</td>
+                <td>P {{number_format($cash, 2)}}</td>
+            </tr>
+            <tr>
+                <td class="text-right">CHANGE:</td>
+                <td>P {{number_format($change, 2)}}</td>
+            </tr>
             @if($points)
-                <dt class="col-sm-4 col-6 text-right">Points used:</dt>
-                <dd class="col-sm-8 col-6">
-                    P {{number_format($points_in_peso, 2)}} ({{number_format($points, 1)}} points)
-                </dd>
+                <tr>
+                    <td class="text-right">Points used:</td>
+                    <td>
+                        P {{number_format($points_in_peso, 2)}} ({{number_format($points, 1)}} points)
+                    </td>
+                </tr>
             @endif
             @if($discount)
-                <dt class="col-sm-4 col-6 text-right">Discount:</dt>
-                <dd class="col-sm-8 col-6">
-                    P {{number_format($discount_in_peso, 2)}} ({{number_format($discount, 1)}}%)
-                </dd>
+                <tr>
+                    <td class="text-right">Discount:</td>
+                    <td>
+                        P {{number_format($discount_in_peso, 2)}} ({{number_format($discount, 1)}}%)
+                    </td>
+                </tr>
             @endif
             @if($rfid)
-                <dt class="col-sm-4 col-6 text-right">RFID:</dt>
-                <dd class="col-sm-8 col-6">
-                    P {{number_format($card_load_used, 2)}} ({{$rfid}})
-                </dd>
+                <tr>
+                    <td class="text-right">RFID:</td>
+                    <td>
+                        P {{number_format($card_load_used, 2)}} ({{$rfid}})
+                    </td>
+                </tr>
             @endif
-        </dl>
+        </table>
 
-        <hr>
+        <br>
 
         <div class="footer text-center">
             <div>This is not an official receipt</div>

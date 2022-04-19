@@ -8,10 +8,15 @@ use App\CustomerWash;
 use App\DryingService;
 use App\FullService;
 use App\Jobs\SendTransaction;
+use App\Lagoon;
+use App\LagoonTransactionItem;
 use App\OtherService;
 use App\Product;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
+use App\ScarpaCategory;
+use App\ScarpaCleaningTransactionItem;
+use App\ScarpaVariation;
 use App\Transaction;
 use App\TransactionRemarks;
 use App\WashingService;
@@ -263,6 +268,203 @@ class PosTransactionController extends Controller
         });
     }
 
+    public function scarpaCleanings() {
+        $result = ScarpaCategory::orderBy('name')->get();
+        return response()->json([
+            'result' => $result,
+        ]);
+    }
+
+    public function scarpaVariations($serviceId, $groupBy) {
+        $variations = ScarpaVariation::where('scarpa_category_id', $serviceId)
+            ->get();
+
+        return response()->json([
+            'variations' => $variations->groupBy($groupBy),
+        ]);
+    }
+
+    public function addScarpaCleaning($variationId, Request $request) {
+        return DB::transaction(function () use ($variationId, $request) {
+            $transaction = Transaction::find($request->transactionId);
+            $customer = Customer::findOrFail($request->customerId);
+
+            $variation = ScarpaVariation::with('scarpaCategory')->findOrFail($variationId);
+
+            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item from other`s day transaction.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction && $transaction->partialPayment) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item to partially paid Job Order.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction == null) {
+                $transaction = Transaction::create([
+                    'customer_id' => $request->customerId,
+                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
+                    'customer_name' => $customer->name,
+                ]);
+            } else {
+                $transaction->update([
+                    'saved' => false,
+                ]);
+            }
+
+            $scarpaCleaningTransactionItem = ScarpaCleaningTransactionItem::create([
+                'transaction_id' => $transaction->id,
+                'scarpa_category_id' => $variation->scarpa_category_id,
+                'scarpa_variation_id' => $variationId,
+                'name' => $variation->scarpaCategory->name . " (" . $variation->action . ")",
+                // 'size' => $variation->size,
+                // 'color' => $variation->color,
+                'price' => $variation->selling_price,
+            ]);
+
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+
+            return response()->json([
+                'transaction' => $transaction,
+            ]);
+        });
+    }
+
+    public function addLagoon(Request $request) {
+        return DB::transaction(function () use ($request) {
+
+            $lagoon = Lagoon::findOrFail($request->itemId);
+
+            $transaction = Transaction::find($request->transactionId);
+            $customer = Customer::findOrFail($request->customerId);
+
+            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item from other`s day transaction.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction && $transaction->partialPayment) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item to partially paid Job Order.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction == null) {
+                $transaction = Transaction::create([
+                    'customer_id' => $request->customerId,
+                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
+                    'customer_name' => $customer->name,
+                ]);
+            } else {
+                $transaction->update([
+                    'saved' => false,
+                ]);
+            }
+
+
+            $transactionItem = LagoonTransactionItem::create([
+                'transaction_id' => $transaction->id,
+                'name' => $lagoon->name,
+                'price' => $lagoon->price,
+                'lagoon_id' => $lagoon->id,
+            ]);
+
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+            $this->dispatch($lagoon->queSynch());
+
+            return response()->json([
+                'transaction' => $transaction,
+            ]);
+        });
+    }
+
+    public function reduceScarpaCleaning(Request $request) {
+        return DB::transaction(function () use ($request) {
+            $scarpaCleaningTransactionItem = ScarpaCleaningTransactionItem::with('transaction')
+                ->where([
+                    'scarpa_variation_id' => $request->scarpaVariationId,
+                    'transaction_id' => $request->transactionId,
+                ])->orderByDesc('created_at')->first();
+
+            if(!$scarpaCleaningTransactionItem->created_at->isToday()) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot remove item. Transaction is from previous day']
+                    ],
+                ], 422);
+            }
+
+            if($scarpaCleaningTransactionItem->delete()) {
+                $scarpaCleaningTransactionItem->transaction()->update([
+                    'saved' => false,
+                ]);
+
+                $this->dispatch((new SendTransaction($scarpaCleaningTransactionItem->transaction_id))->delay(5));
+
+                return response()->json([
+                    'scarpaCleaningTransactionItem' => $scarpaCleaningTransactionItem
+                ]);
+            }
+
+            return $scarpaCleaningTransactionItem;
+        });
+    }
+    public function reduceLagoon(Request $request) {
+        return DB::transaction(function () use ($request) {
+            $lagonTransactionItem = LagoonTransactionItem::with('transaction')
+                ->where([
+                    'lagoon_id' => $request->lagoonId,
+                    'transaction_id' => $request->transactionId,
+                ])->orderByDesc('created_at')->first();
+
+            if(!$lagonTransactionItem->created_at->isToday()) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot remove item. Transaction is from previous day']
+                    ],
+                ], 422);
+            }
+
+            if($lagonTransactionItem->delete()) {
+                $lagonTransactionItem->transaction()->update([
+                    'saved' => false,
+                ]);
+
+                $this->dispatch((new SendTransaction($lagonTransactionItem->transaction_id))->delay(5));
+
+                return response()->json([
+                    'lagoonTransactionItem' => $lagonTransactionItem
+                ]);
+            }
+
+            return $lagonTransactionItem;
+        });
+    }
+
     public function reduceProducts(Request $request) {
         return DB::transaction(function () use ($request) {
             $productItem = ProductTransactionItem::where([
@@ -273,7 +475,7 @@ class PosTransactionController extends Controller
             if(!$productItem->created_at->isToday()) {
                 return response()->json([
                     'errors' => [
-                        'message' => ['Cannot remove item. Transaction if from previous day']
+                        'message' => ['Cannot remove item. Transaction iS from previous day']
                     ],
                 ], 422);
             }
@@ -343,6 +545,14 @@ class PosTransactionController extends Controller
             ]);
 
             $products = $transaction->productTransactionItems()->update([
+                'saved' => true,
+            ]);
+
+            $scarpaCleanings = $transaction->scarpaCleaningTransactionItems()->update([
+                'saved' => true,
+            ]);
+
+            $lagoon = $transaction->lagoonTransactionItems()->update([
                 'saved' => true,
             ]);
 

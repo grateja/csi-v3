@@ -30,10 +30,13 @@ const actions = {
         context.commit('setLoadingClaimStub', true);
         context.commit('clearErrors');
         return axios.get(`/api/transactions/${data.transactionId}/print-claim-stub`).then((res, rej) => {
-            //let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            if(!res.data.method) {
+                let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-            //w.document.write(res.data);
-            //w.document.close();
+                w.document.write(res.data);
+                w.document.close();
+
+            }
 
             context.commit('setLoadingClaimStub', false);
             return res;
@@ -47,10 +50,13 @@ const actions = {
         context.commit('setLoadingJobOrder', true);
         context.commit('clearErrors');
         return axios.get(`/api/transactions/${transactionId}/print-job-order`).then((res, rej) => {
-            //let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            if(!res.data.method) {
+                let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-            //w.document.write(res.data);
-            //w.document.close();
+                w.document.write(res.data);
+                w.document.close();
+
+            }
 
             context.commit('setLoadingJobOrder', false);
             return res;
@@ -63,10 +69,13 @@ const actions = {
     rfidLoadTransaction(context, transactionId) {
         context.commit('clearErrors');
         return axios.get(`/api/rfid-cards/load-transactions/${transactionId}/print-load-transaction`).then((res, rej) => {
-            //let w = window.open('about:blank', 'print', 'width=800,height=1000');
+            if(!res.data.method) {
+                let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-            //w.document.write(res.data);
-            //w.document.close();
+                w.document.write(res.data);
+                w.document.close();
+
+            }
             return res;
         }).catch(err => {
             context.commit('setErrors', err.response.data.errors);

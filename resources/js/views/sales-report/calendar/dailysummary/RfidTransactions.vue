@@ -2,7 +2,7 @@
     <div v-if="rfidCard" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
-                <h3 class="title gray--text">RFID TAP CARD</h3>
+                <h3 class="title gray--text">TAP CARD</h3>
             </v-flex>
             <template v-if="simplified">
                 <v-flex class="text-xs-right title">{{rfidCard.cycle_count}}</v-flex>

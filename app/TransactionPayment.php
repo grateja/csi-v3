@@ -19,7 +19,25 @@ class TransactionPayment extends Model
     ];
 
     protected $fillable = [
-        'id', 'cash', 'date', 'points', 'discount', 'discount_name', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid', 'synched',
+        'id',
+        'cash',
+        'date',
+        'points',
+        'discount',
+        'discount_name',
+        'cash_less_provider',
+        'cash_less_reference_number',
+        'cash_less_amount',
+        'total_amount',
+        'change',
+        'user_id',
+        'paid_to',
+        'points_in_peso',
+        'balance',
+        'total_cash',
+        'card_load_used',
+        'rfid',
+        'synched',
     ];
 
     public function user() {

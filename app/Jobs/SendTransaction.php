@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Client;
 use App\Customer;
+use App\PartialPayment;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
@@ -52,6 +53,7 @@ class SendTransaction implements ShouldQueue
             'service_transaction_items' => ServiceTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'product_transaction_items' => ProductTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'payment' => TransactionPayment::withTrashed()->find($transaction->id),
+            'partial_payment' => PartialPayment::withTrashed()->find($transaction->id),
             'remarks' => TransactionRemarks::withTrashed()->where('transaction_id', $transaction->id),
         ];
 

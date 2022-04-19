@@ -73,6 +73,31 @@
 
                     <v-divider class="my-2 transparent"></v-divider>
 
+                    <table class="v-table" v-if="tempTransaction.posScarpaCleaningItems.length">
+                        <tr>
+                            <th colspan="4">Scarpa</th>
+                        </tr>
+                        <tr>
+                            <th class="name">NAME</th>
+                            <th class="unit-price">UNIT PRICE</th>
+                            <th class="quantity">QUANTITY</th>
+                            <th class="total">TOTAL</th>
+                        </tr>
+                        <tr v-for="item in tempTransaction.posScarpaCleaningItems" :key="item.id">
+                            <td class="pl-1">{{item.name}}</td>
+                            <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                            <td class="text-xs-center">
+                                {{item.quantity}}
+                            </td>
+                            <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        </tr>
+                        <tr class=" font-weight-bold">
+                            <td colspan="2" class="pl-1">Total</td>
+                            <td class="text-xs-center">{{tempTransaction.posScarpaCleaningSummary.total_quantity}}</td>
+                            <td class="text-xs-center">P {{parseFloat(tempTransaction.posScarpaCleaningSummary.total_price).toFixed(2)}}</td>
+                        </tr>
+                    </table>
+
                     <table class="v-table" v-if="tempTransaction.posProductItems.length">
                         <tr>
                             <th colspan="4">Products</th>
@@ -155,6 +180,15 @@
                                             <v-btn slot="activator" icon small class="ma-0" @click="openPartialPayment = true"><v-icon>open_in_new</v-icon></v-btn>
                                         </v-tooltip>
                                     </span>
+                                </v-flex>
+                            </v-layout>
+                            <v-layout v-if="tempTransaction.payment.cash_less_amount">
+                                <v-flex xs5><span class="data-term font-weight-bold">{{tempTransaction.payment.cash_less_provider}}</span></v-flex>
+                                <v-flex xs7>
+                                    <div class="data-value">
+                                        <div class="font-weight-bold">P {{parseFloat(tempTransaction.payment.cash_less_amount).toFixed(2)}}</div>
+                                        <div> REF#.{{tempTransaction.payment.cash_less_reference_number}}</div>
+                                    </div>
                                 </v-flex>
                             </v-layout>
                             <v-layout>

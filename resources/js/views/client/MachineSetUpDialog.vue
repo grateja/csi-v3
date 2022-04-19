@@ -3,6 +3,26 @@
         <form @submit.prevent="save">
             <v-card>
                 <v-card-title class="title grey--text">Machine details</v-card-title>
+                <v-card-text v-if="!loading && machinesRegistered">
+                    <h3>There are machines already set up</h3>
+                    <v-divider></v-divider>
+                    <v-layout>
+                        <v-flex xs3 sm2 md2 class="text-xs-right mr-1">Washers:</v-flex>
+                        <v-flex xs1>{{machines.washers.length}}</v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs3 sm2 md2 class="text-xs-right mr-1">Dryers:</v-flex>
+                        <v-flex xs1>{{machines.dryers.length}}</v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs3 sm2 md2 class="text-xs-right mr-1">Titan Washers:</v-flex>
+                        <v-flex xs1>{{machines.titan_washers.length}}</v-flex>
+                    </v-layout>
+                    <v-layout>
+                        <v-flex xs3 sm2 md2 class="text-xs-right mr-1">Titan Dryers:</v-flex>
+                        <v-flex xs1>{{machines.titan_dryers.length}}</v-flex>
+                    </v-layout>
+                </v-card-text>
                 <v-card-text>
                     <v-layout row>
                         <v-flex>
@@ -12,16 +32,16 @@
                             <v-text-field v-model="formData.wStartIp" outline label="Start IP"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.wInitialTime" outline label="Initial time"></v-text-field>
+                            <v-text-field v-model="formData.wInitialTime" outline label="Delicate time"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.wAdditionalTime" outline label="Additional time"></v-text-field>
+                            <v-text-field v-model="formData.wAdditionalTime" outline label="Regular time"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.wInitialPrice" outline label="Initial price"></v-text-field>
+                            <v-text-field v-model="formData.wInitialPrice" outline label="Delicate price"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.wAdditionalPrice" outline label="Additional price"></v-text-field>
+                            <v-text-field v-model="formData.wAdditionalPrice" outline label="Delicate price"></v-text-field>
                         </v-flex>
                     </v-layout>
                     <v-layout row>
@@ -52,16 +72,16 @@
                             <v-text-field v-model="formData.twStartIp" outline label="Start IP"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.twInitialTime" outline label="Initial time"></v-text-field>
+                            <v-text-field v-model="formData.twInitialTime" outline label="Delicate time"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.twAdditionalTime" outline label="Additional time"></v-text-field>
+                            <v-text-field v-model="formData.twAdditionalTime" outline label="Regular time"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.twInitialPrice" outline label="Initial price"></v-text-field>
+                            <v-text-field v-model="formData.twInitialPrice" outline label="Delicate price"></v-text-field>
                         </v-flex>
                         <v-flex>
-                            <v-text-field v-model="formData.twAdditionalPrice" outline label="Additional price"></v-text-field>
+                            <v-text-field v-model="formData.twAdditionalPrice" outline label="Regular price"></v-text-field>
                         </v-flex>
                     </v-layout>
                     <v-layout row>
@@ -102,13 +122,15 @@ export default {
     ],
     data() {
         return {
+            loading: false,
+            machines: null,
             formData: {
                 gateWay: '192.168.210',
                 washerCount: 5,
                 wStartIp: '11',
-                wInitialTime: 38,
+                wInitialTime: 24,
                 wAdditionalTime: 12,
-                wInitialPrice: 60,
+                wInitialPrice: 40,
                 wAdditionalPrice: 20,
                 dryerCount: 5,
                 dStartIp: '31',
@@ -118,9 +140,9 @@ export default {
                 dAdditionalPrice: 15,
                 twasherCount: 0,
                 twStartIp: '21',
-                twInitialTime: 38,
+                twInitialTime: 24,
                 twAdditionalTime: 12,
-                twInitialPrice: 80,
+                twInitialPrice: 60,
                 twAdditionalPrice: 40,
                 tdryerCount: 0,
                 tdStartIp: '41',
@@ -139,6 +161,14 @@ export default {
                 this.$router.push('/remote-panel')
             });
         },
+        checkSetUp() {
+            this.loading = true;
+            axios.get(`/api/machines`).then((res, rej) => {
+                this.machines = res.data.result;
+            }).finally(() => {
+                this.loading = false;
+            });
+        },
         close() {
             this.$emit('input', false);
         }
@@ -146,6 +176,17 @@ export default {
     computed: {
         saving() {
             return this.$store.getters['client/settingUpMachine'];
+        },
+        machinesRegistered() {
+            return this.machines != null &&
+                (this.machines.dryers.length > 0 || this.machines.washers.length > 0 || this.machines.titan_dryers.length > 0 || this.machines.titan_washers.length > 0);
+        }
+    },
+    watch: {
+        value(val) {
+            if(val) {
+                this.checkSetUp();
+            }
         }
     }
 }

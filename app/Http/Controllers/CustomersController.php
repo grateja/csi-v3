@@ -69,7 +69,7 @@ class CustomersController extends Controller
 
     public function store(Request $request) {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|unique:customers,name,NULL,id,deleted_at,NULL',
             'crn' => 'required|unique:customers|digits:5',
         ];
 
@@ -107,6 +107,7 @@ class CustomersController extends Controller
         $customer = Customer::findOrFail($customerId);
 
         $rules = [
+//            'name' => 'required|unique:customers,name,NULL,id,deleted_at,NULL',
             'name' => 'required',
             'date' => 'nullable|date'
         ];

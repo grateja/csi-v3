@@ -36,6 +36,19 @@
                         <v-flex xs5><span class="data-term font-weight-bold">Total amount:</span></v-flex>
                         <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(transaction.total_price).toFixed(2)}}</span></v-flex>
                     </v-layout>
+
+                    <v-layout v-if="cashLess">
+                        <v-flex xs5><span class="data-term font-weight-bold">Cashless:</span></v-flex>
+                        <v-flex xs7>
+                            <span class="data-value">{{cashLess.provider}}: {{`P ${parseFloat(cashLess.amount).toFixed(2)}`}}
+                                <v-tooltip top>
+                                    <span>Remove cashless</span>
+                                    <v-btn slot="activator" outline icon small class="ma-0" @click="cashLess = null"><v-icon>close</v-icon></v-btn>
+                                </v-tooltip>
+                            </span>
+                        </v-flex>
+                    </v-layout>
+
                     <v-layout v-if="discount">
                         <v-flex xs5><span class="data-term font-weight-bold">Discount:</span></v-flex>
                         <v-flex xs7>
@@ -119,6 +132,7 @@
                         <v-btn round @click="openDiscountDialog = true" :class="{'primary' : !!discount}">discount</v-btn>
                         <v-btn round @click="selectPoints" :class="{'primary' : !!formData.pointsInPeso}">points</v-btn>
                         <v-btn round @click="selectCard" :class="{'primary' : !!formData.rfidCardLoad}">card</v-btn>
+                        <v-btn round @click="selectCashLess" :class="{'primary' : !!cashLess}">{{ !!cashLess ? cashLess.provider + " P " + parseFloat(cashLess.amount).toFixed(2) : "Cash Less" }}</v-btn>
                 </v-card-text>
                 <!-- <v-card-actions>
                     <v-checkbox v-model="printJobOrder" label="Print job order"></v-checkbox>
@@ -134,6 +148,7 @@
         <points-dialog v-model="openPointsDialog" :customer="transaction.customer" @setPoints="setPoints"  v-if="transaction" />
         <discount-dialog v-model="openDiscountDialog" @setDiscount="selectDiscount" />
         <partial-payment-dialog v-if="transaction && transaction.partial_payment" v-model="openPartialPayment" :partialPaymentId="transaction.partial_payment.id"></partial-payment-dialog>
+        <cash-less-dialog v-model="openCashLessDialog" :cashLess="cashLess" @confirm="setCashLess" :amountToPay="amountToPay" />
     </v-dialog>
 </template>
 
@@ -142,13 +157,15 @@ import RfidCardDialog from './RfidCardDialog.vue';
 import PointsDialog from './PointsDialog.vue';
 import DiscountDialog from './DiscountDialog.vue';
 import PartialPaymentDialog from './PartialPaymentDialog.vue';
+import CashLessDialog from './CashLessDialog.vue'
 
 export default {
     components: {
         RfidCardDialog,
         PointsDialog,
         DiscountDialog,
-        PartialPaymentDialog
+        PartialPaymentDialog,
+        CashLessDialog
     },
     props: [
         'transaction', 'value'
@@ -159,6 +176,8 @@ export default {
             openPointsDialog: false,
             openDiscountDialog: false,
             openPartialPayment: false,
+            openCashLessDialog: false,
+            cashLess: null,
             discount: null,
             printJobOrder: false,
             formData: {
@@ -182,6 +201,11 @@ export default {
             }
 
             this.formData.discountId = this.discount ? this.discount.id : null;
+            if(this.cashLess) {
+                this.formData.cashlessAmount = this.cashLess.amount
+                this.formData.cashlessProvider = this.cashLess.provider
+                this.formData.cashlessReferenceNumber = this.cashLess.referenceNumber
+            }
             this.$store.dispatch('payment/proceedToPayment', {
                 transactionId: this.transaction.id,
                 formData: this.formData,
@@ -203,6 +227,9 @@ export default {
         selectCard() {
             this.openRfidCardDialog = true;
         },
+        selectCashLess() {
+            this.openCashLessDialog = true
+        },
         setCard(data) {
             console.log(data);
             this.formData.rfidCardId = data.cardId;
@@ -213,9 +240,14 @@ export default {
         },
         setPoints(data) {
             this.formData.pointsInPeso = parseFloat(data.amountToUse);
+            this.formData.cash = this.amountToPay
         },
         selectDiscount(data) {
             this.discount = data;
+        },
+        setCashLess(data) {
+            this.cashLess = data
+            this.formData.cash = this.amountToPay
         }
     },
     computed: {
@@ -225,7 +257,9 @@ export default {
             let points = parseFloat(this.formData.pointsInPeso) || 0;
             let load = parseFloat(this.formData.rfidCardLoad) || 0;
             let total_price = parseFloat(this.transaction.total_price) || 0;
-            let change = this.partialPayment + cash + discount + points + load - total_price;
+            let change = this.partialPayment + cash + discount + points + load - total_price + this.cashLessAmount;
+            console.log("cash less")
+            console.log(this.cashLessAmount)
             if(change <= 0) {
                 return 0.00;
             }
@@ -243,13 +277,19 @@ export default {
         errors() {
             return this.$store.getters['payment/getErrors'];
         },
+        cashLessAmount() {
+            if(this.cashLess && this.cashLess.amount) {
+                return parseFloat(this.cashLess.amount) || 0
+            }
+            return 0
+        },
         balance() {
             let cash = parseFloat(this.formData.cash) || 0;
             let discount = parseFloat(this.discountInPeso) || 0;
             let points = parseFloat(this.formData.pointsInPeso) || 0;
             let load = parseFloat(this.formData.rfidCardLoad) || 0;
             let total_price = parseFloat(this.transaction.total_price) || 0;
-            let bal = total_price - cash - discount - points - load - this.partialPayment;
+            let bal = total_price - cash - discount - points - load - this.partialPayment - this.cashLessAmount;
             if(bal >= 0) {
                 return parseFloat(bal).toFixed(2);
             }
@@ -263,7 +303,7 @@ export default {
         },
         amountToPay() {
             if(this.transaction) {
-                return parseFloat(this.transaction.total_price - this.discountInPeso - this.formData.rfidCardLoad - this.formData.pointsInPeso - this.partialPayment);
+                return parseFloat(this.transaction.total_price - this.discountInPeso - this.formData.rfidCardLoad - this.formData.pointsInPeso - this.partialPayment - this.cashLessAmount);
             }
         }
     },
