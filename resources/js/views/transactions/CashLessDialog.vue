@@ -58,6 +58,10 @@ export default {
             this.amountError = null
             this.referenceNumberError = null
             var hasError = false
+            if(this.amount > this.amountToPay) {
+                this.amountError = "Amount cannot be higher than the total price of Job Order"
+                hasError = true
+            }
             if(this.provider == null || this.provider == 'Other') {
                 if(this.customProvider == null || this.customProvider == '') {
                     this.providerError = "This field is required"

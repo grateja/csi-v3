@@ -28,7 +28,7 @@ class CreateTransactionPaymentsTable extends Migration
 
             $table->string('cash_less_provider')->nullable()->comment('G-Cash, PayMaya, ...');
             $table->string('cash_less_reference_number')->nullable();
-            $table->double('cash_less_amount')->default(0);
+            $table->double('cash_less_amount')->nullable()->default(0);
 
             $table->double('total_amount')->nullable()->default(0);
             $table->double('balance')->nullable()->default(0);

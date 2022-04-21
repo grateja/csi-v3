@@ -170,6 +170,14 @@ class PaymentsController extends Controller
                             ]
                         ], 422);
                     }
+
+                    if($cashlessAmount > $transaction->total_price) {
+                        return response()->json([
+                            'errors' => [
+                                'message' => ['Cashless payment cannot be higher than total price of the job order']
+                            ]
+                        ], 422);
+                    }
                 }
 
                 if($request->pointsInPeso) {
