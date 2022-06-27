@@ -446,6 +446,24 @@ class ThermalPrinter extends Model
         }
     }
 
+    private function summaryDiscounts($data) {
+        $this->printSubtitle("DISCOUNTED JO");
+        $this->printer->initialize();
+        if(count($data)) {
+            $data = collect($data);
+            foreach($data as $item) {
+                $this->printItem($item->discount_name, $item->discount_in_peso, $item->quantity);
+            }
+            $this->printUnderline();
+            $this->printer->setEmphasis(true);
+            $this->printItem("Total", $data->sum('amount'), $data->sum('quantity'));
+            $this->printer->feed();
+        } else {
+            $this->printCaption("No Discounted JO");
+            $this->printer->feed();
+        }
+    }
+
     public function dailySummary($data) {
         $this->printHeader();
         if(array_key_exists('quote', $data)) {
@@ -485,6 +503,7 @@ class ThermalPrinter extends Model
         $this->summaryCollections($data['collections']);
         $this->summaryCashless($data['cashless']);
         $this->summaryExpenses($data['expenses']);
+        $this->summaryDiscounts($data['discounts']);
         $this->summaryTotalDeposit($data['totalDeposit']);
 
         $this->cut();
