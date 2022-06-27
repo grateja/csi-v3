@@ -18,7 +18,6 @@ use App\ScarpaCategory;
 use App\ScarpaCleaningTransactionItem;
 use App\ScarpaVariation;
 use App\Transaction;
-use App\TransactionRemarks;
 use App\WashingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -185,6 +184,74 @@ class PosTransactionController extends Controller
                 'transaction' => $transaction,
             ]);
         });
+    }
+
+    public function addPerKilo($category, Request $request) {
+        $rules = [
+            'kilo' => 'required|numeric',
+            'itemId' => 'required',
+            'customerId' => 'required'
+        ];
+
+        if($request->validate($rules)) {
+            return 
+            DB::transaction(function () use ($category, $request) {
+                $transaction = Transaction::find($request->transactionId);
+                $customer = Customer::findOrFail($request->customerId);
+                $transactionItems = [];
+                $item = null;
+                $kilo = null;
+                $price = 0;
+
+                if($transaction == null) {
+                    $transaction = Transaction::create([
+                        'customer_id' => $request->customerId,
+                        'user_id' => auth('api')->id(),
+                        'staff_name' => auth('api')->user()->name,
+                        'customer_name' => $customer->name,
+                    ]);
+                } else {
+                    $transaction->update([
+                        'saved' => false,
+                    ]);
+                }
+    
+
+                switch ($category) {
+                    case 'washing':
+                        $item = WashingService::find($request->itemId);
+                        break;
+                    case 'drying':
+                        $item = DryingService::find($request->itemId);
+                        break;
+                    case 'other':
+                        $item = OtherService::find($request->itemId);
+                        break;
+                    case 'full':
+                        $item = FullService::with('fullServiceProducts', 'fullServiceItems')->find($request->itemId);
+                        break;
+                }
+
+                $price = $item->pricePerKilo * $request->kilo;
+                $kilo = $request->kilo / $request->load;
+
+                for($i = 0; $i <= $request->load; $i++) {
+                    $transactionItems[] = ServiceTransactionItem::create([
+                        'transaction_id' => $transaction->id,
+                        'name' => "($kilo KG) $item->name",
+                        'price' => $price,
+                        'category' => $category,
+                        'saved' => false,
+                        'washing_service_id' => $category == 'washing' ? $request->itemId : null,
+                        'drying_service_id' => $category == 'drying' ? $request->itemId : null,
+                        'other_service_id' => $category == 'other' ? $request->itemId : null,
+                        'full_service_id' => $category == 'full' ? $request->itemId : null,
+                    ]);
+                }
+
+                return response()->json($transactionItems);
+            });
+        }
     }
 
     public function addProduct(Request $request) {

@@ -199,6 +199,12 @@ class SalesReportController extends Controller
             ->groupBy('cash_less_provider')
             ->get();
 
+        $discounts = TransactionPayment::whereDate('date', $date)
+            ->where('discount', '>', 0)
+            ->select(DB::raw("SUM(total_amount) as total_amount, discount, COUNT(*) as quantity, CONCAT(discount_name, ' (-', discount ,'%)') as discount_name"))
+            ->groupBy('discount_name', 'discount')
+            ->get();
+
         $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereDate('date', $date)
             ->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
             ->first();
@@ -246,6 +252,7 @@ class SalesReportController extends Controller
             'totalSales' => $totalSales,
             'totalDeposit' => $collections['total'] - $expenses['total'],
             'cashless' => $cashless,
+            'discounts' => $discounts,
         ];
 
         if($print) {

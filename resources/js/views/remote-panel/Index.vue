@@ -5,7 +5,7 @@
         <v-divider v-else class="my-3"></v-divider>
 
         <v-btn to="/remote-panel" exact active-class="primary" round>8 Kilo Capacity</v-btn>
-        <v-btn to="/remote-panel/titan" active-class="primary" round exact>10 Kilo Capacity</v-btn>
+        <v-btn to="/remote-panel/titan" active-class="primary" round exact>12 Kilo Capacity</v-btn>
         <template v-if="isDeveloper">
             <v-divider></v-divider>
             <v-btn @click="stopAll" round :loading="resetting">stop all</v-btn>

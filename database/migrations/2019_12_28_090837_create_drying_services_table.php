@@ -19,6 +19,7 @@ class CreateDryingServicesTable extends Migration
             $table->string('description')->nullable();
             $table->string('img_path')->nullable();
             $table->double('price')->default(0);
+            // $table->double('price_per_load')->default(0);
             $table->string('machine_type')->comment('REGULAR, TITAN');
             $table->integer('minutes')->comment('Must be divisible by 10');
             $table->double('points')->default(0);

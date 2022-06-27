@@ -425,6 +425,30 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
     });
     
 
+    // /api/services/per-kilo
+    
+    Route::group(['prefix' => 'per-kilo'], function() {
+        // /api/services/per-kilo
+        Route::get('/', 'PerKiloServicesController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/per-kilo/create
+            Route::post('create', 'PerKiloServicesController@store');
+
+            // /api/services/per-kilo/{id}/update
+            Route::post('{id}/update', 'PerKiloServicesController@update');
+
+            // /api/services/per-kilo/{id}/set-picture
+            Route::post('{id}/set-picture', 'PerKiloServicesController@setPicture');
+
+            // /api/services/per-kilo/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'PerKiloServicesController@removePicture');
+
+            // /api/services/per-kilo/{id}/delete-service
+            Route::post('{id}/delete-service', 'PerKiloServicesController@deleteService');
+        });
+    });
+    
 });
 
 // /apo/pos-transactions
@@ -458,6 +482,12 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
 
     // /api/pos-transactions/reduce-lagoon
     Route::post('reduce-lagoon', 'PosTransactionController@reduceLagoon');
+
+    // /api/pos-transactions/add-per-kilo
+    Route::post('add-per-kilo', 'PosTransactionController@addPerKilo');
+
+    // /api/pos-transactions/reduce-per-kilo
+    Route::post('add-per-kilo', 'PosTransactionController@removePerKilo');
 
     // /api/pos-transactions/scarpa-cleanings
     Route::group(['prefix' => 'scarpa-cleanings'], function() {

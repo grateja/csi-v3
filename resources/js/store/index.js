@@ -26,6 +26,7 @@ import printer from './modules/printer.js';
 import serviceprice from './modules/serviceprice.js';
 import washingservice from './modules/washingservice.js';
 import dryingservice from './modules/dryingservice.js';
+import perkiloservices from './modules/perkiloservices.js';
 import otherservice from './modules/otherservice.js';
 import scarpacleaning from './modules/scarpacleaning.js';
 import lagoon from './modules/lagoon.js'
@@ -121,6 +122,7 @@ export default new  Vuex.Store({
         serviceprice,
         washingservice,
         dryingservice,
+        perkiloservices,
         otherservice,
         scarpacleaning,
         lagoon,

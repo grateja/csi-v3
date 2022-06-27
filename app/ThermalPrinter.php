@@ -298,7 +298,7 @@ class ThermalPrinter extends Model
             $this->printItem("Total", $data->sum('total_price'), $data->sum('quantity'));
             $this->printer->feed();
         } else {
-            $this->printCaption("No used services");
+            $this->printCaption("No cashless payment");
             $this->printer->feed();
         }
     }
@@ -428,6 +428,24 @@ class ThermalPrinter extends Model
         $this->printer->feed();
     }
 
+    private function summaryCashless($data) {
+        $this->printSubtitle("CASHLESS PAYMENT");
+        $this->printer->initialize();
+        if(count($data)) {
+            $data = collect($data);
+            foreach($data as $item) {
+                $this->printItem($item->cash_less_provider, $item->amount, $item->quantity);
+            }
+            $this->printUnderline();
+            $this->printer->setEmphasis(true);
+            $this->printItem("Total", $data->sum('amount'), $data->sum('quantity'));
+            $this->printer->feed();
+        } else {
+            $this->printCaption("No cashless payment");
+            $this->printer->feed();
+        }
+    }
+
     public function dailySummary($data) {
         $this->printHeader();
         if(array_key_exists('quote', $data)) {
@@ -465,6 +483,7 @@ class ThermalPrinter extends Model
         $this->summaryRFIDLoad($data['rfidLoad']);
         $this->summaryTotalSales($data['totalSales']);
         $this->summaryCollections($data['collections']);
+        $this->summaryCashless($data['cashless']);
         $this->summaryExpenses($data['expenses']);
         $this->summaryTotalDeposit($data['totalDeposit']);
 

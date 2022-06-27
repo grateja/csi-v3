@@ -91,6 +91,10 @@ const routes = [
                 component: require('./views/transactions/Services.vue').default
             },
             {
+                path: 'per-kilo',
+                component: require('./views/transactions/PerKilo.vue').default
+            },
+            {
                 path: 'scarpa-cleanings',
                 component: require('./views/transactions/ScarpaCleanings.vue').default
             },
@@ -168,6 +172,10 @@ const routes = [
             {
                 path: 'lagoon',
                 component: require('./views/services/lagoon/Index.vue').default
+            },
+            {
+                path: 'per-kilo',
+                component: require('./views/services/per-kilo-services/Index.vue').default
             }
         ]
     },

@@ -399,6 +399,9 @@ export default {
 
 
 <style scoped>
+.active {
+    color:black!important;
+}
 .date {
     color: white;
 }

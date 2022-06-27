@@ -36,6 +36,7 @@
                 <collections :collections="collections" :view="view" />
                 <cashless :cashless="cashless" :view="view" />
                 <expenses :expenses="expenses" :view="view" />
+                <discounts :discounts="discounts" :view="view" />
                 <deposit :deposit="deposit" />
 
                 <!-- <h3 class="title gray--text ml-3">Job Orders</h3>
@@ -558,6 +559,7 @@ import RfidLoad from './dailysummary/RfidLoad.vue';
 import Collections from './dailysummary/Collections.vue';
 import Cashless from './dailysummary/Cashless.vue';
 import Expenses from './dailysummary/Expenses.vue';
+import Discounts from './dailysummary/Discounts.vue';
 import TotalSales from './dailysummary/TotalSales.vue';
 import Deposit from './dailysummary/Deposit.vue';
 import Customers from './dailysummary/Customers.vue';
@@ -574,6 +576,7 @@ export default {
         Collections,
         Cashless,
         Expenses,
+        Discounts,
         TotalSales,
         Deposit,
         Customers
@@ -597,6 +600,7 @@ export default {
             collections: null,
             cashless: null,
             expenses: null,
+            discounts: null,
             usedProducts: null,
             usedServices: null,
             usedScarpa: null,
@@ -619,6 +623,7 @@ export default {
                 this.collections = res.data.collections;
                 this.cashless = res.data.cashless;
                 this.expenses = res.data.expenses;
+                this.discounts = res.data.discounts;
                 this.usedProducts = res.data.usedProducts;
                 this.usedServices = res.data.usedServices;
                 this.usedScarpa = res.data.usedScarpa;

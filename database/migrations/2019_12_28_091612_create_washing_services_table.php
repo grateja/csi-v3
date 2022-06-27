@@ -19,6 +19,7 @@ class CreateWashingServicesTable extends Migration
             $table->string('description')->nullable();
             $table->string('img_path')->nullable();
             $table->double('price')->default(0);
+            // $table->double('price_per_load')->default(0);
             $table->string('machine_type')->comment('REGULAR, TITAN');
             $table->integer('regular_minutes')->default(0);
             $table->integer('additional_minutes')->default(0);

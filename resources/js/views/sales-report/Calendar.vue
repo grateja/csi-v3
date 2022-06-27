@@ -21,7 +21,7 @@
                                     <template v-if="draft.active">
                                         <v-hover v-slot:default="{ hover }" v-if="draft.active">
                                             <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="preview(draft.date)" height="131px">
-                                                <span class="pa-2 grey--text font-weigth-bold">{{draft.date}}</span>
+                                                <span class="pa-2 green--text font-weigth-bold">{{draft.date}}</span>
                                                 <v-tooltip top v-if="draft.newCustomers">
                                                     <v-layout slot="activator" class="caption">
                                                         <v-flex xs3 class="text-xs-right pr-1">
@@ -346,6 +346,9 @@ ul.dates li.blank {
 .sunday .day {
     color: #a80b5a;
     font-weight: bold;
+}
+div.active {
+    color: black!important;
 }
 /* .day-blank {
     box-shadow:5px 5px 5px rgba(0,0,0,.05) inset,

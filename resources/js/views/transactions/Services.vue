@@ -1,5 +1,9 @@
 <template>
     <div>
+        <v-btn to="/new-transaction/services" class="translucent" active-class="primary" round>Per load</v-btn>
+        <!-- <v-btn to="/new-transaction/per-kilo" class="translucent" active-class="primary" round>Per kilo</v-btn> -->
+
+
         <h3 class="white--text mt-5">Washing services</h3>
 
         <v-progress-linear v-if="loading" height="2" class="my-0" indeterminate></v-progress-linear>
