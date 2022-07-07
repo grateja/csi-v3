@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Client;
 use App\Customer;
+use App\LagoonPerKiloTransactionItem;
 use App\LagoonTransactionItem;
 use App\PartialPayment;
 use App\ProductTransactionItem;
@@ -55,10 +56,11 @@ class SendTransaction implements ShouldQueue
             'service_transaction_items' => ServiceTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'product_transaction_items' => ProductTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'lagoon_transaction_items' => LagoonTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
+            'lagoon_per_kilo_transaction_items' => LagoonPerKiloTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'scarpa_cleaning_transaction_items' => ScarpaCleaningTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'payment' => TransactionPayment::withTrashed()->find($transaction->id),
-            'partial_payment' => PartialPayment::withTrashed()->find($transaction->id),
-            'remarks' => TransactionRemarks::withTrashed()->where('transaction_id', $transaction->id),
+            'partial_payment' => PartialPayment::withTrashed()->where('transaction_id', $transaction->id)->first(),
+            'remarks' => TransactionRemarks::withTrashed()->where('transaction_id', $transaction->id)->get(),
         ];
 
         $response = $this->createRequest($data, $shopId);
@@ -95,8 +97,13 @@ class SendTransaction implements ShouldQueue
                     'synched' => Carbon::now(),
                 ]);
             }
-            if($result->lagoon_transaction_item_ids) {
+            if(array_key_exists('lagoon_transaction_item_ids', $result)) {
                 DB::table('lagoon_transaction_items')->whereIn('id', $result->lagoon_transaction_item_ids)->update([
+                    'synched' => Carbon::now(),
+                ]);
+            }
+            if(array_key_exists('lagoon_per_kilo_transaction_item_ids', $result)) {
+                DB::table('lagoon_per_kilo_transaction_items')->whereIn('id', $result->lagoon_per_kilo_transaction_item_ids)->update([
                     'synched' => Carbon::now(),
                 ]);
             }
@@ -107,6 +114,7 @@ class SendTransaction implements ShouldQueue
         $clientRequest = new GuzzleHttpClient();
         $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId . '/transaction', [
         // $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId . '/transaction', [
+        // $response = $clientRequest->post('http://localhost:8000/api/live/v3/update/' . $shopId . '/transaction', [
             'json' => $data,
             'headers' => [
                 'Content-Type' => 'application/json',

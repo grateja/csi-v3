@@ -123,6 +123,28 @@
                         </tr>
                     </table>
 
+                    <table class="v-table" v-if="tempTransaction.posLagoonPerKiloItems.length">
+                        <tr>
+                            <th class="name">NAME</th>
+                            <th class="unit-price">PRICE /KG</th>
+                            <th class="quantity">KG</th>
+                            <th class="total">TOTAL</th>
+                        </tr>
+                        <tr v-for="item in tempTransaction.posLagoonPerKiloItems" :key="item.id">
+                            <td class="pl-1">{{item.name}}</td>
+                            <td class="text-xs-center">{{item.price_per_kilo ? 'P ' + parseFloat(item.price_per_kilo).toFixed(2) : 'FREE'}}</td>
+                            <td class="text-xs-center">
+                                {{item.kilos}}
+                            </td>
+                            <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        </tr>
+                        <tr class=" font-weight-bold">
+                            <td colspan="2" class="pl-1">Total</td>
+                            <td class="text-xs-center">{{tempTransaction.posLagoonPerKiloSummary.total_quantity}}</td>
+                            <td class="text-xs-center">P {{parseFloat(tempTransaction.posLagoonPerKiloSummary.total_price).toFixed(2)}}</td>
+                        </tr>
+                    </table>
+
                     <table class="v-table" v-if="tempTransaction.posProductItems.length">
                         <tr>
                             <th colspan="4">Products</th>

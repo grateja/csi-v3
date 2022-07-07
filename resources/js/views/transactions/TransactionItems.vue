@@ -279,7 +279,7 @@
                 </v-layout>
                 <v-divider></v-divider>
                 <template v-for="(item, i) in currentTransaction.posLagoonItems">
-                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                    <v-layout :key="i + 'lagoon'" class="px-1">
                         <v-flex xs4>
                             <div>
                                 <v-btn icon small class="ma-0 red" outline @click="reduceLagoon(item)" :loading="item.reducing">
@@ -299,7 +299,66 @@
                             <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
                         </v-flex>
                     </v-layout>
-                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                    <v-divider :key="i + '-div-lagoon'"></v-divider>
+                </template>
+                <v-divider class="black"></v-divider>
+                <v-layout class="pa-1 font-weight-bold" >
+                    <v-flex xs4>
+                        <div>Total</div>
+                    </v-flex>
+                    <v-flex xs3>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="text-xs-center">{{currentTransaction.posLagoonSummary.total_quantity}}</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="text-xs-right">P {{parseFloat(currentTransaction.posLagoonSummary.total_price).toFixed(2)}}</div>
+                    </v-flex>
+                </v-layout>
+            </v-card>
+            <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posLagoonPerKiloItems.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>LAGOON /KG</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Price /KG</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">KG</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <template v-for="(item, i) in currentTransaction.posLagoonPerKiloItems">
+                    <v-layout :key="i + 'lagoon-per-kilo'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                <v-btn icon small class="ma-0 red" outline @click="reduceLagoonPerKilo(item)" :loading="item.reducing">
+                                    <v-icon small class="red--text">remove</v-icon>
+                                </v-btn>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.price_per_kilo ? 'P ' + parseFloat(item.price_per_kilo).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.kilos}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-lagoon-per-kilo'"></v-divider>
                 </template>
                 <v-divider class="black"></v-divider>
                 <v-layout class="pa-1 font-weight-bold" >
@@ -461,7 +520,7 @@
                 <v-spacer></v-spacer>
             </v-card-actions>
         <service-item-dialog v-if="currentTransaction" v-model="openServiceItemDialog" :serviceName="activeServiceItemName" :transactionId="currentTransaction.id"></service-item-dialog>
-        <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" />
+        <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" @save="paid = true" />
     </v-card>
 </template>
 <script>
@@ -475,6 +534,7 @@ export default {
     },
     data() {
         return {
+            paid: false,
             openPaymentDialog: false,
             openServiceItemDialog: false,
             activeServiceItemName: null
@@ -545,6 +605,17 @@ export default {
                 });
             });
         },
+        reduceLagoonPerKilo(item) {
+            Vue.set(item, 'reducing', true);
+            this.$store.dispatch('postransaction/reduceLagoonPerKilo', {
+                lagoonId: item.id,
+                transactionId: this.currentTransaction.id
+            }).finally(() => {
+                this.$store.dispatch('postransaction/refreshTransaction').finally(() => {
+                    Vue.set(item, 'reducing', false);
+                });
+            });
+        },
         viewPayment() {
             this.openPaymentDialog = true;
         },
@@ -552,6 +623,11 @@ export default {
             this.$store.dispatch('printer/printClaimStub', {
                 transactionId: this.currentTransaction.id
             });
+        }
+    },
+    beforeDestroy() {
+        if(!this.paid) {
+            axios.post('/api/pos-transactions/clear-monitor');
         }
     }
 }

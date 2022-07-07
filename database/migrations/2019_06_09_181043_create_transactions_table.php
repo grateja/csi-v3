@@ -22,6 +22,7 @@ class CreateTransactionsTable extends Migration
             $table->string('staff_name')->nullable()->comment('static name of user who saved the transaction');
             $table->string('job_order')->nullable();
             $table->boolean('saved')->default(false);
+            $table->string('or_number')->nullable();
 
             $table->string('customer_name');
             $table->float('total_price')->default(0);

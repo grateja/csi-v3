@@ -20,7 +20,7 @@ class CreatePerKiloTransactionItemsTable extends Migration
             $table->string('name')->nullable();
             $table->double('kilo')->nullable();
             $table->double('load')->nullable();
-            $table->
+            // $table->
 
 
             $table->timestamps();

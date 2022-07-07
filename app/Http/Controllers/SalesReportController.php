@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Customer;
 use App\Expense;
+use App\LagoonPerKiloTransactionItem;
 use App\LagoonTransactionItem;
 use App\Machine;
 use App\MonthlyTarget;
@@ -238,6 +239,11 @@ class SalesReportController extends Controller
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
+        $usedLagoonPerKilo = LagoonPerKiloTransactionItem::whereHas('transaction', function($query) use ($date) {
+            $query->whereDate('date', $date)
+                ->where('saved', true);
+        })->where('saved', true)->groupBy('name')->selectRaw('SUM(kilos) as kg, name, SUM(total_price) as total_price')->get();
+
         $data = [
             'newCustomers' => $newCustomers,
             'posSummary' => $posSummary,
@@ -249,6 +255,7 @@ class SalesReportController extends Controller
             'usedServices' => $usedServices,
             'usedScarpa' => $usedScarpa,
             'usedLagoon' => $usedLagoon,
+            'usedLagoonPerKilo' => $usedLagoonPerKilo,
             'totalSales' => $totalSales,
             'totalDeposit' => $collections['total'] - $expenses['total'],
             'cashless' => $cashless,

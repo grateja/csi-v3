@@ -189,6 +189,9 @@ Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
 
     // /api/customers/get-crn
     Route::get('get-crn', 'CustomersController@getCRN');
+
+    // /api/customers/{customerId}
+    Route::get('{customerId}', 'CustomersController@show');
 });
 
 // /api/products
@@ -423,6 +426,31 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             Route::post('{id}/delete-service', 'LagoonController@deleteService');
         });
     });
+
+    // /api/services/lagoon-per-kilo
+    Route::group(['prefix' => 'lagoon-per-kilo'], function() {
+
+        // /api/services/lagoon-per-kilo
+        Route::get('/', 'LagoonPerKiloController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/lagoon-per-kilo/create
+            Route::post('create', 'LagoonPerKiloController@store');
+
+            // /api/services/lagoon-per-kilo/{id}/update
+            Route::post('{id}/update', 'LagoonPerKiloController@update');
+
+            // /api/services/lagoon-per-kilo/{id}/set-picture
+            Route::post('{id}/set-picture', 'LagoonPerKiloController@setPicture');
+
+            // /api/services/lagoon-per-kilo/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'LagoonPerKiloController@removePicture');
+
+            // /api/services/lagoon-per-kilo/{id}/delete-service
+            Route::post('{id}/delete-service', 'LagoonPerKiloController@deleteService');
+        });
+    });
+    
     
 
     // /api/services/per-kilo
@@ -453,6 +481,9 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
 
 // /apo/pos-transactions
 Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], function () {
+    // /api/pos-transactions/clear-monitor
+    Route::post('clear-monitor', 'PosTransactionController@clearMonitorView');
+
     // /api/pos-transactions/current-transaction/{customerId}
     Route::get('current-transaction/{customerId}', 'PosTransactionController@currentTransaction');
 
@@ -477,11 +508,17 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
     // /api/pos-transactions/add-lagoon
     Route::post('add-lagoon', 'PosTransactionController@addLagoon');
 
+    // /api/pos-transactions/add-lagoon-per-kilo
+    Route::post('add-lagoon-per-kilo', 'PosTransactionController@addLagoonPerKilo');
+
     // /api/pos-transactions/reduce-products
     Route::post('reduce-products', 'PosTransactionController@reduceProducts');
 
     // /api/pos-transactions/reduce-lagoon
     Route::post('reduce-lagoon', 'PosTransactionController@reduceLagoon');
+
+    // /api/pos-transactions/reduce-lagoon-per-kilo
+    Route::post('reduce-lagoon-per-kilo', 'PosTransactionController@reduceLagoonPerKilo');
 
     // /api/pos-transactions/add-per-kilo
     Route::post('add-per-kilo', 'PosTransactionController@addPerKilo');

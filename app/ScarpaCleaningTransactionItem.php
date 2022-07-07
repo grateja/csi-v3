@@ -23,4 +23,24 @@ class ScarpaCleaningTransactionItem extends Model
     public function queSynch() {
         return (new AutoSynch('scarpa_cleaning_transaction_items', $this->id))->delay(5);
     }
+
+    protected static function boot() {
+        static::deleting(function($model) {
+            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            $monitorChecker->update([
+                'transaction_id' => $model->transaction_id,
+                'token' => $model->id,
+                'action' => 'remove-scarpa',
+            ]);
+        });
+        static::created(function($model) {
+            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            $monitorChecker->update([
+                'transaction_id' => $model->transaction_id,
+                'token' => $model->id,
+                'action' => 'add-scarpa',
+            ]);
+        });
+        parent::boot();
+    }
 }

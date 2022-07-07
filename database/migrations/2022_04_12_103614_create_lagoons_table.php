@@ -16,6 +16,7 @@ class CreateLagoonsTable extends Migration
         Schema::create('lagoons', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
+            $table->string('category')->nullable();
             $table->string('description')->nullable();
             $table->string('img_path')->nullable();
             $table->double('price')->default(0);

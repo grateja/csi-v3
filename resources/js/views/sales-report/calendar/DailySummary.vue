@@ -30,6 +30,7 @@
                 <used-products :usedProducts="usedProducts" :view="view" />
                 <scarpa-cleanings :usedScarpa="usedScarpa" :view="view" />
                 <lagoon :usedLagoon="usedLagoon" :view="view" />
+                <lagoon-per-kilo :usedLagoonPerKilo="usedLagoonPerKilo" :view="view" />
                 <rfid-transactions :rfidCard="rfidCard" :view="view" />
                 <rfid-load :rfidLoad="rfidLoad" :view="view" />
                 <total-sales :totalSales="totalSales" :view="view" />
@@ -553,6 +554,7 @@ import UsedProducts from './dailysummary/UsedProducts.vue'
 import UsedServices from './dailysummary/UsedServices.vue';
 import ScarpaCleanings from './dailysummary/ScarpaCleanings.vue';
 import Lagoon from './dailysummary/Lagoon.vue';
+import LagoonPerKilo from './dailysummary/LagoonPerKilo.vue';
 import JobOrders from './dailysummary/JobOrders.vue';
 import RfidTransactions from './dailysummary/RfidTransactions.vue';
 import RfidLoad from './dailysummary/RfidLoad.vue';
@@ -570,6 +572,7 @@ export default {
         UsedServices,
         ScarpaCleanings,
         Lagoon,
+        LagoonPerKilo,
         JobOrders,
         RfidTransactions,
         RfidLoad,
@@ -605,6 +608,7 @@ export default {
             usedServices: null,
             usedScarpa: null,
             usedLagoon: null,
+            usedLagoonPerKilo: null,
             newCustomers: 0,
             totalSales: null,
             deposit: 0
@@ -628,6 +632,7 @@ export default {
                 this.usedServices = res.data.usedServices;
                 this.usedScarpa = res.data.usedScarpa;
                 this.usedLagoon = res.data.usedLagoon;
+                this.usedLagoonPerKilo = res.data.usedLagoonPerKilo;
                 this.newCustomers = res.data.newCustomers;
                 this.totalSales = res.data.totalSales;
                 this.deposit = res.data.totalDeposit;

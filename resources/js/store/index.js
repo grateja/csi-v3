@@ -30,6 +30,7 @@ import perkiloservices from './modules/perkiloservices.js';
 import otherservice from './modules/otherservice.js';
 import scarpacleaning from './modules/scarpacleaning.js';
 import lagoon from './modules/lagoon.js'
+import lagoonperkilo from './modules/lagoonperkilo.js'
 import fullservice from './modules/fullservice.js';
 import postransaction from './modules/postransaction.js';
 import fullserviceitem from './modules/fullserviceitem.js';
@@ -126,6 +127,7 @@ export default new  Vuex.Store({
         otherservice,
         scarpacleaning,
         lagoon,
+        lagoonperkilo,
         postransaction,
         fullservice,
         fullserviceitem,

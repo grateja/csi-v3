@@ -40,6 +40,13 @@ class CustomersController extends Controller
         ], 200);
     }
 
+    public function show($customerId) {
+        $customer = Customer::findOrFail($customerId);
+        return response()->json([
+            'customer' => $customer,
+        ]);
+    }
+
     public function autocomplete(Request $request) {
         $data = Customer::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");

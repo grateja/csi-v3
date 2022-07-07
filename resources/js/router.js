@@ -171,7 +171,17 @@ const routes = [
             },
             {
                 path: 'lagoon',
-                component: require('./views/services/lagoon/Index.vue').default
+                component: require('./views/services/lagoon/Index.vue').default,
+                children: [
+                    {
+                        path: 'per-kilo',
+                        component: require('./views/services/lagoon/per-kilo/Index.vue').default
+                    },
+                    {
+                        path: 'per-item',
+                        component: require('./views/services/lagoon/per-item/Index.vue').default
+                    }
+                ]
             },
             {
                 path: 'per-kilo',
@@ -252,6 +262,10 @@ const routes = [
     {
         path: '/time-keeping',
         component: require('./views/time-keeping/Index.vue').default
+    },
+    {
+        path: '/monitor-view',
+        component: require('./views/monitor-view/Index.vue').default
     },
     {
         path: '/',

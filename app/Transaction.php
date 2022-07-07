@@ -61,6 +61,10 @@ class Transaction extends Model
         return $this->hasMany('App\LagoonTransactionItem')->orderBy('name');
     }
 
+    public function lagoonPerKiloTransactionItems() {
+        return $this->hasMany('App\LagoonPerKiloTransactionItem')->orderBy('name');
+    }
+
     public function customerWashes() {
         return $this->hasManyThrough('App\CustomerWash', 'App\ServiceTransactionItem');
     }
@@ -158,6 +162,18 @@ class Transaction extends Model
         return $items->get();
     }
 
+    public function posLagoonPerKiloItems($withTrashed = false) {
+        // $items = $this->lagoonPerKiloTransactionItems()->groupBy('name', 'total_price', 'lagoon_per_kilo_id')->selectRaw('lagoon_per_kilo_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+        $items = $this->lagoonPerKiloTransactionItems()
+            ->select('id', 'name', 'kilos', 'price_per_kilo', 'total_price', 'lagoon_per_kilo_id');
+
+        if($withTrashed) {
+            $items = $items->withTrashed();
+        }
+
+        return $items->get();
+    }
+
     public function posScarpaCleaningItems($withTrashed = false) {
         $items = $this->scarpaCleaningTransactionItems()->groupBy('scarpa_variation_id', 'name', 'price')
             ->selectRaw('scarpa_variation_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
@@ -216,6 +232,13 @@ class Transaction extends Model
         ];
     }
 
+    public function posLagoonPerKiloSummary($withTrashed = false) {
+        return [
+            'total_price' => $this->posLagoonPerKiloItems($withTrashed)->sum('total_price'),
+            'total_quantity' => $this->posLagoonPerKiloItems($withTrashed)->sum('kilos'),
+        ];
+    }
+
     public function attachJobOrder() {
         $jobOrder = JobOrderFormat::first();
         if(!$jobOrder) {
@@ -231,7 +254,8 @@ class Transaction extends Model
         $sTotal = $this->posServiceItems()->sum('total_price');
         $scTotal = $this->posScarpaCleaningItems()->sum('total_price');
         $lTotal = $this->posLagoonItems()->sum('total_price');
-        return $pTotal + $sTotal + $scTotal + $lTotal; 
+        $lpkTotal = $this->posLagoonPerKiloItems()->sum('total_price');
+        return $pTotal + $sTotal + $scTotal + $lTotal + $lpkTotal; 
     }
 
     // public function refreshAllWithTrashed() {
@@ -250,11 +274,13 @@ class Transaction extends Model
         $this['posProductItems'] = $this->posProductItems($withTrashed);
         $this['posScarpaCleaningItems'] = $this->posScarpaCleaningItems($withTrashed);
         $this['posLagoonItems'] = $this->posLagoonItems($withTrashed);
+        $this['posLagoonPerKiloItems'] = $this->posLagoonPerKiloItems($withTrashed);
         $this['posServiceSummary'] = $this->posServiceSummary($withTrashed);
         $this['posProductSummary'] = $this->posProductSummary($withTrashed);
         $this['posScarpaCleaningSummary'] = $this->posScarpaCleaningSummary($withTrashed);
         $this['posLagoonSummary'] = $this->posLagoonSummary($withTrashed);
-        $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'] + $this->posScarpaCleaningSummary($withTrashed)['total_price'] + $this->posLagoonSummary($withTrashed)['total_price'];
+        $this['posLagoonPerKiloSummary'] = $this->posLagoonPerKiloSummary($withTrashed);
+        $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'] + $this->posScarpaCleaningSummary($withTrashed)['total_price'] + $this->posLagoonSummary($withTrashed)['total_price'] + $this->posLagoonPerKiloSummary($withTrashed)['total_price'];
         if($this->payment) {
             $this['paidTo'] = $this->payment->user->name;
         }
@@ -324,6 +350,8 @@ class Transaction extends Model
             unset($model['posServiceSummary']);
             unset($model['posLagoonItems']);
             unset($model['posLagoonSummary']);
+            unset($model['posLagoonPerKiloItems']);
+            unset($model['posLagoonPerKiloSummary']);
             unset($model['posScarpaCleaningSummary']);
             unset($model['posProductSummary']);
             unset($model['customer']);
@@ -332,6 +360,15 @@ class Transaction extends Model
             unset($model['remarks']);
             $model['updated_at'] = Carbon::now()->toDateTimeString();
             $model['created_at'] = Carbon::now()->toDateTimeString();
+        });
+
+        static::created(function($model) {
+            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            $monitorChecker->update([
+                'transaction_id' => $model->id,
+                'token' => $model->id,
+                'action' => 'retreive',
+            ]);
         });
 
         parent::boot();

@@ -42,8 +42,8 @@ class LiveHostController extends Controller
             'scarpa_categories',
             'scarpa_variations',
             'scarpa_cleaning_transaction_items',
-            'lagoons',
             'lagoon_transaction_items',
+            'lagoon_per_kilo_transaction_items',
         ];
 
         $collections = [];
@@ -111,6 +111,7 @@ class LiveHostController extends Controller
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
+        // $response = $clientRequest->post('http://localhost:8000/api/live/v3/update/' . $shopId, [
         $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId, [
         // $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId, [
             'json' => $data,

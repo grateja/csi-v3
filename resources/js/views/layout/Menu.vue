@@ -1,43 +1,50 @@
 <template>
     <div>
         <flash-message />
-        <v-toolbar flat app class="translucent">
-            <!-- <v-toolbar-side-icon v-if="!!user" @click="drawer = !drawer"></v-toolbar-side-icon> -->
-            <v-btn icon @click="drawer = !drawer" class="translucent">
-                <v-icon v-if="!drawer" color="white">keyboard_arrow_right</v-icon>
-                <v-icon v-else color="white">keyboard_arrow_left</v-icon>
-            </v-btn>
-            <v-toolbar-title v-if="!!user">
-                <v-btn large to="/" round class="translucent">
-                    <!-- <v-icon left large>apps</v-icon> MENU -->
-                    <v-img src="/img/dos-icons/menu.png" width="30" />
-                    <span class="mx-3">menu</span>
+        <v-hover v-slot:default="{ hover }">
+            <v-toolbar flat app class="translucent" :style=" monitorView&&!hover ? 'opacity: 0' : 'opacity: 1' ">
+                <!-- <v-toolbar-side-icon v-if="!!user" @click="drawer = !drawer"></v-toolbar-side-icon> -->
+                <v-btn icon @click="drawer = !drawer" class="translucent">
+                    <v-icon v-if="!drawer" color="white">keyboard_arrow_right</v-icon>
+                    <v-icon v-else color="white">keyboard_arrow_left</v-icon>
                 </v-btn>
-            </v-toolbar-title>
+                <v-toolbar-title v-if="!!user">
+                    <v-btn large to="/" round class="translucent">
+                        <!-- <v-icon left large>apps</v-icon> MENU -->
+                        <v-img src="/img/dos-icons/menu.png" width="30" />
+                        <span class="mx-3">menu</span>
+                    </v-btn>
+                </v-toolbar-title>
 
-            <v-spacer></v-spacer>
+                <v-spacer></v-spacer>
 
-            <template v-if="!!user">
-                <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 720" class="translucent" round>
-                    <!-- <v-icon :left="$vuetify.breakpoint.width > 720">store</v-icon> -->
-                    <v-img src="/img/dos-icons/preferences.png" width="25" :left="$vuetify.breakpoint.width > 720" class="mx-2" />
-                    <span v-if="$vuetify.breakpoint.width > 720">
-                        shop preferences
-                    </span>
-                </v-btn>
-                <v-btn to="/account" class="translucent" round>
-                    <span>{{user.roles[0] | uppercase}}</span>
-                </v-btn>
-                <v-btn flat small @click="logout" :loading="isLoggingOut">
-                    Logout<v-icon right>close</v-icon>
-                </v-btn>
-            </template>
+                <template v-if="!!user">
+                    <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 720" class="translucent" round>
+                        <!-- <v-icon :left="$vuetify.breakpoint.width > 720">store</v-icon> -->
+                        <v-img src="/img/dos-icons/preferences.png" width="25" :left="$vuetify.breakpoint.width > 720" class="mx-2" />
+                        <span v-if="$vuetify.breakpoint.width > 720">
+                            shop preferences
+                        </span>
+                    </v-btn>
+                    <v-btn to="/account" class="translucent" round>
+                        <span>{{user.roles[0] | uppercase}}</span>
+                    </v-btn>
+                    <v-btn flat small @click="logout" :loading="isLoggingOut">
+                        Logout<v-icon right>close</v-icon>
+                    </v-btn>
+                </template>
 
-            <template v-else>
-                <v-btn flat router to="/login">Login</v-btn>
-            </template>
+                <template v-else>
+                    <v-btn flat router to="/login">Login</v-btn>
+                </template>
 
-        </v-toolbar>
+                <!-- <v-btn icon class="translucent" @click="toggleMonitorView" v-if="!needsToHide" :to="monitorView ? '/' : '/monitor-view'">
+                    <v-icon v-if="monitorView">phonelink_off</v-icon>
+                    <v-icon v-else>phonelink</v-icon>
+                </v-btn> -->
+
+            </v-toolbar>
+        </v-hover>
 
         <v-navigation-drawer app v-model="drawer" :stateless="!needsToHide" fixed v-if="!!user" :class="{'transparent' : $vuetify.breakpoint.width > 800}">
             <v-card v-if="!!user" flat class="pa-1 my-2 text-xs-center transparent"  router to="/account">
@@ -137,6 +144,7 @@ export default {
     },
     data() {
         return {
+            monitorView: false,
             drawer: true,
             mini: false,
             needsToHide: true,
@@ -341,6 +349,10 @@ export default {
             this.$store.dispatch('auth/logout').then((res, rej) => {
                 this.$router.push('/login');
             });
+        },
+        toggleMonitorView() {
+            this.monitorView = !this.monitorView
+            this.drawer = !this.monitorView
         }
     },
     beforeDestroy () {

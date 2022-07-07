@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Lagoon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class LagoonController extends Controller
 {
     public function index(Request $request) {
         $result = Lagoon::where('name', 'like', "%$request->keyword%")
+            ->orderBy('name')
             ->get();
 
         return response()->json([
-            'result' => $result,
+            'result' => $result->groupBy('category'),
         ]);
     }
 
@@ -58,7 +60,6 @@ class LagoonController extends Controller
     public function deleteService($id) {
         $service = Lagoon::findOrFail($id);
         if($service->delete()) {
-            $this->dispatch($service->queSynch());
             File::delete(public_path() . $service->img_path);
             return response()->json([
                 'service' => $service,
@@ -68,9 +69,22 @@ class LagoonController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|unique:lagoons,name,NULL,id,deleted_at,NULL',
+            // 'name' => 'required|unique:lagoons,name,NULL,id,deleted_at,NULL',
             'price' => 'numeric',
         ];
+
+        $service = Lagoon::withTrashed()->where([
+            'name' => $request->name,
+            'category' => $request->category,
+        ])->first();
+
+        if($service != null && $service->deleted_at == null) {
+            return response()->json([
+                'errors' => [
+                    'name' => ['Service with the same name and category already exists']
+                ]
+            ], 422);
+        }
 
         if($request->validate($rules)) {
             $service = Lagoon::withTrashed()->where([
@@ -80,7 +94,7 @@ class LagoonController extends Controller
             if($service) {
                 $service->update([
                     'name' => $request->name,
-                    'description' => $request->description,
+                    'category' => $request->category,
                     'price' => $request->price,
                     'img_path' => null,
                     'deleted_at' => null,
@@ -88,13 +102,11 @@ class LagoonController extends Controller
             } else {
                 $service = Lagoon::create([
                     'name' => $request->name,
-                    'description' => $request->description,
+                    'category' => $request->category,
                     'price' => $request->price,
                     'img_path' => null,
                 ]);
             }
-
-            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,
@@ -118,11 +130,9 @@ class LagoonController extends Controller
         if($request->validate($rules)) {
             $service->update([
                 'name' => $request->name,
-                'description' => $request->description,
+                'category' => $request->category,
                 'price' => $request->price,
             ]);
-
-            $this->dispatch($service->queSynch());
 
             return response()->json([
                 'service' => $service,

@@ -12,6 +12,7 @@
 */
 Route::get('csi-v3/public/api/tap/{ipAddress}/{rfid}/{macAddress?}', 'TapCardController@tap');
 Route::get('csi-2019/public/api/tap/{ipAddress}/{rfid}/{macAddress?}', 'TapCardController@tap');
+// Route::get('/monitor-view', 'MonitorViewController@index');
 
 Route::get('{any}', function() {
     return view('welcome');

@@ -341,6 +341,24 @@ class ThermalPrinter extends Model
         }
     }
 
+    private function summaryUsedLagoonPerKilo($data) {
+        $this->printSubtitle("USED LAGOON /KG");
+        $this->printer->initialize();
+        if(count($data)) {
+            $data = collect($data);
+            foreach($data as $item) {
+                $this->printItem($item->name, $item->total_price, $item->kg);
+            }
+            $this->printUnderline();
+            $this->printer->setEmphasis(true);
+            $this->printItem("Total", $data->sum('total_price'), $data->sum('kg'));
+            $this->printer->feed();
+        } else {
+            $this->printCaption("No used services");
+            $this->printer->feed();
+        }
+    }
+
     private function summaryScarpa($data) {
         $this->printer->initialize();
         $this->printer->setEmphasis(true);
@@ -497,6 +515,7 @@ class ThermalPrinter extends Model
         $this->summaryUsedProducts($data['usedProducts']);
         $this->summaryScarpa($data['usedScarpa']);
         $this->summaryUsedLagoon($data['usedLagoon']);
+        $this->summaryUsedLagoonPerKilo($data['usedLagoonPerKilo']);
         $this->summaryRFID($data['rfidCard']);
         $this->summaryRFIDLoad($data['rfidLoad']);
         $this->summaryTotalSales($data['totalSales']);

@@ -1,5 +1,6 @@
 <?php
 
+use App\LagoonPerKilo;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -21,7 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(\JobOrderSeeder::class);
         $this->call(\PointsDataSeeder::class);
         $this->call(\StoreHoursSeeder::class);
-
         DB::table('role_users')->insert([
             [
                 'user_id' => 'e026cf14-0093-4de3-8ab2-e13086acb7ac',

@@ -10,6 +10,7 @@ use App\PartialPayment;
 use App\RfidCard;
 use App\Transaction;
 use App\TransactionPayment;
+use App\MonitorChecker;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -130,7 +131,13 @@ class PaymentsController extends Controller
                     ]);
 
                     $this->dispatch((new SendTransaction($transaction->id))->delay(5));
-
+                    // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+                    // $monitorChecker->update([
+                    //     'transaction_id' => null,
+                    //     'token' => null,
+                    //     'action' => 'paid',
+                    // ]);    
+    
                     return response()->json([
                         'transaction' => $transaction,
                         'payment' => $payment,
@@ -267,6 +274,12 @@ class PaymentsController extends Controller
 
 
                 $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+                $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+                $monitorChecker->update([
+                    'transaction_id' => null,
+                    'token' => null,
+                    'action' => 'paid',
+                ]);    
 
                 return response()->json([
                     'transaction' => $transaction,

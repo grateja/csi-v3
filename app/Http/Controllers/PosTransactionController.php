@@ -9,6 +9,8 @@ use App\DryingService;
 use App\FullService;
 use App\Jobs\SendTransaction;
 use App\Lagoon;
+use App\LagoonPerKilo;
+use App\LagoonPerKiloTransactionItem;
 use App\LagoonTransactionItem;
 use App\OtherService;
 use App\Product;
@@ -19,9 +21,11 @@ use App\ScarpaCleaningTransactionItem;
 use App\ScarpaVariation;
 use App\Transaction;
 use App\WashingService;
+use App\MonitorChecker;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PosTransactionController extends Controller
 {
@@ -34,6 +38,22 @@ class PosTransactionController extends Controller
         if($transaction) {
             $transaction->refreshAll();
             $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
+        }
+
+        $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+
+        if($transaction != null) {
+            $monitorChecker->update([
+                'transaction_id' => $transaction->id,
+                'job_order' => $transaction->job_order,
+                'token' => $customerId,
+                'action' => 'retreive',
+            ]);
+        } else {
+            $monitorChecker->update([
+                'token' => $customerId,
+                'action' => 'create',
+            ]);
         }
 
         return response()->json([
@@ -451,10 +471,80 @@ class PosTransactionController extends Controller
 
             $transactionItem = LagoonTransactionItem::create([
                 'transaction_id' => $transaction->id,
-                'name' => $lagoon->name,
+                'name' => $lagoon->category . '(' . $lagoon->name . ')',
                 'price' => $lagoon->price,
                 'lagoon_id' => $lagoon->id,
             ]);
+
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+
+            return response()->json([
+                'transaction' => $transaction,
+            ]);
+        });
+    }
+
+    public function addLagoonPerKilo(Request $request) {
+        return DB::transaction(function () use ($request) {
+
+            $lagoon = LagoonPerKilo::findOrFail($request->itemId);
+
+            $transaction = Transaction::find($request->transactionId);
+            $customer = Customer::findOrFail($request->customerId);
+
+            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item from other`s day transaction.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction && $transaction->partialPayment) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item to partially paid Job Order.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction == null) {
+                $transaction = Transaction::create([
+                    'customer_id' => $request->customerId,
+                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
+                    'customer_name' => $customer->name,
+                ]);
+            } else {
+                $transaction->update([
+                    'saved' => false,
+                ]);
+            }
+
+            $transactionItem = LagoonPerKiloTransactionItem::where([
+                'transaction_id' => $transaction->id,
+                'lagoon_per_kilo_id' => $request->itemId,
+            ])->first();
+            if($transactionItem != null) {
+                $transactionItem->update([
+                    'kilos' => DB::raw('kilos+' . $request->kg),
+                    'total_price' => DB::raw('total_price+' . ($request->kg * $lagoon->price_per_kilo))
+                ]);
+            } else {
+                $transactionItem = LagoonPerKiloTransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'name' => $lagoon->name,
+                    'kilos' => $request->kg,
+                    'price_per_kilo' => $lagoon->price_per_kilo,
+                    'total_price' => $request->kg * $lagoon->price_per_kilo,
+                    'lagoon_per_kilo_id' => $lagoon->id,
+                ]);
+            }
 
             if($transaction) {
                 $transaction->refreshAll();
@@ -506,6 +596,34 @@ class PosTransactionController extends Controller
                     'lagoon_id' => $request->lagoonId,
                     'transaction_id' => $request->transactionId,
                 ])->orderByDesc('created_at')->first();
+
+            if(!$lagonTransactionItem->created_at->isToday()) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot remove item. Transaction is from previous day']
+                    ],
+                ], 422);
+            }
+
+            if($lagonTransactionItem->delete()) {
+                $lagonTransactionItem->transaction()->update([
+                    'saved' => false,
+                ]);
+
+                $this->dispatch((new SendTransaction($lagonTransactionItem->transaction_id))->delay(5));
+
+                return response()->json([
+                    'lagoonTransactionItem' => $lagonTransactionItem
+                ]);
+            }
+
+            return $lagonTransactionItem;
+        });
+    }
+
+    public function reduceLagoonPerKilo(Request $request) {
+        return DB::transaction(function () use ($request) {
+            $lagonTransactionItem = LagoonPerKiloTransactionItem::with('transaction')->findOrFail($request->lagoonId);
 
             if(!$lagonTransactionItem->created_at->isToday()) {
                 return response()->json([
@@ -622,6 +740,10 @@ class PosTransactionController extends Controller
                 'saved' => true,
             ]);
 
+            $lagoon = $transaction->lagoonPerKiloTransactionItems()->update([
+                'saved' => true,
+            ]);
+
             foreach ($washingServices as $item) {
                 CustomerWash::create([
                     'service_name' => $item->name,
@@ -715,9 +837,25 @@ class PosTransactionController extends Controller
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
+            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            $monitorChecker->update([
+                'transaction_id' => $transaction->id,
+                'token' => $transaction->id,
+                'action' => 'save',
+            ]);
+
             return response()->json([
                 'transaction' => $transaction,
             ]);
         });
+    }
+
+    public function clearMonitorView() {
+        $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+        $monitorChecker->update([
+            'transaction_id' => null,
+            'token' => null,
+            'action' => 'clear',
+        ]);
     }
 }
