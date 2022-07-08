@@ -994,6 +994,15 @@ Route::group(['prefix' => 'exports', 'middleware' => 'auth:api'], function () {
     Route::get('rfid-topups', 'ExcelReportsController@rfidTopups');
 });
 
+// /api/boards
+Route::group(['prefix' => 'boards'], function() {
+    // /api/boards/today
+    Route::get('today', 'BoardsController@getBoardToday');
+
+    // /api/boards/announcement
+    Route::get('announcement', 'AnnouncementsController@getAnnouncement');
+});
+
 // oauth
 Route::group(['prefix' => 'oauth', 'middleware' => 'auth:api'], function() {
     // oauth/check

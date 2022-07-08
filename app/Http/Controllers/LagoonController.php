@@ -121,11 +121,25 @@ class LagoonController extends Controller
             'name' => 'required',
             'price' => 'numeric',
         ];
-        $service = Lagoon::findOrFail($id);
 
-        if($service->name != $request->name) {
-            $rules['name'] = 'required|unique:lagoons,name,NULL,id,deleted_at,NULL';
+        $service = Lagoon::withTrashed()->where([
+            'name' => $request->name,
+            'category' => $request->category,
+        ])->first();
+
+        if($service != null && $service->deleted_at == null) {
+            return response()->json([
+                'errors' => [
+                    'name' => ['Service with the same name and category already exists']
+                ]
+            ], 422);
         }
+
+        $service = Lagoon::withTrashed()->findOrFail($id);
+
+        // if($service->name != $request->name) {
+            // $rules['name'] = 'required|unique:lagoons,name,NULL,id,deleted_at,NULL';
+        // }
 
         if($request->validate($rules)) {
             $service->update([

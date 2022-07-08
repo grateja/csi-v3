@@ -28,5 +28,11 @@ class DatabaseSeeder extends Seeder
                 'role_id' => 1
             ],
         ]);
+
+        $this->call(\EventTypesTableSeeder::class);
+        $this->call(\EventsTableSeeder::class);
+        $this->call(\SlidesTableSeeder::class);
+        $this->call(\AnnouncementsDataSeeder::class);
+        $this->call(\SysDefaultsTableSeeder::class);
     }
 }

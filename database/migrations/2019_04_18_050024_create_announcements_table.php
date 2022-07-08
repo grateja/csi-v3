@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMonitorCheckersTable extends Migration
+class CreateAnnouncementsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateMonitorCheckersTable extends Migration
      */
     public function up()
     {
-        Schema::create('monitor_checkers', function (Blueprint $table) {
+        Schema::create('announcements', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('transaction_id')->nullable();
-            $table->string('job_order')->nullable();
-            $table->string('action')->nullable()->comment('iddle|hasQue');
-            $table->string('token')->nullable();
+
+            $table->text('content')->nullable();
+            $table->date('date')->nullable();
 
             $table->timestamps();
         });
@@ -31,6 +30,6 @@ class CreateMonitorCheckersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('monitor_checkers');
+        Schema::dropIfExists('announcements');
     }
 }
