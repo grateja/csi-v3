@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class SysDefault extends Model
 {
     use UsesUuid;
+
+    protected $fillable = [
+        'event_id', 'announcement_id',
+    ];
+
     public function announcement() {
         return $this->belongsTo('App\Announcement');
     }

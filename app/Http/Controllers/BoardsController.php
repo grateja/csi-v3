@@ -11,13 +11,14 @@ class BoardsController extends Controller
 {
     public function getBoardToday() {
         $event = Event::with('eventType', 'slides', 'video')
-            ->whereDate('date', Carbon::now())
+            ->whereDate('date_from', '<=', Carbon::now())
+            ->whereDate('date_until', '>=', Carbon::now())
             ->first();
 
         if($event == null) {
             $event = SysDefault::with(['event' => function($query) {
                 $query->with('slides');
-            }])->find(1)->event;
+            }])->first()->event;
         }
         return response()->json([
             'event' => $event

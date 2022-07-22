@@ -276,4 +276,15 @@ class ScarpaCleaningController extends Controller
     {
         //
     }
+
+    public function deleteService($id) {
+        $service = ScarpaCategory::findOrFail($id);
+        if($service->delete()) {
+            $service->scarpaCleaningTransactionItems()->where('saved', false)->delete();
+            File::delete(public_path() . $service->img_path);
+            return response()->json([
+                'service' => $service,
+            ]);
+        }
+    }
 }

@@ -383,8 +383,8 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             // /api/services/scarpa-cleanings/{id}/remove-picture
             Route::post('{id}/remove-picture', 'ScarpaCleaningController@removePicture');
 
-            // /api/services/scarpa-cleanings/{id}/delete-product
-            Route::post('{id}/delete-product', 'ScarpaCleaningController@deleteProduct');
+            // /api/services/scarpa-cleanings/{id}/delete-service
+            Route::post('{id}/delete-service', 'ScarpaCleaningController@deleteService');
         });
 
         // /api/services/scarpa-cleanings/variations
@@ -1001,7 +1001,74 @@ Route::group(['prefix' => 'boards'], function() {
 
     // /api/boards/announcement
     Route::get('announcement', 'AnnouncementsController@getAnnouncement');
+
+    // /api/boards/{customerId}
+    Route::get('{customerId}', 'CustomersController@show');
+
+    // /api/boards/job-order/{transactionId}
+    Route::get('job-order/{transactionId}', 'TransactionsController@show');
+
+    // /api/boards/clear-monitor
+    Route::post('clear-monitor', 'PosTransactionController@clearMonitorView');
 });
+
+// /api/announcements
+Route::group(['prefix' => 'announcements', 'middleware' => 'auth:api'], function() {
+    // /api/announcements
+    Route::get('/', 'AnnouncementsController@index');
+
+    // /api/announcements/create
+    Route::post('create', 'AnnouncementsController@store');
+
+    // /api/announcements/{id}/update
+    Route::post('{id}/update', 'AnnouncementsController@update');
+
+    // /api/announcements/{id}/delete
+    Route::post('{id}/delete', 'AnnouncementsController@delete');
+
+    // /api/events/set-default/{slideId}
+    Route::post('set-default/{slideId}', 'AnnouncementsController@setDefault');
+});
+
+
+// /api/events
+Route::group(['prefix' => 'events'], function() {
+    Route::group(['middleware' => 'auth:api'], function() {
+        // /api/events
+        Route::get('/', 'EventsController@index');
+
+        // /api/events/create
+        Route::post('create', 'EventsController@store');
+
+        // /api/events/{id}/update
+        Route::post('{id}/update', 'EventsController@update');
+
+        // /api/events/{id}/delete
+        Route::post('{id}/delete', 'EventsController@delete');
+
+        // /api/events/{id}
+        Route::get('{id}', 'EventsController@show');
+
+        // /api/events/remove-slide/{slideId}
+        Route::post('remove-slide/{slideId}', 'EventsController@removeSlide');
+
+        // /api/events/set-default/{slideId}
+        Route::post('set-default/{slideId}', 'EventsController@setDefault');
+    });
+});
+
+// /api/files
+Route::group(['prefix' => 'files', 'middleware' => 'auth:api'], function() {
+    // /api/files/upload-slides/{eventId}
+    Route::post('upload-slides/{eventId}', 'FilesController@uploadSlides');
+
+    // /api/files/upload-video/{eventId}
+    Route::post('upload-video/{eventId}', 'FilesController@uploadVideo');
+
+    // /api/files/change-picture/{slideId}
+    Route::post('change-picture/{slideId}', 'FilesController@changePicture');
+});
+
 
 // oauth
 Route::group(['prefix' => 'oauth', 'middleware' => 'auth:api'], function() {

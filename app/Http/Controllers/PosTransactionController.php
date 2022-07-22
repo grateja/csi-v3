@@ -40,20 +40,22 @@ class PosTransactionController extends Controller
             $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
         }
 
-        $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+        // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
 
         if($transaction != null) {
-            $monitorChecker->update([
-                'transaction_id' => $transaction->id,
-                'job_order' => $transaction->job_order,
-                'token' => $customerId,
-                'action' => 'retreive',
-            ]);
+            MonitorChecker::hasQue($transaction->id);
+            // $monitorChecker->update([
+            //     'transaction_id' => $transaction->id,
+            //     'job_order' => $transaction->job_order,
+            //     'token' => $transaction->id,
+            //     'action' => 'hasQue',
+            // ]);
         } else {
-            $monitorChecker->update([
-                'token' => $customerId,
-                'action' => 'create',
-            ]);
+            MonitorChecker::selectCustomer($customerId);
+            // $monitorChecker->update([
+            //     'token' => $customerId,
+            //     'action' => 'select-customer',
+            // ]);
         }
 
         return response()->json([
@@ -200,6 +202,8 @@ class PosTransactionController extends Controller
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
+            MonitorChecker::hasQue($transaction->id);
+
             return response()->json([
                 'transaction' => $transaction,
             ]);
@@ -268,6 +272,8 @@ class PosTransactionController extends Controller
                         'full_service_id' => $category == 'full' ? $request->itemId : null,
                     ]);
                 }
+
+                MonitorChecker::hasQue($transaction->id);
 
                 return response()->json($transactionItems);
             });
@@ -348,6 +354,8 @@ class PosTransactionController extends Controller
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
             $this->dispatch($product->queSynch());
 
+            MonitorChecker::hasQue($transaction->id);
+
             return response()->json([
                 'transaction' => $transaction,
                 'product' => $product->fresh(),
@@ -424,6 +432,8 @@ class PosTransactionController extends Controller
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
+            MonitorChecker::hasQue($transaction->id);
+
             return response()->json([
                 'transaction' => $transaction,
             ]);
@@ -481,6 +491,8 @@ class PosTransactionController extends Controller
             }
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+
+            MonitorChecker::hasQue($transaction->id);
 
             return response()->json([
                 'transaction' => $transaction,
@@ -552,6 +564,8 @@ class PosTransactionController extends Controller
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
+            MonitorChecker::hasQue($transaction->id);
+
             return response()->json([
                 'transaction' => $transaction,
             ]);
@@ -581,10 +595,13 @@ class PosTransactionController extends Controller
 
                 $this->dispatch((new SendTransaction($scarpaCleaningTransactionItem->transaction_id))->delay(5));
 
+                MonitorChecker::hasQue($scarpaCleaningTransactionItem->transaction_id);
+
                 return response()->json([
                     'scarpaCleaningTransactionItem' => $scarpaCleaningTransactionItem
                 ]);
             }
+
 
             return $scarpaCleaningTransactionItem;
         });
@@ -617,6 +634,8 @@ class PosTransactionController extends Controller
                 ]);
             }
 
+            MonitorChecker::hasQue($transaction->id);
+
             return $lagonTransactionItem;
         });
     }
@@ -644,6 +663,8 @@ class PosTransactionController extends Controller
                     'lagoonTransactionItem' => $lagonTransactionItem
                 ]);
             }
+
+            MonitorChecker::hasQue($transaction->id);
 
             return $lagonTransactionItem;
         });
@@ -677,6 +698,8 @@ class PosTransactionController extends Controller
 
             $this->dispatch((new SendTransaction($product->transaction_id))->delay(5));
             $this->dispatch($product->queSynch());
+
+            MonitorChecker::hasQue($transaction->id);
 
             return response()->json([
                 'productItem' => $productItem
@@ -837,12 +860,12 @@ class PosTransactionController extends Controller
 
             $this->dispatch((new SendTransaction($transaction->id))->delay(5));
 
-            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
-            $monitorChecker->update([
-                'transaction_id' => $transaction->id,
-                'token' => $transaction->id,
-                'action' => 'save',
-            ]);
+            // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            // $monitorChecker->update([
+            //     'transaction_id' => $transaction->id,
+            //     'token' => $transaction->id,
+            //     'action' => 'save',
+            // ]);
 
             return response()->json([
                 'transaction' => $transaction,
@@ -851,11 +874,12 @@ class PosTransactionController extends Controller
     }
 
     public function clearMonitorView() {
-        $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
-        $monitorChecker->update([
-            'transaction_id' => null,
-            'token' => null,
-            'action' => 'clear',
-        ]);
+        MonitorChecker::idle();
+        // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+        // $monitorChecker->update([
+        //     'transaction_id' => null,
+        //     'token' => null,
+        //     'action' => 'idle',
+        // ]);
     }
 }

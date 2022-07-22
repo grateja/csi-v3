@@ -10,7 +10,11 @@ class Event extends Model
     use UsesUuid;
 
     protected $fillable = [
-        'id', 'title', 'description', 'date', 'event_type_id', 'updated_at'
+        'id', 'title', 'description', 'date_from', 'date_until', 'event_type_id', 'updated_at'
+    ];
+
+    public $appends = [
+        'is_default',
     ];
 
     public function slides() {
@@ -23,5 +27,13 @@ class Event extends Model
 
     public function video() {
         return $this->hasOne('App\Video');
+    }
+
+    public function getIsDefaultAttribute() {
+        return $this->sysDefault != null;
+    }
+
+    public function sysDefault() {
+        return $this->hasOne('App\SysDefault');
     }
 }

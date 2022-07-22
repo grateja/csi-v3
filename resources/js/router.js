@@ -264,8 +264,28 @@ const routes = [
         component: require('./views/time-keeping/Index.vue').default
     },
     {
-        path: '/monitor-view',
-        component: require('./views/monitor-view/Index.vue').default
+        path: '/external-view',
+        component: require('./views/external-view/Index.vue').default,
+        children: [
+            {
+                path: 'events',
+                component: require('./views/external-view/events/Index.vue').default,
+                children: [
+                    {
+                        path: ':id',
+                        component: require('./views/external-view/events/Event.vue').default
+                    },
+                    {
+                        path: '/',
+                        component: require('./views/external-view/events/EventsList.vue').default
+                    }
+                ],
+            },
+            {
+                path: 'announcements',
+                component: require('./views/external-view/announcements/Index.vue').default,
+            }
+        ]
     },
     {
         path: '/',

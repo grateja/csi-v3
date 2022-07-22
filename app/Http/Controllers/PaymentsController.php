@@ -278,7 +278,7 @@ class PaymentsController extends Controller
                 $monitorChecker->update([
                     'transaction_id' => null,
                     'token' => null,
-                    'action' => 'paid',
+                    'action' => 'idle',
                 ]);    
 
                 return response()->json([

@@ -40,6 +40,10 @@ import machine from './modules/machine.js';
 import transactionreport from './modules/transactionreport.js';
 
 import storehour from './modules/storehour.js';
+import event from './modules/event.js';
+import announcement from './modules/announcement.js';
+import video from './modules/video.js';
+import file from './modules/file.js';
 
 export default new  Vuex.Store({
     state: {
@@ -135,6 +139,10 @@ export default new  Vuex.Store({
         productpurchase,
         machine,
         storehour,
-        transactionreport
+        transactionreport,
+        event,
+        announcement,
+        video,
+        file
     }
 });

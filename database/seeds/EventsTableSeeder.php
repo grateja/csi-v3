@@ -14,7 +14,7 @@ class EventsTableSeeder extends Seeder
         $events = [
             [
                 'id' => 'event-default',
-                'date' => \Carbon\Carbon::now(),
+                'date_from' => \Carbon\Carbon::now(),
                 'title' => 'Start up event',
                 'description' => 'Something to say',
                 'published' => true,

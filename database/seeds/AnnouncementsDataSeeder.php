@@ -14,7 +14,8 @@ class AnnouncementsDataSeeder extends Seeder
         \App\Announcement::create([
             'id' => 'announcement-default',
             'content' => 'https://www.elsphillipines.com Tel. No. : 721-8595 / 721-8996',
-            'date' => date('Y-m-d'),
+            'date_from' => date('Y-m-d'),
+            'date_until' => date('Y-m-d'),
         ]);
     }
 }

@@ -26,20 +26,20 @@ class ProductTransactionItem extends Model
 
     protected static function boot() {
         static::deleting(function($model) {
-            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
-            $monitorChecker->update([
-                'transaction_id' => $model->transaction_id,
-                'token' => $model->id,
-                'action' => 'remove-product',
-            ]);
+            // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            // $monitorChecker->update([
+            //     'transaction_id' => $model->transaction_id,
+            //     'token' => $model->id,
+            //     'action' => 'remove-product',
+            // ]);
         });
         static::created(function($model) {
-            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
-            $monitorChecker->update([
-                'transaction_id' => $model->transaction_id,
-                'token' => $model->id,
-                'action' => 'add-product',
-            ]);
+            // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            // $monitorChecker->update([
+            //     'transaction_id' => $model->transaction_id,
+            //     'token' => $model->id,
+            //     'action' => 'add-product',
+            // ]);
         });
         parent::boot();
     }

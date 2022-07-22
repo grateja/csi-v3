@@ -26,20 +26,22 @@ class ScarpaCleaningTransactionItem extends Model
 
     protected static function boot() {
         static::deleting(function($model) {
-            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
-            $monitorChecker->update([
-                'transaction_id' => $model->transaction_id,
-                'token' => $model->id,
-                'action' => 'remove-scarpa',
-            ]);
+            // MonitorChecker::hasQue($model->transaction_id, $model->id);
+            // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            // $monitorChecker->update([
+            //     'transaction_id' => $model->transaction_id,
+            //     'token' => $model->id,
+            //     'action' => 'hasQue',
+            // ]);
         });
         static::created(function($model) {
-            $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
-            $monitorChecker->update([
-                'transaction_id' => $model->transaction_id,
-                'token' => $model->id,
-                'action' => 'add-scarpa',
-            ]);
+            // MonitorChecker::hasQue($model->transaction_id, $model->id);
+            // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);
+            // $monitorChecker->update([
+            //     'transaction_id' => $model->transaction_id,
+            //     'token' => $model->id,
+            //     'action' => 'hasQue',
+            // ]);
         });
         parent::boot();
     }

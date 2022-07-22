@@ -16,7 +16,8 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->uuid('id')->primary();
 
-            $table->date('date');
+            $table->date('date_from');
+            $table->date('date_until')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
             $table->boolean('published')->default(false);

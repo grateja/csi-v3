@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Slide extends Model
 {
     use UsesUuid;
-    public $timestamps = false;
+
+    protected $fillable = [
+        'id', 'source', 'order', 'caption', 'description', 'event_id'
+    ];
 
     public function event() {
         return $this->belongsTo('App\Event');

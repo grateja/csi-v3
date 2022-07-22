@@ -276,18 +276,18 @@ export default {
                     color: '#e4dfdd',
                     to: '/discounts'
                 },
-                // {
-                //     text: 'LiLo',
-                //     icon: '',
-                //     roles: ['admin'],
-                //     to: '/lilo'
-                // },
                 {
                     text: 'Time Keeping',
                     icon: 'time-keeping',
                     roles: ['admin', 'staff'],
                     to: '/time-keeping'
-                }
+                },
+                {
+                    text: 'External View',
+                    icon: '',
+                    roles: ['admin'],
+                    to: '/external-view/events'
+                },
             ]
         }
     },

@@ -627,7 +627,7 @@ export default {
     },
     beforeDestroy() {
         if(!this.paid) {
-            axios.post('/api/pos-transactions/clear-monitor');
+            axios.post('/api/boards/clear-monitor');
         }
     }
 }

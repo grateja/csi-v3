@@ -20,8 +20,7 @@ body {
 
 .time-wrapper,
 .board-wrapper,
-.news-wrapper,
-.announcement-wrapper {
+.news-wrapper {
     position: absolute;
 }
 
@@ -41,9 +40,10 @@ body {
 .board-wrapper {
     width: 100%;
     top: -40px;
+    display: none;
 }
 
-.announcement-wrapper {
+#announcement {
     position: absolute;
     bottom: 0px;
     font-size: 2em;
@@ -87,8 +87,54 @@ body {
     margin: 4px;
 }
 
-
-
+.jo-wrapper {
+    display: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2em;
+    border-radius: 10px;
+    padding: 15px;
+    width: 70vw;
+    background: rgb(0 255 255 / 27%);
+    margin: auto auto;
+}
+.jo-wrapper > div {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    min-height: 80vh;
+}
+#itemsPlaceholder {
+    display: none;
+}
+fieldset.customer-name {
+    border: 5px solid rgb(207, 205, 205);
+    border-radius: 20px;
+}
+.customer-name legend {
+    color: #4d6569;
+    font-size: .7em;
+    width: auto;
+    padding-left: 10px;
+}
+#customerName {
+    font-weight: bold;
+    color: #327eaf;
+    padding-left: 15px;
+    padding-bottom: 15px;
+    display: block;
+} 
+table#items {
+    font-size: 1em;
+}
+table#items td {
+    text-align: center;
+}
+table#items tfoot {
+    font-weight: bold;
+}
+#items td.item-name {
+    text-align: left;
+}
 
 #boardContent .slider_circle_10 {
     position: relative;

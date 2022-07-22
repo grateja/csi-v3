@@ -34,5 +34,6 @@ class DatabaseSeeder extends Seeder
         $this->call(\SlidesTableSeeder::class);
         $this->call(\AnnouncementsDataSeeder::class);
         $this->call(\SysDefaultsTableSeeder::class);
+        $this->call(\MonitorCheckerSeeder::class);
     }
 }
