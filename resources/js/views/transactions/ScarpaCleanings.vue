@@ -6,27 +6,31 @@
 
         <v-layout>
             <v-flex xs4>
-                <template  v-for="service in services">
-                    <div :key="service.id">
-                        <v-hover v-slot:default="{ hover }">
-                            <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="activeService = service" :color="activeService == service ? 'white' : ''">
-                                <v-card-text>
-                                    <v-responsive v-if="service.img_path">
-                                        <v-img height="100px" :src="service.img_path" max-height="100px" ></v-img>
-                                    </v-responsive>
-                                    <div class="text-xs-center ma-1">
-                                        <div>
-                                            {{service.name}}
-                                        </div>
-                                        <div class="font-italic grey--text">{{service.description}}</div>
-                                    </div>
-                                    <v-progress-linear v-if="service.isAdding" indeterminate height="4" class="my-0"></v-progress-linear>
-                                    <v-divider v-else class="my-2"></v-divider>
-                                </v-card-text>
-                            </v-card>
-                        </v-hover>
+                <div>
+                    <div class="categories">
+                        <template  v-for="service in services">
+                            <div :key="service.id">
+                                <v-hover v-slot:default="{ hover }">
+                                    <v-card class="ma-1 pointer rounded-card translucent" :elevation="hover ? 12 : 2" @click="activeService = service" :color="activeService == service ? 'white' : ''">
+                                        <v-card-text>
+                                            <v-responsive v-if="service.img_path">
+                                                <v-img height="100px" :src="service.img_path" max-height="100px" ></v-img>
+                                            </v-responsive>
+                                            <div class="text-xs-center ma-1">
+                                                <div>
+                                                    {{service.name}}
+                                                </div>
+                                                <div class="font-italic grey--text">{{service.description}}</div>
+                                            </div>
+                                            <v-progress-linear v-if="service.isAdding" indeterminate height="4" class="my-0"></v-progress-linear>
+                                            <v-divider v-else class="my-2"></v-divider>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-hover>
+                            </div>
+                        </template>
                     </div>
-                </template>
+                </div>
             </v-flex>
 
             <v-flex xs8>
@@ -151,3 +155,10 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .categories {
+        overflow-y: scroll;
+        height: 75vh;
+    }
+</style>
