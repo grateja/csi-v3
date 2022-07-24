@@ -1,0 +1,46 @@
+body, html {
+    background: #eee;
+    font-family: consolas;
+}
+.button-container {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+}
+.large {
+    font-size: 1.5em;
+}
+.table td{
+    padding: 0px;
+}
+.text-center {
+    text-align: center;
+}
+.text-right {
+    text-align: right;
+}
+.text-left {
+    text-align: left;
+}
+table {
+    width: 100%;
+}
+@media print {
+    .button-container {
+        display: none;
+    }
+    .main {
+        min-width: 100%!important;
+        margin: 0px!important;
+    }
+}
+@media screen{
+    .main {
+        background: white;
+        border: 1px solid #eee;
+        box-shadow: 10px 10px 10px #ddd;
+        padding: .5cm;
+        max-width: 80%;
+        margin: 20px auto;
+    }
+}

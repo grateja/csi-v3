@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css?family=Orbitron');
+
+body, html {
+    padding: 0px;
+    margin: 0px;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+body {
+    background: url('/img/board-main-bg.png');
+    background-size: 100%;
+}
+
+.main {
+    /* background: silver; */
+    height: 100vh;
+}
+
+.time-wrapper,
+.board-wrapper,
+.news-wrapper,
+.announcement-wrapper {
+    position: absolute;
+}
+
+.header-wrapper {
+    margin-left: 280px;
+    color: white;
+    font-family: 'arial';
+    font-style: italic;
+    font-size: 3em;
+}
+
+.time-wrapper {
+    right: 0px;
+    top: 0px;
+}
+
+.board-wrapper {
+    width: 100%;
+    top: -40px;
+}
+
+.announcement-wrapper {
+    position: absolute;
+    bottom: 0px;
+    font-size: 2em;
+    padding: .1em 0;
+    width: 100%;
+    background: #355f4b;
+    color: white;
+    border-top: 5px solid #4cc3f8;
+}
+
+.news-wrapper {
+    /* background: silver; */
+    bottom: 4em;
+    width: 200%;
+    /* border-top: 5px solid rgb(206, 206, 206); */
+}
+
+
+.news-item {
+    border: 1px solid transparent;
+    display: flex;
+    height: 90px;
+    width: 25vw;
+    overflow: hidden;
+    float: left;
+    background: rgba(0, 103, 129, 0.685);
+}
+.news-item .thumbnail {
+    height: 70px;
+    margin: 4px;
+    border: 3px solid white;
+}
+.news-item .title {
+    color: white;
+    font-size: 1em;
+    margin: 4px;
+}
+.news-item .description {
+    font-size: .8em;
+    color: rgb(207, 207, 207);
+    margin: 4px;
+}
+
+
+
+
+#boardContent .slider_circle_10 {
+    position: relative;
+    width: 99vw;
+    height: 66.2vw;
+    margin: 0 auto;
+    user-select: none;
+    /* top: -24vh; */
+    top: -20%;
+    transform: translateY(-20%);
+}
+#boardContent .slider_circle_10 div.active{
+    top: 35%;
+    left: 50%;
+    margin-left: -36%;
+    width: 72%;
+    box-shadow: 0px 0px 100px rgba(0, 0, 0, 0.322);
+    height: 60%;
+    border: 10px solid rgba(0, 255, 255, 0.274);
+}
+#boardContent .slider_circle_10 div{
+    background: none;
+    border: 1px solid transparent;
+    box-shadow: none;
+}
+
+#boardContent img {
+    width: 100%;
+    max-width: 100%;
+}
+
+#boardContent .next1 {
+    margin-left: 20%;
+}
+
+.time-wrapper {
+    padding: 1em;
+    color: #4d6569;
+}
+
+#time, #date{
+    font-family: 'orbitron';
+    text-align: right;
+    line-height: 1em;
+    font-weight: 900;
+    text-shadow: 2px 2px 0px white;
+}
+
+#time{
+    font-size: 3em;
+}
+#date {
+    font-size: 1.2em;
+    letter-spacing: .36em;
+}
+
+#announcementContent {
+    font-family: 'Segoe UI';
+}
