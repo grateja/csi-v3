@@ -18,8 +18,20 @@ use App\ThermalPrinter;
 class PrinterController extends Controller
 {
     public function test(Request $request) {
-        if($thermalPrinter = new ThermalPrinter) {
+        if($request->text) {
+            $thermalPrinter = new ThermalPrinter;
+            if($printerError = $thermalPrinter->hasError()) {
+                return response()->json([
+                    'errors' => $printerError
+                ], 422);
+            }
             $thermalPrinter->test($request->text);
+        } else {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Empty text']
+                ]
+            ], 422);
         }
     }
     public function printReceipt($transactionId) {

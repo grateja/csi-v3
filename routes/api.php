@@ -50,6 +50,13 @@ Route::group(['prefix' => 'developer'], function () {
     });
 });
 
+// /api/test
+Route::group(['prefix' => 'test'], function() {
+    // /api/test/print
+    Route::get('print', 'PrinterController@test');
+});
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
