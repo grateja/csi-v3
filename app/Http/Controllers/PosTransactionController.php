@@ -634,7 +634,7 @@ class PosTransactionController extends Controller
                 ]);
             }
 
-            MonitorChecker::hasQue($transaction->id);
+            MonitorChecker::hasQue($lagonTransactionItem->transaction_id);
 
             return $lagonTransactionItem;
         });
@@ -664,7 +664,7 @@ class PosTransactionController extends Controller
                 ]);
             }
 
-            MonitorChecker::hasQue($transaction->id);
+            MonitorChecker::hasQue($lagonTransactionItem->transaction_id);
 
             return $lagonTransactionItem;
         });
