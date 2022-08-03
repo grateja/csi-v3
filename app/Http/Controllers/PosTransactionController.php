@@ -699,7 +699,7 @@ class PosTransactionController extends Controller
             $this->dispatch((new SendTransaction($product->transaction_id))->delay(5));
             $this->dispatch($product->queSynch());
 
-            MonitorChecker::hasQue($transaction->id);
+            MonitorChecker::hasQue($product->transaction_id);
 
             return response()->json([
                 'productItem' => $productItem
