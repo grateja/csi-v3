@@ -76,7 +76,7 @@ class LagoonController extends Controller
         $service = Lagoon::withTrashed()->where([
             'name' => $request->name,
             'category' => $request->category,
-        ])->first();
+        ])->whereNull('deleted_at')->first();
 
         if($service != null && $service->deleted_at == null) {
             return response()->json([
@@ -127,7 +127,7 @@ class LagoonController extends Controller
             'category' => $request->category,
         ])->first();
 
-        if($service != null && $service->deleted_at == null) {
+        if($service != null && ($service->name != $request->name || $service->category != $request->category) && $service->deleted_at == null) {
             return response()->json([
                 'errors' => [
                     'name' => ['Service with the same name and category already exists']
