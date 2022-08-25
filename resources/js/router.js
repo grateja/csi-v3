@@ -87,6 +87,10 @@ const routes = [
         },
         children: [
             {
+                path: 'qr',
+                component: require('./views/transactions/QRScanner.vue').default
+            },
+            {
                 path: 'services',
                 component: require('./views/transactions/Services.vue').default
             },
@@ -286,6 +290,10 @@ const routes = [
                 component: require('./views/external-view/announcements/Index.vue').default,
             }
         ]
+    },
+    {
+        path: '/scanner',
+        component: require('./views/qrscanner/Index.vue').default
     },
     {
         path: '/',

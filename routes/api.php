@@ -54,6 +54,9 @@ Route::group(['prefix' => 'developer'], function () {
 Route::group(['prefix' => 'test'], function() {
     // /api/test/print
     Route::get('print', 'PrinterController@test');
+
+    // /api/test/qr
+    Route::get('qr', 'PrinterController@qrCode');
 });
 
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
 use Carbon\Carbon;
+use Mike42\Escpos\EscposImage;
 
 class ThermalPrinter extends Model
 {
@@ -24,6 +25,10 @@ class ThermalPrinter extends Model
             $connector = new FilePrintConnector("/dev/usb/lp0");
             $this->printer = new Printer($connector);
         }
+    }
+
+    public function qr($text) {
+        $this->cut();
     }
 
     public function test($text) {

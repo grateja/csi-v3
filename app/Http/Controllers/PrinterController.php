@@ -34,6 +34,25 @@ class PrinterController extends Controller
             ], 422);
         }
     }
+
+    public function qrCode(Request $request) {
+        if($request->text) {
+            $thermalPrinter = new ThermalPrinter;
+            if($printerError = $thermalPrinter->hasError()) {
+                return response()->json([
+                    'errors' => $printerError
+                ], 422);
+            }
+            $thermalPrinter->qr($request->text);
+        } else {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Empty text']
+                ]
+            ], 422);
+        }
+    }
+
     public function printReceipt($transactionId) {
         $transaction = Transaction::with(['customer' => function($query) {
             $query->select('id', 'name');

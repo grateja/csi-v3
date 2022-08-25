@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "apexcharts": "^3.35.3",
+        "html5-qrcode": "^2.2.1",
         "material-design-icons-iconfont": "^4.0.5",
         "moment": "^2.29.4",
         "vue-2-breadcrumbs": "^0.5.2",

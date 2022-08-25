@@ -44,6 +44,7 @@ import event from './modules/event.js';
 import announcement from './modules/announcement.js';
 import video from './modules/video.js';
 import file from './modules/file.js';
+import qrscanner from './modules/qrscanner.js'
 
 export default new  Vuex.Store({
     state: {
@@ -143,6 +144,7 @@ export default new  Vuex.Store({
         event,
         announcement,
         video,
-        file
+        file,
+        qrscanner
     }
 });

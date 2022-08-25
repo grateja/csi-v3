@@ -18,6 +18,13 @@ class Transaction extends Model
         'id', 'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid', 'synched', 'updated_at', 'created_at',
     ];
 
+    public function simplified() {
+        $customer = $this->customer;
+        return json_encode([
+            "customer" => $customer
+        ]);
+    }
+
     public static function filterKeys($val) {
         $keys = [
             'customer_name' => 'Customer name',

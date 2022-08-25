@@ -74,7 +74,12 @@ export default {
     methods: {
         login() {
             this.$store.dispatch('auth/loginAttempt', this.$data).then((res, rej) => {
-                this.$router.push('/');
+                var cache = this.$store.getters['qrscanner/getCachedQRData']
+                var url = '/';
+                if(cache) {
+                    url = `/new-transaction/qr?jo=${cache}`
+                }
+                this.$router.push(url);
             }).catch(err => {});
         },
         getSystemDateTime() {

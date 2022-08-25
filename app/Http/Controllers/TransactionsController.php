@@ -6,6 +6,7 @@ use App\Customer;
 use App\Jobs\SendTransaction;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
+use App\ThermalPrinter;
 use App\Transaction;
 use App\TransactionRemarks;
 use Carbon\Carbon;
@@ -49,6 +50,9 @@ class TransactionsController extends Controller
 
 
         $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
+
+        $printer = ThermalPrinter();
+        $printer->qr(json_encode($transaction));
 
         return response()->json([
             'transaction' => $transaction,
