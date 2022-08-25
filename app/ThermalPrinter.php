@@ -7,6 +7,14 @@ use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 use Mike42\Escpos\Printer;
 use Carbon\Carbon;
 use Mike42\Escpos\EscposImage;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\Writer\PngWriter;
 
 class ThermalPrinter extends Model
 {
@@ -28,7 +36,29 @@ class ThermalPrinter extends Model
     }
 
     public function qr($text) {
-        $this->cut();
+        $tempFile = public_path() . "/img/temp.png";
+        $this->printer->initialize();
+
+        $writer = new PngWriter();
+
+        // Create QR code
+        $qrCode = QrCode::create($text)
+            ->setEncoding(new Encoding('UTF-8'))
+            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->setSize(300)
+            ->setMargin(0)
+            ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->setForegroundColor(new Color(0, 0, 0))
+            ->setBackgroundColor(new Color(255, 255, 255));
+
+        $result = $writer->write($qrCode);
+        $result->saveToFile($tempFile);
+
+        $img = EscposImage::load($tempFile);
+        $this->printer->graphics($img);
+
+        $this->printer->feed();
+        $this->printer->close();
     }
 
     public function test($text) {

@@ -51,7 +51,7 @@ class TransactionsController extends Controller
 
         $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();
 
-        $printer = ThermalPrinter();
+        $printer = new ThermalPrinter();
         $printer->qr(json_encode($transaction));
 
         return response()->json([
