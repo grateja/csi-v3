@@ -119,7 +119,7 @@ class PrinterController extends Controller
     }
 
 
-    public function claimStub($transactionId) {
+    public function claimStub($transactionId, Request $request) {
         $transaction = Transaction::with('partialPayment.user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
         $transaction->refreshAll();
         // $transaction->withPayment();
@@ -132,7 +132,7 @@ class PrinterController extends Controller
                 ], 422);
             }
         } else {
-            $thermalPrinter->claimStub($transaction);
+            $thermalPrinter->claimStub($transaction, $request);
             return response()->json([
                 'success' => 'Claim stub printed successfully',
                 'method' => 'rpi'
@@ -163,7 +163,7 @@ class PrinterController extends Controller
         return view('printer.claim-stub', $data);
     }
 
-    public function jobOrder($transactionId) {
+    public function jobOrder($transactionId, Request $request) {
         $client = Client::firstOrFail();
 
         $transaction = Transaction::with('user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
@@ -187,7 +187,7 @@ class PrinterController extends Controller
                 ], 422);
             }
         } else {
-            $thermalPrinter->jobOrder($transaction);
+            $thermalPrinter->jobOrder($transaction, $request);
             return response()->json([
                 'success' => 'Job Order Printed successfully',
                 'method' => 'rpi',

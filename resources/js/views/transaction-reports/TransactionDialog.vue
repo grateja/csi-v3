@@ -310,37 +310,46 @@
                     </v-tooltip>
                     <v-spacer></v-spacer>
                     <v-btn class="primary" round @click="viewPayment" v-if="tempTransaction && tempTransaction.payment == null">View payment</v-btn>
+                    <!-- <v-tooltip top>
+                        <v-btn slot="activator" class="primary" round @click="printClaimStub(true)" v-if="tempTransaction" :loading="jobOrderLoading" icon>
+                            <v-icon>crop_free</v-icon>
+                        </v-btn>
+                        <span>Print with QR Code</span>
+                    </v-tooltip> -->
                     <v-tooltip top>
-                        <v-btn slot="activator" class="primary" round @click="printJobOrder" v-if="tempTransaction && !!tempTransaction.payment" :loading="jobOrderLoading" icon>
+                        <v-btn slot="activator" class="primary" round @click="openPrinterDialog = true" v-if="tempTransaction">
                             <v-icon>print</v-icon>
                         </v-btn>
                         <span>Print job order</span>
                     </v-tooltip>
-                    <v-tooltip top>
-                        <v-btn slot="activator" round @click="printClaimStub" v-if="tempTransaction" :loading="claimStubLoading" icon>
+                    <!-- <v-tooltip top>
+                        <v-btn slot="activator" round @click="printClaimStub(false)" v-if="tempTransaction" :loading="claimStubLoading" icon>
                             <v-icon>print</v-icon>
                         </v-btn>
                         <span>Print claim stub</span>
-                    </v-tooltip>
+                    </v-tooltip> -->
                 </template>
             </v-card-actions>
         </v-card>
         <payment-dialog v-model="openPaymentDialog" :transaction="tempTransaction" @save="savePayment" />
         <transaction-remarks-dialog v-model="openRemarksDialog" :transaction="tempTransaction" />
         <partial-payment-dialog v-if="tempTransaction && tempTransaction.partial_payment" v-model="openPartialPayment" :partialPaymentId="tempTransaction.partial_payment.id"></partial-payment-dialog>
+        <printer-dialog v-model="openPrinterDialog" :transaction="tempTransaction" />
     </v-dialog>
 </template>
 
 <script>
 import PaymentDialog from '../transactions/PaymentDialog.vue';
 import TransactionRemarksDialog from '../transactions/TransactionRemarksDialog.vue';
-import PartialPaymentDialog from '../transactions/PartialPaymentDialog.vue'
+import PartialPaymentDialog from '../transactions/PartialPaymentDialog.vue';
+import PrinterDialog from './PrinterDialog.vue';
 
 export default {
     components: {
         PaymentDialog,
         TransactionRemarksDialog,
-        PartialPaymentDialog
+        PartialPaymentDialog,
+        PrinterDialog
     },
     props: [
         'value', 'transactionId'
@@ -352,6 +361,7 @@ export default {
             openPaymentDialog: false,
             openRemarksDialog: false,
             openPartialPayment: false,
+            openPrinterDialog: false,
             isDeleting: false
         }
     },
@@ -374,13 +384,16 @@ export default {
             this.$emit('input', false);
             this.$emit('savePayment', transaction);
         },
-        printClaimStub() {
+        printClaimStub(withQRCode) {
             this.$store.dispatch('printer/printClaimStub', {
-                transactionId: this.transactionId
+                transactionId: this.transactionId,
+                withQRCode
             });
         },
         printJobOrder() {
-            this.$store.dispatch('printer/printJobOrder', this.transactionId);
+            this.$store.dispatch('printer/printJobOrder', {
+                transactionId: this.transactionId,
+            });
         },
         deleteTransaction() {
             if(confirm('Delete this transaction?')) {

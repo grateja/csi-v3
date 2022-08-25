@@ -26,10 +26,34 @@ const mutations = {
 };
 
 const actions = {
+    print(context, data) {
+        context.commit('setLoadingStatus', true);
+        context.commit('clearErrors');
+        return axios.post(`/api/transactions/${data.transactionId}/print-${data.entity}`, 
+            data.formData
+        ).then((res, rej) => {
+            if(!res.data.method) {
+                let w = window.open('about:blank', 'print', 'width=800,height=1000');
+
+                w.document.write(res.data);
+                w.document.close();
+
+            }
+
+            context.commit('setLoadingStatus', false);
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            context.commit('setLoadingStatus', false);
+            return Promise.reject(err);
+        });
+    },
     printClaimStub(context, data) {
         context.commit('setLoadingClaimStub', true);
         context.commit('clearErrors');
-        return axios.get(`/api/transactions/${data.transactionId}/print-claim-stub`).then((res, rej) => {
+        return axios.post(`/api/transactions/${data.transactionId}/print-claim-stub`, {
+            withQRCode: data.withQRCode
+        }).then((res, rej) => {
             if(!res.data.method) {
                 let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
@@ -46,10 +70,11 @@ const actions = {
             return Promise.reject(err);
         });
     },
-    printJobOrder(context, transactionId) {
+    printJobOrder(context, data) {
         context.commit('setLoadingJobOrder', true);
         context.commit('clearErrors');
-        return axios.get(`/api/transactions/${transactionId}/print-job-order`).then((res, rej) => {
+        console.log(data)
+        return axios.post(`/api/transactions/${data.transactionId}/print-job-order`).then((res, rej) => {
             if(!res.data.method) {
                 let w = window.open('about:blank', 'print', 'width=800,height=1000');
 

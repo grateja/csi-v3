@@ -578,11 +578,14 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
     // /api/transactions/{transactionId}/view-service-items
     Route::get('{transactionId}/view-service-items', 'TransactionsController@viewServiceItems');
 
+    // /api/transactions/{transactionId}/print
+    Route::post('{transactionId}/print', 'PrinterController@print');
+
     // /api/transactions/{transactionId}/print-claim-stub
-    Route::get('{transactionId}/print-claim-stub', 'PrinterController@claimStub');
+    Route::post('{transactionId}/print-claim-stub', 'PrinterController@claimStub');
 
     // /api/transactions/{transactionId}/print-job-order
-    Route::get('{transactionId}/print-job-order', 'PrinterController@jobOrder');
+    Route::post('{transactionId}/print-job-order', 'PrinterController@jobOrder');
 
     // /api/transaction/service-items
     Route::group(['prefix' => 'service-items'], function() {

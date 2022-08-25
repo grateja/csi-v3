@@ -198,15 +198,28 @@ class ThermalPrinter extends Model
         }
     }
 
-    public function claimStub($transaction) {
+    private function printLagoonPerKilo($lagoonItems) {
+        if(count($lagoonItems)) {
+            $this->printer->feed();
+            $this->printSubtitle("LAGOON PER KILO");
+            $this->printer->initialize();
+            $this->printList($lagoonItems);
+        }
+    }
+
+    public function claimStub($transaction, $options) {
         $this->printHeader();
         $this->printQuote("*** CLAIM STUB ***");
 
         $this->printSubHeader($transaction);
-        $this->printServices($transaction->posServiceItems);
-        $this->printProducts($transaction->posProductItems);
-        $this->printScarpa($transaction->posScarpaCleaningItems);
-        $this->printLagoon($transaction->posLagoonItems);
+
+        if($options->includeItems) {
+            $this->printServices($transaction->posServiceItems);
+            $this->printProducts($transaction->posProductItems);
+            $this->printScarpa($transaction->posScarpaCleaningItems);
+            $this->printLagoon($transaction->posLagoonItems);
+            $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
 
         $this->printUnderline();
         $this->printItem("TOTAL AMOUNT",$transaction->total_price);
@@ -227,19 +240,26 @@ class ThermalPrinter extends Model
             $this->printDetail("STAFF", $transaction->payment->user['name']);
         }
 
+        if($options->includeQRCode) {
+            $this->qr($transaction->simplified);
+        }
+
         $this->cut();
     }
 
-    public function jobOrder($transaction) {
+    public function jobOrder($transaction, $options) {
         $this->printHeader();
         $this->printQuote("*** JOB ORDER ***");
 
         $this->printSubHeader($transaction);
 
-        $this->printServices($transaction->posServiceItems);
-        $this->printProducts($transaction->posProductItems);
-        $this->printScarpa($transaction->posScarpaCleaningItems);
-        $this->printLagoon($transaction->posLagoonItems);
+        if($options->includeItems) {
+            $this->printServices($transaction->posServiceItems);
+            $this->printProducts($transaction->posProductItems);
+            $this->printScarpa($transaction->posScarpaCleaningItems);
+            $this->printLagoon($transaction->posLagoonItems);
+            $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
 
         $this->printUnderline();
         $this->printItem("TOTAL AMOUNT",$transaction->total_price);
@@ -275,6 +295,10 @@ class ThermalPrinter extends Model
         $this->printItem("Change", $transaction->payment->change);
         $this->printItem("Balance", 0);
         $this->printItem("Received by", $transaction->payment->user->name);
+
+        if($options->includeQRCode) {
+            $this->qr($transaction->simplified);
+        }
 
         $this->cut();
     }
