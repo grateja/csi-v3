@@ -13,6 +13,7 @@
             </v-flex>
         </v-layout>
         <pre>{{QRData}}</pre>
+        <pre>{{errorMessage}}</pre>
         <v-btn @click="start">scan</v-btn>
     </div>
 </template>
@@ -24,7 +25,8 @@ export default {
         return {
             devices: [],
             activeDevice: null,
-            QRData: null
+            QRData: null,
+            errorMessage: null
         }
     },
     methods: {
@@ -43,6 +45,7 @@ export default {
                 // parse error, ignore it.
             })
             .catch((err) => {
+                this.errorMessage = err
             // Start failed, handle it.
             });
         }
