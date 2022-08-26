@@ -46,8 +46,8 @@ class Transaction extends Model
         $lagoonPerKilo = collect($this->posLagoonPerKiloItems())->transform(function($item) {
             return [
                 'nam' => $item->name,
-                'qty' => $item->quantity,
-                'up' => $item->unit_price,
+                'qty' => $item->kilos,
+                'up' => $item->price_per_kilo,
             ];
         });
 
