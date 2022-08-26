@@ -37,15 +37,25 @@ class TransactionsController extends Controller
         ]);
     }
 
-    public function show($transactionId) {
+    public function show($transactionId, Request $request) {
         $transaction = Transaction::withTrashed()
             ->with(
             'payment.user',
             'partialPayment.user'
             )
-        ->findOrfail($transactionId);
+        ->where('id', $transactionId)
+        ->orWhere(function($query) use ($transactionId, $request) {
+            $query->where([
+                'job_order' => $transactionId,
+                'date' => $request->date,
+            ]);
+        })->first();
 
-            $transaction->refreshAll($transaction->deleted_at);
+        if($transaction == null) {
+            return response(['error'=>true],404);
+        }
+
+        $transaction->refreshAll($transaction->deleted_at);
 
 
         $transaction['birthdayToday'] = Carbon::createFromDate($transaction->customer['first_visit'])->setYear(date('Y'))->isToday();

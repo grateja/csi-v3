@@ -25,10 +25,6 @@ class Transaction extends Model
             'adr' => $this->customer->address,
             'cn' => $this->customer->contact_number,
         ];
-        $jo = [
-            'jo' => $this->job_order,
-            'dt' => $this->date,
-        ];
         $scarpa = collect($this->posScarpaCleaningItems())->transform(function($item) {
             return [
                 'nam' => $item->name,
@@ -52,8 +48,9 @@ class Transaction extends Model
         });
 
         return json_encode([
+            'jo' => $this->job_order,
+            'date' => $this->date,
             'cust' => $customer,
-            'jo' => $jo,
             'sv' => $scarpa,
             'lag' => $lagoon,
             'lpk' => $lagoonPerKilo,

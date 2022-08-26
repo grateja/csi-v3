@@ -13,6 +13,11 @@
                 <v-btn v-if="mode == 'file'" @click="browsePicture">Browse from device</v-btn>
                 <v-progress-circular indeterminate v-if="loading" />
             </v-card-text>
+            <v-card-actions v-if="mode == 'camera'">
+                <v-btn v-for="i in devices" :key="i.id" @click="start(i.id)" :class="{active: activeDevice!=null && i.id == activeDevice.id}">
+                    {{i.label}}
+                </v-btn>
+            </v-card-actions>
         </v-card>
         <input type="file" name="inputFile" id="inputFile" ref="inputFile" @change="setPicture" accept="image/*">
     </v-dialog>
@@ -76,6 +81,9 @@ export default {
                 })
                 .catch(err => {
                     // failure, handle it.
+                    alert("Invalid QR Code")
+                    this.$refs.inputFile.value = null;
+                    this.html5QrCode.clear()
                     console.log(`Error scanning file. Reason: ${err}`)
                 });
         },
