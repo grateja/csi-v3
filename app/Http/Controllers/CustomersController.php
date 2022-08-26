@@ -159,7 +159,7 @@ class CustomersController extends Controller
     }
 
     public function getCRN() {
-        $customer = Customer::orderByDesc('created_at')->first();
+        $customer = Customer::withTrashed()->orderByDesc('created_at')->first();
         if($customer) {
             $num = (int) $customer->crn;
             return str_pad(++$num, 5, '0', STR_PAD_LEFT);

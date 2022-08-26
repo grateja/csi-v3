@@ -55,7 +55,7 @@ class ThermalPrinter extends Model
         $result->saveToFile($tempFile);
 
         $img = EscposImage::load($tempFile);
-        $this->printer->graphics($img);
+        $this->printer->bitImage($img);
 
         $this->printer->feed();
         $this->printer->close();
@@ -241,7 +241,7 @@ class ThermalPrinter extends Model
         }
 
         if($options->includeQRCode) {
-            $this->qr($transaction->simplified);
+            $this->qr($transaction->simplified());
         }
 
         $this->cut();
@@ -297,7 +297,7 @@ class ThermalPrinter extends Model
         $this->printItem("Received by", $transaction->payment->user->name);
 
         if($options->includeQRCode) {
-            $this->qr($transaction->simplified);
+            $this->qr($transaction->simplified());
         }
 
         $this->cut();

@@ -6,13 +6,13 @@
             </v-flex>
             <v-flex xs6>
                 <v-list>
-                    <v-list-tile v-for="i in devices" :key="i.id" @click="activeDevice = i">
+                    <v-list-tile v-for="i in devices" :key="i.id" @click="start(i)">
                         {{i.label}}
                     </v-list-tile>
                 </v-list>
             </v-flex>
         </v-layout>
-        <pre>{{devices}}</pre>
+        <pre>{{QRData}}</pre>
         <v-btn @click="start">scan</v-btn>
     </div>
 </template>
@@ -23,20 +23,21 @@ export default {
     data() {
         return {
             devices: [],
-            activeDevice: null
+            activeDevice: null,
+            QRData: null
         }
     },
     methods: {
-        start() {
+        start(id) {
             const html5QrCode = new Html5Qrcode(/* element id */ "reader");
             html5QrCode.start(
-            this.activeDevice.id, 
+            id, 
             {
                 fps: 10,    // Optional, frame per seconds for qr code scanning
                 qrbox: { width: 250, height: 250 }  // Optional, if you want bounded box UI
             },
             (decodedText, decodedResult) => {
-                // do something when code is read
+                this.QRData = decodedText
             },
             (errorMessage) => {
                 // parse error, ignore it.

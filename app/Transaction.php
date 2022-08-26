@@ -19,9 +19,44 @@ class Transaction extends Model
     ];
 
     public function simplified() {
-        $customer = $this->customer;
+        $customer = [
+            'nam' => $this->customer->name,
+            'crn' => $this->customer->crn,
+            'adr' => $this->customer->address,
+            'cn' => $this->customer->contact_number,
+        ];
+        $jo = [
+            'jo' => $this->job_order,
+            'dt' => $this->date,
+        ];
+        $scarpa = collect($this->posScarpaCleaningItems())->transform(function($item) {
+            return [
+                'nam' => $item->name,
+                'qty' => $item->quantity,
+                'up' => $item->unit_price,
+            ];
+        });
+        $lagoon = collect($this->posLagoonItems())->transform(function($item) {
+            return [
+                'nam' => $item->name,
+                'qty' => $item->quantity,
+                'up' => $item->unit_price,
+            ];
+        });
+        $lagoonPerKilo = collect($this->posLagoonPerKiloItems())->transform(function($item) {
+            return [
+                'nam' => $item->name,
+                'qty' => $item->quantity,
+                'up' => $item->unit_price,
+            ];
+        });
+
         return json_encode([
-            "customer" => $customer
+            'cust' => $customer,
+            'jo' => $jo,
+            'sv' => $scarpa,
+            'lag' => $lagoon,
+            'lpk' => $lagoonPerKilo,
         ]);
     }
 
