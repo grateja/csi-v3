@@ -6,7 +6,7 @@
             </v-flex>
             <v-flex xs6>
                 <v-list>
-                    <v-list-tile v-for="i in devices" :key="i.id" @click="start(i)">
+                    <v-list-tile v-for="i in devices" :key="i.id" @click="start(i.id)">
                         {{i.label}}
                     </v-list-tile>
                 </v-list>
