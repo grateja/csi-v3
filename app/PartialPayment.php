@@ -14,7 +14,22 @@ class PartialPayment extends Model
 
 
     protected $fillable = [
-        'id', 'transaction_id', 'cash', 'points', 'discount', 'total_amount', 'change', 'user_id', 'paid_to', 'points_in_peso', 'balance', 'total_cash', 'card_load_used', 'rfid', 'synched',
+        'id',
+        'transaction_id', 
+        'cash',
+        'or_number', 
+        'points', 
+        'discount', 
+        'total_amount', 
+        'change', 
+        'user_id', 
+        'paid_to', 
+        'points_in_peso', 
+        'balance', 
+        'total_cash', 
+        'card_load_used', 
+        'rfid', 
+        'synched',
     ];
 
     public $appends = [

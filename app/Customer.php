@@ -56,6 +56,10 @@ class Customer extends Model
         return $this->hasMany('App\CustomerWash');
     }
 
+    public function lagoonPartner() {
+        return $this->belongsToMany('App\LagoonPartner', 'lagoon_partner_customers', 'customer_id', 'lagoon_partner_id');
+    }
+
     protected static function boot() {
         static::deleting(function($model) {
             $model->customerDries()->delete();

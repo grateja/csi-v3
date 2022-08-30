@@ -21,6 +21,7 @@ class TransactionPayment extends Model
     protected $fillable = [
         'id',
         'cash',
+        'or_number',
         'date',
         'points',
         'discount',

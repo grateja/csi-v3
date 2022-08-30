@@ -516,27 +516,31 @@
             <v-card-actions v-else-if="!!currentTransaction">
                 <v-spacer></v-spacer>
                 <v-btn color="primary" @click="viewPayment" round>{{totalPrice}}&nbsp;&nbsp;Payment</v-btn>
-                <v-btn @click="printClaimStub" round :loading="claimStubLoading">Print claim stub</v-btn>
+                <v-btn @click="openPrinterDialog = true" round>Print</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
         <service-item-dialog v-if="currentTransaction" v-model="openServiceItemDialog" :serviceName="activeServiceItemName" :transactionId="currentTransaction.id"></service-item-dialog>
         <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" @save="paid = true" />
+        <printer-dialog v-model="openPrinterDialog" :transaction="currentTransaction" />
     </v-card>
 </template>
 <script>
 import ServiceItemDialog from './ServiceItemDialog.vue';
 import PaymentDialog from './PaymentDialog.vue';
+import PrinterDialog from '../transaction-reports/PrinterDialog.vue';
 
 export default {
     components: {
         ServiceItemDialog,
-        PaymentDialog
+        PaymentDialog,
+        PrinterDialog
     },
     data() {
         return {
             paid: false,
             openPaymentDialog: false,
             openServiceItemDialog: false,
+            openPrinterDialog: false,
             activeServiceItemName: null
         }
     },

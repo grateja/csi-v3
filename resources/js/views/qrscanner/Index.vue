@@ -5,6 +5,14 @@
         <!-- <pre>{{QRData}}</pre> -->
         <v-card v-if="QRData != null" width="500px" class="rounded-card">
             <v-layout>
+                <v-flex xs5 class="text-xs-right mr-3">Job Order:</v-flex>
+                <v-flex xs7>{{QRData.jo}}</v-flex>
+            </v-layout>
+            <v-layout>
+                <v-flex xs5 class="text-xs-right mr-3">Date:</v-flex>
+                <v-flex xs7>{{moment(QRData.date).format('MMM dd, yyyy')}}</v-flex>
+            </v-layout>
+            <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Customer name:</v-flex>
                 <v-flex xs7>{{QRData.cust.nam}}</v-flex>
             </v-layout>
@@ -213,9 +221,10 @@
 
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-progress-circular v-if="loading" indeterminate></v-progress-circular>
+                <v-btn v-if="!!joConflict" @click="showJoConflict = true">Show conflicting JO</v-btn>
+                <v-progress-circular v-else-if="loading" indeterminate></v-progress-circular>
                 <template v-else>
-                    <v-btn class="primary">Confirm</v-btn>
+                    <v-btn @click="save" class="primary" :loading="isSaving">Confirm</v-btn>
                     <v-btn @click="QRData = null">Cancel</v-btn>
                 </template>
                 <v-spacer></v-spacer>
@@ -241,6 +250,8 @@
         <!-- <v-btn @click="start">scan</v-btn> -->
         <!-- <input type="file" name="inputFile" id="inputFile" ref="inputFile" @change="setPicture" accept="image/*"> -->
         <scanner-dialog v-model="showScannerDialog" @success="decode" :mode="mode" />
+        <job-order-dialog v-if="joConflict" :transactionId="joConflict.id" v-model="showJoConflict" />
+        <!-- <pre>{{joConflict}}</pre> -->
     </v-container>
 </template>
 
@@ -248,9 +259,11 @@
 
 // import {Html5Qrcode} from "html5-qrcode"
 import ScannerDialog from './ScannerDialog.vue';
+import JobOrderDialog from '../transaction-reports/TransactionDialog.vue';
 export default {
     components: {
-        ScannerDialog
+        ScannerDialog,
+        JobOrderDialog
     },
     data() {
         return {
@@ -262,7 +275,10 @@ export default {
             // errorMessage: null,
             // html5QrCode: null,
             mode: null,
-            showScannerDialog: false
+            showScannerDialog: false,
+            joConflict: null,
+            joConflictId: null,
+            showJoConflict: false
         }
     },
     methods: {
@@ -281,15 +297,37 @@ export default {
             }
         },
         check() {
+            if(!this.QRData.jo) {
+                this.$store.commit('setFlash', {
+                    message: 'Invalid Job Order Number',
+                    color: 'error'
+                })
+                return;
+            }
+            if(!this.QRData.date) {
+                this.$store.commit('setFlash', {
+                    message: 'Invalid Date Format',
+                    color: 'error'
+                })
+                return;
+            }
             this.loading = true;
             axios.get(`/api/transactions/${encodeURIComponent(this.QRData.jo)}`, {
                 query: {
                     date: this.QRData.dt
                 }
             }).then((res, rej) => {
+                this.joConflict = res.data.transaction;
                 console.log(res.data);
             }).finally(() => {
                 this.loading = false;
+            });
+        },
+        save() {
+            this.$store.dispatch('qrtransaction/save', {
+                formData: this.QRData
+            }).then((res, rej) => {
+                this.QRData = null
             });
         }
         // browsePicture() {
@@ -348,6 +386,11 @@ export default {
     },
     beforeDestroy() {
         // this.html5QrCode.stop();
+    },
+    computed: {
+        isSaving() {
+            return this.$store.getters['qrtransaction/isSaving'];
+        }
     }
 }
 </script>

@@ -104,6 +104,7 @@
                             <span class="display-1">P {{amountToPay.toFixed(2)}}</span>
                         </v-card>
                         <v-text-field class="round-input mt-3 text-xs-center" outline v-model="formData.cash" label="Cash" ref="cash" :error-messages="errors.get('cash')"></v-text-field>
+                        <v-text-field class="round-input mt-3 text-xs-center" outline v-model="formData.orNumber" label="OR number" ref="orNumber" :error-messages="errors.get('orNumber')"></v-text-field>
                         <!-- <template v-if="formData.rfidCardId && formData.rfidCardLoad">
                             <v-text-field v-model="formData.rfidCardLoad" label="RFID Card:" readonly clearable></v-text-field>
                         </template> -->
@@ -140,7 +141,7 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-btn type="submit" class="primary" round :loading="saving && !printJobOrder">{{balance > 0 ? 'Partial payment' : 'Save'}}</v-btn>
-                    <v-btn v-if="balance <= 0" round :loading="saving && printJobOrder" @click="saveAndPrint">Save and print</v-btn>
+                    <!-- <v-btn v-if="balance <= 0" round :loading="saving && printJobOrder" @click="saveAndPrint">Save and print</v-btn> -->
                 </v-card-actions>
             </v-card>
         </form>
@@ -182,6 +183,7 @@ export default {
             printJobOrder: false,
             formData: {
                 cash: 0,
+                orNumber: null,
                 discountId: null,
                 rfidCardId: null,
                 rfidCardLoad: 0,

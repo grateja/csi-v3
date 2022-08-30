@@ -118,6 +118,7 @@ class PaymentsController extends Controller
                         'customer_id' => $transaction->customer_id,
                         'date' => Carbon::now(),
                         'cash' => $request->cash,
+                        'or_number' => $request->orNumber,
                         'points' => $pointsToDeduct,
                         'points_in_peso' => $request->pointsInPeso,
                         // 'discount' => $percentageDiscount,
@@ -252,6 +253,7 @@ class PaymentsController extends Controller
                         'customer_id' => $transaction->customer_id,
                         'date' => Carbon::now(),
                         'cash' => $request->cash,
+                        'or_number' => $request->orNumber,
                         'points' => $pointsToDeduct,
                         'points_in_peso' => $request->pointsInPeso,
                         'discount' => $percentageDiscount,
@@ -282,6 +284,7 @@ class PaymentsController extends Controller
                 ]);    
 
                 return response()->json([
+
                     'transaction' => $transaction,
                     'payment' => $payment,
                     // 'cash' => $request->cash,

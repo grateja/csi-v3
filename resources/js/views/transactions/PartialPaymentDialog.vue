@@ -23,6 +23,10 @@
                     <v-flex xs7><span class="data-value">P {{parseFloat(partialPayment.cash).toLocaleString(2)}}</span></v-flex>
                 </v-layout>
                 <v-layout>
+                    <v-flex xs5><span class="data-term font-weight-bold">OR Number:</span></v-flex>
+                    <v-flex xs7><span class="data-value font-weight-bold">{{partialPayment.or_number}}</span></v-flex>
+                </v-layout>
+                <v-layout>
                     <v-flex xs5><span class="data-term">Balance:</span></v-flex>
                     <v-flex xs7><span class="data-value">P {{parseFloat(partialPayment.balance).toLocaleString(2)}}</span></v-flex>
                 </v-layout>

@@ -47,7 +47,7 @@ class TransactionsController extends Controller
         ->orWhere(function($query) use ($transactionId, $request) {
             $query->where([
                 'job_order' => $transactionId,
-                'date' => $request->date,
+                // 'date' => $request->date,
             ]);
         })->first();
 

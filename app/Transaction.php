@@ -48,8 +48,8 @@ class Transaction extends Model
         });
 
         return json_encode([
+            'pid' => Client::first()->id,
             'jo' => $this->job_order,
-            'date' => $this->date,
             'cust' => $customer,
             'sv' => $scarpa,
             'lag' => $lagoon,
@@ -126,6 +126,10 @@ class Transaction extends Model
 
     public function remarks() {
         return $this->hasMany('App\TransactionRemarks')->orderBy('created_at');
+    }
+
+    public function lagoonPartner() {
+        return $this->belongsToMany('App\LagoonPartner', 'lagoon_partner_transactions', 'transaction_id', 'lagoon_partner_id');
     }
 
     public function posServiceItems($withTrashed = false) {

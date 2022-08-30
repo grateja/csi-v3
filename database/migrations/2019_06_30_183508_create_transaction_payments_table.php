@@ -19,6 +19,7 @@ class CreateTransactionPaymentsTable extends Migration
             $table->uuid('customer_id')->nullable();
             $table->timestamp('date')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->double('cash')->nullable()->default(0);
+            $table->string('or_number')->nullable();
             $table->double('points')->nullable()->comment('Customer loyalty points used')->default(0);
             $table->double('points_in_peso')->nullable()->comment('Points in peso used during payment')->default(0);
             $table->double('card_load_used')->nullable()->comment('Amount of card load used')->default(0);

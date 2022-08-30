@@ -228,6 +228,7 @@ class ThermalPrinter extends Model
         if($transaction->partialPayment && !$transaction->payment) {
             $this->printItem("Partial payment", $transaction->partialPayment['cash']);
             $this->printItem("Balance", $transaction->partialPayment['balance']);
+            $this->printItem("OR Number", $transaction->partialPayment['or_number']);
         } else if(!$transaction->payment) {
             $this->printSubtitle("NOT PAID");
             $this->printer->initialize();
@@ -271,6 +272,7 @@ class ThermalPrinter extends Model
             $this->printItem("Date", Carbon::createFromDate($transaction->partialPayment['date'])->format('m/d/Y h:iA'));
             $this->printItem("Amount", $transaction->partialPayment['cash']);
             $this->printItem("Balance", $transaction->partialPayment['balance']);
+            $this->printItem("OR Number", $transaction->partialPayment['or_number']);
             $this->printItem("Received by", $transaction->partialPayment['paid_to']);
             $this->printUnderline();
         }
@@ -289,6 +291,7 @@ class ThermalPrinter extends Model
         }
 
         $this->printItem("Cash", $transaction->payment->cash);
+        $this->printItem("OR Number", $transaction->payment['or_number']);
         if($transaction->payment->cash_less_amount) {
             $this->printItem($transaction->payment->cash_less_provider, $transaction->payment->cash_less_amount);
         }

@@ -509,6 +509,9 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
     // /api/pos-transactions/save-transaction/{transactionId}
     Route::post('save-transaction/{transactionId}', 'PosTransactionController@saveTransaction');
 
+    // /api/pos-transactions/save-qr-code-transaction
+    Route::post('save-qr-code-transaction', 'QRTransactionController@save');
+
     // /api/pos-transactions/products
     Route::get('products', 'PosTransactionController@products');
 

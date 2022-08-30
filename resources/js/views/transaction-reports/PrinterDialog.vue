@@ -10,6 +10,7 @@
                 <v-layout>
                     <v-flex xs6>
                         <v-radio-group v-model="entity">
+                            <span v-if="transaction.date_paid == null" class="red--text font-italic caption">For paid Job Orders only!</span>
                             <v-radio label="Job Order only" value="job-order" :disabled="transaction.date_paid == null"></v-radio>
                             <v-radio label="Claim stub only" value="claim-stub"></v-radio>
                         </v-radio-group>
