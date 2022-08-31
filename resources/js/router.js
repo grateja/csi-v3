@@ -296,6 +296,10 @@ const routes = [
         component: require('./views/qrscanner/Index.vue').default
     },
     {
+        path: '/lagoon-partners',
+        component: require('./views/lagoon-partners/Index.vue').default
+    },
+    {
         path: '/',
         component: require('./views/layout/TileMenu.vue').default
     },

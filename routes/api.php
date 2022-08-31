@@ -921,6 +921,21 @@ Route::group(['prefix' => 'discounts', 'middleware' => ['auth:api']], function()
     Route::post('{id}/delete', 'DiscountsController@delete');
 });
 
+// /api/lagoon-partners
+Route::group(['prefix' => 'lagoon-partners', 'middleware' => ['auth:api']], function() {
+    // /api/lagoon-partners
+    Route::get('/', 'LagoonPartnersController@index');
+
+    // /api/lagoon-partners/create
+    Route::post('create', 'LagoonPartnersController@store');
+
+    // /api/lagoon-partners/{id}/create
+    Route::post('{id}/update', 'LagoonPartnersController@update');
+
+    // /api/lagoon-partners/{id}/delete
+    Route::post('{id}/delete', 'LagoonPartnersController@delete');
+});
+
 // /api/loyalty-points
 Route::group(['prefix' => 'loyalty-points', 'middleware' => ['auth:api', 'role:admin']], function() {
     // /api/loyalty-points/get

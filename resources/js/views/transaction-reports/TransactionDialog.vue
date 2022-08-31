@@ -242,7 +242,7 @@
                                 <v-flex xs5><span class="data-term font-weight-bold">Cash:</span></v-flex>
                                 <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.cash).toFixed(2)}}</span></v-flex>
                             </v-layout>
-                            <v-layout>
+                            <v-layout v-if="tempTransaction.payment.or_number">
                                 <v-flex xs5><span class="data-term font-weight-bold">OR Number:</span></v-flex>
                                 <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.payment.or_number}}</span></v-flex>
                             </v-layout>

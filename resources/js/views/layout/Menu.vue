@@ -283,6 +283,12 @@ export default {
                     to: '/time-keeping'
                 },
                 {
+                    text: 'Lagoon Partners',
+                    icon: 'lagoon-partners',
+                    roles: ['admin'],
+                    to: '/lagoon-partners'
+                },
+                {
                     text: 'External View',
                     icon: '',
                     roles: ['admin'],

@@ -6,11 +6,11 @@
         <v-card v-if="QRData != null" width="500px" class="rounded-card">
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Job Order:</v-flex>
-                <v-flex xs7>{{QRData.jo}}</v-flex>
+                <v-flex xs7 :class="{'red--text' : !!joConflict}">{{QRData.jo}}</v-flex>
             </v-layout>
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Date:</v-flex>
-                <v-flex xs7>{{moment(QRData.date).format('MMM dd, yyyy')}}</v-flex>
+                <v-flex xs7>{{moment().format('MMM D, yyyy')}}</v-flex>
             </v-layout>
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Customer name:</v-flex>
@@ -218,6 +218,11 @@
             </v-card>
 
 
+            <v-card-actions class="title font-weight-bold">
+                Total amount
+                <v-spacer />
+                {{parseFloat(totalAmount).toFixed(2)}}
+            </v-card-actions>
 
             <v-card-actions>
                 <v-spacer></v-spacer>
@@ -225,8 +230,8 @@
                 <v-progress-circular v-else-if="loading" indeterminate></v-progress-circular>
                 <template v-else>
                     <v-btn @click="save" class="primary" :loading="isSaving">Confirm</v-btn>
-                    <v-btn @click="QRData = null">Cancel</v-btn>
                 </template>
+                <v-btn @click="QRData = null">Cancel</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
 
@@ -304,13 +309,6 @@ export default {
                 })
                 return;
             }
-            if(!this.QRData.date) {
-                this.$store.commit('setFlash', {
-                    message: 'Invalid Date Format',
-                    color: 'error'
-                })
-                return;
-            }
             this.loading = true;
             axios.get(`/api/transactions/${encodeURIComponent(this.QRData.jo)}`, {
                 query: {
@@ -329,6 +327,11 @@ export default {
             }).then((res, rej) => {
                 this.QRData = null
             });
+        },
+        sum(items, key) {
+            return items.reduce((accumulator, object) => {
+                return accumulator + object[key];
+            }, 0);
         }
         // browsePicture() {
         //     this.$refs.inputFile.click();
@@ -390,6 +393,15 @@ export default {
     computed: {
         isSaving() {
             return this.$store.getters['qrtransaction/isSaving'];
+        },
+        totalAmount() {
+            if(this.QRData) {
+                var lag = this.QRData.lag.reduce((a, o) => { return a + (o.qty * o.up ); }, 0);
+                var lpk = this.QRData.lpk.reduce((a, o) => { return a + (o.qty * o.up ); }, 0);
+                var sv = this.QRData.sv.reduce((a, o) => { return a + (o.qty * o.up ); }, 0);
+                return lag + lpk + sv
+            }
+            return 0;
         }
     }
 }
