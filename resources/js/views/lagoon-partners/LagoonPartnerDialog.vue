@@ -24,7 +24,7 @@
                 </v-card-actions>
             </v-card>
         </form>
-        <scanner-dialog v-model="showScanner" @success="decode" :mode="mode" />
+        <scanner-dialog v-model="showScanner" @success="decode" :mode="scannMode" />
     </v-dialog>
 </template>
 
