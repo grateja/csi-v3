@@ -17,6 +17,7 @@ class CreateLagoonPartnersTable extends Migration
             $table->uuid('id')->primary();
             $table->string('shop_name')->nullable();
             $table->string('address')->nullable();
+            $table->string('contact_number')->nullable();
             $table->timestamps();
         });
     }

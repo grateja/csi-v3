@@ -58,7 +58,7 @@ class ThermalPrinter extends Model
         $this->printer->bitImage($img);
 
         $this->printer->feed();
-        $this->printer->close();
+        // $this->printer->close();
     }
 
     public function test($text) {
@@ -587,6 +587,16 @@ class ThermalPrinter extends Model
         $this->summaryDiscounts($data['discounts']);
         $this->summaryTotalDeposit($data['totalDeposit']);
 
+        $this->cut();
+    }
+
+    public function printShopPreferences($client) {
+        $this->printer->initialize();
+        $this->qr(json_encode($client));
+        $this->printDetail("ID", $client->user_id);
+        $this->printDetail("Shop Name", $client->shop_name);
+        $this->printDetail("Address", $client->address);
+        $this->printDetail("Contact#", $client->contact_number);
         $this->cut();
     }
 

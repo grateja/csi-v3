@@ -48,7 +48,7 @@ class Transaction extends Model
         });
 
         return json_encode([
-            'pid' => Client::first()->id,
+            'pid' => Client::first()->user_id,
             'jo' => $this->job_order,
             'cust' => $customer,
             'sv' => $scarpa,

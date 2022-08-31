@@ -26,15 +26,31 @@ use App\RfidCard;
 use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\ServiceTransactionItem;
+use App\ThermalPrinter;
 use App\Transaction;
 use App\TransactionPayment;
 use App\TransactionRemarks;
 use App\UnregisteredCard;
 use App\User;
 use App\WashingService;
+// use Endroid\QrCode\QrCode;
+// use Endroid\QrCode\Writer\PngWriter;
+// use Endroid\QrCode\Color\Color;
+// use Endroid\QrCode\Encoding\Encoding;
+// use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+// use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\Writer\PngWriter;
 
 class ClientsController extends Controller
 {
@@ -296,8 +312,58 @@ class ClientsController extends Controller
             return response()->json([
                 'machines' => Machine::all(),
                 'success' => 'Machines created'
-                ]);
+            ]);
         });
+    }
+
+    public function printQRCode() {
+        $client = Client::firstOrFail()->only([
+            'user_id',
+            'shop_name',
+            'address',
+            'shop_email',
+            'shop_number'
+        ]);
+        $thermalPrinter = new ThermalPrinter;
+        if($printerError = $thermalPrinter->hasError()) {
+            if(env('PRINTER_METHOD', 'rpi') == 'rpi') {
+                return response()->json([
+                    'errors' => $printerError,
+                    'method' => 'rpi',
+                ], 422);
+            }
+        } else {
+            $thermalPrinter->printShopPreferences($client);
+            return response()->json([
+                'success' => 'Shop preference printed successfully',
+                'method' => 'rpi'
+            ]);
+        }
+    }
+
+    public function generateQRCode() {
+        $client = Client::firstOrFail()->only([
+            'user_id',
+            'shop_name',
+            'address',
+            'shop_email',
+            'shop_number'
+        ]);
+        $writer = new PngWriter();
+
+        // Create QR code
+       $qrCode = QrCode::create(json_encode($client))
+            ->setEncoding(new Encoding('UTF-8'))
+            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->setSize(300)
+            ->setMargin(0)
+            ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->setForegroundColor(new Color(0, 0, 0))
+            ->setBackgroundColor(new Color(255, 255, 255));
+
+        $result = $writer->write($qrCode);
+        $result->saveToFile(public_path('/img/shop-pref-qr-code.png'));
+        return $result->getDataUri();
     }
 
     /**

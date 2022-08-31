@@ -46,8 +46,15 @@ class QRTransactionController extends Controller
             ], 422);
         }
         return DB::transaction(function () use ($request) {
+            $partner = LagoonPartner::find($request->pid);
+            if($partner == null) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Lagoon partner ID not recognized or Unregistered!']
+                    ]
+                ], 422);
+            }
             $customer = Customer::where('crn', $request->cust['crn'])->first();
-            $partner = LagoonPartner::findOrFail($request->pid);
             if($customer == null) {
                 $customer = Customer::create([
                     'name' => $request->cust['nam'],
@@ -119,6 +126,7 @@ class QRTransactionController extends Controller
             ]);
 
             $partner->customers()->sync($customer->id);
+            $partner->transactions()->sync($transaction->id);
 
             // DB::table('lagoon_partner_customers')->insert([
             //     'customer_id' => $customer->id,

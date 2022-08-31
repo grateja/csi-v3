@@ -223,6 +223,11 @@ class PrinterController extends Controller
         return view('printer.job-order', $data);
     }
 
+    public function printShopPreferences() {
+        $client = Client::firstOrFail();
+        
+    }
+
     public function loadTransaction($transactionId) {
         $client = Client::firstOrFail();
         $rfidLoadTransaction = RfidLoadTransaction::findOrFail($transactionId);

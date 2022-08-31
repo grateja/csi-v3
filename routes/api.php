@@ -67,7 +67,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // /api/thermal/print
 Route::group(['prefix' => 'thermal/print'], function() {
     // /api/thermal/print
-    Route::post('claim-stub', 'ThermalPrinterController@claimStub');
+    // Route::post('claim-stub', 'ThermalPrinterController@claimStub');
 });
 
 
@@ -87,6 +87,12 @@ Route::group(['prefix' => 'reset'], function() {
 Route::group(['prefix' => 'admin', 'middleware' => ['auth:api', 'role:admin,developer']], function () {
     // /api/admin/preferences/shop-details/{shopId}
     Route::get('preferences/shop-details/{shopId}', 'ClientsController@edit');
+
+    // /api/admin/preferences/print-qr-codde
+    Route::post('preferences/print-qr-code', 'ClientsController@printQRCode');
+
+    // /api/admin/preferences/generate-qr-code
+    Route::post('preferences/generate-qr-code', 'ClientsController@generateQRCode');
 
     // /api/admin/store-hours
     Route::group(['prefix' => 'store-hours'], function () {

@@ -3,7 +3,7 @@
         <h3 class="title white--text">Scan QR code</h3>
         <v-divider class="my-3"></v-divider>
         <!-- <pre>{{QRData}}</pre> -->
-        <v-card v-if="QRData != null" width="500px" class="rounded-card">
+        <v-card v-if="QRData != null" class="rounded-card">
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Job Order:</v-flex>
                 <v-flex xs7 :class="{'red--text' : !!joConflict}">{{QRData.jo}}</v-flex>
@@ -221,7 +221,7 @@
             <v-card-actions class="title font-weight-bold">
                 Total amount
                 <v-spacer />
-                {{parseFloat(totalAmount).toFixed(2)}}
+                P {{parseFloat(totalAmount).toFixed(2)}}
             </v-card-actions>
 
             <v-card-actions>
@@ -290,6 +290,7 @@ export default {
         scan(mode) {
             this.mode = mode;
             this.showScannerDialog = true;
+            this.joConflict = null;
         },
         decode(data) {
             try {
