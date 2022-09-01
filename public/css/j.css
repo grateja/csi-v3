@@ -170,6 +170,10 @@ table#items tfoot {
     margin-left: 20%;
 }
 
+#videoFile {
+    height: 100vh;
+}
+
 .time-wrapper {
     padding: 1em;
     color: #4d6569;

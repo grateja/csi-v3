@@ -10,6 +10,7 @@
             </v-card-title>
             <v-card-text class="text-xs-center">
                 <div id="reader"></div>
+                <p class="caption red--text" v-if="errorMessage && mode == 'camera'">{{errorMessage}}</p>
                 <v-btn v-if="mode == 'file'" @click="browsePicture">Browse from device</v-btn>
                 <v-progress-circular indeterminate v-if="loading" />
             </v-card-text>
@@ -32,7 +33,8 @@ export default {
             QRData: null,
             html5QrCode: null,
             activeDevice: null,
-            loading: false
+            loading: false,
+            errorMessage: null
         }
     },
     methods: {
@@ -92,6 +94,7 @@ export default {
             //     this.html5QrCode = new Html5Qrcode("reader");
             // }
             if(this.devices.length > 0) return;
+            this.loading = true;
             Html5Qrcode.getCameras().then(devices => {
                 /**
                  * devices would be an array of objects of type:
@@ -103,7 +106,10 @@ export default {
                 }
             }).catch(err => {
                 // handle err
-                alert(err)
+                // alert("Error loading cameras " + err)
+                this.errorMessage = err.message;
+            }).finally(() => {
+                this.loading = false;
             });
         },
         stop() {
@@ -113,6 +119,15 @@ export default {
         },
         close() {
             this.$emit('input', false);
+        },
+        chekcPermission() {
+            navigator.permissions.query({ name: "camera" }).then(res => {
+                if(res.state == "granted"){
+                    this.loadCameras();
+                } else {
+                    this.errorMessage = "Camera permission not granted"
+                }
+            });
         }
     },
     created() {
@@ -124,8 +139,7 @@ export default {
                     this.html5QrCode = new Html5Qrcode("reader");
                 }
                 if(this.mode == 'camera') {
-                    this.loading = true;
-                    this.loadCameras();
+                    this.chekcPermission();
                 } else {
                     this.browsePicture();
                 }
@@ -142,7 +156,7 @@ export default {
         },
         mode(val) {
             if(val == 'camera') {
-                this.loadCameras();
+                // this.loadCameras();
             } else {
 
             }

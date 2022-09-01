@@ -43,7 +43,7 @@
 <body>
     <div class="main">
         <div class="header-wrapper">
-            <p>Enhancing Life's Standards</p>
+            <!-- <p>Enhancing Life's Standards</p> -->
         </div>
         <div class="time-wrapper">
             <div id="time"></div>

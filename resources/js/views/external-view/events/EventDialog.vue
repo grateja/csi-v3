@@ -37,12 +37,10 @@
                     <v-text-field v-model="formData.title" label="Title" :error-messages="errors.get('title')" outline></v-text-field>
                     <v-textarea v-model="formData.description" rows="3" label="Description" outline></v-textarea>
 
-                    <!-- <v-radio-group v-model="eventTypeId" row>
+                    <v-radio-group v-model="formData.eventTypeId" row>
                         <v-radio :value="1" label="Slide show"></v-radio>
                         <v-radio :value="2" label="Video"></v-radio>
-                        <v-radio :value="3" label="Text"></v-radio>
-                        <v-radio :value="4" label="Youtube link"></v-radio>
-                    </v-radio-group> -->
+                    </v-radio-group>
                 </v-card-text>
                 <v-card-actions class="pa-3">
                     <v-spacer></v-spacer>

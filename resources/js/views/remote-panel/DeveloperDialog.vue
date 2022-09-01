@@ -9,8 +9,22 @@
                 </v-btn>
             </v-card-title>
             <v-card-actions>
-                <v-btn round @click="test" :loading="activating">test</v-btn>
-                <v-btn round @click="cancel" v-if="activating">cancel</v-btn>
+                <template v-if="activating">
+                    <v-btn round @click="cancel">cancel</v-btn>
+                    <v-progress-circular indeterminate />
+                </template>
+                <template v-else-if="!!machine && machine.machine_type[1] == 'w'">
+                    <v-btn round @click="test(1)" :loading="activating">delicate</v-btn>
+                    <v-btn round @click="test(2)" :loading="activating">warm/cold</v-btn>
+                    <v-btn round @click="test(3)" :loading="activating">hot</v-btn>
+                    <v-btn round @click="test(4)" :loading="activating">super wash</v-btn>
+                </template>
+                <template v-else>
+                    <v-btn round @click="test(1)" :loading="activating">10 min</v-btn>
+                    <v-btn round @click="test(2)" :loading="activating">20 min</v-btn>
+                    <v-btn round @click="test(3)" :loading="activating">30 min</v-btn>
+                    <v-btn round @click="test(4)" :loading="activating">40 min</v-btn>
+                </template>
             </v-card-actions>
             <v-card-text>
                 <!-- <pre>{{machine}}</pre> -->
@@ -34,13 +48,13 @@ export default {
         close() {
             this.$emit('input', false);
         },
-        test() {
+        test(pulse) {
             if(this.machine) {
                 console.log('testing');
                 this.activating = true;
                 this.cancelSource = axios.CancelToken.source();
 
-                axios.get(`http://${this.machine.ip_address}/activate?pulse=1&token=${Math.random().toString(36).substring(7)}`, {
+                axios.get(`http://${this.machine.ip_address}/activate?pulse=${pulse}&token=${Math.random().toString(36).substring(7)}`, {
                     params: {},
                     cancelToken: this.cancelSource.token
                 }).then((res, rej) => {

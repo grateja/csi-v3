@@ -8,6 +8,7 @@ use App\Event;
 use App\MonitorChecker;
 use App\Slide;
 use App\SysDefault;
+use App\Video;
 use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
@@ -144,7 +145,18 @@ class EventsController extends Controller
         }
         MonitorChecker::idle();
         return response()->json([
-            'message' => ['Slide removed']
+            'success' => ['Slide removed']
+        ]);
+    }
+
+    public function deleteVideo($videoId) {
+        $video = Video::findOrFail($videoId);
+        if($video->delete()) {
+            File::delete(public_path() . $video->source);
+            MonitorChecker::idle();
+        }
+        return response()->json([
+            'success' => ['Video deleted']
         ]);
     }
 

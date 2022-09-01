@@ -125,13 +125,13 @@ export default {
         print() {
             this.printingQRCode = true;
             axios.post('/api/admin/preferences/print-qr-code').then((res, rej) => {
-                // if(!res.data.method) {
-                //     let w = window.open('about:blank', 'print', 'width=800,height=1000');
+                if(!res.data.method) {
+                    let w = window.open('about:blank', 'print', 'width=800,height=1000');
 
-                //     w.document.write(res.data);
-                //     w.document.close();
+                    w.document.write(res.data);
+                    w.document.close();
 
-                // }
+                }
                 this.showQRCode = false;
             }).finally(() => {
                 this.printingQRCode = false;

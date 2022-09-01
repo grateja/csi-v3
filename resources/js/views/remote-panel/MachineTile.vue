@@ -61,7 +61,7 @@
             </template>
             <template>
                 <div v-if="isDeveloper">
-
+                    {{machine.ip_address}}
                 </div>
             </template>
         <!-- </div> -->

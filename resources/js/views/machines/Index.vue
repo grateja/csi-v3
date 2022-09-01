@@ -164,6 +164,7 @@ export default {
                 // this.machines = data.result;
             } else {
                 if(data.action == 'update') {
+                    this.activeMachine.machine_name = data.result.machine_name;
                     this.activeMachine.initial_time = data.result.initial_time;
                     this.activeMachine.additional_time = data.result.additional_time;
                     this.activeMachine.initial_price = data.result.initial_price;

@@ -13,7 +13,7 @@
         <v-flex xs12>
             <v-tabs v-model="activeTab" color="blue" active-class="white">
                 <v-tab><v-icon left>perm_media</v-icon> Slide show</v-tab>
-                <!-- <v-tab><v-icon left>video_library</v-icon> Video</v-tab> -->
+                <v-tab><v-icon left>video_library</v-icon> Video</v-tab>
                 <!-- <v-tab><v-icon left>title</v-icon> Text</v-tab> -->
                 <!-- <v-tab><v-icon left>subscriptions</v-icon> Youtube link</v-tab> -->
 

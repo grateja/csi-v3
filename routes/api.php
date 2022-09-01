@@ -596,6 +596,9 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
     // /api/transactions/{transactionId}/print-job-order
     Route::post('{transactionId}/print-job-order', 'PrinterController@jobOrder');
 
+    // /api/transactions/{transactionId}/print-tap-card
+    Route::post('{transactionId}/print-tap-card', 'PrinterController@tapCard');
+
     // /api/transaction/service-items
     Route::group(['prefix' => 'service-items'], function() {
         // /api/transaction/service-items/{serviceTransactionItemId}/delete
@@ -676,6 +679,9 @@ Route::group(['prefix' => 'payments', 'middleware' => 'auth:api'], function() {
 Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() {
     // /api/machines
     Route::get('/', 'MachinesController@index');
+
+    // /api/machines/next-stack-order/{machineType}
+    Route::get('next-stack-order/{machineType}', 'MachinesController@nextStackOrder');
 
     // /api/machines/remarks
     Route::get('remarks', 'MachinesController@remarks');
@@ -883,6 +889,9 @@ Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() 
     // /api/rfid-cards/load-transactions/{transactionId}/print-load-transaction
     Route::get('load-transactions/{transactionId}/print-load-transaction', 'PrinterController@loadTransaction');
 
+    // /api/rfid-cards/tap-transactions/{transactionId}/print
+    Route::post('tap-transactions/{transactionId}/print', 'PrinterController@tapTransaction');
+
     // /api/rfid-cards/unregistered-cards/clear-all
     Route::post('unregistered-cards/clear-all', 'RfidCardsController@clearUnregisteredCards');
 
@@ -1088,6 +1097,9 @@ Route::group(['prefix' => 'events'], function() {
 
         // /api/events/remove-slide/{slideId}
         Route::post('remove-slide/{slideId}', 'EventsController@removeSlide');
+
+        // /api/events/delete-video/{videoId}
+        Route::post('delete-video/{videoId}', 'EventsController@deleteVideo');
 
         // /api/events/set-default/{slideId}
         Route::post('set-default/{slideId}', 'EventsController@setDefault');

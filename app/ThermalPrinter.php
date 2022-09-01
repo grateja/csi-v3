@@ -326,6 +326,23 @@ class ThermalPrinter extends Model
         $this->cut();
     }
 
+    public function tapCard($transaction) {
+        $this->printHeader();
+
+        $this->printQuote("*** RFID Tap Card ***");
+
+        $this->printer->initialize();
+
+        $this->printItem("Date", $transaction->created_at->format('m/d/Y h:iA'));
+        $this->printItem("Card owner", $transaction->owner_name);
+        $this->printItem("RFID", "#" . $transaction->rfid . "");
+        $this->printItem("Amount", $transaction->price);
+        $this->printItem("Machine", $transaction->machine_name);
+        $this->printItem("Minutes", $transaction->minutes);
+
+        $this->cut();
+    }
+
     private function printCaption($text) {
         $this->printer->initialize();
         $this->printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -593,10 +610,11 @@ class ThermalPrinter extends Model
     public function printShopPreferences($client) {
         $this->printer->initialize();
         $this->qr(json_encode($client));
-        $this->printDetail("ID", $client->user_id);
-        $this->printDetail("Shop Name", $client->shop_name);
-        $this->printDetail("Address", $client->address);
-        $this->printDetail("Contact#", $client->contact_number);
+        $this->printer->initialize();
+        $this->printDetail("ID", $client['user_id']);
+        $this->printDetail("Shop Name", $client['shop_name']);
+        $this->printDetail("Address", $client['address']);
+        $this->printDetail("Contact#", $client['contact_number']);
         $this->cut();
     }
 

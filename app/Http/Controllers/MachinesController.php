@@ -360,6 +360,7 @@ class MachinesController extends Controller
                         'additional_price' => $request->additionalPrice,
                         'initial_time' => $request->initialTime,
                         'additional_time' => $request->additionalTime,
+                        'stack_order' => $request->stackOrder,
                     ]);
                     $result = $machine;
                     $this->dispatch($machine->queSynch());
@@ -409,6 +410,7 @@ class MachinesController extends Controller
             'additionalPrice' => 'numeric',
             'initialTime' => 'required|numeric',
             'additionalTime' => 'numeric',
+            'stackOrder' => 'required|numeric',
         ];
         if($request->validate($rules)) {
             return DB::transaction(function () use ($request, $machineType) {
@@ -420,6 +422,7 @@ class MachinesController extends Controller
                     'initial_time' => $request->initialTime,
                     'additional_time' => $request->additionalTime,
                     'machine_type' => $machineType,
+                    'stack_order' => $request->stackOrder,
                 ]);
 
                 return response()->json([
@@ -492,5 +495,14 @@ class MachinesController extends Controller
                 'success_message' => 'Machine Deleted'
             ]);
         }
+    }
+
+    public function nextStackOrder($machineType) {
+        $stackOrder = 1;
+        $machine = Machine::where('machine_type', $machineType)->orderByDesc('stack_order')->first();
+        if($machine != null) {
+            $stackOrder = $machine->stack_order + 1;
+        }
+        return $stackOrder;
     }
 }

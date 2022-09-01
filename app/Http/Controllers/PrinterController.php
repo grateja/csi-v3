@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use App\CompletedServiceTransaction;
 use Illuminate\Support\Facades\DB;
 use App\CompletedProductTransaction;
+use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use Illuminate\Support\Facades\File;
 use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
@@ -223,11 +224,6 @@ class PrinterController extends Controller
         return view('printer.job-order', $data);
     }
 
-    public function printShopPreferences() {
-        $client = Client::firstOrFail();
-        
-    }
-
     public function loadTransaction($transactionId) {
         $client = Client::firstOrFail();
         $rfidLoadTransaction = RfidLoadTransaction::findOrFail($transactionId);
@@ -265,5 +261,46 @@ class PrinterController extends Controller
         ];
 
         return view('printer.rfid-load-transaction', $data);
+    }
+
+    public function tapCard($transactionId) {
+        $client = Client::firstOrFail();
+        $rfidTransaction = RfidCardTransaction::findOrFail($transactionId);
+
+        $thermalPrinter = new ThermalPrinter;
+        if($printerError = $thermalPrinter->hasError()) {
+            if(env('PRINTER_METHOD', 'rpi') == 'rpi') {
+                return response()->json([
+                    'errors' => $printerError,
+                    'method' => 'rpi',
+                ], 422);
+            }
+        } else {
+            $thermalPrinter->tapCard($rfidTransaction);
+            return response()->json([
+                'success' => 'RFID Tap Card Printed successfully'
+            ]);
+        }
+
+        $data = [
+            'shop_name' => $client->shop_name,
+            'shop_address' => $client->address,
+            'shop_email' => $client->shop_email,
+            'shop_number' => $client->shop_number,
+            'created_at' => $rfidTransaction->created_at,
+            'owner_name' => $rfidTransaction->owner_name,
+            'rfid' => $rfidTransaction->rfid,
+            'amount' => $rfidTransaction->amount,
+            'machine_name' => $rfidTransaction->machine_name,
+            'minutes' => $rfidTransaction->minutes,
+            // 'remaining_balance' => $rfidTransaction->remaining_balance,
+            // 'current_balance' => $rfidTransaction->current_balance,
+            // 'cash' => $rfidTransaction->cash,
+            // 'change' => $rfidTransaction->change,
+            // 'staff_name' => $rfidTransaction->staff_name,
+            // 'remarks' => $rfidTransaction->remarks,
+        ];
+
+        return view('printer.rfid-tap-card', $data);
     }
 }

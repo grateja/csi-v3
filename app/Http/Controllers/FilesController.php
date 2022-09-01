@@ -42,7 +42,8 @@ class FilesController extends Controller
             DB::transaction(function () use ($data, $event) {
                 $slides = Slide::insert($data);
                 $event->update([
-                    'updated_at' => Carbon::now()
+                    'updated_at' => Carbon::now(),
+                    'event_type_id' => 1,
                 ]);
             });
 
@@ -111,8 +112,11 @@ class FilesController extends Controller
                 ]);
 
                 $event->update([
-                    'updated_at' => Carbon::now()
+                    'updated_at' => Carbon::now(),
+                    'event_type_id' => 2,
                 ]);
+
+                MonitorChecker::idle();
 
                 return response()->json([
                     'video' => $video

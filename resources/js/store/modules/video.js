@@ -8,7 +8,7 @@ const mutations = {
 
 const actions = {
     deleteVideo(context, videoId) {
-        return axios.post(`/api/videos/${videoId}/delete`).then((res, rej) => {
+        return axios.post(`/api/events/delete-video/${videoId}`).then((res, rej) => {
             return res;
         });
     }

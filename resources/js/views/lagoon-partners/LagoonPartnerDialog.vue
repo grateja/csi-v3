@@ -78,6 +78,13 @@ export default {
         decode(data) {
             try {
                 this.QRData = JSON.parse(data);
+                if(this.QRData.user_id == null) {
+                    this.$store.commit('setFlash', {
+                        message: 'Invalid Partner ID',
+                        color: 'error'
+                    });
+                    return;
+                }
                 this.formData.id = this.QRData.user_id;
                 this.formData.shopName = this.QRData.shop_name;
                 this.formData.address = this.QRData.address;
@@ -85,7 +92,10 @@ export default {
                 console.log(this.QRData)
             } catch(e) {
                 this.QRData = null;
-                alert(e.message)
+                this.$store.commit('setFlash', {
+                    message: "Invalid Data",
+                    color: 'error'
+                });
             }
         }
     },

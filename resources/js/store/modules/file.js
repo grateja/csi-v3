@@ -1,10 +1,14 @@
 const state = {
-    videoUploadProgress: 0
+    videoUploadProgress: 0,
+    uploading: false
 };
 
 const mutations = {
     setVideoUploadProgress(state, value) {
         state.videoUploadProgress = value;
+    },
+    setUploadingState(state, value) {
+        state.uploading = value;
     }
 };
 
@@ -23,6 +27,7 @@ const actions = {
         });
     },
     uploadVideo(context, request) {
+        context.commit('setUploadingState', true);
         return axios.post('/api/files/upload-video/' + request.eventId,
             request.formData,
             {
@@ -37,6 +42,8 @@ const actions = {
         }).then((res, rej) => {
             return res;
             // console.log(res.data);
+        }).finally(() => {
+            context.commit('setUploadingState', false);
         });
     },
     changePicture(context, request) {
@@ -57,6 +64,9 @@ const actions = {
 const getters = {
     getVidUploadProgress(state) {
         return state.videoUploadProgress;
+    },
+    getUploadingState(state) {
+        return state.uploading;
     }
 };
 

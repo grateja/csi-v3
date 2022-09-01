@@ -16,6 +16,7 @@
                     <v-text-field outline label="Additional price" v-model="formData.additionalPrice" :error-messages="errors.get('additionalPrice')" hint="Set to 0 to disable"></v-text-field>
                     <v-text-field outline label="Initial time" v-model="formData.initialTime" :error-messages="errors.get('initialTime')"></v-text-field>
                     <v-text-field outline label="Additional time" v-model="formData.additionalTime" :error-messages="errors.get('additionalTime')" hint="Set to 0 to disable"></v-text-field>
+                    <v-text-field outline label="Stack Order" v-model="formData.stackOrder" :error-messages="errors.get('stackOrder')" :disabled="retreivingStackOrder" :loading="retreivingStackOrder"></v-text-field>
                     <v-checkbox :label="`Apply to all ${machineType}`" v-model="formData.applyToAll"></v-checkbox>
                     <div class="font-italic font-weight-bold caption" v-if="formData.applyToAll">This configuration will be applied to all {{machineType}}</div>
                 </v-card-text>
@@ -42,10 +43,12 @@ export default {
                 initialTime: 0,
                 additionalTime: 0,
                 ipAddress: null,
+                stackOrder: 0,
                 applyToAll: false
             },
             action: null,
-            isDeleting: false
+            isDeleting: false,
+            retreivingStackOrder: false
         }
     },
     methods: {
@@ -105,6 +108,7 @@ export default {
                 this.formData.initialTime = this.machine.initial_time;
                 this.formData.additionalTime = this.machine.additional_time;
                 this.formData.ipAddress = this.machine.ip_address;
+                this.formData.stackOrder = this.machine.stack_order;
                 this.action = 'update';
             } else {
                 this.formData.machineName = null;
@@ -115,6 +119,13 @@ export default {
                 this.formData.applyToAll = false;
                 this.formData.ipAddress = '192.168.210.';
                 this.action = 'insert';
+                // get stack order
+                this.retreivingStackOrder = true;
+                axios.get(`/api/machines/next-stack-order/${this.mt}`).then((res, rej) => {
+                    this.formData.stackOrder = res.data;
+                }).finally(() => {
+                    this.retreivingStackOrder = false
+                });
             }
         }
     }

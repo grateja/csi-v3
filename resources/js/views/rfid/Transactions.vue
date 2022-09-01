@@ -81,6 +81,9 @@
                         <v-btn outline icon small v-if="isOwner" @click="deleteTransaction(props.item)" :loading="props.item.isDeleting">
                             <v-icon small>delete</v-icon>
                         </v-btn>
+                        <v-btn outline icon small @click="print(props.item)" :loading="props.item.isPrinting">
+                            <v-icon small>print</v-icon>
+                        </v-btn>
                     </td>
                 </template>
                 <template slot="footer">
@@ -222,6 +225,15 @@ export default {
             this.cardType = cardType;
             this.reset = true;
             this.load();
+        },
+        print(item) {
+            Vue.set(item, 'isPrinting', true);
+            this.$store.dispatch('printer/print', {
+                entity: 'tap-card',
+                transactionId: item.id
+            }).finally(() => {
+                Vue.set(item, 'isPrinting', false);
+            });
         }
     },
     created() {

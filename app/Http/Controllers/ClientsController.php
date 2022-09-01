@@ -339,6 +339,8 @@ class ClientsController extends Controller
                 'method' => 'rpi'
             ]);
         }
+
+        return view('printer.shop-preferences', $client);
     }
 
     public function generateQRCode() {

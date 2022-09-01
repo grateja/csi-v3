@@ -3,8 +3,8 @@
         <v-layout>
             <v-flex>
                 <v-card>
-                    {{humanFileSize(getUploadProgress.loaded)}}
-                    <v-progress-linear :value="getUploadProgress.percent"></v-progress-linear>
+                    <span v-if="uploading">{{humanFileSize(getUploadProgress.loaded)}}</span>
+                    <v-progress-linear v-if="uploading" :value="getUploadProgress.percent"></v-progress-linear>
                     <video v-if="source" :src="source" controls id="video"></video>
                     <v-card-text class="text-xs=center">
                         <v-btn @click="deleteVideo" v-if="event.video">Delete</v-btn>
@@ -68,8 +68,8 @@ export default {
                 ++u;
             } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
 
-
-            return bytes.toFixed(dp) + ' ' + units[u];
+            if(bytes) return bytes.toFixed(dp) + ' ' + units[u];
+            return '';
         }
     },
     computed: {
@@ -80,6 +80,9 @@ export default {
         },
         getUploadProgress() {
             return this.$store.getters['file/getVidUploadProgress'];
+        },
+        uploading() {
+            return this.$store.getters['file/getUploadingState'];
         }
     }
 }
