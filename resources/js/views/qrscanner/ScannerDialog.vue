@@ -121,13 +121,20 @@ export default {
             this.$emit('input', false);
         },
         chekcPermission() {
-            navigator.permissions.query({ name: "camera" }).then(res => {
-                if(res.state == "granted"){
-                    this.loadCameras();
-                } else {
-                    this.errorMessage = "Camera permission not granted"
-                }
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            }).then((stream) => {
+                this.loadCameras();
+            }).catch((er) => {
+                this.errorMessage = "Camera permission not granted"
             });
+            // navigator.permissions.query({ name: "camera" }).then(res => {
+            //     if(res.state == "granted"){
+            //         this.loadCameras();
+            //     } else {
+            //         this.errorMessage = "Camera permission not granted"
+            //     }
+            // });
         }
     },
     created() {
