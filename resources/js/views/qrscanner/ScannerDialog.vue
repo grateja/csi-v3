@@ -15,11 +15,11 @@
                 <v-btn v-if="mode == 'file'" @click="browsePicture">Browse from device</v-btn>
                 <v-progress-circular indeterminate v-if="loading" />
             </v-card-text>
-            <v-card-actions v-if="mode == 'camera'">
+            <v-card-text v-if="mode == 'camera'">
                 <v-btn v-for="i in devices" :key="i.id" @click="start(i.id)" :class="{active: activeDevice!=null && i.id == activeDevice.id}">
                     {{i.label}}
                 </v-btn>
-            </v-card-actions>
+            </v-card-text>
         </v-card>
         <input type="file" name="inputFile" id="inputFile" ref="inputFile" @change="setPicture" accept="image/*">
     </v-dialog>

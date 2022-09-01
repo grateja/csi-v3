@@ -239,7 +239,8 @@ class PrinterController extends Controller
         } else {
             $thermalPrinter->loadTransaction($rfidLoadTransaction);
             return response()->json([
-                'success' => 'RFID Tap up Printed successfully'
+                'success' => 'RFID Tap up Printed successfully',
+                'method' => 'rpi',
             ]);
         }
 
@@ -278,7 +279,8 @@ class PrinterController extends Controller
         } else {
             $thermalPrinter->tapCard($rfidTransaction);
             return response()->json([
-                'success' => 'RFID Tap Card Printed successfully'
+                'success' => 'RFID Tap Card Printed successfully',
+                'method' => 'rpi',
             ]);
         }
 

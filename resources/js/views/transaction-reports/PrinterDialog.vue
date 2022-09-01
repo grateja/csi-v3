@@ -44,7 +44,7 @@ export default {
             entity: 'claim-stub',
             includeItems: true,
             includeRemarks: true,
-            includeQRCode: true,
+            includeQRCode: true
         }
     },
     methods: {
@@ -73,8 +73,6 @@ export default {
                     this.entity = 'job-order';
                     this.includeItems = true;
                 }
-            } else {
-                this.loading = false;
             }
         },
         entity(val) {

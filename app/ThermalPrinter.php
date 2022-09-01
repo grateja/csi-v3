@@ -15,6 +15,8 @@ use Endroid\QrCode\Label\Label;
 use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class ThermalPrinter extends Model
 {
@@ -36,7 +38,8 @@ class ThermalPrinter extends Model
     }
 
     public function qr($text) {
-        $tempFile = public_path() . "/img/temp.png";
+        $filename = Str::random(5);
+        $tempFile = public_path() . "/img/$filename-qr.png";
         $this->printer->initialize();
 
         $writer = new PngWriter();
@@ -58,6 +61,7 @@ class ThermalPrinter extends Model
         $this->printer->bitImage($img);
 
         $this->printer->feed();
+        File::delete($tempFile);
         // $this->printer->close();
     }
 
