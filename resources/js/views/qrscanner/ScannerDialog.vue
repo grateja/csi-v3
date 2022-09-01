@@ -10,7 +10,8 @@
             </v-card-title>
             <v-card-text class="text-xs-center">
                 <div id="reader"></div>
-                <p class="caption red--text" v-if="errorMessage && mode == 'camera'">{{errorMessage}}</p>
+                <p class="caption red--text" v-if="errorMessage && mode == 'camera' && !granted">{{errorMessage}}</p>
+                <v-btn v-if="!granted && !loading && mode == 'camera'" @click="requestPermission">Enable camera permission</v-btn>
                 <v-btn v-if="mode == 'file'" @click="browsePicture">Browse from device</v-btn>
                 <v-progress-circular indeterminate v-if="loading" />
             </v-card-text>
@@ -34,7 +35,8 @@ export default {
             html5QrCode: null,
             activeDevice: null,
             loading: false,
-            errorMessage: null
+            errorMessage: null,
+            granted: false
         }
     },
     methods: {
@@ -115,26 +117,42 @@ export default {
         stop() {
             if(this.html5QrCode != null && this.html5QrCode.isScanning) {
                 this.html5QrCode.stop();
+                console.log('stop camera')
             }
         },
         close() {
             this.$emit('input', false);
         },
         chekcPermission() {
+            navigator.permissions.query({ name: "camera" }).then(res => {
+                if(res.state == "granted"){
+                    this.granted = true;
+                    this.loadCameras();
+                    this.errorMessage = "";
+                } else {
+                    this.errorMessage = "Camera permission not granted"
+                    console.log("state", res.state)
+                }
+            });
+        },
+        requestPermission() {
+            this.loading = true;
             navigator.mediaDevices.getUserMedia({
                 video: true
             }).then((stream) => {
-                this.loadCameras();
+                this.granted = true
+                this.errorMessage = "";
+                stream.getVideoTracks().forEach(track => {
+                    track.stop();
+                    this.loadCameras();
+                });
             }).catch((er) => {
                 this.errorMessage = "Camera permission not granted"
+            }).finally(() => {
+                this.stop();
+                console.log('permission requested')
+                this.loading = false;
             });
-            // navigator.permissions.query({ name: "camera" }).then(res => {
-            //     if(res.state == "granted"){
-            //         this.loadCameras();
-            //     } else {
-            //         this.errorMessage = "Camera permission not granted"
-            //     }
-            // });
         }
     },
     created() {
