@@ -305,9 +305,9 @@
             </div>
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
-                <template v-if="!!tempTransaction && !tempTransaction.deleted_at">
+                <template v-if="!!tempTransaction">
                     <v-tooltip top v-if="isOwner">
-                        <v-btn slot="activator" icon @click="deleteTransaction" :loading="isDeleting">
+                        <v-btn slot="activator" icon @click="deleteTransaction(!!tempTransaction.deleted_at)" :loading="isDeleting">
                             <v-icon>delete</v-icon>
                         </v-btn>
                         <span>Delete job order</span>
@@ -399,10 +399,13 @@ export default {
                 transactionId: this.transactionId,
             });
         },
-        deleteTransaction() {
+        deleteTransaction(permanent) {
             if(confirm('Delete this transaction?')) {
                 this.isDeleting = true;
-                this.$store.dispatch('transaction/deleteTransaction', this.transactionId).then((res, rej) => {
+                this.$store.dispatch('transaction/deleteTransaction', {
+                    transactionId: this.transactionId,
+                    permanent
+                }).then((res, rej) => {
                     this.$emit('deleteTransaction', res.data.transaction);
                     this.tempTransaction = null;
                     this.close();

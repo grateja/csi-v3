@@ -29,8 +29,10 @@ const actions = {
     disposeService(context, data) {
         return axios.post(`/api/pending-services/${data.serviceType}/${data.serviceId}/dispose-service`);
     },
-    deleteTransaction(context, transactionId) {
-        return axios.post(`/api/transactions/${transactionId}/delete-transaction`);
+    deleteTransaction(context, data) {
+        return axios.post(`/api/transactions/${data.transactionId}/delete-transaction`, {
+            permanent: data.permanent
+        });
     },
     addRemarks(context, data) {
         context.commit('clearErrors');

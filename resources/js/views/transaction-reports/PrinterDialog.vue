@@ -16,9 +16,32 @@
                         </v-radio-group>
                     </v-flex>
                     <v-flex xs6>
-                        <v-checkbox label="Include items" v-model="includeItems" :disabled="entity == 'job-order'"></v-checkbox>
-                        <v-checkbox label="Include remarks" v-model="includeRemarks"></v-checkbox>
-                        <v-checkbox label="Include QR Code" v-model="includeQRCode"></v-checkbox>
+                        <v-list>
+                            <!-- <v-list-tile>
+                                <v-checkbox label="Include items" v-model="includeItems" :disabled="entity == 'job-order'"></v-checkbox>
+                            </v-list-tile> -->
+                            <!-- <v-list-tile>
+                                <v-checkbox label="Include remarks" v-model="includeRemarks"></v-checkbox>
+                            </v-list-tile> -->
+                            <v-list-tile>
+                                <v-checkbox label="Itemized" v-model="options.itemized"></v-checkbox>
+                            </v-list-tile>
+                            <v-list-tile>
+                                <v-checkbox label="Products" v-model="options.products"></v-checkbox>
+                            </v-list-tile>
+                            <v-list-tile>
+                                <v-checkbox label="Wash/Dry Services" v-model="options.services"></v-checkbox>
+                            </v-list-tile>
+                            <v-list-tile>
+                                <v-checkbox label="Scarpa" v-model="options.scarpa"></v-checkbox>
+                            </v-list-tile>
+                            <v-list-tile>
+                                <v-checkbox label="Lagoon" v-model="options.lagoon"></v-checkbox>
+                            </v-list-tile>
+                            <v-list-tile>
+                                <v-checkbox label="Include QR Code" v-model="includeQRCode" v-if="canPrintQRCode" :disabled="dopuSetup == 'slave'"></v-checkbox>
+                            </v-list-tile>
+                        </v-list>
                     </v-flex>
                 </v-layout>
             </v-card-text>
@@ -43,8 +66,15 @@ export default {
         return {
             entity: 'claim-stub',
             includeItems: true,
-            includeRemarks: true,
-            includeQRCode: true
+            // includeRemarks: true,
+            includeQRCode: false,
+            options: {
+                itemized: false,
+                products: false,
+                services: false,
+                scarpa: false,
+                lagoon: false,
+            }
         }
     },
     methods: {
@@ -54,8 +84,9 @@ export default {
                 entity: this.entity,
                 formData: {
                     includeItems: this.includeItems,
-                    includeRemarks: this.includeRemarks,
-                    includeQRCode: this.includeQRCode
+                    // includeRemarks: this.includeRemarks,
+                    includeQRCode: this.includeQRCode,
+                    options: this.options
                 }
             });
         },
@@ -73,6 +104,9 @@ export default {
                     this.entity = 'job-order';
                     this.includeItems = true;
                 }
+                if(!this.canPrintQRCode) {
+                    this.formData.includeQRCode = false;
+                }
             }
         },
         entity(val) {
@@ -81,11 +115,26 @@ export default {
             } else {
                 this.includeItems = true
             }
+        },
+        dopuSetup: {
+            handler(val) {
+                if(val == 'slave') {
+                    this.includeQRCode = true
+                }
+            },
+            deep: true,
+            immediate: true
         }
     },
     computed: {
         loading() {
             return this.$store.getters['printer/isLoading'];
+        },
+        dopuSetup() {
+            return this.$store.getters.getDopuSetup
+        },
+        canPrintQRCode() {
+            return this.dopuSetup == 'master' || this.dopuSetup == 'slave'
         }
     }
 }

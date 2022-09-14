@@ -3,7 +3,7 @@
         <h3 class="title white--text">Scan QR code</h3>
         <v-divider class="my-3"></v-divider>
         <!-- <pre>{{QRData}}</pre> -->
-        <v-card v-if="QRData != null" class="rounded-card">
+        <v-card v-if="QRData != null && !!QRData.cust" class="rounded-card">
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Job Order:</v-flex>
                 <v-flex xs7 :class="{'red--text' : !!joConflict}">{{QRData.jo}}</v-flex>
@@ -30,7 +30,7 @@
             </v-layout>
 
 
-            <v-card class="ma-1" v-if="QRData.sv.length" flat>
+            <v-card class="ma-1" v-if="QRData.sv && QRData.sv.length" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>SCARPA</h4>
@@ -94,7 +94,7 @@
 
 
 
-            <v-card class="ma-1" v-if="QRData.lag.length" flat>
+            <v-card class="ma-1" v-if="QRData.lag && QRData.lag.length" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>LAGOON</h4>
@@ -157,7 +157,7 @@
 
 
 
-            <v-card class="ma-1" v-if="QRData.lpk.length" flat>
+            <v-card class="ma-1" v-if="QRData.lpk && QRData.lpk.length" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>LAGOON PER KILO</h4>
@@ -308,6 +308,7 @@ export default {
                     message: 'Invalid Job Order Number',
                     color: 'error'
                 })
+                this.QRData = null;
                 return;
             }
             this.loading = true;
@@ -397,9 +398,9 @@ export default {
         },
         totalAmount() {
             if(this.QRData) {
-                var lag = this.QRData.lag.reduce((a, o) => { return a + (o.qty * o.up ); }, 0);
-                var lpk = this.QRData.lpk.reduce((a, o) => { return a + (o.qty * o.up ); }, 0);
-                var sv = this.QRData.sv.reduce((a, o) => { return a + (o.qty * o.up ); }, 0);
+                var lag = this.QRData.lag ? this.QRData.lag.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
+                var lpk = this.QRData.lpk ? this.QRData.lpk.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
+                var sv = this.QRData.sv ? this.QRData.sv.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
                 return lag + lpk + sv
             }
             return 0;

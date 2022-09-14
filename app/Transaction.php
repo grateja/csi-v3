@@ -18,7 +18,7 @@ class Transaction extends Model
         'id', 'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid', 'synched', 'updated_at', 'created_at',
     ];
 
-    public function simplified() {
+    public function simplified($options) {
         $customer = [
             'nam' => $this->customer->name,
             'crn' => $this->customer->crn,
@@ -47,14 +47,50 @@ class Transaction extends Model
             ];
         });
 
-        return json_encode([
+        $products = collect($this->posProductItems())->transform(function($item) {
+            return [
+                'pid' => $item->product_id,
+                'qty' => $item->quantity,
+            ];
+        });
+
+        if($options['services']) {
+            $services = $this->serviceTransactionItems()
+                ->groupBy('name', 'price', 'full_service_id', 'category', 'service_id')
+                ->selectRaw('coalesce(washing_service_id, drying_service_id, other_service_id) as service_id, COUNT(name) as quantity, category')->get();
+
+            $services = collect($services)->transform(function($item) {
+                return [
+                    'sid' => $item->service_id,
+                    'qty' => $item->quantity,
+                    'cat' => $item->category,
+                ];
+            });
+        }
+
+        $data = [
             'pid' => Client::first()->user_id,
             'jo' => $this->job_order,
             'cust' => $customer,
-            'sv' => $scarpa,
-            'lag' => $lagoon,
-            'lpk' => $lagoonPerKilo,
-        ]);
+            // 'sv' => $scarpa,
+            // 'lag' => $lagoon,
+            // 'lpk' => $lagoonPerKilo,
+        ];
+        if($options['scarpa']) {
+            $data['sv'] = $scarpa;
+        }
+        if($options['lagoon']) {
+            $data['lag'] = $lagoon;
+            $data['lpk'] = $lagoonPerKilo;
+        }
+        if($options['products']) {
+            $data['prd'] = $products;
+        }
+        if($options['services']) {
+            $data['svc'] = $services;
+        }
+
+        return json_encode($data);
     }
 
     public static function filterKeys($val) {

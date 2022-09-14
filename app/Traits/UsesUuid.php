@@ -8,7 +8,7 @@ trait UsesUuid {
     protected static function bootUsesUuid() {
         static::creating(function($model) {
             if(!$model->getKey()) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
+                $model->{$model->getKeyName()} = Str::random(6);//(string) Str::uuid();
             }
         });
     }

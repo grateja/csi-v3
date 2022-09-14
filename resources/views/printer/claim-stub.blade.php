@@ -49,6 +49,9 @@
                 <div>This is not an official receipt</div>
                 <div>This is not a sales invoice</div>
                 <div>*** CUSTOMER COPY ***</div>
+                @if($qr_code)
+                <img src="{{$qr_code}}" />
+                @endif
             </div>
         </div>
     </body>

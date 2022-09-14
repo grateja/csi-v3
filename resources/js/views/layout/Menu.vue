@@ -128,6 +128,18 @@
                 </span>
             </v-btn>
         </div>
+        <div v-if="dopuSetup == 'master' && isOwner" class="pl-4 ml-4">
+            <v-btn round class="menu-iddle" to="/lagoon-partners" active-class="menu-active" flat>
+                <!-- <v-responsive> -->
+                    <!-- <v-avatar size="20" class="transparent mx-2"> -->
+                        <!-- <img :src="`/img/dos-icons/${link.icon}.png`" alt="" width="20" class="mt-1 mx-2" /> -->
+                    <!-- </v-avatar> -->
+                <!-- </v-responsive> -->
+                <span class="mx-2">
+                    Lagoon Partners
+                </span>
+            </v-btn>
+        </div>
 
         </v-navigation-drawer>
         <shop-preferences-dialog v-model="openShopPreferences" />
@@ -282,12 +294,12 @@ export default {
                     roles: ['admin', 'staff'],
                     to: '/time-keeping'
                 },
-                {
-                    text: 'Lagoon Partners',
-                    icon: 'lagoon-partners',
-                    roles: ['admin'],
-                    to: '/lagoon-partners'
-                },
+                // {
+                //     text: 'Lagoon Partners',
+                //     icon: 'lagoon-partners',
+                //     roles: ['admin'],
+                //     to: '/lagoon-partners'
+                // },
                 {
                     text: 'External View',
                     icon: '',
@@ -305,9 +317,8 @@ export default {
             let user = this.user;
             if(user && this.links.length) {
                 let links = this.links.filter(link =>
-
                     // get only the links with specific roles
-                    link.roles.some(role => role == user.roles[0] || role == '*') &&
+                    link.roles.some(role => (role == user.roles[0] || role == '*')) &&
 
                     // remove unnecessary roles
                     !link.roles.some(role => role == `!${user.roles[0]}`)).map(link => {
@@ -318,7 +329,6 @@ export default {
                         }
                         return link;
                     });
-
                 return links;
             }
             return [];
@@ -339,6 +349,9 @@ export default {
         },
         loadingBranch() {
             return this.$store.getters['branch/isSelectingBranch'];
+        },
+        dopuSetup() {
+            return this.$store.getters.getDopuSetup;
         },
         isOwner() {
             let user = this.$store.getters.getCurrentUser;

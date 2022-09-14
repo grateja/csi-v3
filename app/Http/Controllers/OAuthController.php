@@ -69,7 +69,8 @@ class OAuthController extends Controller
                 'token' => $token,
                 'activeBranch' => $user->activeBranch,
                 'retainToken' => $request->rememberMe,
-                'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'els'),
+                'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
+                'dopuSetup' => env('DOPU_SETUP', 'basic') // basic, slave, master
             ]);
         }
         return response()->json([
@@ -90,7 +91,8 @@ class OAuthController extends Controller
             'user' => $user,
             'activeBranch' => $user->activeBranch,
             'token' => $token,
-            'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'els'),
+            'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
+            'dopuSetup' => env('DOPU_SETUP', 'basic') // basic, slave, master
         ], 200);
     }
 }

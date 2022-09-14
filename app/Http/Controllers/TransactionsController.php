@@ -249,12 +249,14 @@ class TransactionsController extends Controller
         ]);
     }
 
-    public function deleteTransaction($transactionId) {
-        return DB::transaction(function () use ($transactionId) {
-            $transaction = Transaction::findOrFail($transactionId);
+    public function deleteTransaction($transactionId, Request $request) {
+        return DB::transaction(function () use ($transactionId, $request) {
+            $transaction = Transaction::withTrashed()->findOrFail($transactionId);
 
-            if($transaction->delete()) {
-
+            if($request->permanent) {
+                $transaction->forceDelete();
+            } else {
+                $transaction->delete();
                 $name = auth('api')->user()->name;
 
                 TransactionRemarks::create([
@@ -264,10 +266,10 @@ class TransactionsController extends Controller
                 ]);
 
                 $this->dispatch((new SendTransaction($transactionId))->delay(5));
-                return response()->json([
-                    'transaction' => $transaction,
-                ]);
             }
+            return response()->json([
+                'transaction' => $transaction,
+            ]);
         });
     }
 }

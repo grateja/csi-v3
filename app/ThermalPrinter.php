@@ -211,13 +211,13 @@ class ThermalPrinter extends Model
         }
     }
 
-    public function claimStub($transaction, $options) {
+    public function claimStub($transaction, $config) {
         $this->printHeader();
         $this->printQuote("*** CLAIM STUB ***");
 
         $this->printSubHeader($transaction);
 
-        if($options->includeItems) {
+        if($config->includeItems) {
             $this->printServices($transaction->posServiceItems);
             $this->printProducts($transaction->posProductItems);
             $this->printScarpa($transaction->posScarpaCleaningItems);
@@ -242,23 +242,33 @@ class ThermalPrinter extends Model
         if($transaction->payment) {
             $this->printSubtitle("FULLY PAID");
             $this->printer->initialize();
+            if($transaction->payment->discount) {
+                $this->printItem("{$transaction->payment->discount_name} (-{$transaction->payment->discount}%)", $transaction->payment->discount_in_peso);
+            }
+            if($transaction->payment->points) {
+                $this->printItem("Points ({$transaction->payment->points}pts)", $transaction->payment->points_in_peso);
+            }
+            $this->printItem("Cash", $transaction->payment->cash);
+            $this->printItem("OR Number", $transaction->payment['or_number']);
+            $this->printItem("Change", $transaction->payment->change);
+            $this->printItem("Balance", 0);
             $this->printDetail("STAFF", $transaction->payment->user['name']);
         }
 
-        if($options->includeQRCode) {
-            $this->qr($transaction->simplified());
+        if($config->includeQRCode) {
+            $this->qr($transaction->simplified($config->options));
         }
 
         $this->cut();
     }
 
-    public function jobOrder($transaction, $options) {
+    public function jobOrder($transaction, $config) {
         $this->printHeader();
         $this->printQuote("*** JOB ORDER ***");
 
         $this->printSubHeader($transaction);
 
-        if($options->includeItems) {
+        if($config->includeItems) {
             $this->printServices($transaction->posServiceItems);
             $this->printProducts($transaction->posProductItems);
             $this->printScarpa($transaction->posScarpaCleaningItems);
@@ -303,8 +313,8 @@ class ThermalPrinter extends Model
         $this->printItem("Balance", 0);
         $this->printItem("Received by", $transaction->payment->user->name);
 
-        if($options->includeQRCode) {
-            $this->qr($transaction->simplified());
+        if($config->includeQRCode) {
+            $this->qr($transaction->simplified($config->options));
         }
 
         $this->cut();
