@@ -2,7 +2,7 @@
     <v-container>
         <h3 class="title white--text">Scan QR code</h3>
         <v-divider class="my-3"></v-divider>
-        <pre>{{QRData}}</pre>
+        <!-- <pre>{{QRData}}</pre> -->
         <v-card v-if="QRData != null && !!QRData.cust" class="rounded-card">
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Job Order:</v-flex>
@@ -519,7 +519,7 @@ export default {
                 console.log(res.data);
             }).finally(() => {
                 this.loading = false;
-                this.lookupBasicItems();
+                // this.lookupBasicItems();
             });
         },
         lookupBasicItems() {
