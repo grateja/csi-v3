@@ -2,6 +2,7 @@
     <v-container>
         <h3 class="title white--text">Scan QR code</h3>
         <v-divider class="my-3"></v-divider>
+        <!-- <pre>{{isIncludeServices}}</pre> -->
         <!-- <pre>{{QRData}}</pre> -->
         <v-card v-if="QRData != null && !!QRData.cust" class="rounded-card">
             <v-layout>
@@ -219,7 +220,7 @@
 
 
 
-            <v-card class="ma-1" v-if="QRData.svc && QRData.svc.washing" flat>
+            <v-card class="ma-1" v-if="QRData.services && QRData.services.washing" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>WASHING SERVICES</h4>
@@ -239,7 +240,7 @@
                         <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
                     </v-flex>
                 </v-layout>
-                <template v-for="(item, i) in QRData.svc.washing">
+                <template v-for="(item, i) in QRData.services.washing">
                     <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
                         <v-flex xs4>
                             <div>
@@ -261,7 +262,7 @@
                 </template>
             </v-card>
 
-            <v-card class="ma-1" v-if="QRData.svc && QRData.svc.drying" flat>
+            <v-card class="ma-1" v-if="QRData.services && QRData.services.drying" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>DRYING SERVICES</h4>
@@ -281,7 +282,7 @@
                         <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
                     </v-flex>
                 </v-layout>
-                <template v-for="(item, i) in QRData.svc.drying">
+                <template v-for="(item, i) in QRData.services.drying">
                     <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
                         <v-flex xs4>
                             <div>
@@ -302,7 +303,7 @@
                     <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
                 </template>
             </v-card>
-            <v-card class="ma-1" v-if="QRData.svc && QRData.svc.other" flat>
+            <v-card class="ma-1" v-if="QRData.services && QRData.services.other" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>OTHER SERVICES</h4>
@@ -322,7 +323,7 @@
                         <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
                     </v-flex>
                 </v-layout>
-                <template v-for="(item, i) in QRData.svc.other">
+                <template v-for="(item, i) in QRData.services.other">
                     <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
                         <v-flex xs4>
                             <div>
@@ -346,7 +347,7 @@
 
 
 
-            <v-card class="ma-1" v-if="QRData.prd && QRData.prd.length" flat>
+            <v-card class="ma-1" v-if="QRData.products && QRData.products.length" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
                     <h4>PRODUCTS</h4>
@@ -366,7 +367,7 @@
                         <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
                     </v-flex>
                 </v-layout>
-                <template v-for="(item, i) in QRData.prd">
+                <template v-for="(item, i) in QRData.products">
                     <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
                         <v-flex xs4>
                             <div>
@@ -465,7 +466,10 @@ export default {
         },
         decode(data) {
             try {
-                this.QRData = JSON.parse(data);
+                var _qrData = JSON.parse(data);
+                _qrData.services = [];
+                _qrData.products = [];
+                this.QRData = _qrData;
 
                 this.QRData.sv = this.QRData.sv.map(item => {
                     var _item = item.split('`')
@@ -519,7 +523,9 @@ export default {
                 console.log(res.data);
             }).finally(() => {
                 this.loading = false;
-                // this.lookupBasicItems();
+                if(this.isIncludeServices) {
+                    this.lookupBasicItems();
+                }
             });
         },
         lookupBasicItems() {
@@ -536,8 +542,8 @@ export default {
                 services: this.QRData.svc,
                 products: this.QRData.prd
             }).then((res, rej) => {
-                this.QRData.svc = res.data.services;
-                this.QRData.prd = res.data.products;
+                this.QRData.services = res.data.services;
+                this.QRData.products = res.data.products;
             }).finally(() => {
                 this.loading = false;
             });
@@ -615,15 +621,18 @@ export default {
         isSaving() {
             return this.$store.getters['qrtransaction/isSaving'];
         },
+        isIncludeServices() {
+            return this.$store.getters.getDopuIncludeServices;
+        },
         totalAmount() {
             if(this.QRData) {
                 var lag = this.QRData.lag ? this.QRData.lag.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
                 var lpk = this.QRData.lpk ? this.QRData.lpk.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
                 var sv = this.QRData.sv ? this.QRData.sv.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
-                var ws = this.QRData.svc.washing ? this.QRData.svc.washing.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
-                var ds = this.QRData.svc.drying ? this.QRData.svc.drying.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
-                var os = this.QRData.svc.other ? this.QRData.svc.other.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
-                var p = this.QRData.prd ? this.QRData.prd.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var ws = this.QRData.services && this.QRData.services.washing ? this.QRData.services.washing.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var ds = this.QRData.services && this.QRData.services.drying ? this.QRData.services.drying.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var os = this.QRData.services && this.QRData.services.other ? this.QRData.services.other.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var p = this.QRData.products ? this.QRData.products.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
                 return lag + lpk + sv + ws + ds + os + p
             }
             return 0;

@@ -211,37 +211,16 @@ class ThermalPrinter extends Model
         }
     }
 
-    public function claimStub($transaction, $config) {
+    public function claimStub($transaction, $itemized) {
         $this->printHeader();
         $this->printQuote("*** CLAIM STUB ***");
 
         $this->printSubHeader($transaction);
 
-        if($config->options['services']) {
+        if($itemized) {
             $this->printServices($transaction->posServiceItems);
-            // $this->printProducts($transaction->posProductItems);
-            // $this->printScarpa($transaction->posScarpaCleaningItems);
-            // $this->printLagoon($transaction->posLagoonItems);
-            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        }
-        if($config->options['products']) {
-            // $this->printServices($transaction->posServiceItems);
             $this->printProducts($transaction->posProductItems);
-            // $this->printScarpa($transaction->posScarpaCleaningItems);
-            // $this->printLagoon($transaction->posLagoonItems);
-            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        }
-        if($config->options['scarpa']) {
-            // $this->printServices($transaction->posServiceItems);
-            // $this->printProducts($transaction->posProductItems);
             $this->printScarpa($transaction->posScarpaCleaningItems);
-            // $this->printLagoon($transaction->posLagoonItems);
-            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        }
-        if($config->options['lagoon']) {
-            // $this->printServices($transaction->posServiceItems);
-            // $this->printProducts($transaction->posProductItems);
-            // $this->printScarpa($transaction->posScarpaCleaningItems);
             $this->printLagoon($transaction->posLagoonItems);
             $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
         }
@@ -283,37 +262,16 @@ class ThermalPrinter extends Model
         $this->cut();
     }
 
-    public function jobOrder($transaction, $config) {
+    public function jobOrder($transaction, $itemized) {
         $this->printHeader();
         $this->printQuote("*** JOB ORDER ***");
 
         $this->printSubHeader($transaction);
 
-        if($config->options['services']) {
+        if($itemized) {
             $this->printServices($transaction->posServiceItems);
-            // $this->printProducts($transaction->posProductItems);
-            // $this->printScarpa($transaction->posScarpaCleaningItems);
-            // $this->printLagoon($transaction->posLagoonItems);
-            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        }
-        if($config->options['products']) {
-            // $this->printServices($transaction->posServiceItems);
             $this->printProducts($transaction->posProductItems);
-            // $this->printScarpa($transaction->posScarpaCleaningItems);
-            // $this->printLagoon($transaction->posLagoonItems);
-            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        }
-        if($config->options['scarpa']) {
-            // $this->printServices($transaction->posServiceItems);
-            // $this->printProducts($transaction->posProductItems);
             $this->printScarpa($transaction->posScarpaCleaningItems);
-            // $this->printLagoon($transaction->posLagoonItems);
-            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        }
-        if($config->options['lagoon']) {
-            // $this->printServices($transaction->posServiceItems);
-            // $this->printProducts($transaction->posProductItems);
-            // $this->printScarpa($transaction->posScarpaCleaningItems);
             $this->printLagoon($transaction->posLagoonItems);
             $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
         }
@@ -370,10 +328,7 @@ class ThermalPrinter extends Model
         $this->printScarpa($transaction->posScarpaCleaningItems);
         $this->printLagoon($transaction->posLagoonItems);
         $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
-        $this->qr($transaction->simplified([
-            'scarpa',
-            'lagoon'
-        ]));
+        $this->qr($transaction->simplified());
         $this->cut();
     }
 

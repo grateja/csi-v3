@@ -139,7 +139,6 @@
             <div>This is not an official receipt</div>
             <div>This is not a sales invoice</div>
             <div>*** CUSTOMER COPY ***</div>
-            <img src="{{$qr_code}}" />
         </div>
 
     </div>

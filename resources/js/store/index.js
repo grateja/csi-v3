@@ -53,7 +53,8 @@ export default new  Vuex.Store({
         currentUser: null,
         flashMessage: null,
         machineActivationMethod: null,
-        dopuSetup: null
+        dopuSetup: null,
+        dopuIncludeServices: false,
     },
     getters: {
         getCurrentUser(state) {
@@ -73,6 +74,9 @@ export default new  Vuex.Store({
         },
         getDopuSetup(state) {
             return state.dopuSetup
+        },
+        getDopuIncludeServices(state) {
+            return state.dopuIncludeServices
         }
     },
     actions: {
@@ -91,6 +95,7 @@ export default new  Vuex.Store({
             state.currentUser = data.user;
             state.machineActivationMethod = data.machineActivationMethod;
             state.dopuSetup = data.dopuSetup;
+            state.dopuIncludeServices = data.dopuIncludeServices;
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${data.token.accessToken}`;
         },
         updateEmail(state, data) {

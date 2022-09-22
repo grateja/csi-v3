@@ -139,7 +139,7 @@ class PrinterController extends Controller
                 ], 422);
             }
         } else {
-            $thermalPrinter->claimStub($transaction, $request);
+            $thermalPrinter->claimStub($transaction, $request->itemized);
             return response()->json([
                 'success' => 'Claim stub printed successfully',
                 'method' => 'rpi'
@@ -158,17 +158,17 @@ class PrinterController extends Controller
         // $tmp = public_path("/img/tmp/{$transactionId}.png");
 
         // Create QR code
-        $writer = new PngWriter();
-        $qrCode = QrCode::create($transaction->simplified($request->options))
-            ->setEncoding(new Encoding('UTF-8'))
-            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
-            ->setSize(300)
-            ->setMargin(0)
-            ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
-            ->setForegroundColor(new Color(0, 0, 0))
-            ->setBackgroundColor(new Color(255, 255, 255));
+        // $writer = new PngWriter();
+        // $qrCode = QrCode::create($transaction->simplified($request->options))
+        //     ->setEncoding(new Encoding('UTF-8'))
+        //     ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+        //     ->setSize(300)
+        //     ->setMargin(0)
+        //     ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+        //     ->setForegroundColor(new Color(0, 0, 0))
+        //     ->setBackgroundColor(new Color(255, 255, 255));
 
-        $result = $writer->write($qrCode);
+        // $result = $writer->write($qrCode);
 
         $data = [
             'shop_name' => $client->shop_name,
@@ -180,7 +180,7 @@ class PrinterController extends Controller
             'customer_name' => $transaction->customer->name,
             'status' => $transaction->payment == null ? 'Not Paid' : 'Paid to: ' . $transaction->payment->user->name,
             'total_amount' => $transaction->total_price,
-            'qr_code' => $request->includeQRCode ? $result->getDataUri() : null,
+            // 'qr_code' => $request->includeQRCode ? $result->getDataUri() : null,
         ];
 
         // $result->saveToFile(public_path('/img/shop-pref-qr-code.png'));
@@ -213,23 +213,23 @@ class PrinterController extends Controller
                 ], 422);
             }
         } else {
-            $thermalPrinter->jobOrder($transaction, $request);
+            $thermalPrinter->jobOrder($transaction, $request->itemized);
             return response()->json([
                 'success' => 'Job Order Printed successfully',
                 'method' => 'rpi',
             ]);
         }
 
-        $writer = new PngWriter();
-        $qrCode = QrCode::create($transaction->simplified($request->options))
-            ->setEncoding(new Encoding('UTF-8'))
-            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
-            ->setSize(300)
-            ->setMargin(0)
-            ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
-            ->setForegroundColor(new Color(0, 0, 0))
-            ->setBackgroundColor(new Color(255, 255, 255));
-        $result = $writer->write($qrCode);
+        // $writer = new PngWriter();
+        // $qrCode = QrCode::create($transaction->simplified($request->options))
+        //     ->setEncoding(new Encoding('UTF-8'))
+        //     ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+        //     ->setSize(300)
+        //     ->setMargin(0)
+        //     ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+        //     ->setForegroundColor(new Color(0, 0, 0))
+        //     ->setBackgroundColor(new Color(255, 255, 255));
+        // $result = $writer->write($qrCode);
 
         $data = [
             'shop_name' => $client->shop_name,
@@ -255,7 +255,7 @@ class PrinterController extends Controller
             'discount_in_peso' => $transaction->payment->discount_in_peso,
             'rfid' => $transaction->payment->rfid,
             'card_load_used' => $transaction->payment->card_load_used,
-            'qr_code' => $request->includeQRCode ? $result->getDataUri() : null,
+            // 'qr_code' => $request->includeQRCode ? $result->getDataUri() : null,
         ];
 
         return view('printer.job-order', $data);
