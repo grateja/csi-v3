@@ -141,7 +141,7 @@
                 <v-divider></v-divider>
                 <v-card-actions>
                     <v-btn type="submit" class="primary" round :loading="saving && !printJobOrder">{{balance > 0 ? 'Partial payment' : 'Save'}}</v-btn>
-                    <!-- <v-btn v-if="balance <= 0" round :loading="saving && printJobOrder" @click="saveAndPrint">Save and print</v-btn> -->
+                    <v-btn v-if="balance <= 0" round :loading="saving && printJobOrder" @click="saveAndPrint">Save and print</v-btn>
                 </v-card-actions>
             </v-card>
         </form>
@@ -213,13 +213,11 @@ export default {
                 formData: this.formData,
                 method
             }).then((res, rej) => {
-                if(this.printJobOrder) {
-                    this.$store.dispatch('printer/printJobOrder', res.data.transaction.id);
-                }
+                // if(this.printJobOrder) {
+                //     this.$store.dispatch('printer/printJobOrder', res.data.transaction.id);
+                // }
                 this.close();
-                this.$store.commit('postransaction/clearTransaction');
-                this.$store.commit('postransaction/removeCustomer');
-                this.$emit('save', res.data.transaction);
+                this.$emit('save', this.printJobOrder);
             });
         },
         saveAndPrint() {

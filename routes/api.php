@@ -581,6 +581,9 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
     // /api/transactions/{transactionId}
     Route::get('{transactionId}', 'TransactionsController@show');
 
+    // /api/transactions/look-up-items
+    Route::post('look-up-items', 'TransactionsController@lookUpItems');
+
     // /api/transactions/{transactionId}/delete-transaction
     Route::post('{transactionId}/delete-transaction', 'TransactionsController@deleteTransaction');
 
@@ -595,6 +598,9 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
 
     // /api/transactions/{transactionId}/print-job-order
     Route::post('{transactionId}/print-job-order', 'PrinterController@jobOrder');
+
+    // /api/transactions/{transactionId}/print-dopu
+    Route::post('{transactionId}/print-dopu', 'PrinterController@dopu');
 
     // /api/transactions/{transactionId}/print-tap-card
     Route::post('{transactionId}/print-tap-card', 'PrinterController@tapCard');

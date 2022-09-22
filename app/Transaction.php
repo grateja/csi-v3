@@ -26,32 +26,36 @@ class Transaction extends Model
             'cn' => $this->customer->contact_number,
         ];
         $scarpa = collect($this->posScarpaCleaningItems())->transform(function($item) {
-            return [
-                'nam' => $item->name,
-                'qty' => $item->quantity,
-                'up' => $item->unit_price,
-            ];
+            return "$item->name`$item->quantity`$item->unit_price";
+            // return [
+            //     'nam' => $item->name,
+            //     'qty' => $item->quantity,
+            //     'up' => $item->unit_price,
+            // ];
         });
         $lagoon = collect($this->posLagoonItems())->transform(function($item) {
-            return [
-                'nam' => $item->name,
-                'qty' => $item->quantity,
-                'up' => $item->unit_price,
-            ];
+            return "$item->name`$item->quantity`$item->unit_price";
+            // return [
+            //     'nam' => $item->name,
+            //     'qty' => $item->quantity,
+            //     'up' => $item->unit_price,
+            // ];
         });
         $lagoonPerKilo = collect($this->posLagoonPerKiloItems())->transform(function($item) {
-            return [
-                'nam' => $item->name,
-                'qty' => $item->kilos,
-                'up' => $item->price_per_kilo,
-            ];
+            return "$item->name`$item->kilos`$item->price_per_kilo";
+            // return [
+            //     'nam' => $item->name,
+            //     'qty' => $item->kilos,
+            //     'up' => $item->price_per_kilo,
+            // ];
         });
 
         $products = collect($this->posProductItems())->transform(function($item) {
-            return [
-                'pid' => $item->product_id,
-                'qty' => $item->quantity,
-            ];
+            return "$item->product_id`$item->quantity";
+            // return [
+            //     'pid' => $item->product_id,
+            //     'qty' => $item->quantity,
+            // ];
         });
 
         if($options['services']) {
@@ -60,11 +64,12 @@ class Transaction extends Model
                 ->selectRaw('coalesce(washing_service_id, drying_service_id, other_service_id) as service_id, COUNT(name) as quantity, category')->get();
 
             $services = collect($services)->transform(function($item) {
-                return [
-                    'sid' => $item->service_id,
-                    'qty' => $item->quantity,
-                    'cat' => $item->category,
-                ];
+                return "$item->service_id`$item->quantity`$item->category";
+                // return [
+                //     'sid' => $item->service_id,
+                //     'qty' => $item->quantity,
+                //     'cat' => $item->category,
+                // ];
             });
         }
 

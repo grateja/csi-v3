@@ -520,8 +520,8 @@
                 <v-spacer></v-spacer>
             </v-card-actions>
         <service-item-dialog v-if="currentTransaction" v-model="openServiceItemDialog" :serviceName="activeServiceItemName" :transactionId="currentTransaction.id"></service-item-dialog>
-        <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" @save="paid = true" />
-        <printer-dialog v-model="openPrinterDialog" :transaction="currentTransaction" />
+        <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" @save="save" />
+        <printer-dialog v-model="openPrinterDialog" :transaction="currentTransaction" @close="clear" />
     </v-card>
 </template>
 <script>
@@ -627,6 +627,18 @@ export default {
             this.$store.dispatch('printer/printClaimStub', {
                 transactionId: this.currentTransaction.id
             });
+        },
+        save(print) {
+            this.paid = true
+            if(print) {
+                this.openPrinterDialog = print;
+            } else {
+                this.clear();
+            }
+        },
+        clear() {
+            this.$store.commit('postransaction/clearTransaction');
+            this.$store.commit('postransaction/removeCustomer');
         }
     },
     beforeDestroy() {

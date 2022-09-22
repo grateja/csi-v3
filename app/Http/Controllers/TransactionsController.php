@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\DryingService;
 use App\Jobs\SendTransaction;
+use App\OtherService;
+use App\Product;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\Transaction;
 use App\TransactionRemarks;
+use App\WashingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -271,5 +275,52 @@ class TransactionsController extends Controller
                 'transaction' => $transaction,
             ]);
         });
+    }
+
+    public function lookUpItems(Request $request) {
+        $services = collect($request->services)->transform(function($item) {
+            $_item =  explode('`', $item);
+            return [
+                'id' => $_item[0],
+                'quantity' => $_item[1],
+                'category' => $_item[2],
+            ];
+        });
+        $products = collect($request->products)->transform(function($item) {
+            $_item =  explode('`', $item);
+            return [
+                'id' => $_item[0],
+                'quantity' => $_item[1],
+            ];
+        });
+
+        $sIds = $services->map(function($item){ return $item['id']; });
+        $pIds = $products->map(function($item){ return $item['id']; });
+
+        $washing = WashingService::whereIn('id', $sIds)->get();
+        $drying = DryingService::whereIn('id', $sIds)->get();
+        $other = OtherService::whereIn('id', $sIds)->get();
+        $pLookup = Product::whereIn('id', $pIds)->get();
+
+        $sLookup = $washing->merge($drying)->merge($other);
+
+        $_services = $services->transform(function($item) use ($sLookup) {
+            $svc = $sLookup->where('id', $item['id'])->first();
+            $item['name'] = $svc->name;
+            $item['unit_price'] = $svc->price;
+            return $item;
+        });
+
+        $_products = $products->transform(function($item) use ($pLookup) {
+            $svc = $pLookup->where('id', $item['id'])->first();
+            $item['name'] = $svc->name;
+            $item['unit_price'] = $svc->selling_price;
+            return $item;
+        });
+
+        return response()->json([
+            'services' =>  $_services->groupBy('category'),
+            'products' => $_products,
+        ]);
     }
 }

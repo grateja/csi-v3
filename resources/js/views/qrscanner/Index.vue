@@ -2,7 +2,7 @@
     <v-container>
         <h3 class="title white--text">Scan QR code</h3>
         <v-divider class="my-3"></v-divider>
-        <!-- <pre>{{QRData}}</pre> -->
+        <pre>{{QRData}}</pre>
         <v-card v-if="QRData != null && !!QRData.cust" class="rounded-card">
             <v-layout>
                 <v-flex xs5 class="text-xs-right mr-3">Job Order:</v-flex>
@@ -218,6 +218,177 @@
             </v-card>
 
 
+
+            <v-card class="ma-1" v-if="QRData.svc && QRData.svc.washing" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>WASHING SERVICES</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">Quantity</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <template v-for="(item, i) in QRData.svc.washing">
+                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price * item.quantity).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                </template>
+            </v-card>
+
+            <v-card class="ma-1" v-if="QRData.svc && QRData.svc.drying" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>DRYING SERVICES</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">Quantity</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <template v-for="(item, i) in QRData.svc.drying">
+                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price * item.quantity).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                </template>
+            </v-card>
+            <v-card class="ma-1" v-if="QRData.svc && QRData.svc.other" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>OTHER SERVICES</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">Quantity</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <template v-for="(item, i) in QRData.svc.other">
+                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price * item.quantity).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                </template>
+            </v-card>
+
+
+
+            <v-card class="ma-1" v-if="QRData.prd && QRData.prd.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>PRODUCTS</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">Quantity</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <template v-for="(item, i) in QRData.prd">
+                    <v-layout :key="i + 'scarpa-cleaning'" class="px-1">
+                        <v-flex xs4>
+                            <div>
+                                {{item.name}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                        <v-flex xs2>
+                            <div class="text-xs-center">{{item.quantity}}
+                            </div>
+                        </v-flex>
+                        <v-flex xs3>
+                            <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price * item.quantity).toFixed(2) : 'FREE'}}</div>
+                        </v-flex>
+                    </v-layout>
+                    <v-divider :key="i + '-div-scarpa-cleaning'"></v-divider>
+                </template>
+            </v-card>
+
+
             <v-card-actions class="title font-weight-bold">
                 Total amount
                 <v-spacer />
@@ -295,7 +466,34 @@ export default {
         decode(data) {
             try {
                 this.QRData = JSON.parse(data);
-                console.log(this.QRData)
+
+                this.QRData.sv = this.QRData.sv.map(item => {
+                    var _item = item.split('`')
+                    return {
+                        nam: _item[0],
+                        qty: _item[1],
+                        up: _item[2]
+                    }
+                })
+
+                this.QRData.lag = this.QRData.lag.map(item => {
+                    var _item = item.split('`')
+                    return {
+                        nam: _item[0],
+                        qty: _item[1],
+                        up: _item[2]
+                    }
+                })
+
+                this.QRData.lpk = this.QRData.lpk.map(item => {
+                    var _item = item.split('`')
+                    return {
+                        nam: _item[0],
+                        qty: _item[1],
+                        up: _item[2]
+                    }
+                })
+
                 this.check()
             } catch(e) {
                 this.QRData = null;
@@ -312,13 +510,34 @@ export default {
                 return;
             }
             this.loading = true;
-            axios.get(`/api/transactions/${encodeURIComponent(this.QRData.jo)}`, {
+            axios.get(`/api/transactions/${encodeURIComponent(this.QRData.jo)}`/*, {
                 query: {
                     date: this.QRData.dt
                 }
-            }).then((res, rej) => {
+            }*/).then((res, rej) => {
                 this.joConflict = res.data.transaction;
                 console.log(res.data);
+            }).finally(() => {
+                this.loading = false;
+                this.lookupBasicItems();
+            });
+        },
+        lookupBasicItems() {
+            if(!this.QRData.jo) {
+                this.$store.commit('setFlash', {
+                    message: 'Invalid Job Order Number',
+                    color: 'error'
+                })
+                this.QRData = null;
+                return;
+            }
+            this.loading = true;
+            axios.post(`/api/transactions/look-up-items`, {
+                services: this.QRData.svc,
+                products: this.QRData.prd
+            }).then((res, rej) => {
+                this.QRData.svc = res.data.services;
+                this.QRData.prd = res.data.products;
             }).finally(() => {
                 this.loading = false;
             });
@@ -401,7 +620,11 @@ export default {
                 var lag = this.QRData.lag ? this.QRData.lag.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
                 var lpk = this.QRData.lpk ? this.QRData.lpk.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
                 var sv = this.QRData.sv ? this.QRData.sv.reduce((a, o) => { return a + (o.qty * o.up ); }, 0) : 0;
-                return lag + lpk + sv
+                var ws = this.QRData.svc.washing ? this.QRData.svc.washing.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var ds = this.QRData.svc.drying ? this.QRData.svc.drying.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var os = this.QRData.svc.other ? this.QRData.svc.other.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                var p = this.QRData.prd ? this.QRData.prd.reduce((a, o) => { return a + (o.quantity * o.unit_price ); }, 0) : 0;
+                return lag + lpk + sv + ws + ds + os + p
             }
             return 0;
         }

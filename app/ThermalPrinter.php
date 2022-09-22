@@ -217,10 +217,31 @@ class ThermalPrinter extends Model
 
         $this->printSubHeader($transaction);
 
-        if($config->includeItems) {
+        if($config->options['services']) {
             $this->printServices($transaction->posServiceItems);
+            // $this->printProducts($transaction->posProductItems);
+            // $this->printScarpa($transaction->posScarpaCleaningItems);
+            // $this->printLagoon($transaction->posLagoonItems);
+            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
+        if($config->options['products']) {
+            // $this->printServices($transaction->posServiceItems);
             $this->printProducts($transaction->posProductItems);
+            // $this->printScarpa($transaction->posScarpaCleaningItems);
+            // $this->printLagoon($transaction->posLagoonItems);
+            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
+        if($config->options['scarpa']) {
+            // $this->printServices($transaction->posServiceItems);
+            // $this->printProducts($transaction->posProductItems);
             $this->printScarpa($transaction->posScarpaCleaningItems);
+            // $this->printLagoon($transaction->posLagoonItems);
+            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
+        if($config->options['lagoon']) {
+            // $this->printServices($transaction->posServiceItems);
+            // $this->printProducts($transaction->posProductItems);
+            // $this->printScarpa($transaction->posScarpaCleaningItems);
             $this->printLagoon($transaction->posLagoonItems);
             $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
         }
@@ -255,9 +276,9 @@ class ThermalPrinter extends Model
             $this->printDetail("STAFF", $transaction->payment->user['name']);
         }
 
-        if($config->includeQRCode) {
-            $this->qr($transaction->simplified($config->options));
-        }
+        // if($config->includeQRCode) {
+        //     $this->qr($transaction->simplified($config->options));
+        // }
 
         $this->cut();
     }
@@ -268,10 +289,31 @@ class ThermalPrinter extends Model
 
         $this->printSubHeader($transaction);
 
-        if($config->includeItems) {
+        if($config->options['services']) {
             $this->printServices($transaction->posServiceItems);
+            // $this->printProducts($transaction->posProductItems);
+            // $this->printScarpa($transaction->posScarpaCleaningItems);
+            // $this->printLagoon($transaction->posLagoonItems);
+            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
+        if($config->options['products']) {
+            // $this->printServices($transaction->posServiceItems);
             $this->printProducts($transaction->posProductItems);
+            // $this->printScarpa($transaction->posScarpaCleaningItems);
+            // $this->printLagoon($transaction->posLagoonItems);
+            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
+        if($config->options['scarpa']) {
+            // $this->printServices($transaction->posServiceItems);
+            // $this->printProducts($transaction->posProductItems);
             $this->printScarpa($transaction->posScarpaCleaningItems);
+            // $this->printLagoon($transaction->posLagoonItems);
+            // $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        }
+        if($config->options['lagoon']) {
+            // $this->printServices($transaction->posServiceItems);
+            // $this->printProducts($transaction->posProductItems);
+            // $this->printScarpa($transaction->posScarpaCleaningItems);
             $this->printLagoon($transaction->posLagoonItems);
             $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
         }
@@ -313,10 +355,25 @@ class ThermalPrinter extends Model
         $this->printItem("Balance", 0);
         $this->printItem("Received by", $transaction->payment->user->name);
 
-        if($config->includeQRCode) {
-            $this->qr($transaction->simplified($config->options));
-        }
+        // if($config->includeQRCode) {
+        //     $this->qr($transaction->simplified($config->options));
+        // }
 
+        $this->cut();
+    }
+
+    public function dopu($transaction) {
+        $this->printHeader();
+        $this->printQuote("*** Drop-off | Pick-up ***");
+
+        $this->printSubHeader($transaction);
+        $this->printScarpa($transaction->posScarpaCleaningItems);
+        $this->printLagoon($transaction->posLagoonItems);
+        $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+        $this->qr($transaction->simplified([
+            'scarpa',
+            'lagoon'
+        ]));
         $this->cut();
     }
 

@@ -14,6 +14,13 @@
             <v-progress-linear v-if="isCheckingUser" indeterminate></v-progress-linear>
             <router-view v-else />
         </v-content>
+        <v-dialog persistent :value="!onLine" width="520">
+            <v-card>
+                <v-card-title>
+                    <span class="title">You are offline!</span>
+                </v-card-title>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -29,9 +36,25 @@ export default {
         //Toolbar,
         //FlashMessage
     },
+    data() {
+        return {
+            onLine: navigator.onLine
+        }
+    },
     computed: {
         isCheckingUser() {
             return this.$store.getters['auth/isLoading'];
+        }
+    },
+    mounted() {
+        console.log('ekeme')
+        try {
+            window.addEventListener('offline', (e) => { this.onLine = false; });
+    
+            window.addEventListener('online', (e) => { this.onLine = true; });
+
+        } catch(e) {
+            console.log(e)
         }
     }
 }

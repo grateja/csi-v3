@@ -261,6 +261,69 @@ class PrinterController extends Controller
         return view('printer.job-order', $data);
     }
 
+    public function dopu(Request $request, $transactionId) {
+        $transaction = Transaction::with('partialPayment.user', 'payment.user', 'customer', 'serviceTransactionItems', 'productTransactionItems')->findOrFail($transactionId);
+        $transaction->refreshAll();
+        // $transaction->withPayment();
+        $thermalPrinter = new ThermalPrinter;
+        if($printerError = $thermalPrinter->hasError()) {
+            if(env('PRINTER_METHOD', 'rpi') == 'rpi') {
+                return response()->json([
+                    'errors' => $printerError,
+                    'method' => 'rpi',
+                ], 422);
+            }
+        } else {
+            $thermalPrinter->dopu($transaction, $request);
+            return response()->json([
+                'success' => 'DOPU stub printed successfully',
+                'method' => 'rpi'
+            ]);
+        }
+        $client = Client::firstOrFail();
+
+        if(!$transaction->saved) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Cannot print job order. Job Order was modified']
+                ]
+            ], 422);
+        }
+
+        // $tmp = public_path("/img/tmp/{$transactionId}.png");
+
+        // Create QR code
+        $writer = new PngWriter();
+        $qrCode = QrCode::create($transaction->simplified($request->options))
+            ->setEncoding(new Encoding('UTF-8'))
+            ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+            ->setSize(300)
+            ->setMargin(0)
+            ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->setForegroundColor(new Color(0, 0, 0))
+            ->setBackgroundColor(new Color(255, 255, 255));
+
+        $result = $writer->write($qrCode);
+
+        $data = [
+            'shop_name' => $client->shop_name,
+            'shop_address' => $client->address,
+            'shop_email' => $client->shop_email,
+            'shop_number' => $client->shop_number,
+            'job_order' => $transaction->job_order,
+            'date' => Carbon::createFromDate($transaction->date)->format('M-d, Y h:i A'),
+            'customer_name' => $transaction->customer->name,
+            'status' => $transaction->payment == null ? 'Not Paid' : 'Paid to: ' . $transaction->payment->user->name,
+            'total_amount' => $transaction->total_price,
+            'qr_code' => $result->getDataUri(),
+        ];
+
+        // $result->saveToFile(public_path('/img/shop-pref-qr-code.png'));
+
+
+        return view('printer.dopu', $data);
+    }
+
     public function loadTransaction($transactionId) {
         $client = Client::firstOrFail();
         $rfidLoadTransaction = RfidLoadTransaction::findOrFail($transactionId);
