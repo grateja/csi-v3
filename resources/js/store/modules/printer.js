@@ -183,8 +183,11 @@ const actions = {
             return Promise.reject(err);
         });
     },
-    printDailySale(context, date) {
-        return axios.get(`/api/reports/print/daily-sale/${date}/true`).then((res, rej) => {
+    printDailySale(context, data) {
+        return axios.post(`/api/sales-report/summary/1`, {
+            date: data.date,
+            until: data.until
+        }).then((res, rej) => {
             //let params = 'fullscreen=yes,height=' + screen.height + ',width=' + screen.width;
             //console.log(params)
             //let w = window.open('about:blank', 'print', params);

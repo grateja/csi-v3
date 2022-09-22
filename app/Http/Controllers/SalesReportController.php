@@ -124,27 +124,34 @@ class SalesReportController extends Controller
         ]);
     }
 
-    public function summary($date, $print = false) {
-        $newCustomers = Customer::whereDate('created_at', $date)->count();
+    public function summary(Request $request, $print = false) {
+        $newCustomers = Customer::whereDate('created_at', '>=', $request->date)
+            ->whereDate('created_at', '<=', $request->until)
+            ->count();
 
         $posTransactions = Transaction::where('saved', true)
-            ->whereDate('date', $date)
+            ->whereDate('date', '>=', $request->date)
+            ->whereDate('date', '<=', $request->until)
             ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
             ->first();
 
-        $partialPayments = PartialPayment::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date)
+        $partialPayments = PartialPayment::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until)
                 ->whereNull('date_paid');
         })->selectRaw('COUNT(id) as total_jo, SUM(cash) as total_sales, SUM(balance) as total_balance')
             ->first();
 
-        $fullyPaid = TransactionPayment::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date);
+        $fullyPaid = TransactionPayment::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date','>=', $request->date)
+                ->whereDate('date', '<=', $request->until);
         })->selectRaw('COUNT(id) as total_jo, SUM(total_amount) as total_sales, SUM(balance) as total_balance')
             ->first();
 
-        $unpaid = Transaction::whereDate('date', $date)
-            ->whereDoesntHave('partialPayment')
+        $unpaid = Transaction::where(function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until);
+        })->whereDoesntHave('partialPayment')
             ->whereNull('date_paid')
             ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
             ->first();
@@ -157,26 +164,33 @@ class SalesReportController extends Controller
         ];
 
 
-        $rfidCardTransactionSummary = RfidCardTransaction::whereDate('created_at', $date)
+        $rfidCardTransactionSummary = RfidCardTransaction::whereDate('created_at','>=', $request->date)
+            ->whereDate('created_at', '<=', $request->until)
             ->selectRaw('SUM(IF(card_type = "u", price, 0)) as users_card, SUM(IF(card_type = "c", price, 0)) as customers_card, SUM(price) as total_price, COUNT(id) AS cycle_count')
             ->first();
 
-        $rfidLoadTransactionSummary = RfidLoadTransaction::whereDate('created_at', $date)
+        $rfidLoadTransactionSummary = RfidLoadTransaction::whereDate('created_at', '>=', $request->date)
+            ->whereDate('created_at', '<=', $request->until)
             ->selectRaw('SUM(amount) as total_price, COUNT(id) as total_count')
             ->first();
 
-        $collPartialPayments = PartialPayment::whereDate('date', $date)
-            ->whereHas('transaction', function($query) {
+        $collPartialPayments = PartialPayment::where(function($query) use ($request) {
+            $query->whereDate('date','>=', $request->date)
+                ->whereDate('date', '<=', $request->until);
+        })->whereHas('transaction', function($query) {
                 $query->whereDoesntHave('payment');
             })
             ->sum('cash');
 
-        $colFullPartialPayment = PartialPayment::whereDate('date', $date)
-            ->whereHas('transaction', function($query) {
+        $colFullPartialPayment = PartialPayment::where(function($query) use ($request) {
+            $query->whereDate('date','>=', $request->date)
+                ->whereDate('date', '<=', $request->until);
+        })->whereHas('transaction', function($query) {
                 $query->whereHas('payment');
             })->sum('cash');
 
-        $collFullyPaid = TransactionPayment::whereDate('date', $date)
+        $collFullyPaid = TransactionPayment::whereDate('date', '>=', $request->date)
+            ->whereDate('date', '<=', $request->until)
             ->select(DB::raw('SUM(`cash` - `change`) as collection'))->first();
 
         $totalSales = $posTransactions->total_sales + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card;
@@ -194,22 +208,30 @@ class SalesReportController extends Controller
             'total' => $collPartialPayments + $collFullyPaid->collection + $rfidLoadTransactionSummary->total_price + $rfidCardTransactionSummary->users_card + $colFullPartialPayment,
         ];
 
-        $cashless = TransactionPayment::whereDate('date', $date)
-            ->where("cash_less_amount", ">", 0)
+        $cashless = TransactionPayment::where(function($query) use ($request) {
+            $query->whereDate('date', '>=',  $request->date)
+                ->whereDate('date', '<=', $request->until);
+        })->where("cash_less_amount", ">", 0)
             ->select(DB::raw("SUM(cash_less_amount) as amount, COUNT(*) as quantity, cash_less_provider"))
             ->groupBy('cash_less_provider')
             ->get();
 
-        $discounts = TransactionPayment::whereDate('date', $date)
-            ->where('discount', '>', 0)
+        $discounts = TransactionPayment::where(function($query) use ($request) {
+            $query->whereDate('date', '>=',  $request->date)
+                ->whereDate('date', '<=', $request->until);
+        })->where('discount', '>', 0)
             ->select(DB::raw("SUM(total_amount) as total_amount, discount, COUNT(*) as quantity, CONCAT(discount_name, ' (-', discount ,'%)') as discount_name"))
             ->groupBy('discount_name', 'discount')
             ->get();
 
-        $productPurchases = ProductPurchase::where('unit_cost', '>', '0')->whereDate('date', $date)
-            ->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
+        $productPurchases = ProductPurchase::where('unit_cost', '>', '0')
+            ->where(function($query) use ($request) {
+                $query->whereDate('date', '>=',  $request->date)
+                    ->whereDate('date', '<=', $request->until);
+            })->selectRaw('SUM(quantity * unit_cost) as total_cost, COUNT(id) as total_count')
             ->first();
-        $otherExpenses = Expense::whereDate('date', $date)
+        $otherExpenses = Expense::whereDate('date', '>=', $request->date)
+            ->whereDate('date', '<=', $request->until)
             ->selectRaw('SUM(amount) as total_expense, COUNT(id) as total_count')
             ->first();
 
@@ -219,28 +241,33 @@ class SalesReportController extends Controller
             'total' => $otherExpenses->total_expense + $productPurchases->total_cost,
         ];
 
-        $usedProducts = ProductTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date)
+        $usedProducts = ProductTransactionItem::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=',  $request->date)
+                ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('count(*) as quantity, name, sum(price) as total_price')->get();
 
-        $usedServices = ServiceTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date)
+        $usedServices = ServiceTransactionItem::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
-        $usedScarpa = ScarpaCleaningTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date)
+        $usedScarpa = ScarpaCleaningTransactionItem::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
-        $usedLagoon = LagoonTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date)
+        $usedLagoon = LagoonTransactionItem::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
-        $usedLagoonPerKilo = LagoonPerKiloTransactionItem::whereHas('transaction', function($query) use ($date) {
-            $query->whereDate('date', $date)
+        $usedLagoonPerKilo = LagoonPerKiloTransactionItem::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('SUM(kilos) as kg, name, SUM(total_price) as total_price')->get();
 
@@ -263,7 +290,7 @@ class SalesReportController extends Controller
         ];
 
         if($print) {
-            $data['date'] = Carbon::createFromDate($date)->format("D m/d/Y");
+            $data['date'] = Carbon::createFromDate($request->date)->format("D m/d/Y");
             $data['quote'] = '** Daily Sales **';
             // return view('printer.daily', $data);
             $thermalPrinter = new ThermalPrinter;

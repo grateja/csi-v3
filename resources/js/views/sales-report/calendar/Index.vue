@@ -233,20 +233,20 @@
                 </ul>
             </div>
         </div> -->
-        <daily-summary v-model="openDailySummary" :date="date" />
-        <custom-range-dialog v-model="openMonthSummary" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog>
+        <daily-summary v-model="openDailySummary" :date="date" :until="until" />
+        <!-- <custom-range-dialog v-model="openMonthSummary" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog> -->
     </div>
 </template>
 <script>
 import DailySummary from './DailySummary.vue';
 import Navigator from '../Navigator.vue';
-import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
+// import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
 
 export default {
     components: {
         Navigator,
         DailySummary,
-        CustomRangeDialog
+        // CustomRangeDialog
     },
     data() {
         return {
@@ -257,8 +257,9 @@ export default {
             loading: false,
             action: 'default',
             date: null,
-            dateFrom: null,
-            dateTo: null,
+            until: null,
+            // dateFrom: null,
+            // dateTo: null,
             origin: null
         }
     },
@@ -274,7 +275,9 @@ export default {
             this.origin = 'Sales for : ' + moment().set('month', this.monthIndex - 1).format('MMMM') + ', ' + this.year;
         },
         preview(day) {
-            this.date = moment(`${this.year}-${this.monthIndex}-${day}`).format('YYYY-MM-DD');
+            var _date = moment(`${this.year}-${this.monthIndex}-${day}`).format('YYYY-MM-DD');
+            this.date = _date;
+            this.until = _date;
             this.openDailySummary = true;
         },
         next() {
@@ -289,9 +292,9 @@ export default {
             this.$router.push('/sales-report/monthly-view');
         },
         viewMonthSummary() {
-            this.dateFrom = moment().set('month', this.monthIndex - 1).startOf('month').format('YYYY-MM-DD');
-            this.dateTo = moment().set('month', this.monthIndex - 1).endOf('month').format('YYYY-MM-DD');
-            this.openMonthSummary = true;
+            this.date = moment().set('month', this.monthIndex - 1).startOf('month').format('YYYY-MM-DD');
+            this.until = moment().set('month', this.monthIndex - 1).endOf('month').format('YYYY-MM-DD');
+            this.openDailySummary = true;
         }
     },
     computed: {

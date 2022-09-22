@@ -585,7 +585,7 @@ export default {
         Customers
     },
     props: [
-        'value', 'date'
+        'value', 'date', 'until'
     ],
     data() {
         return {
@@ -620,7 +620,10 @@ export default {
         },
         load() {
             this.loading = true;
-            axios.get(`/api/sales-report/${this.date}/summary`).then((res, reh) => {
+            axios.post(`/api/sales-report/summary`, {
+                date: this.date,
+                until: this.until
+            }).then((res, reh) => {
                 this.posSummary = res.data.posSummary;
                 this.rfidCard = res.data.rfidCard;
                 this.rfidLoad = res.data.rfidLoad;
@@ -686,7 +689,10 @@ export default {
             });
         },
         printAll() {
-            this.$store.dispatch('printer/printDailySale', this.date).then((res, rej) => {
+            this.$store.dispatch('printer/printDailySale', {
+                date: this.date,
+                until: this.until
+            }).then((res, rej) => {
                 console.log(res.data);
             })
         }

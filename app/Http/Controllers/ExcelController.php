@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Expense;
 use App\Exports\ReportTemplate;
+use App\Lagoon;
+use App\LagoonPerKilo;
 use App\PartialPayment;
 use App\ProductPurchase;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\TransactionPayment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -174,5 +177,25 @@ class ExcelController extends Controller
         return response()->json([
             'result' => array_values($result->toArray()),
         ]);
+    }
+
+    public function exportServices() {
+        $lagoonPerKilo = LagoonPerKilo::orderBy('name')
+            ->selectRaw('id, "lagoon /kg" as category, name, price_per_kilo')->get();
+
+        $lagoon = Lagoon::orderBy(DB::raw('category, name'))
+            ->selectRaw('id, category, name, price')->get();
+
+
+        $scarpa = DB::table('scarpa_categories')
+            ->join('scarpa_variations', 'scarpa_category_id', '=', 'scarpa_categories.id')
+            ->selectRaw('scarpa_variations.id as id, name as category, action as name, selling_price as price')
+            ->get();
+
+        $services = $scarpa->merge($lagoon)->merge($lagoonPerKilo);
+        
+        return Excel::download(new ReportTemplate($services, [
+            'ID', 'CATEGORY', 'NAME', 'PRICE'
+        ]), 'keme.csv');
     }
 }

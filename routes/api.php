@@ -142,8 +142,8 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
 
 // /api/sales-report
 Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function() {
-    // /api/sales-report/{date}/summary
-    Route::get('{date}/summary', 'SalesReportController@summary');
+    // /api/sales-report/summary/{print}
+    Route::post('summary/{print?}', 'SalesReportController@summary');
 
     // /api/sales-report/{monthIndex}/{year}/all
     Route::get('{monthIndex}/{year}/all', 'SalesReportController@index');
@@ -173,6 +173,17 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
     });
 });
 Route::get('cumulative/{year}', 'SalesReportController@yearlyCumulative');
+
+
+// /api/excel
+Route::group(['prefix' => 'excel', 'middleware' => 'auth:api'], function() {
+    // /api/excel/sales-custom-range/1
+    Route::post('sales-custom-range/1', 'ExcelController@customRange');
+
+    // /api/excel/export-services
+    Route::post('export-services', 'ExcelController@exportServices');
+});
+
 
 // /api/sales-report/{monthIndex}/{year}/weekly
 // Route::get('/sales-report/{monthIndex}/{year}/weekly', 'SalesReportController@weekly');

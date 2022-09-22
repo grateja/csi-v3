@@ -39,7 +39,7 @@
                 <v-btn @click="close" round>close</v-btn>
                 <v-btn @click="printAll" round :loading="printing">print</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn @click="exportExcel" round :loading="exporting">excel</v-btn>
+                <!-- <v-btn @click="exportExcel" round :loading="exporting">excel</v-btn> -->
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -140,7 +140,7 @@ export default {
         },
         exportExcel() {
             this.$store.dispatch(`exportdownload/download`, {
-                uri: 'custom-range',
+                uri: 'sales-custom-range',
                 params: {
                     dateFrom: this.dateFrom,
                     dateTo: this.dateTo,

@@ -21,15 +21,15 @@ const actions = {
     download(context, data) {
         context.commit('setLoadingStatus', true);
         context.commit('clearErrors');
-        return axios.get(`/api/sales-report/excel/${data.uri}/1`, {
+        return axios.post(`/api/excel/${data.uri}`, {
             params: data.params,
             responseType: 'blob'
         }).then((res, rej) => {
-            console.log(res.data);
+            console.log(res);
             const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = downloadUrl;
-            link.setAttribute('download', data.params.origin + '.xls'); //any other extension
+            link.setAttribute('download', moment().format('d-MM-Y') + '.csv'); //any other extension
             document.body.appendChild(link);
             link.click();
             link.remove();
