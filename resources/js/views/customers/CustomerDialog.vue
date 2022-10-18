@@ -38,6 +38,7 @@ export default {
             mode: 'insert',
             loadingCRN: false,
             formData: {
+                id: null,
                 crn: null,
                 remarks: null,
                 name: null,
@@ -90,6 +91,7 @@ export default {
         value(val) {
             if(val && this.customer) {
                 this.mode = 'update';
+                this.formData.id = this.customer.id;
                 this.formData.crn = this.customer.crn;
                 this.formData.remarks = this.customer.remarks;
                 this.formData.name = this.customer.name;
@@ -102,6 +104,7 @@ export default {
                 }, 500);
             } else {
                 this.mode = 'insert';
+                this.formData.id = null;
                 this.formData.name = this.initialName;
                 this.formData.remarks = null;
                 this.formData.crn = null;

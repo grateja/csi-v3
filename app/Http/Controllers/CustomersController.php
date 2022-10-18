@@ -8,6 +8,7 @@ use App\Customer;
 use App\LoyaltyPoint;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client as GuzzleHttpClient;
+use Illuminate\Support\Str;
 
 class CustomersController extends Controller
 {
@@ -94,6 +95,7 @@ class CustomersController extends Controller
         if($request->validate($rules)) {
             return DB::transaction(function () use ($request) {
                 $customer = Customer::create([
+                    'id' => $request->id ? $request->id : Str::random(6),
                     'name' => $request->name,
                     'crn' => $request->crn,
                     'remarks' => $request->remarks,
