@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use Illuminate\Http\Request;
 use App\Customer;
 use App\LoyaltyPoint;
 use Illuminate\Support\Facades\DB;
+use GuzzleHttp\Client as GuzzleHttpClient;
 
 class CustomersController extends Controller
 {
@@ -166,5 +168,20 @@ class CustomersController extends Controller
         } else {
             return '00001';
         }
+    }
+
+    public function preRegistered(Request $request) {
+        $clientRequest = new GuzzleHttpClient();
+        $shopId = Client::first()->user_id;
+        $url = env('CLOUD_URL', '139.162.73.87');
+
+        $response = $clientRequest->get('http://'.$url.'/api/auto-complete/pre-registered/' . $shopId . '?keyword=' . $request->keyword, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json'
+            ],
+            'http_errors' => false
+        ]);
+        return $response->getBody()->getContents();
     }
 }

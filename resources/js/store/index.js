@@ -77,6 +77,12 @@ export default new  Vuex.Store({
         },
         getDopuIncludeServices(state) {
             return state.dopuIncludeServices
+        },
+        getCanDownloadCustomers(state) {
+            return state.canDownloadCustomers
+        },
+        getShopId(state) {
+            return state.shopId;
         }
     },
     actions: {
@@ -96,6 +102,8 @@ export default new  Vuex.Store({
             state.machineActivationMethod = data.machineActivationMethod;
             state.dopuSetup = data.dopuSetup;
             state.dopuIncludeServices = data.dopuIncludeServices;
+            state.canDownloadCustomers = data.canDownloadCustomers;
+            state.shopId = data.shopId;
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${data.token.accessToken}`;
         },
         updateEmail(state, data) {

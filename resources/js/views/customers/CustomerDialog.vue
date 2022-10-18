@@ -31,7 +31,7 @@
 <script>
 export default {
     props: [
-        'value', 'customer', 'initialName'
+        'value', 'customer', 'initialName', 'preRegister'
     ],
     data() {
         return {
@@ -113,15 +113,19 @@ export default {
             if(val && !this.customer) {
                 this.getCRN();
             }
-            this.clear();
-        },
-        customer(val) {
-            if(!!val) {
-                this.mode = 'update';
-            } else {
+            if(this.preRegister) {
+                this.getCRN();
                 this.mode = 'insert';
             }
+            this.clear();
         }
+        // customer(val) {
+        //     if(!!val) {
+        //         this.mode = 'update';
+        //     } else {
+        //         this.mode = 'insert';
+        //     }
+        // }
     }
 }
 </script>

@@ -313,6 +313,17 @@ class ThermalPrinter extends Model
         $this->printItem("Balance", 0);
         $this->printItem("Received by", $transaction->payment->user->name);
 
+        if($transaction->remarks) {
+            $this->printer->initialize();
+            $this->printUnderline();
+            $this->printSubtitle("REMARKS");
+            $this->printer->initialize();
+            foreach($transaction->remarks as $remarks) {
+                $this->text("* " . $remarks->remarks);
+                $this->printer->feed();
+            }
+        }
+
         // if($config->includeQRCode) {
         //     $this->qr($transaction->simplified($config->options));
         // }
@@ -328,6 +339,18 @@ class ThermalPrinter extends Model
         $this->printScarpa($transaction->posScarpaCleaningItems);
         $this->printLagoon($transaction->posLagoonItems);
         $this->printLagoonPerKilo($transaction->posLagoonPerKiloItems);
+
+        if($transaction->remarks) {
+            $this->printer->initialize();
+            $this->printUnderline();
+            $this->printSubtitle("REMARKS");
+            $this->printer->initialize();
+            foreach($transaction->remarks as $remarks) {
+                $this->text("* " . $remarks->remarks);
+                $this->printer->feed();
+            }
+        }
+
         $this->qr($transaction->simplified());
         $this->cut();
     }

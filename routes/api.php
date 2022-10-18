@@ -190,6 +190,9 @@ Route::group(['prefix' => 'excel', 'middleware' => 'auth:api'], function() {
 
 // /api/customers
 Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
+    // /api/customers/pre-registered
+    Route::get('pre-registered', 'CustomersController@preRegistered');
+
     // /api/customers/{customerId}/check-points
     Route::get('{customerId}/check-points', 'CustomersController@checkPoints');
 

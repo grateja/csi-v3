@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Client;
 use App\TiTo;
 use Illuminate\Http\Request;
 use App\User;
@@ -67,11 +68,12 @@ class OAuthController extends Controller
             return response()->json([
                 'user' => $user,
                 'token' => $token,
-                'activeBranch' => $user->activeBranch,
+                'shopId' => Client::first()->user_id,
+                // 'activeBranch' => $user->activeBranch,
                 'retainToken' => $request->rememberMe,
                 'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
                 'dopuSetup' => env('DOPU_SETUP', 'basic'), // basic, slave, master
-                'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false)
+                'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
             ]);
         }
         return response()->json([
@@ -87,14 +89,16 @@ class OAuthController extends Controller
     public function check() {
         $user = auth('api')->user();
         $token = $user->createToken('csi-2019');
+        $shopId = Client::first()->user_id;
 
         return response()->json([
             'user' => $user,
-            'activeBranch' => $user->activeBranch,
+            'shopId' => $shopId,
+            // 'activeBranch' => $user->activeBranch,
             'token' => $token,
             'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
             'dopuSetup' => env('DOPU_SETUP', 'basic'), // basic, slave, master
-            'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false)
+            'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
         ], 200);
     }
 }

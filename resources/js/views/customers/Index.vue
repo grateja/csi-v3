@@ -2,10 +2,15 @@
     <v-container>
         <h4 class="title panel-title">Customers</h4>
         <v-divider class="my-3"></v-divider>
-        <v-btn class="primary ml-0 translucent" round @click="addCustomer">
-            <v-icon small left>add</v-icon>
-            Create new customer
-        </v-btn>
+        <v-card class="transparent" flat>
+            <v-card-actions class=" ml-0 pl-0">
+                <v-btn class="primary ml-0 translucent" round @click="addCustomer">
+                    <v-icon small left>add</v-icon>
+                    Create new customer
+                </v-btn>
+                <v-spacer />
+            </v-card-actions>
+        </v-card>
         <form @submit.prevent="filter">
             <v-layout row>
                 <v-flex grow>
@@ -253,7 +258,10 @@ export default {
             if(user) {
                 return user.roles.some(r => r == 'admin');
             }
-        }
+        },
+        canDownloadCustomers() {
+            return this.$store.getters.getCanDownloadCustomers;
+        },
     },
     created() {
         this.load();
