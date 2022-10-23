@@ -77,7 +77,7 @@
                             <span class="data-value">{{`P ${parseFloat(formData.rfidCardLoad).toFixed(2)}`}}
                                 <v-tooltip top>
                                     <span>Remove RFID Card</span>
-                                    <v-btn slot="activator" outline icon small class="ma-0" @click="formData.rfidCardId = null"><v-icon>close</v-icon></v-btn>
+                                    <v-btn slot="activator" outline icon small class="ma-0" @click="setCard(null)"><v-icon>close</v-icon></v-btn>
                                 </v-tooltip>
                             </span>
                         </v-flex>
@@ -132,7 +132,7 @@
                 <v-card-text>
                         <v-btn round @click="openDiscountDialog = true" :class="{'primary' : !!discount}">discount</v-btn>
                         <v-btn round @click="selectPoints" :class="{'primary' : !!formData.pointsInPeso}">points</v-btn>
-                        <v-btn round @click="selectCard" :class="{'primary' : !!formData.rfidCardLoad}">card</v-btn>
+                        <v-btn round @click="selectCard" :class="{'primary' : !!formData.rfidCardId}" :disabled="formData.rfidCardId == 'loyalty-card'">card</v-btn>
                         <v-btn round @click="selectCashLess" :class="{'primary' : !!cashLess}">{{ !!cashLess ? cashLess.provider + " P " + parseFloat(cashLess.amount).toFixed(2) : "Cash Less" }}</v-btn>
                 </v-card-text>
                 <!-- <v-card-actions>
@@ -145,9 +145,9 @@
                 </v-card-actions>
             </v-card>
         </form>
-        <rfid-card-dialog v-model="openRfidCardDialog" :customerId="transaction.customer_id" v-if="transaction" @setCard="setCard" />
+        <rfid-card-dialog v-model="openRfidCardDialog" :customerId="transaction.customer_id" v-if="transaction" @setCard="setCard" :loadToUse="formData.rfidCardLoad" :rfidCardId="formData.rfidCardId" />
         <points-dialog v-model="openPointsDialog" :customer="transaction.customer" @setPoints="setPoints"  v-if="transaction" />
-        <discount-dialog v-model="openDiscountDialog" @setDiscount="selectDiscount" />
+        <discount-dialog v-model="openDiscountDialog" @setDiscount="selectDiscount" :customerId="transaction.customer_id" v-if="transaction" />
         <partial-payment-dialog v-if="transaction && transaction.partial_payment" v-model="openPartialPayment" :partialPaymentId="transaction.partial_payment.id"></partial-payment-dialog>
         <cash-less-dialog v-model="openCashLessDialog" :cashLess="cashLess" @confirm="setCashLess" :amountToPay="amountToPay" />
     </v-dialog>
@@ -193,6 +193,14 @@ export default {
     },
     methods: {
         close() {
+            this.formData.cash = 0;
+            this.formData.orNumber = null;
+            this.formData.discountId = null;
+            this.formData.rfidCardId = null;
+            this.formData.rfidCardLoad = 0;
+            this.formData.pointsInPeso = 0;
+            this.cashLess = null;
+            this.discount = null;
             this.$emit('input', false);
         },
         submit() {
@@ -231,9 +239,8 @@ export default {
             this.openCashLessDialog = true
         },
         setCard(data) {
-            console.log(data);
-            this.formData.rfidCardId = data.cardId;
-            this.formData.rfidCardLoad = data.amount;
+            this.formData.rfidCardId = data ? data.cardId : null;
+            this.formData.rfidCardLoad = data ? data.amount : null;
         },
         selectPoints() {
             this.openPointsDialog = true;
@@ -243,7 +250,11 @@ export default {
             this.formData.cash = this.amountToPay
         },
         selectDiscount(data) {
-            this.discount = data;
+            this.discount = data.discount;
+            if(data.card) {
+                this.formData.rfidCardId = data.card.id;
+                this.formData.rfidCardLoad = 0;
+            }
         },
         setCashLess(data) {
             this.cashLess = data

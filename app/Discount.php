@@ -11,6 +11,6 @@ class Discount extends Model
     use SoftDeletes, UsesUuid;
 
     protected $fillable = [
-        'name', 'percentage',
+        'id', 'name', 'percentage', 'deleted_at',
     ];
 }

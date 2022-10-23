@@ -226,7 +226,15 @@ class ThermalPrinter extends Model
         }
 
         $this->printUnderline();
-        $this->printItem("TOTAL AMOUNT",$transaction->total_price);
+        $this->printItem("SUBTOTAL", $transaction->total_price);
+
+        if($transaction->payment) {
+            $this->printItem("{$transaction->payment->discount_name} (-{$transaction->payment->discount}%)", $transaction->payment->discount_in_peso);
+            if($transaction->payment->discount) {
+                $this->printItem("AMOUNT DUE", $transaction->total_price - ($transaction->payment->discount_in_peso));
+            }
+        }
+
         $this->printer->feed();
 
         if($transaction->partialPayment && !$transaction->payment) {
@@ -249,9 +257,9 @@ class ThermalPrinter extends Model
                 $this->printItem("Points ({$transaction->payment->points}pts)", $transaction->payment->points_in_peso);
             }
             $this->printItem("Cash", $transaction->payment->cash);
-            $this->printItem("OR Number", $transaction->payment['or_number']);
             $this->printItem("Change", $transaction->payment->change);
             $this->printItem("Balance", 0);
+            $this->printItem("OR Number", $transaction->payment['or_number']);
             $this->printDetail("STAFF", $transaction->payment->user['name']);
         }
 
@@ -277,16 +285,24 @@ class ThermalPrinter extends Model
         }
 
         $this->printUnderline();
-        $this->printItem("TOTAL AMOUNT",$transaction->total_price);
+        $this->printItem("SUBTOTAL",$transaction->total_price);
+
+        if($transaction->payment) {
+            $this->printItem("{$transaction->payment->discount_name} (-{$transaction->payment->discount}%)", $transaction->payment->discount_in_peso);
+            if($transaction->payment->discount) {
+                $this->printItem("AMOUNT DUE", $transaction->total_price - ($transaction->payment->discount_in_peso));
+            }
+        }
+
         $this->printer->feed();
 
         if($transaction->partialPayment) {
             $this->printSubtitle("PARTIAL PAYMENT");
             $this->printer->initialize();
             $this->printItem("Date", Carbon::createFromDate($transaction->partialPayment['date'])->format('m/d/Y h:iA'));
-            $this->printItem("Amount", $transaction->partialPayment['cash']);
+            $this->printItem("Cash", $transaction->partialPayment['cash']);
             $this->printItem("Balance", $transaction->partialPayment['balance']);
-            $this->printItem("OR Number", $transaction->partialPayment['or_number']);
+            $this->printItem("OR Number", '#' . $transaction->partialPayment['or_number']);
             $this->printItem("Received by", $transaction->partialPayment['paid_to']);
             $this->printUnderline();
         }
@@ -296,21 +312,17 @@ class ThermalPrinter extends Model
         $this->printer->initialize();
         $this->printItem("Date paid", Carbon::createFromDate($transaction->date_paid)->format('m/d/Y h:iA'));
 
-        if($transaction->payment->discount) {
-            $this->printItem("{$transaction->payment->discount_name} (-{$transaction->payment->discount}%)", $transaction->payment->discount_in_peso);
-        }
-
         if($transaction->payment->points) {
             $this->printItem("Points ({$transaction->payment->points}pts)", $transaction->payment->points_in_peso);
         }
 
         $this->printItem("Cash", $transaction->payment->cash);
-        $this->printItem("OR Number", $transaction->payment['or_number']);
         if($transaction->payment->cash_less_amount) {
             $this->printItem($transaction->payment->cash_less_provider, $transaction->payment->cash_less_amount);
         }
         $this->printItem("Change", $transaction->payment->change);
         $this->printItem("Balance", 0);
+        $this->printItem("OR Number", '#' . $transaction->payment['or_number']);
         $this->printItem("Received by", $transaction->payment->user->name);
 
         if($transaction->remarks) {

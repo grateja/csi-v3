@@ -165,6 +165,7 @@ class PaymentsController extends Controller
                 $percentageDiscount = 0;
                 $cashlessAmount = 0;
                 $rfid = null;
+                $rfidCardLoad = 0;
                 $transaction = Transaction::findOrFail($transactionId);
                 $customer = Customer::findOrFail($transaction->customer_id);
                 $transaction->refreshAll();
@@ -203,6 +204,16 @@ class PaymentsController extends Controller
                 }
 
                 if($request->discountId) {
+                    if($request->discountId == 'loyalty-card') {
+                        if($request->rfidCardId == null) {
+                            DB::rollback();
+                            return response()->json([
+                                'errors' => [
+                                    'message' => ['Loyalty discount cannot be applied without RFID card']
+                                ]
+                            ], 422);
+                        }
+                    }
                     $discount = Discount::findOrFail($request->discountId);
                     $discountName = $discount->name;
                     $discountInPeso = $transaction->total_price * $discount->percentage / 100;
@@ -212,7 +223,14 @@ class PaymentsController extends Controller
 
                 if($request->rfidCardId) {
                     $rfidCard = RfidCard::findOrFail($request->rfidCardId);
-                    if($rfidCard->balance < $request->rfidCardLoad) {
+                    
+                    if($request->discountId == 'loyalty-card') {
+                        $rfidCardLoad = $discountInPeso;
+                    } else {
+                        $rfidCardLoad = $request->rfidCardLoad;
+                    }
+
+                    if($rfidCard->balance > $rfidCardLoad && $request->discountId != 'loyalty-card') {
                         DB::rollback();
                         return response()->json([
                             'errors' => [
@@ -221,7 +239,7 @@ class PaymentsController extends Controller
                         ], 422);
                     } else {
                         $rfid = $rfidCard->rfid;
-                        $rfidCard->decrement('balance', $request->rfidCardLoad);
+                        $rfidCard->decrement('balance', $rfidCardLoad);
                     }
                 }
 
@@ -266,7 +284,7 @@ class PaymentsController extends Controller
                         'user_id' => auth('api')->id(),
                         'paid_to' => auth('api')->user()->name,
                         'change' => $change,
-                        'card_load_used' => $request->rfidCardLoad,
+                        'card_load_used' => $rfidCardLoad,
                         'rfid' => $rfid,
                     ]);
                     $transaction->update([

@@ -8,7 +8,7 @@
             <v-card-text>
                 <v-radio-group v-model="selectedCardId">
                     <div v-for="card in cards" :key="card.id" @click="select(card)" class="cursor block">
-                        <v-radio v-model="card.id" :label="card.owner_name + '  (' + card.rfid + ')'"></v-radio>
+                        <v-radio v-model="card.id" :label="card.owner_name + '  (' + card.rfid + ')'" :disabled="card.balance <= 0"></v-radio>
                         <span class="grey--text">P {{ parseFloat(card.balance).toFixed(2)}}</span>
                     </div>
                 </v-radio-group>
@@ -36,7 +36,7 @@
 <script>
 export default {
     props: [
-        'value', 'customerId'
+        'value', 'customerId', 'loadToUse', 'rfidCardId'
     ],
     data() {
         return {
@@ -69,6 +69,11 @@ export default {
                 return;
             }
 
+            if(isNaN(this.amount) || this.amount <= 0) {
+                alert("invalid amount");
+                return;
+            }
+
             this.$emit('setCard', {
                 cardId: this.selectedCardId,
                 amount: this.amount
@@ -85,6 +90,9 @@ export default {
             this.$emit('input', false);
         },
         select(card) {
+            if(card.balance <= 0) {
+                return;
+            }
             this.selectedCardId = card.id;
         }
     },
@@ -102,6 +110,8 @@ export default {
         value(val) {
             if(val) {
                 this.loadCards();
+                this.selectedCardId = this.rfidCardId;
+                this.amount = this.loadToUse;
             }
         }
     }

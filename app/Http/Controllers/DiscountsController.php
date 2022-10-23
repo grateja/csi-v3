@@ -15,6 +15,19 @@ class DiscountsController extends Controller
      */
     public function index(Request $request)
     {
+        $loyaltyDiscount = Discount::withTrashed()->find('loyalty-card');
+        if($loyaltyDiscount == null) {
+            $loyaltyDiscount = Discount::create([
+                'id' => 'loyalty-card',
+                'name' => 'Loyalty Card',
+                'percentage' => 10,
+            ]);
+        } else if($loyaltyDiscount->deleted_at) {
+            $loyaltyDiscount->update([
+                'deleted_at' => null,
+            ]);
+        }
+
         $result = Discount::where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%");
         })->get();
