@@ -13,21 +13,23 @@ class CreatePerKiloWashDriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('per_kilo_wash_dries', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('per_kilo_wash_dries')) {
+            Schema::create('per_kilo_wash_dries', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->string('name')->nullable();
-            $table->double('delicate_price')->nullable();
-            $table->double('warm_price')->nullable();
-            $table->double('hot_price')->nullable();
-            $table->double('superwash_price')->nullable();
+                $table->string('name')->nullable();
+                $table->double('delicate_price')->nullable();
+                $table->double('warm_price')->nullable();
+                $table->double('hot_price')->nullable();
+                $table->double('superwash_price')->nullable();
 
-            $table->string('img_path')->nullable();
+                $table->string('img_path')->nullable();
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

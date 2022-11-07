@@ -13,10 +13,12 @@ class CreateEventTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_types', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-        });
+        if(!Schema::hasTable('event_types')) {
+            Schema::create('event_types', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('name');
+            });
+        }
     }
 
     /**

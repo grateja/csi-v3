@@ -13,14 +13,16 @@ class CreateStoreHoursTable extends Migration
      */
     public function up()
     {
-        Schema::create('store_hours', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->integer('day_index')->comment('1 - Monday, 7 - sunday');
-            $table->string('opens_at')->nullable();
-            $table->string('closes_at')->nullable();
-            $table->timestamp('synched')->nullable();
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('store_hours')) {
+            Schema::create('store_hours', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->integer('day_index')->comment('1 - Monday, 7 - sunday');
+                $table->string('opens_at')->nullable();
+                $table->string('closes_at')->nullable();
+                $table->timestamp('synched')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

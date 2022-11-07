@@ -13,20 +13,22 @@ class CreateEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('events')) {
+            Schema::create('events', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->date('date_from');
-            $table->date('date_until')->nullable();
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->boolean('published')->default(false);
-            $table->unsignedInteger('event_type_id')->nullable();
+                $table->date('date_from');
+                $table->date('date_until')->nullable();
+                $table->string('title');
+                $table->text('description')->nullable();
+                $table->boolean('published')->default(false);
+                $table->unsignedInteger('event_type_id')->nullable();
 
-            $table->timestamps();
+                $table->timestamps();
 
-            $table->foreign('event_type_id')->references('id')->on('event_types')->onDelete('SET NULL');
-        });
+                $table->foreign('event_type_id')->references('id')->on('event_types')->onDelete('SET NULL');
+            });
+        }
     }
 
     /**

@@ -13,20 +13,22 @@ class CreateReworksTable extends Migration
      */
     public function up()
     {
-        Schema::create('reworks', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('reworks')) {
+            Schema::create('reworks', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->text('remarks')->nullable();
-            $table->string('customer_name')->nullable();
-            $table->string('tag')->comment('transfer|reload');
-            $table->uuid('machine_id')->nullable();
-            $table->string('job_order')->nullable();
-            $table->string('account_name')->nullable();
+                $table->text('remarks')->nullable();
+                $table->string('customer_name')->nullable();
+                $table->string('tag')->comment('transfer|reload');
+                $table->uuid('machine_id')->nullable();
+                $table->string('job_order')->nullable();
+                $table->string('account_name')->nullable();
 
-            $table->softDeletes();
-            $table->timestamps();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->softDeletes();
+                $table->timestamps();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

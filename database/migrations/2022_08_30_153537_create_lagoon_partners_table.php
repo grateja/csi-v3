@@ -13,13 +13,15 @@ class CreateLagoonPartnersTable extends Migration
      */
     public function up()
     {
-        Schema::create('lagoon_partners', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('shop_name')->nullable();
-            $table->string('address')->nullable();
-            $table->string('contact_number')->nullable();
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('lagoon_partners')) {
+            Schema::create('lagoon_partners', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('shop_name')->nullable();
+                $table->string('address')->nullable();
+                $table->string('contact_number')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

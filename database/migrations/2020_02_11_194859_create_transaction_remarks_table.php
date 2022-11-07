@@ -13,19 +13,21 @@ class CreateTransactionRemarksTable extends Migration
      */
     public function up()
     {
-        Schema::create('transaction_remarks', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('transaction_remarks')) {
+            Schema::create('transaction_remarks', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->uuid('transaction_id');
-            $table->text('remarks');
-            $table->string('added_by');
+                $table->uuid('transaction_id');
+                $table->text('remarks');
+                $table->string('added_by');
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
 
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
-        });
+                $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
+            });
+        }
     }
 
     /**

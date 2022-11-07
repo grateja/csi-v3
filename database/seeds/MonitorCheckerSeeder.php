@@ -2,6 +2,7 @@
 
 use App\MonitorChecker;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class MonitorCheckerSeeder extends Seeder
 {
@@ -12,9 +13,11 @@ class MonitorCheckerSeeder extends Seeder
      */
     public function run()
     {
-        MonitorChecker::insert([
-            'id' => 'default',
-            'action' => 'idle',
-        ]);
+        if(!DB::table('monitor_checkers')->where('id', 'default')->exists()) {
+            MonitorChecker::insert([
+                'id' => 'default',
+                'action' => 'idle',
+            ]);
+        }
     }
 }

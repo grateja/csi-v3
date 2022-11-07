@@ -13,17 +13,19 @@ class CreateOtherServicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('other_services', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('img_path')->nullable();
-            $table->double('price')->default(0);
+        if(!Schema::hasTable('other_services')) {
+            Schema::create('other_services', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->string('description')->nullable();
+                $table->string('img_path')->nullable();
+                $table->double('price')->default(0);
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

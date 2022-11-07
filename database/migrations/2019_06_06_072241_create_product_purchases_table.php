@@ -13,25 +13,27 @@ class CreateProductPurchasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_purchases', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('product_purchases')) {
+            Schema::create('product_purchases', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->dateTime('date')->nullable();
-            $table->uuid('product_id')->nullable();
-            $table->string('product_name')->nullable();
-            $table->string('receipt')->nullable();
-            $table->integer('quantity')->nullable();
-            $table->double('unit_cost')->nullable();
-            $table->text('remarks')->nullable();
-            $table->string('staff_name')->nullable();
+                $table->dateTime('date')->nullable();
+                $table->uuid('product_id')->nullable();
+                $table->string('product_name')->nullable();
+                $table->string('receipt')->nullable();
+                $table->integer('quantity')->nullable();
+                $table->double('unit_cost')->nullable();
+                $table->text('remarks')->nullable();
+                $table->string('staff_name')->nullable();
 
-            $table->softDeletes();
-            $table->timestamps();
+                $table->softDeletes();
+                $table->timestamps();
 
-            $table->timestamp('synched')->nullable();
+                $table->timestamp('synched')->nullable();
 
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE');
-        });
+                $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE');
+            });
+        }
     }
 
     /**

@@ -13,13 +13,15 @@ class CreateLagoonPartnerCustomers extends Migration
      */
     public function up()
     {
-        Schema::create('lagoon_partner_customers', function (Blueprint $table) {
-            $table->uuid('customer_id');
-            $table->uuid('lagoon_partner_id');
+        if(!Schema::hasTable('lagoon_partner_customers')) {
+            Schema::create('lagoon_partner_customers', function (Blueprint $table) {
+                $table->uuid('customer_id');
+                $table->uuid('lagoon_partner_id');
 
-            $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign('lagoon_partner_id')->references('id')->on('lagoon_partners')->onUpdate('CASCADE')->onDelete('CASCADE');
-        });
+                $table->foreign('customer_id')->references('id')->on('customers')->onUpdate('CASCADE')->onDelete('CASCADE');
+                $table->foreign('lagoon_partner_id')->references('id')->on('lagoon_partners')->onUpdate('CASCADE')->onDelete('CASCADE');
+            });
+        }
     }
 
     /**

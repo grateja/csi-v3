@@ -13,25 +13,27 @@ class CreateScarpaCleaningTransactionItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('scarpa_cleaning_transaction_items', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('scarpa_cleaning_transaction_items')) {
+            Schema::create('scarpa_cleaning_transaction_items', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->uuid('transaction_id');
+                $table->uuid('transaction_id');
 
-            $table->uuid('scarpa_category_id')->nullable();
-            $table->uuid('scarpa_variation_id')->nullable();
-            $table->string('name');
-            $table->double('price')->default(0);
-            $table->boolean('saved')->default(0);
+                $table->uuid('scarpa_category_id')->nullable();
+                $table->uuid('scarpa_variation_id')->nullable();
+                $table->string('name');
+                $table->double('price')->default(0);
+                $table->boolean('saved')->default(0);
 
-            $table->softDeletes();
-            $table->timestamps();
-            $table->timestamp('synched')->nullable();
+                $table->softDeletes();
+                $table->timestamps();
+                $table->timestamp('synched')->nullable();
 
-            $table->foreign('scarpa_category_id')->references('id')->on('scarpa_categories')->onUpdate('CASCADE')->onDelete('SET NULL');
-            $table->foreign('scarpa_variation_id')->references('id')->on('scarpa_variations')->onUpdate('CASCADE')->onDelete('SET NULL');
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onUpdate('CASCADE')->onDelete('CASCADE');
-        });
+                $table->foreign('scarpa_category_id')->references('id')->on('scarpa_categories')->onUpdate('CASCADE')->onDelete('SET NULL');
+                $table->foreign('scarpa_variation_id')->references('id')->on('scarpa_variations')->onUpdate('CASCADE')->onDelete('SET NULL');
+                $table->foreign('transaction_id')->references('id')->on('transactions')->onUpdate('CASCADE')->onDelete('CASCADE');
+            });
+        }
     }
 
     /**

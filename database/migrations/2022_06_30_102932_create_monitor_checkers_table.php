@@ -13,15 +13,17 @@ class CreateMonitorCheckersTable extends Migration
      */
     public function up()
     {
-        Schema::create('monitor_checkers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('transaction_id')->nullable();
-            $table->string('job_order')->nullable();
-            $table->string('action')->nullable()->comment('iddle|hasQue');
-            $table->string('token')->nullable();
+        if(!Schema::hasTable('monitor_checkers')) {
+            Schema::create('monitor_checkers', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->uuid('transaction_id')->nullable();
+                $table->string('job_order')->nullable();
+                $table->string('action')->nullable()->comment('iddle|hasQue');
+                $table->string('token')->nullable();
 
-            $table->timestamps();
-        });
+                $table->timestamps();
+            });
+        }
     }
 
     /**

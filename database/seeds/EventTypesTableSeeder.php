@@ -1,5 +1,6 @@
 <?php
 
+use App\EventType;
 use Illuminate\Database\Seeder;
 
 class EventTypesTableSeeder extends Seeder
@@ -11,25 +12,27 @@ class EventTypesTableSeeder extends Seeder
      */
     public function run()
     {
-        $eventTypes = [
-            [
-                'id' => 1,
-                'name' => 'slides',
-            ],
-            [
-                'id' => 2,
-                'name' => 'video',
-            ],
-            [
-                'id' => 3,
-                'name' => 'text',
-            ],
-            [
-                'id' => 4,
-                'name' => 'youtube',
-            ],
-        ];
+        if(EventType::count() == 0) {
+            $eventTypes = [
+                [
+                    'id' => 1,
+                    'name' => 'slides',
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'video',
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'text',
+                ],
+                [
+                    'id' => 4,
+                    'name' => 'youtube',
+                ],
+            ];
 
-        \App\EventType::insert($eventTypes);
+            EventType::insert($eventTypes);
+        }
     }
 }

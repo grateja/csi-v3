@@ -13,18 +13,20 @@ class CreateLagoonsTable extends Migration
      */
     public function up()
     {
-        Schema::create('lagoons', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('category')->nullable();
-            $table->string('description')->nullable();
-            $table->string('img_path')->nullable();
-            $table->double('price')->default(0);
+        if(!Schema::hasTable('lagoons')) {
+            Schema::create('lagoons', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->string('category')->nullable();
+                $table->string('description')->nullable();
+                $table->string('img_path')->nullable();
+                $table->double('price')->default(0);
 
-            $table->softDeletes();
-            $table->timestamps();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->softDeletes();
+                $table->timestamps();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

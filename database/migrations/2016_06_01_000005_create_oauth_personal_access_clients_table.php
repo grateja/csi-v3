@@ -13,11 +13,13 @@ class CreateOauthPersonalAccessClientsTable extends Migration
      */
     public function up()
     {
-        Schema::create('oauth_personal_access_clients', function (Blueprint $table) {
-            $table->increments('id');
-            $table->uuid('client_id')->index();
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('oauth_personal_access_clients')) {
+            Schema::create('oauth_personal_access_clients', function (Blueprint $table) {
+                $table->increments('id');
+                $table->uuid('client_id')->index();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

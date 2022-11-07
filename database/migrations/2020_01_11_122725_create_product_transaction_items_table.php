@@ -13,24 +13,26 @@ class CreateProductTransactionItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_transaction_items', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('product_transaction_items')) {
+            Schema::create('product_transaction_items', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->uuid('transaction_id');
+                $table->uuid('transaction_id');
 
-            $table->string('name');
-            $table->double('price')->default(0);
+                $table->string('name');
+                $table->double('price')->default(0);
 
-            $table->uuid('product_id')->nullable();
-            $table->boolean('saved')->default(false);
+                $table->uuid('product_id')->nullable();
+                $table->boolean('saved')->default(false);
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
 
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE')->onUpdate('CASCADE');
-        });
+                $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
+                $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE')->onUpdate('CASCADE');
+            });
+        }
     }
 
     /**

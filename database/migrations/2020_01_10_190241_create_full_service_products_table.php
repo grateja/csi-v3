@@ -13,23 +13,25 @@ class CreateFullServiceProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('full_service_products', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('full_service_id');
+        if(!Schema::hasTable('full_service_products')) {
+            Schema::create('full_service_products', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->uuid('full_service_id');
 
-            $table->uuid('product_id')->nullable();
+                $table->uuid('product_id')->nullable();
 
-            $table->string('name');
-            $table->integer('quantity')->default(1);
-            $table->float('price')->default(0);
+                $table->string('name');
+                $table->integer('quantity')->default(1);
+                $table->float('price')->default(0);
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
 
-            $table->foreign('full_service_id')->references('id')->on('full_services')->onDelete('CASCADE')->onUpdate('CASCADE');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE')->onUpdate('CASCADE');
-        });
+                $table->foreign('full_service_id')->references('id')->on('full_services')->onDelete('CASCADE')->onUpdate('CASCADE');
+                $table->foreign('product_id')->references('id')->on('products')->onDelete('CASCADE')->onUpdate('CASCADE');
+            });
+        }
     }
 
     /**

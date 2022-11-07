@@ -13,8 +13,10 @@ class JobOrderSeeder extends Seeder
      */
     public function run()
     {
-        JobOrderFormat::create([
-            'id' => Str::uuid(),
-        ]);
+        if(JobOrderFormat::count() == 0) {
+            JobOrderFormat::create([
+                'id' => 'jo-format-default',
+            ]);
+        }
     }
 }

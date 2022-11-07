@@ -13,15 +13,17 @@ class OtherServicesSeeder extends Seeder
      */
     public function run()
     {
-        $otherServices = [
-            [
-                'id' => Str::uuid(),
-                'name' => 'Fold',
-                'description' => 'P30.00 Fold per load',
-                'price' => 30,
-            ],
-        ];
-
-        OtherService::insert($otherServices);
+        if(OtherService::count() == 0) {
+            $otherServices = [
+                [
+                    'id' => Str::uuid(),
+                    'name' => 'Fold',
+                    'description' => 'P30.00 Fold per load',
+                    'price' => 30,
+                ],
+            ];
+    
+            OtherService::insert($otherServices);
+        }
     }
 }

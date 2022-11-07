@@ -1,5 +1,6 @@
 <?php
 
+use App\SysDefault;
 use Illuminate\Database\Seeder;
 
 class SysDefaultsTableSeeder extends Seeder
@@ -11,9 +12,11 @@ class SysDefaultsTableSeeder extends Seeder
      */
     public function run()
     {
-        \App\SysDefault::create([
-            'event_id' => 'event-default',
-            'announcement_id' => 'announcement-default',
-        ]);
+        if(SysDefault::count() == 0) {
+            SysDefault::create([
+                'event_id' => 'event-default',
+                'announcement_id' => 'announcement-default',
+            ]);
+        }
     }
 }

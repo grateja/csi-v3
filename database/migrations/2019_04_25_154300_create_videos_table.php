@@ -13,20 +13,22 @@ class CreateVideosTable extends Migration
      */
     public function up()
     {
-        Schema::create('videos', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('videos')) {
+            Schema::create('videos', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->uuid('event_id');
-            $table->text('source');
-            $table->string('title')->nullable();
-            $table->text('description')->nullable();
-            $table->integer('order')->nullable();
+                $table->uuid('event_id');
+                $table->text('source');
+                $table->string('title')->nullable();
+                $table->text('description')->nullable();
+                $table->integer('order')->nullable();
 
-            $table->timestamps();
+                $table->timestamps();
 
 
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('CASCADE');
-        });
+                $table->foreign('event_id')->references('id')->on('events')->onDelete('CASCADE');
+            });
+        }
     }
 
     /**

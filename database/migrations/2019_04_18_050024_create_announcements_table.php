@@ -13,16 +13,18 @@ class CreateAnnouncementsTable extends Migration
      */
     public function up()
     {
-        Schema::create('announcements', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('announcements')) {
+            Schema::create('announcements', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->text('content')->nullable();
-            $table->date('date_from')->nullable();
-            $table->date('date_until')->nullable();
-            $table->boolean('marquee_on')->default(0);
+                $table->text('content')->nullable();
+                $table->date('date_from')->nullable();
+                $table->date('date_until')->nullable();
+                $table->boolean('marquee_on')->default(0);
 
-            $table->timestamps();
-        });
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -13,20 +13,22 @@ class CreateProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('products')) {
+            Schema::create('products', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('img_path')->nullable();
-            $table->double('selling_price')->nullable();
-            $table->integer('current_stock')->nullable();
+                $table->string('name');
+                $table->string('description')->nullable();
+                $table->string('img_path')->nullable();
+                $table->double('selling_price')->nullable();
+                $table->integer('current_stock')->nullable();
 
-            $table->timestamps();
-            $table->softDeletes();
+                $table->timestamps();
+                $table->softDeletes();
 
-            $table->timestamp('synched')->nullable();
-        });
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

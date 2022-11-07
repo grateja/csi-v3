@@ -13,20 +13,22 @@ class CreatePerKiloTransactionItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('per_kilo_transaction_items', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('per_kilo_transaction_items')) {
+            Schema::create('per_kilo_transaction_items', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->uuid('transaction_id')->nullable();
-            $table->string('name')->nullable();
-            $table->double('kilo')->nullable();
-            $table->double('load')->nullable();
-            // $table->
+                $table->uuid('transaction_id')->nullable();
+                $table->string('name')->nullable();
+                $table->double('kilo')->nullable();
+                $table->double('load')->nullable();
+                // $table->
 
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

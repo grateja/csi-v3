@@ -13,12 +13,14 @@ class CreateUnregisteredCardsTable extends Migration
      */
     public function up()
     {
-        Schema::create('unregistered_cards', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('machine_name');
-            $table->string('rfid');
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('unregistered_cards')) {
+            Schema::create('unregistered_cards', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('machine_name');
+                $table->string('rfid');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

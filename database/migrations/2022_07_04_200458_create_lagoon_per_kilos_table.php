@@ -13,15 +13,17 @@ class CreateLagoonPerKilosTable extends Migration
      */
     public function up()
     {
-        Schema::create('lagoon_per_kilos', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('lagoon_per_kilos')) {
+            Schema::create('lagoon_per_kilos', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->string('name')->nullable();
-            $table->double('price_per_kilo')->nullable()->default(0);
+                $table->string('name')->nullable();
+                $table->double('price_per_kilo')->nullable()->default(0);
 
-            $table->softDeletes();
-            $table->timestamps();
-        });
+                $table->softDeletes();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

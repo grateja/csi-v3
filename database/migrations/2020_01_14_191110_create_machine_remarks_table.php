@@ -13,22 +13,24 @@ class CreateMachineRemarksTable extends Migration
      */
     public function up()
     {
-        Schema::create('machine_remarks', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('machine_remarks')) {
+            Schema::create('machine_remarks', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->string('title');
-            $table->text('remarks');
-            $table->uuid('user_id')->nullable();
-            $table->uuid('machine_id');
-            $table->integer('remaining_time');
+                $table->string('title');
+                $table->text('remarks');
+                $table->uuid('user_id')->nullable();
+                $table->uuid('machine_id');
+                $table->integer('remaining_time');
 
-            $table->timestamps();
-            $table->timestamp('synched')->nullable();
-            $table->softDeletes();
+                $table->timestamps();
+                $table->timestamp('synched')->nullable();
+                $table->softDeletes();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
-            $table->foreign('machine_id')->references('id')->on('machines')->onDelete('CASCADE')->onUpdate('CASCADE');
-        });
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL')->onUpdate('CASCADE');
+                $table->foreign('machine_id')->references('id')->on('machines')->onDelete('CASCADE')->onUpdate('CASCADE');
+            });
+        }
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use App\LoyaltyPoint;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PointsDataSeeder extends Seeder
 {
@@ -12,8 +13,10 @@ class PointsDataSeeder extends Seeder
      */
     public function run()
     {
-        LoyaltyPoint::create([
-            'amount_in_peso' => 10,
-        ]);
+        if(LoyaltyPoint::count() == 0) {
+            LoyaltyPoint::create([
+                'amount_in_peso' => 10,
+            ]);
+        }
     }
 }

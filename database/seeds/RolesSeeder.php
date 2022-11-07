@@ -1,5 +1,6 @@
 <?php
 
+use App\Role;
 use Illuminate\Database\Seeder;
 
 class RolesSeeder extends Seeder
@@ -11,27 +12,29 @@ class RolesSeeder extends Seeder
      */
     public function run()
     {
-        $roles = [
-            [
-                'id' => 1,
-                'name' => 'developer',
-                'description' => 'Mostly for backoffice',
-                'level' => 'developer',
-            ],
-            [
-                'id' => 2,
-                'name' => 'admin',
-                'description' => 'This is awesome',
-                'level' => 'client',
-            ],
-            [
-                'id' => 3,
-                'name' => 'staff',
-                'description' => 'Not so awesome',
-                'level' => 'user',
-            ],
-        ];
-
-        \App\Role::insert($roles);
+        if(Role::count() == 0) {
+            $roles = [
+                [
+                    'id' => 1,
+                    'name' => 'developer',
+                    'description' => 'Mostly for backoffice',
+                    'level' => 'developer',
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'admin',
+                    'description' => 'This is awesome',
+                    'level' => 'client',
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'staff',
+                    'description' => 'Not so awesome',
+                    'level' => 'user',
+                ],
+            ];
+    
+            \App\Role::insert($roles);
+        }
     }
 }

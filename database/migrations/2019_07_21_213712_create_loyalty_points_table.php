@@ -13,14 +13,16 @@ class CreateLoyaltyPointsTable extends Migration
      */
     public function up()
     {
-        Schema::create('loyalty_points', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('loyalty_points')) {
+            Schema::create('loyalty_points', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->double('amount_in_peso')->nullable()->comment('Amount in peso per points');
+                $table->double('amount_in_peso')->nullable()->comment('Amount in peso per points');
 
-            $table->timestamps();
-            $table->softDeletes();
-        });
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
     }
 
     /**

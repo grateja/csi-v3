@@ -13,16 +13,18 @@ class CreateScarpaCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('scarpa_categories', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->string('img_path')->nullable();
+        if(!Schema::hasTable('scarpa_categories')) {
+            Schema::create('scarpa_categories', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->string('description')->nullable();
+                $table->string('img_path')->nullable();
 
-            $table->softDeletes();
-            $table->timestamps();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->softDeletes();
+                $table->timestamps();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

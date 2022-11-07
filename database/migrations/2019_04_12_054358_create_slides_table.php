@@ -13,17 +13,19 @@ class CreateSlidesTable extends Migration
      */
     public function up()
     {
-        Schema::create('slides', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('slides')) {
+            Schema::create('slides', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->string('source');
-            $table->integer('order');
-            $table->string('caption')->nullable();
-            $table->text('description')->nullable();
-            $table->uuid('event_id');
+                $table->string('source');
+                $table->integer('order');
+                $table->string('caption')->nullable();
+                $table->text('description')->nullable();
+                $table->uuid('event_id');
 
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('CASCADE');
-        });
+                $table->foreign('event_id')->references('id')->on('events')->onDelete('CASCADE');
+            });
+        }
     }
 
     /**

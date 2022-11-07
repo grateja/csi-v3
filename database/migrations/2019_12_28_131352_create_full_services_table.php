@@ -13,16 +13,18 @@ class CreateFullServicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('full_services', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->float('additional_charge')->default(0);
-            $table->float('discount')->default(0);
+        if(!Schema::hasTable('full_services')) {
+            Schema::create('full_services', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->float('additional_charge')->default(0);
+                $table->float('discount')->default(0);
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
-        });
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

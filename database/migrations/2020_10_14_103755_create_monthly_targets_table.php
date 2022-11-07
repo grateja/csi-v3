@@ -13,13 +13,15 @@ class CreateMonthlyTargetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('monthly_targets', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->integer('index')->comment('1-12');
-            $table->integer('target')->nullable();
-            $table->timestamp('synched')->nullable();
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('monthly_targets')) {
+            Schema::create('monthly_targets', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->integer('index')->comment('1-12');
+                $table->integer('target')->nullable();
+                $table->timestamp('synched')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

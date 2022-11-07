@@ -13,13 +13,15 @@ class CreateDiscountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('discounts', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name')->nullable();
-            $table->double('percentage')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        if(!Schema::hasTable('discounts')) {
+            Schema::create('discounts', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name')->nullable();
+                $table->double('percentage')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
     }
 
     /**

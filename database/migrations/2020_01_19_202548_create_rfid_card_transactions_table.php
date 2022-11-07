@@ -13,25 +13,27 @@ class CreateRfidCardTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('rfid_card_transactions', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('rfid');
-            $table->string('machine_name');
-            $table->string('owner_name');
-            $table->float('price')->default(0);
-            $table->string('card_type')->comment('c, u');
-            $table->integer('minutes');
+        if(!Schema::hasTable('rfid_card_transactions')) {
+            Schema::create('rfid_card_transactions', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('rfid');
+                $table->string('machine_name');
+                $table->string('owner_name');
+                $table->float('price')->default(0);
+                $table->string('card_type')->comment('c, u');
+                $table->integer('minutes');
 
-            $table->uuid('machine_id')->nullable();
-            $table->uuid('rfid_card_id')->nullable();
+                $table->uuid('machine_id')->nullable();
+                $table->uuid('rfid_card_id')->nullable();
 
-            $table->timestamp('synched')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
+                $table->timestamp('synched')->nullable();
+                $table->softDeletes();
+                $table->timestamps();
 
-            $table->foreign('machine_id')->references('id')->on('machines')->onDelete('SET NULL')->onUpdate('CASCADE');
-            $table->foreign('rfid_card_id')->references('id')->on('rfid_cards')->onDelete('SET NULL')->onUpdate('CASCADE');
-        });
+                $table->foreign('machine_id')->references('id')->on('machines')->onDelete('SET NULL')->onUpdate('CASCADE');
+                $table->foreign('rfid_card_id')->references('id')->on('rfid_cards')->onDelete('SET NULL')->onUpdate('CASCADE');
+            });
+        }
     }
 
     /**

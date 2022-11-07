@@ -13,17 +13,19 @@ class CreateExpensesTable extends Migration
      */
     public function up()
     {
-        Schema::create('expenses', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->date('date')->nullable();
-            $table->text('remarks')->nullable();
-            $table->double('amount')->nullable();
-            $table->string('expense_type')->nullable()->comment('Free text. Can add what ever type user may want to add');
-            $table->uuid('staff_name')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
-        });
+        if(!Schema::hasTable('expenses')) {
+            Schema::create('expenses', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->date('date')->nullable();
+                $table->text('remarks')->nullable();
+                $table->double('amount')->nullable();
+                $table->string('expense_type')->nullable()->comment('Free text. Can add what ever type user may want to add');
+                $table->uuid('staff_name')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
+            });
+        }
     }
 
     /**

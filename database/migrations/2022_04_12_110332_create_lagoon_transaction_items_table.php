@@ -13,24 +13,26 @@ class CreateLagoonTransactionItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('lagoon_transaction_items', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        if(!Schema::hasTable('lagoon_transaction_items')) {
+            Schema::create('lagoon_transaction_items', function (Blueprint $table) {
+                $table->uuid('id')->primary();
 
-            $table->uuid('transaction_id');
+                $table->uuid('transaction_id');
 
-            $table->string('name');
-            $table->double('price')->default(0);
+                $table->string('name');
+                $table->double('price')->default(0);
 
-            $table->uuid('lagoon_id')->nullable();
-            $table->boolean('saved')->default(false);
+                $table->uuid('lagoon_id')->nullable();
+                $table->boolean('saved')->default(false);
 
-            $table->timestamps();
-            $table->softDeletes();
-            $table->timestamp('synched')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+                $table->timestamp('synched')->nullable();
 
-            $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
-            $table->foreign('lagoon_id')->references('id')->on('lagoons')->onDelete('CASCADE')->onUpdate('CASCADE');
-        });
+                $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('CASCADE')->onUpdate('CASCADE');
+                $table->foreign('lagoon_id')->references('id')->on('lagoons')->onDelete('CASCADE')->onUpdate('CASCADE');
+            });
+        }
     }
 
     /**
