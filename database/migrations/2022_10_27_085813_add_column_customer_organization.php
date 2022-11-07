@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddColumnRfidCards extends Migration
+class AddColumnCustomerOrganization extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddColumnRfidCards extends Migration
      */
     public function up()
     {
-        Schema::table('rfid_cards', function (Blueprint $table) {
-            if (!Schema::hasColumn('rfid_cards', 'discount_points')) {
-                $table->double('discount_percentage')->after('balance')->default(0)->nullable();
+        Schema::table('customers', function (Blueprint $table) {
+            if (!Schema::hasColumn('customers', 'organization')) {
+                $table->string('organization')->after('email')->default(null)->nullable();
             }
         });
     }

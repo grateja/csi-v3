@@ -1031,6 +1031,9 @@ Route::group(['prefix' => 'autocomplete'], function() {
 
     // /api/autocomplete/expense-types
     Route::get('expense-types', 'ExpensesController@autocomplete');
+
+    // /api/autocomplete/organizations
+    Route::get('organizations', 'CustomersController@organizations');
 });
 
 // /api/all

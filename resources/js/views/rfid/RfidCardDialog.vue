@@ -36,6 +36,7 @@
                                 <v-radio value="c" label="Customer card"></v-radio>
                             </v-radio-group>
                             <v-text-field label="RFID" v-model="formData.rfid" :error-messages="errors.get('rfid')" outline ref="rfid" @keydown.native="clear('rfid')"></v-text-field>
+                            <v-text-field label="Free load" v-model="formData.freeLoad" :error-messages="errors.get('freeLoad')" outline ref="freeLoad" @keydown.native="clear('freeLoad')" type="number"></v-text-field>
                         </v-card-text>
                     </v-flex>
                 </v-layout>
@@ -74,7 +75,8 @@ export default {
             formData: {
                 rfid: null,
                 cardType: 'c',
-                ownerId: null
+                ownerId: null,
+                freeLoad: 0
             },
             mode: 'insert',
             results: [],

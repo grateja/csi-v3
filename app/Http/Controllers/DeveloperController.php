@@ -23,7 +23,9 @@ class DeveloperController extends Controller
         return response()->json([
             'user' => $user,
             'token' => $token,
-            'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'els'),
+            'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
+            'dopuSetup' => env('DOPU_SETUP', 'basic'), // basic, slave, master
+            'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
         ], 200);
     }
 }

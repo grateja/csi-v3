@@ -240,7 +240,7 @@ class ThermalPrinter extends Model
         if($transaction->partialPayment && !$transaction->payment) {
             $this->printItem("Partial payment", $transaction->partialPayment['cash']);
             $this->printItem("Balance", $transaction->partialPayment['balance']);
-            $this->printItem("OR Number", $transaction->partialPayment['or_number']);
+            $this->printItem("OR Number", '#' . $transaction->partialPayment['or_number']);
         } else if(!$transaction->payment) {
             $this->printSubtitle("NOT PAID");
             $this->printer->initialize();

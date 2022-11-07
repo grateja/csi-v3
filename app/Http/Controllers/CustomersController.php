@@ -102,6 +102,7 @@ class CustomersController extends Controller
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
+                    'organization' => $request->organization,
                     'first_visit' => $request->birthday,
                 ]);
 
@@ -140,6 +141,7 @@ class CustomersController extends Controller
                     'address' => $request->address,
                     'contact_number' => $request->contactNumber,
                     'email' => $request->email,
+                    'organization' => $request->organization,
                     'first_visit' => $request->birthday,
                 ]);
 
@@ -185,5 +187,15 @@ class CustomersController extends Controller
             'http_errors' => false
         ]);
         return $response->getBody()->getContents();
+    }
+
+    public function organizations(Request $request) {
+        $data = Customer::where(function($query) use ($request) {
+            $query->where('organization', 'like', "%$request->keyword%");
+        })->select('organization')
+        ->distinct()
+        ->orderBy('organization')->pluck('organization');
+
+        return response()->json($data, 200);
     }
 }

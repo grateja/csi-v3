@@ -32,6 +32,7 @@
                     <td>{{props.index + 1}}</td>
                     <td><div class="font-weight-bold">{{ props.item.name }}</div>
                         <div class="ml-4 mb-2">
+                            <div v-if="props.item.organization">{{props.item.organization}}</div>
                             <div class="font-italic caption">{{ props.item.contact_number || '[no-contact-number]' }} / {{ props.item.email || '[no-email]' }}</div>
                             <div>{{ props.item.address || '[no-address]' }}</div>
                             <div>{{ props.item.remarks }}</div>

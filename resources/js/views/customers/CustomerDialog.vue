@@ -16,6 +16,7 @@
                     <v-text-field v-model="formData.address" :error-messages="errors.get('address')" outline label="Address"></v-text-field>
                     <v-text-field v-model="formData.contactNumber" :error-messages="errors.get('contactNumber')" outline label="Contact number"></v-text-field>
                     <v-text-field v-model="formData.email" :error-messages="errors.get('email')" outline label="Email"></v-text-field>
+                    <v-combobox outline v-model="formData.organization" :items="organizations" label="Organization"  item-text="organization" @input.native="search($event)"></v-combobox>
                     <v-text-field v-model="formData.birthday" :error-messages="errors.get('birthday')" outline label="Birthday" type="date"></v-text-field>
                     <v-text-field v-model="formData.remarks" :error-messages="errors.get('remarks')" outline label="Remarks"></v-text-field>
                 </v-card-text>
@@ -37,6 +38,7 @@ export default {
         return {
             mode: 'insert',
             loadingCRN: false,
+            organizations: [],
             formData: {
                 id: null,
                 crn: null,
@@ -45,6 +47,7 @@ export default {
                 address: null,
                 contactNumber: null,
                 email: null,
+                organization: null,
                 birthday: moment().format('YYYY-MM-DD')
             }
         }
@@ -77,6 +80,9 @@ export default {
         },
         clear(key) {
             this.$store.commit('customer/clearErrors', key);
+        },
+        search(e) {
+            this.formData.organization = e.target.value;
         }
     },
     computed: {
@@ -86,6 +92,11 @@ export default {
         saving() {
             return this.$store.getters['customer/isSaving'];
         }
+    },
+    created() {
+        axios.get('/api/autocomplete/organizations').then((res, rej) => {
+            this.organizations = res.data;
+        });
     },
     watch: {
         value(val) {
@@ -98,6 +109,7 @@ export default {
                 this.formData.address = this.customer.address;
                 this.formData.contactNumber = this.customer.contact_number;
                 this.formData.email = this.customer.email;
+                this.formData.organization = this.customer.organization;
                 this.formData.birthday = moment(this.customer.first_visit).format('YYYY-MM-DD');
                 setTimeout(() => {
                     this.$refs.name.$el.querySelector('input').select();
@@ -111,6 +123,7 @@ export default {
                 this.formData.address = null;
                 this.formData.contactNumber = null;
                 this.formData.email = null;
+                this.formData.organization = null;
                 this.formData.birthday = moment().format('YYYY-MM-DD');
             }
             if(val && !this.customer) {

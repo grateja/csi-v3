@@ -152,6 +152,7 @@ class RfidCardsController extends Controller
             'rfid' => 'required|unique:rfid_cards',
             'cardType' => 'required',
             'ownerId' => 'required',
+            'freeLoad' => 'numeric|nullable|min:0',
         ];
 
         if($request->validate($rules)) {
@@ -162,7 +163,20 @@ class RfidCardsController extends Controller
                     'customer_id' => $request->cardType == 'c' ? $request->ownerId : null,
                     'user_id' => $request->cardType == 'u' ? $request->ownerId : null,
                     'card_type' => $request->cardType,
+                    'balance' => $request->freeLoad,
                 ]);
+
+                if($request->freeLoad > 0) {
+                    RfidLoadTransaction::create([
+                        'rfid_card_id' => $rfidCard->id,
+                        'customer_name' => $rfidCard->owner_name,
+                        'rfid' => $rfidCard->rfid,
+                        'amount' => 0,
+                        'cash' => 0,
+                        'staff_name' => auth('api')->user()->name,
+                        'remarks' => 'Free Php ' . $request->freeLoad . ' load upon registration',
+                    ]);
+                }
 
                 UnregisteredCard::where('rfid', $request->rfid)->delete();
                 $this->dispatch($rfidCard->queSynch());
@@ -171,7 +185,7 @@ class RfidCardsController extends Controller
                     'fullname' => $rfidCard->ownerName,
                     'rfid' => $rfidCard->rfid,
                     'rfid_card_id' => $rfidCard->id,
-                    'balance' => 0,
+                    'balance' => $rfidCard->balance,
                     'card_type' => $rfidCard->card_type,
                     'customer_id' => $rfidCard->customer_id,
                     'user_id' => $rfidCard->user_id,
