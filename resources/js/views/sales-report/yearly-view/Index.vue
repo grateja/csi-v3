@@ -128,14 +128,17 @@
                 </v-btn>
             </v-flex>
         </v-layout>
-        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog>
+        <!-- <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog> -->
+        <daily-summary v-model="openCustomRange" :date="dateFrom" :until="dateTo" />
     </div>
 </template>
 <script>
-import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
+// import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
+import DailySummary from '../calendar/DailySummary.vue';
 export default {
     components: {
-        CustomRangeDialog
+        // CustomRangeDialog,
+        DailySummary
     },
     data() {
         return {

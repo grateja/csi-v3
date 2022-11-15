@@ -151,17 +151,20 @@
                 </v-card>
             </v-flex>
         </v-layout>
-        <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog>
+        <!-- <custom-range-dialog v-model="openCustomRange" :dateFrom="dateFrom" :dateTo="dateTo" :origin="origin"></custom-range-dialog> -->
+        <daily-summary v-model="openCustomRange" :date="dateFrom" :until="dateTo" />
     </v-card>
 </template>
 
 <script>
 import Navigator from '../Navigator.vue';
-import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
+import DailySummary from '../calendar/DailySummary.vue';
+// import CustomRangeDialog from '../date-range/CustomRangeDialog.vue';
 export default {
     components: {
         Navigator,
-        CustomRangeDialog
+        DailySummary
+        // CustomRangeDialog
     },
     data() {
         return {

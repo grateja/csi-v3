@@ -6,6 +6,7 @@ use App\Client;
 use Illuminate\Http\Request;
 use App\Customer;
 use App\LoyaltyPoint;
+use App\Organization;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Support\Str;
@@ -190,11 +191,12 @@ class CustomersController extends Controller
     }
 
     public function organizations(Request $request) {
-        $data = Customer::where(function($query) use ($request) {
-            $query->where('organization', 'like', "%$request->keyword%");
-        })->select('organization')
-        ->distinct()
-        ->orderBy('organization')->pluck('organization');
+        $data = Organization::list();
+        // $data = Customer::where(function($query) use ($request) {
+        //     $query->where('organization', 'like', "%$request->keyword%");
+        // })->select('organization')
+        // ->distinct()
+        // ->orderBy('organization')->pluck('organization');
 
         return response()->json($data, 200);
     }

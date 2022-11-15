@@ -1,7 +1,7 @@
 <template>
-    <v-dialog :value="value" max-width="520" persistent>
+    <v-dialog :value="value" max-width="580" persistent>
         <v-card class="rounded-card">
-            <v-card-title class="grey--text"><span class="title">Summary for {{moment(date).format('MMMM DD, YYYY')}}</span>
+            <v-card-title class="grey--text"><span class="title">Summary for {{dateRange}}</span>
                 <v-spacer></v-spacer>
                 <v-btn icon sm @click="close">
                     <v-icon>close</v-icon>
@@ -695,6 +695,16 @@ export default {
             }).then((res, rej) => {
                 console.log(res.data);
             })
+        }
+    },
+    computed: {
+        dateRange() {
+            if(this.date == this.until) {
+                return moment(this.date).format('MMM DD, YYYY')
+            } else {
+                return moment(this.date).format('MMM DD') + ' to ' + moment(this.until).format('MMM DD, YYYY')
+            }
+            
         }
     },
     watch:{

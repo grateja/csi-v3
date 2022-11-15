@@ -7,7 +7,7 @@
             </v-flex>
             <v-flex xs6 class="text-xs-right">
                 <h3 class="font-weight-bold title">
-                    P{{parseFloat(totalSales || 0).toFixed(2)}}
+                    {{totalSales | peso}}
                 </h3>
             </v-flex>
         </v-layout>

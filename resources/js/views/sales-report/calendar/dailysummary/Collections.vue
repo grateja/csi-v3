@@ -9,46 +9,46 @@
                     </v-tooltip>
                 </h3>
             </v-flex>
-            <v-flex v-if="simplified" xs4 class="text-xs-right title"> P{{parseFloat(collections.total || 0).toFixed(2)}}</v-flex>
+            <v-flex v-if="simplified" xs4 class="text-xs-right title"> {{collections.total | peso}}</v-flex>
         </v-layout>
         <!-- <span class="ml-3 font-italic grey--text caption">Job orders paid to date including previous transactions</span> -->
         <v-divider v-if="!simplified"></v-divider>
         <v-expand-transition>
             <v-card-text v-if="!simplified">
                 <div class="px-2 mx-2">
-                    <v-layout>
+                    <v-layout class="ma-2">
                         <v-flex xs6>
                             <span>Fully paid Job Orders</span>
                         </v-flex>
-                        <v-flex xs6 class="text-xs-right">P{{parseFloat(collections.fullyPaid || 0).toFixed(2)}}</v-flex>
+                        <v-flex xs6 class="text-xs-right">{{collections.fullyPaid | peso}}</v-flex>
                     </v-layout>
                     <!-- <v-divider></v-divider> -->
-                    <v-layout>
+                    <v-layout class="ma-2">
                         <v-flex xs6>
                             <span>Partially paid Job Orders</span>
                         </v-flex>
-                        <v-flex xs6 class="text-xs-right">P{{parseFloat(collections.partiallyPaid || 0).toFixed(2)}}</v-flex>
+                        <v-flex xs6 class="text-xs-right">{{collections.partiallyPaid | peso}}</v-flex>
                     </v-layout>
                     <!-- <v-divider></v-divider> -->
-                    <v-layout>
+                    <v-layout class="ma-2">
                         <v-flex xs6>
                             <span>Master cards</span>
                         </v-flex>
-                        <v-flex xs6 class="text-xs-right">P{{parseFloat(collections.rfidTap || 0).toFixed(2)}}</v-flex>
+                        <v-flex xs6 class="text-xs-right">{{collections.rfidTap | peso}}</v-flex>
                     </v-layout>
                     <!-- <v-divider></v-divider> -->
-                    <v-layout>
+                    <v-layout class="ma-2">
                         <v-flex xs6>
                             <span>Load transactions</span>
                         </v-flex>
-                        <v-flex xs6 class="text-xs-right">P{{parseFloat(collections.rfidLoad || 0).toFixed(2)}}</v-flex>
+                        <v-flex xs6 class="text-xs-right">{{collections.rfidLoad | peso}}</v-flex>
                     </v-layout>
                     <v-divider></v-divider>
                     <v-layout class="font-weight-bold">
                         <v-flex xs6>
                             <span>Total</span>
                         </v-flex>
-                        <v-flex xs6 class="text-xs-right">P{{parseFloat(collections.total || 0).toFixed(2)}}</v-flex>
+                        <v-flex xs6 class="text-xs-right">{{collections.total | peso}}</v-flex>
                     </v-layout>
                     <!-- <v-divider></v-divider> -->
                 </div>

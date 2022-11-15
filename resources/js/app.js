@@ -21,6 +21,9 @@ Vue.component('apexcharts', VueApexCharts);
 
 Vue.filter('uppercase', str => str.toUpperCase());
 
+Vue.filter("peso", function (value) {
+    return 'P' + parseFloat(value || 0).toLocaleString('en-US', {maximumFractionDigits:2});
+});
 const app = new Vue({
     el: '#app',
     router,
