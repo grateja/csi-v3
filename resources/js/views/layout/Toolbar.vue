@@ -8,6 +8,8 @@
 
         <v-spacer></v-spacer>
 
+        <v-btn>keme</v-btn>
+
         <template v-if="!!user">
             <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 580">
                 <v-icon :left="$vuetify.breakpoint.width > 580">store</v-icon>
@@ -28,18 +30,22 @@
         </template>
 
         <shop-preferences-dialog v-model="openShopPreferences" />
+        <rfid-terminal v-model="openRfidTerminal" />
     </v-toolbar>
 </template>
 <script>
 import ShopPreferencesDialog from './ShopPreferencesDialog.vue';
+import RfidTerminal from './RfidTerminal.vue';
 
 export default {
     components: {
-        ShopPreferencesDialog
+        ShopPreferencesDialog,
+        RfidTerminal
     },
     data() {
         return {
-            openShopPreferences: false
+            openShopPreferences: false,
+            openRfidTerminal: false
         }
     },
     methods: {

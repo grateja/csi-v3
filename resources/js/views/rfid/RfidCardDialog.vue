@@ -44,26 +44,32 @@
                     <v-btn round class="primary" type="submit" :loading="saving">save</v-btn>
                     <v-btn round @click="close">close</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn round @click="openUnregisteredCardDialog = true">
+                    <!-- <v-btn round @click="openUnregisteredCardDialog = true">
                         browse unregistered card
+                    </v-btn> -->
+                    <v-btn round @click="openUnregisteredCardDialog = true">
+                        <v-icon>tap_and_play</v-icon>
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </form>
-        <unregistered-card-dialog v-model="openUnregisteredCardDialog" @select="selectCard" />
+        <!-- <unregistered-card-dialog v-model="openUnregisteredCardDialog" @select="selectCard" /> -->
+        <rfid-terminal v-model="openUnregisteredCardDialog" @select="selectCard" />
         <customer-dialog v-model="openCustomerDialog" :initialName="keyword" @save="insertCustomer" :customer="activeCustomer" :preRegister="true"></customer-dialog>
         <customer-browser-dialog v-model="openSearchFromCloud" @selectCustomer="selectPreRegistered" />
     </v-dialog>
 </template>
 
 <script>
-import UnregisteredCardDialog from './UnregisteredCardDialog.vue';
+// import UnregisteredCardDialog from './UnregisteredCardDialog.vue';
 import CustomerDialog from '../customers/CustomerDialog.vue';
 import CustomerBrowserDialog from '../customers/CustomerBrowserDialog.vue';
+import RfidTerminal from '../layout/RfidTerminal.vue';
 
 export default {
     components: {
-        UnregisteredCardDialog,
+        // UnregisteredCardDialog,
+        RfidTerminal,
         CustomerDialog,
         CustomerBrowserDialog
     },
@@ -135,7 +141,7 @@ export default {
             }
         },
         selectCard(rfid) {
-            this.formData.rfid = rfid.rfid;
+            this.formData.rfid = rfid;
         },
         selectOwner(item) {
             this.formData.ownerId = item.id;

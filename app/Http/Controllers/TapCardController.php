@@ -6,6 +6,7 @@ use App\Machine;
 use App\MachineUsage;
 use App\RfidCard;
 use App\RfidCardTransaction;
+use App\RfidChecker;
 use App\ThermalPrinter;
 use App\UnregisteredCard;
 use Carbon\Carbon;
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\DB;
 class TapCardController extends Controller
 {
     public function tap($ip, $rfid, $macAddress = null, Request $request) {
+        RfidChecker::where(function($query){})->delete();
+        RfidChecker::create([
+            'rfid' => $rfid,
+        ]);
+
         $token = $request->token;
         $machine = Machine::where('ip_address', $ip)->first();
         if($machine == null) {
@@ -44,6 +50,7 @@ class TapCardController extends Controller
         $rfidCard = RfidCard::where(function($query) {
             $query->whereHas('customer')->orWhereHas('user');
         })->where('rfid', $rfid)->first();
+
         if($rfidCard == null) {
 
             $unregisteredCard = UnregisteredCard::where('rfid', $rfid)->first();
@@ -127,5 +134,11 @@ class TapCardController extends Controller
                 'message' => 'Cannot activate machine',
             ], 422);
         });
+    }
+    public function check($rfid) {
+        RfidChecker::where(function($query){})->delete();
+        RfidChecker::create([
+            'rfid' => $rfid,
+        ]);    
     }
 }

@@ -18,6 +18,10 @@
 
                 <v-spacer></v-spacer>
 
+                <v-btn icon @click="showRfidTerminal = true">
+                    <v-icon>tap_and_play</v-icon>
+                </v-btn>
+
                 <template v-if="!!user">
                     <v-btn v-if="isOwner" @click="openShopPreferences = true" :icon="$vuetify.breakpoint.width < 720" class="translucent" round>
                         <!-- <v-icon :left="$vuetify.breakpoint.width > 720">store</v-icon> -->
@@ -142,25 +146,40 @@
         </div>
 
         </v-navigation-drawer>
+        <!-- <div class="rfid-load-checker">
+            <v-btn icon @click="showRfidTerminal = true" primary>
+                <v-icon>tap_and_play</v-icon>
+            </v-btn>
+        </div> -->
         <shop-preferences-dialog v-model="openShopPreferences" />
+        <rfid-terminal v-model="showRfidTerminal" @select="showRfidDetail" />
+        <card-detail-dialog v-model="openCardDetail" :rfid="rfid" />
     </div>
 </template>
 
 <script>
 import FlashMessage from './FlashMessage.vue';
 import ShopPreferencesDialog from './ShopPreferencesDialog.vue';
+import RfidTerminal from './RfidTerminal.vue';
+import CardDetailDialog from './CardDetailDialog.vue';
+
 export default {
     components: {
         FlashMessage,
-        ShopPreferencesDialog
+        ShopPreferencesDialog,
+        RfidTerminal,
+        CardDetailDialog,
     },
     data() {
         return {
+            rfid: '',
             monitorView: false,
             drawer: true,
             mini: false,
             needsToHide: true,
             openShopPreferences: false,
+            showRfidTerminal: false,
+            openCardDetail: false,
             links: [
                 {
                     text: 'Clients',
@@ -372,6 +391,11 @@ export default {
         toggleMonitorView() {
             this.monitorView = !this.monitorView
             this.drawer = !this.monitorView
+        },
+        showRfidDetail(rfid) {
+            this.rfid = rfid;
+            this.openCardDetail = true;
+            console.log("rfid from menu", rfid)
         }
     },
     beforeDestroy () {
@@ -389,3 +413,12 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.rfid-load-checker {
+    z-index: 99999;
+    position: fixed;
+    top: 70px;
+    right: 25px;
+}
+</style>

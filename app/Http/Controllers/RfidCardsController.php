@@ -266,6 +266,11 @@ class RfidCardsController extends Controller
         }
     }
 
+    public function cardDetails($rfid) {
+        $rfidCard = RfidCard::with('customer')->where('rfid', $rfid)->firstOrFail();
+        return response()->json($rfidCard);
+    }
+
     /**
      * Remove the specified resource from storage.
      *

@@ -73,6 +73,9 @@ Route::group(['prefix' => 'thermal/print'], function() {
 
 // /api/tap
 Route::group(['prefix' => 'tap'], function() {
+    // /api/tap/check/{rfid}
+    Route::get('check/{rfid}', 'TapCardController@check');
+
     // /api/tap/{machineIp}/{rfid}/{macAddress?}
     Route::get('{machineIp}/{rfid}/{macAddress?}', 'TapCardController@tap');
 });
@@ -891,6 +894,9 @@ Route::group(['prefix' => 'search', 'middleware' => 'auth:api'], function() {
 
 // /api/rfid-cards
 Route::group(['prefix' => 'rfid-cards', 'middleware' => 'auth:api'], function() {
+    // /api/rfid-cards/details/{rfid}
+    Route::get('details/{rfid}', 'RfidCardsController@cardDetails');
+
     // /api/rfid-cards/customer-cards
     Route::get('customer-cards', 'RfidCardsController@customerCards');
 
