@@ -13,13 +13,19 @@ class AlterTableWashingServices extends Migration
      */
     public function up()
     {
-        if(!Schema::hasTable('washing_services')) {
-            Schema::table('washing_services', function (Blueprint $table) {
-                $table->double('quick_minutes')->default(0);
-                $table->double('more_rinse_minutes')->default(0);
-                $table->double('premium_minutes')->default(0);
-            });
-        }
+        Schema::table('washing_services', function (Blueprint $table) {
+            if(!Schema::hasColumn('washing_services', 'quick_minutes')) {
+                $table->double('quick_minutes')->after('regular_minutes')->default(0);
+            }
+
+            if(!Schema::hasColumn('washing_services', 'more_rinse_minutes')) {
+                $table->double('more_rinse_minutes')->after('quick_minutes')->default(0);
+            }
+
+            if(!Schema::hasColumn('washing_services', 'premium_minutes')) {
+                $table->double('premium_minutes')->after('more_rinse_minutes')->default(0);
+            }
+        });
     }
 
     /**

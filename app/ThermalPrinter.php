@@ -614,7 +614,7 @@ class ThermalPrinter extends Model
             }
             $this->printUnderline();
             $this->printer->setEmphasis(true);
-            $this->printItem("Total", $data->sum('amount'), $data->sum('quantity'));
+            $this->printItem("Total", $data->sum('discount_in_peso'), $data->sum('quantity'));
             $this->printer->feed();
         } else {
             $this->printCaption("No Discounted JO");
