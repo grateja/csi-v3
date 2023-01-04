@@ -103,6 +103,7 @@ class TransactionsController extends Controller
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
         })
+            ->whereNull('cancelation_remarks')
             ->where('saved', true)
             ->whereDoesntHave('payment');
 
@@ -119,7 +120,7 @@ class TransactionsController extends Controller
         $result = Transaction::where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
-        })->where('saved', true);
+        })->whereNull('cancelation_remarks')->where('saved', true);
 
         if($request->date) {
             $result = $result->whereDate('date', $request->date);
@@ -246,7 +247,8 @@ class TransactionsController extends Controller
         $result = Customer::with(['transactions' => function($query) {
             $query->where('saved', false);
         }])->whereHas('transactions', function($query) {
-            $query->where('saved', false);
+            $query->where('saved', false)
+                ->whereNull('cancelation_remarks');
         })->orderBy('name')->get();
 
         return response()->json([

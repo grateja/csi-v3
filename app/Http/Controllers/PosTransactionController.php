@@ -906,6 +906,7 @@ class PosTransactionController extends Controller
                 foreach ($transaction->productTransactionItems as $value) {
                     $value->product()->increment('current_stock');
                     $value->delete();
+                    $this->dispatch($value->product->queSynch());
                 }
     
                 $this->dispatch((new SendTransaction($transaction->id))->delay(5));
