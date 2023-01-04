@@ -15,7 +15,7 @@ class Transaction extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'id', 'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid', 'synched', 'updated_at', 'created_at',
+        'id', 'customer_id', 'job_order', 'user_id', 'staff_name', 'date', 'saved', 'customer_name', 'total_price', 'date_paid', 'cancelation_remarks', 'synched', 'updated_at', 'created_at',
     ];
 
     public function simplified() {

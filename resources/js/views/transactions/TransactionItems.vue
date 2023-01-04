@@ -508,32 +508,63 @@
                 </v-card-text>
             </v-card>
 
-            <v-card-actions v-if="currentTransaction && !currentTransaction.saved">
-                <v-spacer></v-spacer>
-                <v-btn class="title" color="#cf0" @click="saveTransaction" round :loading="saving"> <span class="font-weight-bold">{{totalPrice}} </span> &nbsp; confirm</v-btn>
-                <v-spacer></v-spacer>
-            </v-card-actions>
+            <template v-if="currentTransaction && !currentTransaction.saved">
+                <v-card-actions v-if="hasItems">
+                    <v-spacer></v-spacer>
+                    <v-btn class="title" color="#cf0" @click="saveTransaction" round :loading="saving"> <span class="font-weight-bold">{{totalPrice}} </span> &nbsp; confirm</v-btn>
+                    <v-spacer></v-spacer>
+                </v-card-actions>
+            </template>
             <v-card-actions v-else-if="!!currentTransaction">
                 <v-spacer></v-spacer>
                 <v-btn color="primary" @click="viewPayment" round>{{totalPrice}}&nbsp;&nbsp;Payment</v-btn>
                 <v-btn @click="openPrinterDialog = true" round>Print</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn @click="cancelTransaction" round :loading="canceling"> <span class="font-weight-bold"> </span>Cancel Job Order</v-btn>
+                <v-spacer></v-spacer>
+            </v-card-actions>
+            <v-card class="pa-2">
+                <template v-if="currentTransaction">
+                    <v-card v-if="currentTransaction.remarks && currentTransaction.remarks.length" class="rounded-card" color="#beb60024">
+                        <v-card-text>
+                            <h3 class="grey--text font-italic">Remarks</h3>
+                            <ul>
+                                <li v-for="remarks in currentTransaction.remarks" :key="remarks.id">
+                                    {{remarks.remarks}}
+                                </li>
+                            </ul>
+                        </v-card-text>
+                    </v-card>
+                </template>
+                <v-btn block flat outline @click="openRemarksDialog = true" round>
+                    <v-icon small left>edit</v-icon>
+                    remarks
+                </v-btn>
+            </v-card>
+        <transaction-remarks-dialog v-model="openRemarksDialog" :transaction="currentTransaction" />
         <service-item-dialog v-if="currentTransaction" v-model="openServiceItemDialog" :serviceName="activeServiceItemName" :transactionId="currentTransaction.id"></service-item-dialog>
         <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" @save="save" />
         <printer-dialog v-model="openPrinterDialog" :transaction="currentTransaction" @close="clear" />
+        <cancel-job-order-dialog v-model="openCancelJobOrderDialog" @confirm="voidTransaction" />
     </v-card>
 </template>
 <script>
 import ServiceItemDialog from './ServiceItemDialog.vue';
 import PaymentDialog from './PaymentDialog.vue';
 import PrinterDialog from '../transaction-reports/PrinterDialog.vue';
+import TransactionRemarksDialog from '../transactions/TransactionRemarksDialog.vue'
+import CancelJobOrderDialog from './CancelJobOrderDialog.vue'
 
 export default {
     components: {
         ServiceItemDialog,
         PaymentDialog,
-        PrinterDialog
+        PrinterDialog,
+        TransactionRemarksDialog,
+        CancelJobOrderDialog
     },
     data() {
         return {
@@ -541,7 +572,10 @@ export default {
             openPaymentDialog: false,
             openServiceItemDialog: false,
             openPrinterDialog: false,
-            activeServiceItemName: null
+            openRemarksDialog: false,
+            openCancelJobOrderDialog: false,
+            activeServiceItemName: null,
+            canceling: false
         }
     },
     computed: {
@@ -561,6 +595,13 @@ export default {
         },
         currentCustomer() {
             return this.$store.getters['postransaction/getCurrentCustomer'];
+        },
+        hasItems() {
+            return this.currentTransaction.posLagoonItems.length > 0 
+                || this.currentTransaction.posLagoonPerKiloItems.length > 0
+                || this.currentTransaction.posProductItems.length > 0
+                || this.currentTransaction.posScarpaCleaningItems.length > 0
+                || this.currentTransaction.posServiceItems.length > 0
         }
     },
     methods: {
@@ -571,6 +612,33 @@ export default {
             this.$store.dispatch('postransaction/saveTransaction', this.currentTransaction.id).then((res, rej) => {
 
             });
+        },
+        cancelTransaction() {
+            if(this.currentTransaction == null) {
+                this.clear();
+            } else if(this.currentTransaction.job_order == null) {
+                if(confirm("Cancel this Job Order")) {
+                    this.canceling = true;
+                    this.$store.dispatch('postransaction/cancelTransaction', this.currentTransaction.id).then((res, rej) => {
+                        this.clear();
+                    }).finally(() => {
+                        this.canceling = false
+                    })
+                }
+            } else {
+                this.openCancelJobOrderDialog = true;
+            }
+        },
+        voidTransaction(remarks) {
+            this.canceling = true;
+            this.$store.dispatch('postransaction/voidTransaction', {
+                transactionId: this.currentTransaction.id,
+                remarks
+            }).then((res, rej) => {
+                this.clear();
+            }).finally(() => {
+                this.canceling = false;
+            })
         },
         viewServiceItems(item) {
             this.activeServiceItemName = item.name;

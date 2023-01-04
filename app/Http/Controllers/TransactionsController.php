@@ -78,7 +78,8 @@ class TransactionsController extends Controller
             'partialPayment' => function($query) {
                 $query->select('id', 'transaction_id', 'balance');
             }
-        ])->where(function($query) use ($request) {
+        ])->whereNull('cancelation_remarks')
+            ->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
         })
@@ -162,7 +163,8 @@ class TransactionsController extends Controller
         if($request->hideDeleted == 'false') {
             $result = $result->withTrashed()->paginate(10);
         } else {
-            $result = $result->paginate(10);
+            $result = $result->whereNull('cancelation_remarks')
+                ->paginate(10);
         }
 
 

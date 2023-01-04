@@ -196,6 +196,14 @@ const actions = {
             context.commit('setSavingStatus', false);
             return Promise.reject(err);
         });
+    },
+    cancelTransaction(context, transactionId) {
+        return axios.post(`/api/pos-transactions/${transactionId}/cancel-transaction`);
+    },
+    voidTransaction(context, data) {
+        return axios.post(`/api/pos-transactions/${data.transactionId}/void-transaction`, {
+            remarks: data.remarks
+        });
     }
 };
 

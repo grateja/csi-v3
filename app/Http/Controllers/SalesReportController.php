@@ -28,6 +28,7 @@ class SalesReportController extends Controller
         $result = [];
         $posTransactions = DB::table('transactions')
             ->where('saved', true)
+            ->whereNull('cancelation_remarks')
             ->whereNull('deleted_at')
             ->whereMonth('date', $monthIndex)->whereYear('date', $year)
             ->groupBy(DB::raw('day'))
@@ -130,6 +131,7 @@ class SalesReportController extends Controller
             ->count();
 
         $posTransactions = Transaction::where('saved', true)
+            ->whereNull('cancelation_remarks')
             ->whereDate('date', '>=', $request->date)
             ->whereDate('date', '<=', $request->until)
             ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
@@ -152,6 +154,7 @@ class SalesReportController extends Controller
             $query->whereDate('date', '>=', $request->date)
                 ->whereDate('date', '<=', $request->until);
         })->whereDoesntHave('partialPayment')
+            ->whereNull('cancelation_remarks')
             ->whereNull('date_paid')
             ->selectRaw('COUNT(id) as total_jo, SUM(total_price) as total_sales')
             ->first();
@@ -243,30 +246,37 @@ class SalesReportController extends Controller
 
         $usedProducts = ProductTransactionItem::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date', '>=',  $request->date)
+                ->whereNull('cancelation_remarks')
                 ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('count(*) as quantity, name, sum(price) as total_price')->get();
 
         $usedServices = ServiceTransactionItem::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date', '>=', $request->date)
+                ->whereNull('cancelation_remarks')
                 ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
         $usedScarpa = ScarpaCleaningTransactionItem::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date', '>=', $request->date)
+                ->whereNull('cancelation_remarks')
                 ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
-        })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
+        })->join('scarpa_categories', 'scarpa_categories.id', 'scarpa_category_id')
+            ->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, scarpa_categories.name as name, SUM(price) as total_price')->get();
 
         $usedLagoon = LagoonTransactionItem::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date', '>=', $request->date)
+                ->whereNull('cancelation_remarks')
                 ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
-        })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
+        })->join('lagoons', 'lagoons.id', 'lagoon_transaction_items.lagoon_id')
+            ->where('saved', true)->groupBy('category')->selectRaw('COUNT(*) as quantity, category as name, SUM(lagoon_transaction_items.price) as total_price')->get();
 
         $usedLagoonPerKilo = LagoonPerKiloTransactionItem::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date', '>=', $request->date)
+                ->whereNull('cancelation_remarks')
                 ->whereDate('date', '<=', $request->until)
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('SUM(kilos) as kg, name, SUM(total_price) as total_price')->get();
@@ -474,6 +484,7 @@ class SalesReportController extends Controller
 
     public function monthy($year) {
         $posTransactions = DB::table('transactions')
+            ->whereNull('cancelation_remarks')
             ->where('saved', true)
             ->whereNull('deleted_at')
             ->whereYear('date', $year)
@@ -557,6 +568,7 @@ class SalesReportController extends Controller
 
     public function yearly($yearFrom, $yearUntil) {
         $posTransactions = DB::table('transactions')
+            ->whereNull('cancelation_remarks')
             ->where('saved', true)
             ->whereNull('deleted_at')
             ->whereBetween(DB::raw('YEAR(date)'), [$yearFrom, $yearUntil])

@@ -873,6 +873,47 @@ class PosTransactionController extends Controller
         });
     }
 
+    public function cancelTransaction($transactionId) {
+        MonitorChecker::idle();
+        $transaction = Transaction::find($transactionId);
+        if($transaction != null) {
+            $transaction->forceDelete();
+        }
+    }
+
+    public function voidTransaction($transactionId, Request $request) {
+        MonitorChecker::idle();
+        return  DB::transaction(function () use ($transactionId, $request) {
+            $transaction = Transaction::find($transactionId);
+            if($transaction != null) {
+                $transaction->update([
+                    'cancelation_remarks' => $request->remarks . "(Canceled by: ".auth('api')->user()->name.")",
+                ]);
+
+                foreach ($transaction->serviceTransactionItems as $value) {
+                    if($value->category == 'full') {
+                        $productItems = $value->fullService->fullServiceProducts;
+                        foreach($productItems as $productItem) {
+                            $product = Product::find($productItem->product_id);
+                            if($product) {
+                                $product->increment('current_stock', $productItem->quantity);
+                            }
+                        }
+                    }
+                    $value->delete();
+                }
+    
+                foreach ($transaction->productTransactionItems as $value) {
+                    $value->product()->increment('current_stock');
+                    $value->delete();
+                }
+    
+                $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+            }
+        });
+        
+    }
+
     public function clearMonitorView() {
         MonitorChecker::idle();
         // $monitorChecker = MonitorChecker::firstOrCreate(['id' => 'default']);

@@ -26,9 +26,9 @@
                                 <!-- <span class="display-1 font-weight-bold machine-tile-name">{{machine.machine_name}}</span> -->
                                 <v-spacer></v-spacer>
                             </v-card-actions>
-                            <div class="index">
+                            <!-- <div class="index">
                                 <span>{{index+1}}</span>
-                            </div>
+                            </div> -->
                             <!-- <div class="text-xs-center font-italic caption grey--text" v-else>Used {{moment(machine.time_ends_in).fromNow()}}</div> -->
 
                             <!-- <div v-if="machine.is_running" class="text-xs-center">
@@ -113,7 +113,7 @@ export default {
             }
         },
         ping() {
-            // this.$store.dispatch('remote/ping', this.machine);
+            this.$store.dispatch('remote/ping', this.machine);
         },
         changeOrder(e) {
             e.stopPropagation();
@@ -141,7 +141,7 @@ export default {
     },
     created() {
         this.timer = setInterval(this.refreshTime, 1000);
-        this.ping();
+        // this.ping();
     },
     beforeDestroy() {
         this.cancelUpdate();

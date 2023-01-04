@@ -51,12 +51,15 @@
                     <tr>
                         <td>{{props.index + 1}}</td>
                         <td>
-                            <v-btn round small class="font-weight-bold" :color="props.item.date_paid != null ? `#31f239` : !!props.item.partial_payment ? '#eeb' : '#f766c2'" @click="previewTransaction(props.item)">
+                            <v-btn round small class="font-weight-bold" :color="joColor(props.item)" @click="previewTransaction(props.item)">
                                 {{ props.item.job_order }}
                             </v-btn>
                             <div class="caption red--text" v-if="props.item.deleted_at">
                                 DELETED:
                                 {{ moment(props.item.deleted_at).format('LLL')}}
+                            </div>
+                            <div v-if="props.item.cancelation_remarks">
+                                {{props.item.cancelation_remarks}}
                             </div>
                         </td>
                         <td>{{ props.item.customer_name }}</td>
@@ -202,6 +205,17 @@ export default {
         },
         deleteTransaction(transaction) {
             this.items = this.items.filter(i => i.id != transaction.id);
+        },
+        joColor(transaction) {
+            if(transaction.cancelation_remarks) {
+                return '#999'
+            } else if(transaction.date_paid != null) {
+                return `#31f239`
+            } else if(!!transaction.partial_payment) {
+                return '#eeb'
+            } else {
+                return '#f766c2'
+            }
         }
     },
     created() {

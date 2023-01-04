@@ -562,6 +562,12 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
     // /api/pos-transactions/reduce-per-kilo
     Route::post('add-per-kilo', 'PosTransactionController@removePerKilo');
 
+    // /api/pos-transactions/{transactionId}/cancel-transaction
+    Route::post('{id}/cancel-transaction', 'PosTransactionController@cancelTransaction');
+
+    // /api/pos-transactions/{transactionId}/void-transaction
+    Route::post('{id}/void-transaction', 'PosTransactionController@voidTransaction');
+
     // /api/pos-transactions/scarpa-cleanings
     Route::group(['prefix' => 'scarpa-cleanings'], function() {
         // /api/pos-transactions/scarpa-cleanings
