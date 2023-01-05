@@ -28,15 +28,18 @@
                 </v-layout>
             </v-card-text>
         </v-card>
-        <custom-range-dialog v-model="openDialog" :dateFrom="dateFrom" :dateTo="dateTo" :origin="'Custom date'"></custom-range-dialog>
+        <daily-summary v-model="openDialog" :date="dateFrom" :until="dateTo" />
+        <!-- <custom-range-dialog v-model="openDialog" :dateFrom="dateFrom" :dateTo="dateTo" :origin="'Custom date'"></custom-range-dialog> -->
     </v-card>
 </template>
 <script>
-import CustomRangeDialog from './CustomRangeDialog.vue';
+// import CustomRangeDialog from './CustomRangeDialog.vue';
+import DailySummary from '../calendar/DailySummary.vue';
 
 export default {
     components: {
-        CustomRangeDialog
+        DailySummary
+        // CustomRangeDialog
     },
     data() {
         return {
