@@ -92,11 +92,14 @@ const getters = {
     //     return 'balie';
     // },
     getDaysInMonth(state) {
-        var d = moment(state.year + '-' + state.monthIndex + '-' + state.day);
-        return d.daysInMonth();
+        var _daysInMonth = ('0' + state.monthIndex).slice(-2)
+        var d = moment(state.year + '-' + _daysInMonth + '-' + state.day);
+        console.log('days in month', d)
+        return d.daysInMonth() | 0;
     },
     getFirstDayOfMonth() {
-        var d = moment(state.year + '-' + state.monthIndex + '-01');
+        var month = ('0' + state.monthIndex).slice(-2)
+        var d = moment(state.year + '-' + month + '-01');
         return d.isoWeekday() - 1;
     },
     getYearsFrom(state) {

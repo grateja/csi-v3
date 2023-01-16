@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <v-card-title class="px-0">
             <v-btn round class="ml-0 translucent" to="/sales-report/monthly-view">
                 <v-icon left>
@@ -275,7 +274,9 @@ export default {
             this.origin = 'Sales for : ' + moment().set('month', this.monthIndex - 1).format('MMMM') + ', ' + this.year;
         },
         preview(day) {
-            var _date = moment(`${this.year}-${this.monthIndex}-${day}`).format('YYYY-MM-DD');
+            var _monthIndex = ('0' + this.monthIndex).slice(-2)
+            var _day = ('0' + day).slice(-2)
+            var _date = moment(`${this.year}-${_monthIndex}-${_day}`).format('YYYY-MM-DD');
             this.date = _date;
             this.until = _date;
             this.openDailySummary = true;
@@ -343,7 +344,9 @@ export default {
                         totalDeposit: '₱' + parseFloat(day.totalDeposit).toLocaleString()
                     }
                 } else {
-                    var _date = moment(`${this.year}-${this.monthIndex}-${d}`);
+                    var _monthIndex = ('0' + this.monthIndex).slice(-2)
+                    var _day = ('0' + d).slice(-2)
+                    var _date = moment(`${this.year}-${_monthIndex}-${_day}`);
                     return {
                         date: d,
                         dayOfWeek: _date.format('dddd'),
@@ -386,6 +389,7 @@ export default {
         }
     },
     created() {
+        // console.log(this.numberOfDaysInMonth);
         if(!this.monthIndex) {
             // this.$store.commit('transactionreport/disolve');
             this.$store.commit('transactionreport/setActiveMonth', new Date().getMonth() + 1);
