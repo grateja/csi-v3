@@ -32,6 +32,7 @@ class PosTransactionController extends Controller
     public function currentTransaction($customerId) {
         $transaction = Transaction::with('customer', 'partialPayment')
             ->whereNull('date_paid')
+            ->whereNull('cancelation_remarks')
             ->where('customer_id', $customerId)
             ->first();
 
