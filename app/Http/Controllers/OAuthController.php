@@ -14,6 +14,7 @@ class OAuthController extends Controller
 {
     public function login(Request $request) {
         $err = null;
+        $shopId = null;
         if(auth()->attempt([
             'email' => $request->email,
             'password' => $request->password
@@ -64,11 +65,14 @@ class OAuthController extends Controller
 
             }
 
+            if($client = Client::first()) {
+                $shopId = $client->user_id;
+            }
 
             return response()->json([
                 'user' => $user,
                 'token' => $token,
-                'shopId' => Client::first()->user_id,
+                'shopId' => $shopId,
                 // 'activeBranch' => $user->activeBranch,
                 'retainToken' => $request->rememberMe,
                 'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
