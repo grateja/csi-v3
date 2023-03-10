@@ -184,12 +184,12 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
-                    }, 10);
+                    // setTimeout(() => {
+                    //     window.scrollTo({
+                    //         top: document.body.scrollHeight,
+                    //         behavior: 'smooth'
+                    //     });
+                    // }, 10);
                 }
                 this.totalResult = res.data.result.total;
                 this.totalPage = res.data.result.last_page;

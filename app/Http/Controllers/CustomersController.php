@@ -10,6 +10,8 @@ use App\Organization;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReportTemplate;
 
 class CustomersController extends Controller
 {
@@ -199,5 +201,41 @@ class CustomersController extends Controller
         // ->orderBy('organization')->pluck('organization');
 
         return response()->json($data, 200);
+    }
+
+    public function newCustomers(Request $request) {
+        $result = Customer::whereDate('created_at', '>=', $request->date);
+            // ->whereDate('date', '<=', $request->until)
+            // ->get();
+        if($request->until != null) {
+            $result = $result->whereDate('created_at', '<=', $request->until);
+        }
+
+        $result->orderBy('created_at');
+
+        if($request->export == 'excel') {
+            return $this->excel($result->selectRaw(
+                'crn, name, contact_number, address'
+            )->get());
+        }
+
+        return response()->json([
+            'result' => $result->paginate(10),
+        ]);
+    }
+
+    public function excel(Request $request) {
+        $result = Customer::whereDate('created_at', '>=', $request->params['date']);
+        if($request->until != null) {
+            $result = $result->whereDate('created_at', '<=', $request->params['until']);
+        }
+
+        $result = $result->orderBy('created_at')->selectRaw(
+            'crn, name, contact_number, address, created_at, first_visit, earned_points'
+        )->get();
+
+        return Excel::download(new ReportTemplate($result, [
+            'CRN', 'NAME', 'CONTACT NUMBER', 'ADDRESS', 'FIRST VISIT', 'BIRTHDAY', 'EARNED_POINTS'
+        ]), 'new-customers.csv');
     }
 }

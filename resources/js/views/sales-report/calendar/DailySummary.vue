@@ -24,7 +24,7 @@
                 <!-- <h3 class="title gray--text ml-3">{{newCustomers}} New customer(s)</h3> -->
 
                 <v-divider class="mb-4"></v-divider>
-                <customers :newCustomers="newCustomers" />
+                <customers :newCustomers="newCustomers" :date="date" :until="until" />
                 <job-orders :posSummary="posSummary" :view="view" />
                 <used-services :usedServices="usedServices" :view="view" />
                 <used-products :usedProducts="usedProducts" :view="view" />

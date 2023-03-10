@@ -12,6 +12,7 @@ Vue.prototype.moment = moment;
 import Vuetify from 'vuetify';
 import Breadcrumbs from 'vue-2-breadcrumbs';
 import VueApexCharts from 'vue-apexcharts';
+import Vue from 'vue';
 
 Vue.use(Vuetify);
 Vue.use(Breadcrumbs);
@@ -24,6 +25,11 @@ Vue.filter('uppercase', str => str.toUpperCase());
 Vue.filter("peso", function (value) {
     return 'P' + parseFloat(value || 0).toLocaleString('en-US', {maximumFractionDigits:2});
 });
+
+Vue.filter("simpleDate", function(value) {
+    let _date = moment(value);
+    return _date.isValid() ? _date.format('MMM D, YYYY') : value;
+})
 const app = new Vue({
     el: '#app',
     router,

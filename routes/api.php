@@ -185,6 +185,9 @@ Route::group(['prefix' => 'excel', 'middleware' => 'auth:api'], function() {
 
     // /api/excel/export-services
     Route::post('export-services', 'ExcelController@exportServices');
+
+    // /api/excel/new-customers
+    Route::post('new-customers', 'CustomersController@excel');
 });
 
 
@@ -193,6 +196,9 @@ Route::group(['prefix' => 'excel', 'middleware' => 'auth:api'], function() {
 
 // /api/customers
 Route::group(['prefix' => 'customers', 'middleware' => 'auth:api'], function() {
+    // /api/customers/new-customers
+    Route::get('new-customers', 'CustomersController@newCustomers');
+
     // /api/customers/pre-registered
     Route::get('pre-registered', 'CustomersController@preRegistered');
 
