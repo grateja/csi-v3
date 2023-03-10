@@ -1,5 +1,5 @@
 <template>
-    <v-dialog :value="value" max-width="640">
+    <v-dialog :value="value" max-width="640" persistent>
         <v-card>
             <v-card-title>
                 <span class="title">New customers</span>
@@ -165,6 +165,8 @@ export default {
     watch: {
         value(val) {
             if(val) {
+                this.items = []
+                this.reset = true
                 this.page = 1
                 this.load();
             }

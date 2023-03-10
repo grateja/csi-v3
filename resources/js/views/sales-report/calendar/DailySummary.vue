@@ -25,7 +25,7 @@
 
                 <v-divider class="mb-4"></v-divider>
                 <customers :newCustomers="newCustomers" :date="date" :until="until" />
-                <job-orders :posSummary="posSummary" :view="view" />
+                <job-orders :posSummary="posSummary" :date="date" :until="until" :view="view" />
                 <used-services :usedServices="usedServices" :view="view" />
                 <used-products :usedProducts="usedProducts" :view="view" />
                 <scarpa-cleanings :usedScarpa="usedScarpa" :view="view" />

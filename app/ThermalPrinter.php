@@ -310,20 +310,23 @@ class ThermalPrinter extends Model
         // Full Payment
         $this->printSubtitle("FULL PAYMENT");
         $this->printer->initialize();
-        $this->printItem("Date paid", Carbon::createFromDate($transaction->date_paid)->format('m/d/Y h:iA'));
+        
+        if($transaction->payment) {
 
-        if($transaction->payment->points) {
-            $this->printItem("Points ({$transaction->payment->points}pts)", $transaction->payment->points_in_peso);
-        }
+            $this->printItem("Date paid", Carbon::createFromDate($transaction->date_paid)->format('m/d/Y h:iA'));
 
-        $this->printItem("Cash", $transaction->payment->cash);
-        if($transaction->payment->cash_less_amount) {
-            $this->printItem($transaction->payment->cash_less_provider, $transaction->payment->cash_less_amount);
+            if($transaction->payment->points) {
+                $this->printItem("Points ({$transaction->payment->points}pts)", $transaction->payment->points_in_peso);
+            }
+            $this->printItem("Cash", $transaction->payment->cash);
+            if($transaction->payment->cash_less_amount) {
+                $this->printItem($transaction->payment->cash_less_provider, $transaction->payment->cash_less_amount);
+            }
+            $this->printItem("Change", $transaction->payment->change);
+            $this->printItem("Balance", 0);
+            $this->printItem("OR Number", '#' . $transaction->payment['or_number']);
+            $this->printItem("Received by", $transaction->payment->user->name);
         }
-        $this->printItem("Change", $transaction->payment->change);
-        $this->printItem("Balance", 0);
-        $this->printItem("OR Number", '#' . $transaction->payment['or_number']);
-        $this->printItem("Received by", $transaction->payment->user->name);
 
         if($transaction->remarks) {
             $this->printer->initialize();

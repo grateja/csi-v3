@@ -30,6 +30,13 @@ Vue.filter("simpleDate", function(value) {
     let _date = moment(value);
     return _date.isValid() ? _date.format('MMM D, YYYY') : value;
 })
+
+Vue.filter("simpleDateTime", function(value) {
+    let _date = moment(value);
+    return _date.isValid() ? _date.format('MMM D, YY h:m a') : value;
+})
+
+
 const app = new Vue({
     el: '#app',
     router,

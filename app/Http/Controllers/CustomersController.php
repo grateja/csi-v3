@@ -225,9 +225,9 @@ class CustomersController extends Controller
     }
 
     public function excel(Request $request) {
-        $result = Customer::whereDate('created_at', '>=', $request->params['date']);
+        $result = Customer::whereDate('created_at', '>=', $request->date);
         if($request->until != null) {
-            $result = $result->whereDate('created_at', '<=', $request->params['until']);
+            $result = $result->whereDate('created_at', '<=', $request->until);
         }
 
         $result = $result->orderBy('created_at')->selectRaw(

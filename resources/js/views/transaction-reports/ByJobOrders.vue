@@ -7,6 +7,12 @@
             <v-flex>
                 <v-checkbox v-model="hideDeleted" class="ml-4 font-weight-bold" color="primary" label="Hide deleted"></v-checkbox>
             </v-flex>
+            <v-flex text-align-right>
+                <v-btn @click="excelExportContinue" round>
+                    <v-img src="/img/excel-btn.png" width="30px" />
+                    export
+                </v-btn>
+            </v-flex>
         </v-layout>
         <v-layout justify-center>
             <v-flex shrink>
@@ -93,6 +99,7 @@ export default {
     },
     data() {
         return {
+            excel: false,
             cancelSource: null,
             keyword: null,
             sortBy: 'job order number',
@@ -216,6 +223,20 @@ export default {
             } else {
                 return '#f766c2'
             }
+        },
+        excelExportContinue() {
+            this.$store.dispatch('exportdownload/download', {
+                uri: 'job-orders',
+                params: {
+                    keyword: this.keyword,
+                    page: this.page,
+                    date: this.date,
+                    datePaid: this.datePaid,
+                    sortBy: this.sortBy,
+                    orderBy: this.orderBy,
+                    hideDeleted: this.hideDeleted
+                },
+            })
         }
     },
     created() {

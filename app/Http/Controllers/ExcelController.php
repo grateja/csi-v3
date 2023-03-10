@@ -12,6 +12,7 @@ use App\ProductPurchase;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\TransactionPayment;
+use App\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -197,5 +198,119 @@ class ExcelController extends Controller
         return Excel::download(new ReportTemplate($services, [
             'ID', 'CATEGORY', 'NAME', 'PRICE'
         ]), 'keme.csv');
+    }
+
+    public function jobOrders(Request $request) {
+        $order = $request->orderBy ? $request->orderBy : 'desc';
+        $sortBy = Transaction::filterKeys($request->sortBy);
+
+        $result = Transaction::with(['serviceTransactionItems', 'payment' => function($query) {
+            $query->select('id', 'date', 'cash', 'points_in_peso', 'cash_less_provider');
+        }, 'partialPayment' => function($query) {
+            $query->select('id', 'transaction_id', 'date', 'total_amount', 'balance');
+        }])->where(function($query) use ($request) {
+            $query->where('customer_name', 'like', "%$request->keyword%")
+                ->orWhere('job_order', 'like', "%$request->keyword%");
+        })->where('saved', true);
+
+        $result = $result->orderBy($sortBy, $order);
+
+        if($request->date && $request->until) {
+            $result = $result->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until);
+        } else if($request->date) {
+            $result = $result->whereDate('date', $request->date);
+        }
+
+        if($request->datePaid) {
+            $result = $result->whereDate('date_paid', $request->datePaid);
+        }
+
+        $result = $result->get();
+
+        $cols = [];
+
+        foreach($result as $item) {
+            $cols[] = [
+                'date_created' => $item->date,
+                'job_order' => $item->job_order,
+                'customer' => $item->customer_name,
+                'service_quantity' => 'QUANTITY',
+                'service_name' => 'SERVICE NAME',
+                'service_amount' => 'AMOUNT',
+                'date_paid' => $item->date_paid,
+                'amount' => $item->total_price,
+                'payment_method' => $item->payment ? $item->payment->payment_method : '',
+            ];
+            foreach($item->posServiceItems() as $serviceItem) {
+                $cols[] = [
+                    'date_created' => '',
+                    'job_order' => '',
+                    'customer' => '',
+                    'service_quantity' => $serviceItem['quantity'],
+                    'service_name' => $serviceItem['name'],
+                    'service_amount' => $serviceItem['total_price'],
+                    'date_paid' => '',
+                    'amount' => '',
+                    'payment_method' => '',
+                ];
+            }
+            foreach($item->posProductItems() as $productItem) {
+                $cols[] = [
+                    'date_created' => '',
+                    'job_order' => '',
+                    'customer' => '',
+                    'service_quantity' => $productItem['quantity'],
+                    'service_name' => $productItem['name'],
+                    'service_amount' => $productItem['total_price'],
+                    'date_paid' => '',
+                    'amount' => '',
+                    'payment_method' => '',
+                ];
+            }
+            foreach($item->posLagoonItems() as $productItem) {
+                $cols[] = [
+                    'date_created' => '',
+                    'job_order' => '',
+                    'customer' => '',
+                    'service_quantity' => $productItem['quantity'],
+                    'service_name' => $productItem['name'],
+                    'service_amount' => $productItem['total_price'],
+                    'date_paid' => '',
+                    'amount' => '',
+                    'payment_method' => '',
+                ];
+            }
+            foreach($item->posLagoonPerKiloItems() as $productItem) {
+                $cols[] = [
+                    'date_created' => '',
+                    'job_order' => '',
+                    'customer' => '',
+                    'service_quantity' => $productItem['kilos'],
+                    'service_name' => $productItem['name'],
+                    'service_amount' => $productItem['total_price'],
+                    'date_paid' => '',
+                    'amount' => '',
+                    'payment_method' => '',
+                ];
+            }
+            foreach($item->posScarpaCleaningItems() as $productItem) {
+                $cols[] = [
+                    'date_created' => '',
+                    'job_order' => '',
+                    'customer' => '',
+                    'service_quantity' => $productItem['quantity'],
+                    'service_name' => $productItem['name'],
+                    'service_amount' => $productItem['total_price'],
+                    'date_paid' => '',
+                    'amount' => '',
+                    'payment_method' => '',
+                ];
+            }
+        }
+
+        return Excel::download(new ReportTemplate(collect($cols), [
+            'DATE PAID', 'JO#', 'CUSTOMER', 'SERVICES', '', '', 'DATE CREATED', 'TOTAL AMOUNT', 'PAYMENT METHOD'
+        ]), 'job-orders.csv');
     }
 }

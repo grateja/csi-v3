@@ -1,14 +1,18 @@
 <template>
     <div v-if="posSummary" class="px-4">
-        <v-layout class="mt-2">
-            <v-flex>
-                <h3 class="title gray--text">JOB ORDERS</h3>
-            </v-flex>
-            <template v-if="simplified">
-                <v-flex xs1 class="text-xs-right title">{{posSummary.pos_transactions.total_jo}}</v-flex>
-                <v-flex xs4 class="text-xs-right title">{{posSummary.pos_transactions.total_sales | peso}}</v-flex>
-            </template>
-        </v-layout>
+        <v-hover v-slot:default="{ hover }">
+            <v-card :elevation="hover ? 3 : 0" class="pointer" @click="openDialog = true">
+                <v-layout class="mt-2">
+                    <v-flex>
+                        <h3 class="title gray--text">JOB ORDERS</h3>
+                    </v-flex>
+                    <template v-if="simplified">
+                        <v-flex xs1 class="text-xs-right title">{{posSummary.pos_transactions.total_jo}}</v-flex>
+                        <v-flex xs4 class="text-xs-right title">{{posSummary.pos_transactions.total_sales | peso}}</v-flex>
+                    </template>
+                </v-layout>
+            </v-card>
+        </v-hover>
         <v-divider v-if="!simplified"></v-divider>
         <v-expand-transition>
             <v-card-text v-if="!simplified">
@@ -48,14 +52,25 @@
                 <!-- <v-divider></v-divider> -->
             </v-card-text>
         </v-expand-transition>
+        <job-orders-dialog v-model="openDialog" :date="date" :until="until" />
     </div>
 </template>
 
 <script>
+import JobOrdersDialog from '../../../shared/summary-preview/JobOrdersDialog.vue';
+
 export default {
     props: [
-        'posSummary', 'view'
+        'posSummary', 'view', 'date', 'until'
     ],
+    components: {
+        JobOrdersDialog
+    },
+    data() {
+        return {
+            openDialog: false
+        }
+    },
     computed: {
         simplified() {
             return this.view == 'simplified';

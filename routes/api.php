@@ -188,6 +188,9 @@ Route::group(['prefix' => 'excel', 'middleware' => 'auth:api'], function() {
 
     // /api/excel/new-customers
     Route::post('new-customers', 'CustomersController@excel');
+
+    // /api/excel/job-orders
+    Route::post('job-orders', 'ExcelController@jobOrders');
 });
 
 

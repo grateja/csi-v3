@@ -15,7 +15,7 @@ class TransactionPayment extends Model
     // protected $primaryKey = 'transaction_id';
 
     public $appends = [
-        'changeStr', 'discount_in_peso'
+        'changeStr', 'discount_in_peso', 'payment_method'
     ];
 
     protected $fillable = [
@@ -55,6 +55,21 @@ class TransactionPayment extends Model
 
     public function getDiscountInPesoAttribute() {
         return $this->total_amount * $this->discount / 100;
+    }
+
+    public function getPaymentMethodAttribute() {
+        $paymentMethod = '';
+        if($this->cash) {
+            $paymentMethod .= 'cash';
+        }
+        if($this->cash_less_provider) {
+            $paymentMethod .= ', ' . $this->cash_less_provider;
+        }
+        if($this->points_in_peso) {
+            $paymentMethod .= ', points';
+        }
+
+        return $paymentMethod;
     }
 
     public function queSynch() {

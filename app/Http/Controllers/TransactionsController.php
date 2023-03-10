@@ -143,7 +143,7 @@ class TransactionsController extends Controller
         $sortBy = Transaction::filterKeys($request->sortBy);
 
         $result = Transaction::with(['payment' => function($query) {
-            $query->select('id', 'date');
+            $query->select('id', 'date', 'cash', 'points_in_peso', 'cash_less_provider');
         }, 'partialPayment' => function($query) {
             $query->select('id', 'transaction_id', 'date', 'total_amount', 'balance');
         }])->where(function($query) use ($request) {
@@ -153,7 +153,10 @@ class TransactionsController extends Controller
 
         $result = $result->orderBy($sortBy, $order);
 
-        if($request->date) {
+        if($request->date && $request->until) {
+            $result = $result->whereDate('date', '>=', $request->date)
+                ->whereDate('date', '<=', $request->until);
+        } else if($request->date) {
             $result = $result->whereDate('date', $request->date);
         }
 
@@ -167,18 +170,6 @@ class TransactionsController extends Controller
             $result = $result->whereNull('cancelation_remarks')
                 ->paginate(10);
         }
-
-
-        // $result->getCollection()->transform(function($item) {
-        //     return [
-        //         'id' => $item->id,
-        //         'job_order' => $item->job_order,
-        //         'customer_name' => $item->customer_name,
-        //         'date' => $item->date,
-        //         'total_price' => $item->total_price,
-        //         'date_paid' => $item->payment == null ? null : $item->payment['date'],
-        //     ];
-        // });
 
         return response()->json([
             'result' => $result,

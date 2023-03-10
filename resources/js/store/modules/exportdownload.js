@@ -22,8 +22,7 @@ const actions = {
         context.commit('setLoadingStatus', true);
         context.commit('clearErrors');
         console.log(data.params)
-        return axios.post(`/api/excel/${data.uri}`, {
-            params: data.params,
+        return axios.post(`/api/excel/${data.uri}`, data.params, {
             responseType: 'blob'
         }).then((res, rej) => {
             console.log(res);
