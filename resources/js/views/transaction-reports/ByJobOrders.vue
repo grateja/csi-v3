@@ -8,26 +8,37 @@
                 <v-checkbox v-model="hideDeleted" class="ml-4 font-weight-bold" color="primary" label="Hide deleted"></v-checkbox>
             </v-flex>
             <v-flex text-align-right>
-                <v-btn @click="excelExportContinue" round>
+                <v-btn @click="showExportOptions = true" round>
                     <v-img src="/img/excel-btn.png" width="30px" />
                     export
                 </v-btn>
             </v-flex>
         </v-layout>
-        <v-layout justify-center>
-            <v-flex shrink>
-                <v-text-field label="Specify date created" v-model="date" type="date" append-icon="date" @change="filter" outline class="mr-2 round-input translucent-input" style="width: 200px" dense></v-text-field>
-            </v-flex>
-            <v-flex shrink>
-                <v-text-field label="Specify date paid" v-model="datePaid" type="date" append-icon="date" @change="filter" outline class="mx-1 round-input translucent-input" style="width: 200px" dense></v-text-field>
-            </v-flex>
-            <v-flex shrink>
-                <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['job order number', 'customer name', 'date created', 'date paid']" @change="filter"></v-combobox>
-            </v-flex>
-            <v-flex shrink>
-                <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
-            </v-flex>
-        </v-layout>
+        <v-btn @click="advancedSearch = !advancedSearch" outline round class="mx-0">
+            <v-icon>sort</v-icon> Advanced Search
+        </v-btn>
+        <v-expand-transition>
+            <div v-if="advancedSearch" class="my-2">
+                <v-layout justify-center>
+                    <v-flex shrink>
+                        <h3 class="title-3 white--text">Specify date created:</h3>
+                        <v-text-field label="From" v-model="date" type="date" append-icon="date" @change="filter" outline class="mr-2 round-input translucent-input" style="width: 200px" dense></v-text-field>
+                        <v-text-field label="To" v-model="until" type="date" append-icon="date" @change="filter" outline class="mr-2 round-input translucent-input" style="width: 200px" dense></v-text-field>
+                    </v-flex>
+                    <v-flex shrink>
+                        <h3 class="title-3 white--text">Specify date paid:</h3>
+                        <v-text-field label="From" v-model="datePaid" type="date" append-icon="date" @change="filter" outline class="mx-1 round-input translucent-input" style="width: 200px" dense></v-text-field>
+                        <v-text-field label="To" v-model="paidUntil" type="date" append-icon="date" @change="filter" outline class="mx-1 round-input translucent-input" style="width: 200px" dense></v-text-field>
+                    </v-flex>
+                    <v-flex shrink>
+                        <v-combobox class="mx-1 translucent-input round-input" label="Sort by" v-model="sortBy" outline :items="['job order number', 'customer name', 'date created', 'date paid']" @change="filter"></v-combobox>
+                    </v-flex>
+                    <v-flex shrink>
+                        <v-combobox class="ml-2 translucent-input round-input" label="Order" v-model="orderBy" outline :items="['asc', 'desc']" @change="filter"></v-combobox>
+                    </v-flex>
+                </v-layout>
+            </div>
+        </v-expand-transition>
 
         <!-- <v-card class="rounded-card translucent">
             <v-card-text>
@@ -75,11 +86,11 @@
                     </tr>
                 </template>
                 <template slot="footer">
-                    <tr v-if="!!summary && hideDeleted">
+                    <tr v-if="hideDeleted">
                         <td colspan="4">
-                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{summary.total_items}}</span> result(s)</div>
+                            <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{totalResult}}</span> result(s)</div>
                         </td>
-                        <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                        <!-- <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td> -->
                         <td></td>
                     </tr>
                 </template>
@@ -87,31 +98,40 @@
         </v-card>
         <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
         <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId" @savePayment="savePayment" @deleteTransaction="deleteTransaction" />
+        <job-order-export-options-dialog v-model="showExportOptions" @continue="excelExportContinue" :loading="exporting" />
     </div>
 </template>
 
 <script>
 import TransactionDialog from './TransactionDialog.vue';
+import JobOrderExportOptionsDialog from '../shared/summary-preview/JobOrderExportOptionsDialog.vue';
 
 export default {
     components: {
-        TransactionDialog
+        TransactionDialog,
+        JobOrderExportOptionsDialog
     },
     data() {
         return {
+            showExportOptions: false,
+            advancedSearch: false,
             excel: false,
             cancelSource: null,
             keyword: null,
             sortBy: 'job order number',
             orderBy: 'desc',
             date: null,
+            until: null,
             datePaid: null,
+            paidUntil: null,
             page: 1,
+            totalResult: 0,
             hideDeleted: true,
             reset: false,
             items: [],
             summary: null,
             loading: false,
+            exporting: null,
             transactionId: null,
             openTransactionDialog: false,
             headers: [
@@ -157,7 +177,9 @@ export default {
                     keyword: this.keyword,
                     page: this.page,
                     date: this.date,
+                    until: this.until,
                     datePaid: this.datePaid,
+                    paidUntil: this.paidUntil,
                     sortBy: this.sortBy,
                     orderBy: this.orderBy,
                     hideDeleted: this.hideDeleted
@@ -169,14 +191,15 @@ export default {
                     this.items = res.data.result.data;
                 } else {
                     this.items = [...this.items, ...res.data.result.data];
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
-                    }, 10);
+                    // setTimeout(() => {
+                    //     window.scrollTo({
+                    //         top: document.body.scrollHeight,
+                    //         behavior: 'smooth'
+                    //     });
+                    // }, 10);
                 }
-                this.summary = res.data.summary;
+                // this.summary = res.data.summary;
+                this.totalResult = res.data.result.total;
             }).finally(() => {
                 this.loading = false;
             });
@@ -224,18 +247,24 @@ export default {
                 return '#f766c2'
             }
         },
-        excelExportContinue() {
+        excelExportContinue(option) {
+            this.exporting = option;
             this.$store.dispatch('exportdownload/download', {
                 uri: 'job-orders',
                 params: {
+                    option,
                     keyword: this.keyword,
                     page: this.page,
                     date: this.date,
+                    until: this.until,
                     datePaid: this.datePaid,
+                    paidUntil: this.paidUntil,
                     sortBy: this.sortBy,
                     orderBy: this.orderBy,
                     hideDeleted: this.hideDeleted
                 },
+            }).finally(() => {
+                this.exporting = null;
             })
         }
     },

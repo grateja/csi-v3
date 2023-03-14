@@ -160,7 +160,10 @@ class TransactionsController extends Controller
             $result = $result->whereDate('date', $request->date);
         }
 
-        if($request->datePaid) {
+        if($request->datePaid && $request->paidUntil) {
+            $result = $result->whereDate('date_paid', '>=', $request->datePaid)
+                ->whereDate('date_paid', '<=', $request->paidUntil);
+        } else if($request->datePaid) {
             $result = $result->whereDate('date_paid', $request->datePaid);
         }
 
@@ -173,7 +176,7 @@ class TransactionsController extends Controller
 
         return response()->json([
             'result' => $result,
-            'summary' => $this->jobOrderSummary($request),
+            // 'summary' => $this->jobOrderSummary($request),
         ]);
     }
 

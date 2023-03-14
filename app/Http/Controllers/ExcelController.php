@@ -201,13 +201,17 @@ class ExcelController extends Controller
     }
 
     public function jobOrders(Request $request) {
+        // if($request->date && $request->until) {
+        //     return Carbon::createFromDate($request->date)->diffInDays($request->until);
+        // }
+
         $order = $request->orderBy ? $request->orderBy : 'desc';
         $sortBy = Transaction::filterKeys($request->sortBy);
 
         $result = Transaction::with(['serviceTransactionItems', 'payment' => function($query) {
             $query->select('id', 'date', 'cash', 'points_in_peso', 'cash_less_provider');
         }, 'partialPayment' => function($query) {
-            $query->select('id', 'transaction_id', 'date', 'total_amount', 'balance');
+            $query->select('id', 'transaction_id', 'date', 'total_amount', 'cash', 'balance');
         }])->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
@@ -222,11 +226,22 @@ class ExcelController extends Controller
             $result = $result->whereDate('date', $request->date);
         }
 
-        if($request->datePaid) {
+        if($request->datePaid && $request->paidUntil) {
+            $result = $result->whereDate('date_paid', '>=', $request->datePaid)
+                ->whereDate('date_paid', '<=', $request->paidUntil);
+        } else if($request->datePaid) {
             $result = $result->whereDate('date_paid', $request->datePaid);
         }
 
+        if($result->count() >= 3000) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Result too big. Only 3000 result is allowed to export.']
+                ]
+            ], 422);
+        }
         $result = $result->get();
+
 
         $cols = [];
 
@@ -235,13 +250,16 @@ class ExcelController extends Controller
                 'date_created' => $item->date,
                 'job_order' => $item->job_order,
                 'customer' => $item->customer_name,
-                'service_quantity' => 'QUANTITY',
-                'service_name' => 'SERVICE NAME',
-                'service_amount' => 'AMOUNT',
-                'date_paid' => $item->date_paid,
+                'service_quantity' => $request->option == 'simplified' ? '' : 'QUANTITY',
+                'service_name' =>  $request->option == 'simplified' ? '' : 'SERVICE NAME',
+                'service_amount' => $request->option == 'simplified' ? '' : 'AMOUNT',
                 'amount' => $item->total_price,
-                'payment_method' => $item->payment ? $item->payment->payment_method : '',
+                'date_paid' => $item->date_paid ? $item->date_paid : ($item->partialPayment ? '[PARTIAL]' : '[UNPAID]'),
+                'payment_method' => $item->payment ? $item->payment->payment_method : '-',
+                'partial_payment' => $item->partialPayment ? $item->partialPayment->cash : '-',
+                'balance' => $item->payment ? '0' : ($item->partialPayment ? $item->partialPayment->balance : $item->total_price),
             ];
+            if($request->option == 'simplified') continue;
             foreach($item->posServiceItems() as $serviceItem) {
                 $cols[] = [
                     'date_created' => '',
@@ -250,9 +268,11 @@ class ExcelController extends Controller
                     'service_quantity' => $serviceItem['quantity'],
                     'service_name' => $serviceItem['name'],
                     'service_amount' => $serviceItem['total_price'],
-                    'date_paid' => '',
                     'amount' => '',
+                    'date_paid' => '',
                     'payment_method' => '',
+                    'partial_payment' => '',
+                    'balance' => '',
                 ];
             }
             foreach($item->posProductItems() as $productItem) {
@@ -263,9 +283,11 @@ class ExcelController extends Controller
                     'service_quantity' => $productItem['quantity'],
                     'service_name' => $productItem['name'],
                     'service_amount' => $productItem['total_price'],
-                    'date_paid' => '',
                     'amount' => '',
+                    'date_paid' => '',
                     'payment_method' => '',
+                    'partial_payment' => '',
+                    'balance' => '',
                 ];
             }
             foreach($item->posLagoonItems() as $productItem) {
@@ -276,9 +298,11 @@ class ExcelController extends Controller
                     'service_quantity' => $productItem['quantity'],
                     'service_name' => $productItem['name'],
                     'service_amount' => $productItem['total_price'],
-                    'date_paid' => '',
                     'amount' => '',
+                    'date_paid' => '',
                     'payment_method' => '',
+                    'partial_payment' => '',
+                    'balance' => '',
                 ];
             }
             foreach($item->posLagoonPerKiloItems() as $productItem) {
@@ -289,9 +313,11 @@ class ExcelController extends Controller
                     'service_quantity' => $productItem['kilos'],
                     'service_name' => $productItem['name'],
                     'service_amount' => $productItem['total_price'],
-                    'date_paid' => '',
                     'amount' => '',
+                    'date_paid' => '',
                     'payment_method' => '',
+                    'partial_payment' => '',
+                    'balance' => '',
                 ];
             }
             foreach($item->posScarpaCleaningItems() as $productItem) {
@@ -302,15 +328,17 @@ class ExcelController extends Controller
                     'service_quantity' => $productItem['quantity'],
                     'service_name' => $productItem['name'],
                     'service_amount' => $productItem['total_price'],
-                    'date_paid' => '',
                     'amount' => '',
+                    'date_paid' => '',
                     'payment_method' => '',
+                    'partial_payment' => '',
+                    'balance' => '',
                 ];
             }
         }
 
         return Excel::download(new ReportTemplate(collect($cols), [
-            'DATE PAID', 'JO#', 'CUSTOMER', 'SERVICES', '', '', 'DATE CREATED', 'TOTAL AMOUNT', 'PAYMENT METHOD'
+            'DATE CREATED', 'JO#', 'CUSTOMER', $request->option == 'simplified' ? '' : 'SERVICES', '', '', 'TOTAL AMOUNT', 'DATE PAID', 'PAYMENT METHOD', 'PARTIAL PAYMENT', 'BALANCE',
         ]), 'job-orders.csv');
     }
 }

@@ -38,7 +38,7 @@
                 <v-btn block @click="loadMore" :loading="loading" round class="translucent">Load more</v-btn>
                 <v-card-actions>
                     <v-spacer />
-                    <v-btn @click="excelExportContinue">
+                    <v-btn @click="showOptions = true">
                         <v-img src="/img/excel-btn.png" width="30px" />
                         export
                     </v-btn>
@@ -47,25 +47,30 @@
             </v-card-text>
         </v-card>
         <transaction-dialog :transactionId="transactionId" v-model="openTransactionDialog" />
+        <job-order-export-options-dialog v-model="showOptions" @continue="excelExportContinue" :loading="exporting" />
     </v-dialog>
 </template>
 
 <script>
 import TransactionDialog from '../../transaction-reports/TransactionDialog.vue';
+import JobOrderExportOptionsDialog from './JobOrderExportOptionsDialog.vue';
 
 export default {
     components: {
-        TransactionDialog
+        TransactionDialog,
+        JobOrderExportOptionsDialog
     },
     props: [
         'value', 'date', 'until',
     ],
     data() {
         return {
+            showOptions: false,
             openTransactionDialog: false,
             transactionId: null,
             items: [],
             loading: false,
+            exporting: null,
             reset: true,
             cancelSource: null,
             page: 1,
@@ -148,15 +153,18 @@ export default {
             this.reset = false;
             this.load();
         },
-        excelExportContinue() {
+        excelExportContinue(option) {
             this.export = 'excel';
-            console.log(this.date)
+            this.exporting = option;
             this.$store.dispatch('exportdownload/download', {
                 uri: 'job-orders',
                 params: {
+                    option,
                     date: this.date,
                     until: this.until,
                 }
+            }).finally(() => {
+                this.exporting = null;
             })
         },
         previewTransaction(item) {

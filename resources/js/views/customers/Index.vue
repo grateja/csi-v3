@@ -41,8 +41,14 @@
                     <!-- <td>{{ props.item.contact_number }}</td> -->
                     <!-- <td>{{ props.item.email }}</td> -->
                     <!-- <td>{{ props.item.address }}</td> -->
-                    <td>{{ date(props.item.first_visit) }}</td>
-                    <td>{{ date(props.item.created_at) }}</td>
+                    <!-- <td>{{ props.item.first_visit | simpleDate }}</td> -->
+                    <td style="width: 200px">
+                        <div>Birthday: {{ props.item.first_visit | simpleDate }}</div>
+                        <div v-if="props.item.last_transaction">
+                            Last visited
+                            {{ props.item.last_transaction.date | ago }}
+                        </div>
+                    </td>
                     <td>{{props.item.customer_washes_count}}</td>
                     <td>{{props.item.customer_dries_count}}</td>
                     <td>
@@ -134,13 +140,21 @@ export default {
                 //     sortable: false
                 // },
                 {
-                    text: 'Birthday',
+                    text: '',
                     sortable: false
                 },
-                {
-                    text: 'First visit',
-                    sortable: false
-                },
+                // {
+                //     text: 'Birthday',
+                //     sortable: false
+                // },
+                // {
+                //     text: 'First visit',
+                //     sortable: false
+                // },
+                // {
+                //     text: 'Last visit',
+                //     sortable: false
+                // },
                 {
                     text: 'Total wash',
                     sortable: false

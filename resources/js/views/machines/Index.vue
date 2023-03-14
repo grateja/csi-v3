@@ -23,7 +23,12 @@
             <v-data-table :headers="headers" :items="machines" :loading="loading" hide-actions class="transparent">
                 <template v-slot:items="props">
                     <tr @click="view(props.item)">
-                        <td>{{ props.item.machine_name }}</td>
+                        <td>
+                            <div>{{ props.item.machine_name }}</div>
+                            <div v-if="isDeveloper" :class="{'red--text' : ipAddressConflict(props.item)}">
+                                {{ props.item.ip_address }} 
+                            </div>
+                        </td>
                         <td>{{ status(props.item) }}</td>
                         <!-- <td>{{ customer(props.item) }}</td> -->
                         <td>{{ props.item.total_usage }}</td>
@@ -169,6 +174,7 @@ export default {
                     this.activeMachine.additional_time = data.result.additional_time;
                     this.activeMachine.initial_price = data.result.initial_price;
                     this.activeMachine.additional_price = data.result.additional_price;
+                    this.activeMachine.ip_address = data.result.ip_address;
                 } else {
                     console.log(data);
                     this.machines.push(data.result);
@@ -181,6 +187,9 @@ export default {
         },
         machineDeleted(machine) {
             this.machines = this.machines.filter(m => m.id != machine.id);
+        },
+        ipAddressConflict(item) {
+            return !!this.machines.find(m => m.ip_address == item.ip_address && m.id != item.id);
         }
     },
     watch: {

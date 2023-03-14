@@ -36,6 +36,11 @@ Vue.filter("simpleDateTime", function(value) {
     return _date.isValid() ? _date.format('MMM D, YY h:m a') : value;
 })
 
+Vue.filter("ago", function(value) {
+    let _date = moment(value);
+    return _date.isValid() ? _date.fromNow(false) : value;
+})
+
 
 const app = new Vue({
     el: '#app',

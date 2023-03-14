@@ -58,18 +58,18 @@ class TransactionPayment extends Model
     }
 
     public function getPaymentMethodAttribute() {
-        $paymentMethod = '';
+        $paymentMethod = [];
         if($this->cash) {
-            $paymentMethod .= 'cash';
+            $paymentMethod[] = 'cash';
         }
         if($this->cash_less_provider) {
-            $paymentMethod .= ', ' . $this->cash_less_provider;
+            $paymentMethod[] = $this->cash_less_provider;
         }
         if($this->points_in_peso) {
-            $paymentMethod .= ', points';
+            $paymentMethod[] = 'points';
         }
 
-        return $paymentMethod;
+        return implode(',', $paymentMethod);
     }
 
     public function queSynch() {

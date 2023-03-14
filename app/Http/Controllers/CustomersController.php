@@ -19,17 +19,26 @@ class CustomersController extends Controller
         $sortBy = Customer::filterKeys($request->sortBy);
         $order = $request->orderBy ? $request->orderBy : 'desc';
 
-        $customers = Customer::withCount(['rfidCards',
+        $customers = Customer::with('lastTransaction')->withCount(['rfidCards',
             'customerDries' => function($query) {
-                //$query->whereNotNull('used');
+                // $query->whereNotNull('used');
             }, 'customerWashes' => function($query) {
-                //$query->whereNotNull('used');
+                // $query->whereNotNull('used');
             }
-        ])->where(function($query) use ($request) {
+        ])
+        // ->join('transactions', function($query) {
+        //     $query->on('transactions.customer_id', '=', 'customers.id')
+        //         ->latest()->limit(1);
+        // })
+        // ->join('customer_washes', 'customer_washes.customer_id', 'customers.id')
+        // ->join('customer_dries', 'customer_dries.customer_id', 'customers.id')
+        ->where(function($query) use ($request) {
             $query->where('name', 'like', "%$request->keyword%")
                 ->orWhere('crn', 'like', "%$request->keyword%")
                 ->orWhere('remarks', 'like', "%$request->keyword%");
         });
+        // ->selectRaw('name, (select count(*) from customer_washes where customers.id = customer_washes.customer_id) as customer_washes_count, (select count(*) from customer_dries where customers.id = customer_dries.customer_id) as customer_dries_count, transactions.created_at as last_visit')
+        // ->groupBy('name', 'customers.id', 'customer_id', 'crn', 'remarks', 'address', 'contact_number', 'email', 'organization', 'earned_points', 'first_visit', 'customers.created_at', 'customers.deleted_at', 'customers.updated_at', 'customers.synched', 'transactions.created_at');
 
         $customers = $customers->orderBy(DB::raw($sortBy), $order);
         // $customers = $customers->orderBy('customer_washes_count');

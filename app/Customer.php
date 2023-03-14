@@ -56,6 +56,10 @@ class Customer extends Model
         return $this->hasMany('App\CustomerWash');
     }
 
+    public function lastTransaction() {
+        return $this->hasOne('App\Transaction')->latest();
+    }
+
     public function lagoonPartner() {
         return $this->belongsToMany('App\LagoonPartner', 'lagoon_partner_customers', 'customer_id', 'lagoon_partner_id');
     }
