@@ -143,7 +143,7 @@ class TransactionsController extends Controller
         $sortBy = Transaction::filterKeys($request->sortBy);
 
         $result = Transaction::with(['payment' => function($query) {
-            $query->select('id', 'date', 'cash', 'points_in_peso', 'cash_less_provider');
+            $query->select('id', 'date', 'cash','points', 'points_in_peso', 'cash_less_provider', 'discount_name', 'discount', 'total_amount', 'change', 'total_cash');
         }, 'partialPayment' => function($query) {
             $query->select('id', 'transaction_id', 'date', 'total_amount', 'balance');
         }])->where(function($query) use ($request) {
