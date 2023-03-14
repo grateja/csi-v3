@@ -58,7 +58,8 @@ class TransactionPayment extends Model
     }
 
     public function getCollectionAttribute() {
-        return $this->total_amount - $this->getDiscountInPesoAttribute() - $this->points_in_peso;
+        // return 'fuck you';
+        return $this->total_amount - $this->getDiscountInPesoAttribute() - $this->points_in_peso - $this->cash_less_amount;
     }
 
     public function getPaymentMethodAttribute() {

@@ -209,7 +209,7 @@ class ExcelController extends Controller
         $sortBy = Transaction::filterKeys($request->sortBy);
 
         $result = Transaction::with(['serviceTransactionItems', 'payment' => function($query) {
-            $query->select('id', 'date', 'cash','points', 'points_in_peso', 'cash_less_provider', 'discount_name', 'discount', 'total_amount', 'change', 'total_cash');
+            // $query->select('id', 'date', 'cash','points', 'points_in_peso', 'cash_less_provider', 'discount_name', 'discount', 'total_amount', 'change', 'total_cash');
         }, 'partialPayment' => function($query) {
             $query->select('id', 'transaction_id', 'date', 'total_amount', 'cash', 'balance');
         }])->where(function($query) use ($request) {
@@ -363,7 +363,7 @@ class ExcelController extends Controller
         }
 
         return Excel::download(new ReportTemplate(collect($cols), [
-            'DATE CREATED', 'JO#', 'CUSTOMER', $request->option == 'simplified' ? '' : 'SERVICES', '', '', 'TOTAL AMOUNT', 'DISCOUNT NAME', 'DISCOUNT', 'DISCOUNTED AMOUNT','POINTS USED', 'CASH RECEIVED', 'DATE PAID', 'PAYMENT METHOD', 'PARTIAL PAYMENT', 'BALANCE',
+            'DATE CREATED', 'JO#', 'CUSTOMER', $request->option == 'simplified' ? '' : 'SERVICES', '', '', 'TOTAL AMOUNT', 'DISCOUNT NAME', 'DISCOUNT', 'DISCOUNTED AMOUNT','POINTS USED', 'COLLECTION', 'DATE PAID', 'PAYMENT METHOD', 'PARTIAL PAYMENT', 'BALANCE',
         ]), 'job-orders.csv');
     }
 }
