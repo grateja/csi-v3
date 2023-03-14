@@ -15,7 +15,7 @@ class TransactionPayment extends Model
     // protected $primaryKey = 'transaction_id';
 
     public $appends = [
-        'changeStr', 'discount_in_peso', 'payment_method', 'collection'
+        'changeStr', 'discount_in_peso', 'payment_method', 'collected'
     ];
 
     protected $fillable = [
@@ -57,7 +57,7 @@ class TransactionPayment extends Model
         return $this->total_amount * $this->discount / 100;
     }
 
-    public function getCollectionAttribute() {
+    public function getCollectedAttribute() {
         // return 'fuck you';
         return $this->total_amount - $this->getDiscountInPesoAttribute() - $this->points_in_peso - $this->cash_less_amount;
     }

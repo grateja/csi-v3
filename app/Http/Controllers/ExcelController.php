@@ -258,7 +258,7 @@ class ExcelController extends Controller
                 'discount' => $item->payment && $item->payment->discount ? $item->payment->discount_in_peso : '0',
                 'discounted_amount' => $item->payment && $item->payment->discount ? $item->total_price - $item->payment->discount_in_peso : $item->total_price,
                 'points_used' => $item->payment && $item->payment->points ? "({$item->payment->points}pts.)" . " PHP {$item->payment->points_in_peso}" : '',
-                'cash_received' => $item->payment ? $item->payment->collection : '0',
+                'cash_received' => $item->payment ? $item->payment->collected : '0',
                 'date_paid' => $item->date_paid ? $item->date_paid : ($item->partialPayment ? '[PARTIAL]' : '[UNPAID]'),
                 'payment_method' => $item->payment ? $item->payment->payment_method : '-',
                 'partial_payment' => $item->partialPayment ? $item->partialPayment->cash : '-',
