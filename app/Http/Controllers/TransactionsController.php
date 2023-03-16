@@ -176,7 +176,7 @@ class TransactionsController extends Controller
 
         return response()->json([
             'result' => $result,
-            // 'summary' => $this->jobOrderSummary($request),
+            'summary' => $this->jobOrderSummary($request),
         ]);
     }
 

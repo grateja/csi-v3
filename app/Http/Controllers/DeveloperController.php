@@ -13,6 +13,13 @@ class DeveloperController extends Controller
         return $request->date;
     }
 
+    public function getSystemDateTime() {
+        return response()->json([
+            'sysDateTime' => date('Y-m-d h:i:s A'),
+            'version' => env('APP_VERSION', ''),
+        ]);
+    }
+
     public function machineActivationMethod() {
         return env('MACHINE_ACTIVATION_METHOD', 'els');
     }

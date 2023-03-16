@@ -16,9 +16,10 @@ use Illuminate\Http\Request;
 // /api/developer
 Route::group(['prefix' => 'developer'], function () {
     // /api/developer/system-date-time
-    Route::get('system-date-time', function() {
-        return date('Y-m-d h:i:s A');
-    });
+    // Route::get('system-date-time', function() {
+    //     return date('Y-m-d h:i:s A');
+    // });
+    Route::get('system-date-time', 'DeveloperController@getSystemDateTime');
 
     Route::post('set-system-date-time', 'DeveloperController@setSystemDateTime');
 

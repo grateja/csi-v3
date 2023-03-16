@@ -87,11 +87,12 @@ class PosTransactionController extends Controller
     }
 
     public function addService($category, Request $request) {
+        // return response()->json(env('RESTRICT_ADD_SERVICE_DIFF_DATE', 'test'));
         return DB::transaction(function () use ($request, $category) {
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
 
-            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+            if($transaction && env('RESTRICT_ADD_SERVICE_DIFF_DATE', true) && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [
@@ -297,7 +298,7 @@ class PosTransactionController extends Controller
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
 
-            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+            if($transaction && env('RESTRICT_ADD_SERVICE_DIFF_DATE', true) && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [
@@ -387,7 +388,7 @@ class PosTransactionController extends Controller
 
             $variation = ScarpaVariation::with('scarpaCategory')->findOrFail($variationId);
 
-            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+            if($transaction && env('RESTRICT_ADD_SERVICE_DIFF_DATE', true) && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [
@@ -449,7 +450,7 @@ class PosTransactionController extends Controller
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
 
-            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+            if($transaction && env('RESTRICT_ADD_SERVICE_DIFF_DATE', true) && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [
@@ -509,7 +510,7 @@ class PosTransactionController extends Controller
             $transaction = Transaction::find($request->transactionId);
             $customer = Customer::findOrFail($request->customerId);
 
-            if($transaction && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+            if($transaction && env('RESTRICT_ADD_SERVICE_DIFF_DATE', true) && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
                 DB::rollback();
                 return response()->json([
                     'errors' => [

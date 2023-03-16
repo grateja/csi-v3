@@ -24,6 +24,10 @@ class PaymentsController extends Controller
             'pointsInPeso' => 'numeric|nullable',
         ];
 
+        if(env('REQUIRE_OR_NUMBER', false)) {
+            $rules['orNumber'] = 'required';
+        }
+
         if($request->validate($rules)) {
             return DB::transaction(function () use ($transactionId, $request) {
                 $discountInPeso = 0;
@@ -155,6 +159,10 @@ class PaymentsController extends Controller
             'rfidCardLoad' => 'numeric|nullable',
             'pointsInPeso' => 'numeric|nullable',
         ];
+
+        if(env('REQUIRE_OR_NUMBER', false)) {
+            $rules['orNumber'] = 'required';
+        }
 
         if($request->validate($rules)) {
 

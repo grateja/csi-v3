@@ -47,6 +47,12 @@ export default {
                     color: '#a7a1e6',
                     route: '/sales-report/calendar-view'
                 },
+                // {
+                //     text: 'Daily Report',
+                //     icon: 'sales-report',
+                //     roles: ['staff'],
+                //     route: '/daily-report'
+                // },
                 {
                     text: 'Job orders',
                     icon: 'job-orders',

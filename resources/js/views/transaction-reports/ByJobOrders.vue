@@ -90,7 +90,7 @@
                         <td colspan="4">
                             <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{totalResult}}</span> result(s)</div>
                         </td>
-                        <!-- <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td> -->
+                        <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
                         <td></td>
                     </tr>
                 </template>
@@ -198,7 +198,7 @@ export default {
                     //     });
                     // }, 10);
                 }
-                // this.summary = res.data.summary;
+                this.summary = res.data.summary;
                 this.totalResult = res.data.result.total;
             }).finally(() => {
                 this.loading = false;

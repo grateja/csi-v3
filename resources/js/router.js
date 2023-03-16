@@ -50,6 +50,10 @@ const routes = [
         ]
     },
     {
+        path: '/daily-report',
+        component: require('./views/daily-report/Index.vue').default
+    },
+    {
         path: '/sales-report',
         component: require('./views/sales-report/Index.vue').default,
         children: [

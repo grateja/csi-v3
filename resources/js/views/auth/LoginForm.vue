@@ -3,7 +3,7 @@
         <v-card color="transparent" flat>
             <v-card-title class="white--text title">
                 <v-spacer></v-spacer>
-                Laundry Card Management System
+                Laundry Card Management System {{ version }}
                 <v-spacer></v-spacer>
             </v-card-title>
         </v-card>
@@ -68,7 +68,8 @@ export default {
             email: '',
             password: '',
             rememberMe: false,
-            sysDateTime: null
+            sysDateTime: null,
+            version: null
         }
     },
     methods: {
@@ -84,7 +85,8 @@ export default {
         },
         getSystemDateTime() {
             axios.get('/api/developer/system-date-time').then((res, rej) => {
-                this.sysDateTime = new Date(res.data);
+                this.sysDateTime = new Date(res.data.sysDateTime);
+                this.version = res.data.version;
             });
         },
         setTime() {
