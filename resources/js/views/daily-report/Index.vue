@@ -1,36 +1,167 @@
 <template>
-    <v-container>
+    <v-container v-if="result">
         <h3 class="title white--text my-3">Daily Report</h3>
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
         <v-divider v-else class="my-3"></v-divider>
-        <v-card class="translucent rounded-card">
-            <v-card-text>
-                <h4 class="white--text">NEW CUSTOMERS</h4>
+        <date-navigator v-model="date" class="my-2" />
 
-                <h4 class="white--text">JOB ORDERS</h4>
-                <v-layout>
-                    <v-flex xs1>JO#</v-flex>
-                    <v-flex xs3>CUSTOMER</v-flex>
-                    <v-flex x1>AMOUNT</v-flex>
-                    <v-flex x4>ITEMS</v-flex>
-                    <v-flex x3>PAYMENT</v-flex>
+
+        <!-- <summary-preview :summary="result.summary" /> -->
+
+        <v-card class="translucent rounded-card mt-2" v-if="result && result.customers && result.customers.length">
+            <v-card-title>
+                <h4 class="font-weight-bold title">NEW CUSTOMERS</h4>
+            </v-card-title>
+            <v-card-text v-if="result">
+                <v-divider />
+                <v-layout class="font-weight-bold">
+                    <v-flex xs1>CRN</v-flex>
+                    <v-flex xs3>NAME</v-flex>
+                    <v-flex xs4>ADDRESS</v-flex>
+                    <v-flex xs2>C.#.</v-flex>
                 </v-layout>
-                <h4 class="white--text">INVENTORY</h4>
-                <v-card-text><pre>{{ result }}</pre></v-card-text>
+                <v-divider />
+                <v-layout v-for="customer in result.customers" :key="customer.id">
+                    <v-flex xs1>{{customer.crn}}</v-flex>
+                    <v-flex xs3>{{customer.name}}</v-flex>
+                    <v-flex xs4>{{customer.address}}</v-flex>
+                    <v-flex xs2>{{customer.contact_number}}</v-flex>
+                </v-layout>
             </v-card-text>
         </v-card>
+
+        <template v-if="result?.jobOrdersToday?.created?.length > 0">
+            <v-card class="translucent rounded-card mt-2">
+                <v-card-title>
+                    <h4 class="font-weight-bold title">JOB ORDERS CREATED TODAY</h4>
+                </v-card-title>
+                <v-card-text>
+                    <v-divider />
+                    <job-orders :items="result.jobOrdersToday.created" @openJobOrder="openTransaction" />
+                </v-card-text>
+            </v-card>
+        </template>
+
+        <template v-if="result?.jobOrdersToday?.paid?.length > 0">
+            <v-card class="translucent rounded-card mt-2">
+                <v-card-text>
+                    <h4 class="font-weight-bold title">JOB ORDERS PAID TODAY</h4>
+                    <h4 class="grey--text font-italic"> (Including Job Orders created from previous days)</h4>
+                </v-card-text>
+                <v-card-text>
+                    <v-divider />
+                    <job-orders :items="result.jobOrdersToday.paid" @openJobOrder="openTransaction" />
+                </v-card-text>
+            </v-card>
+        </template>
+
+        <template v-if="result?.jobOrdersOtherDays?.unCollected?.length > 0">
+            <v-card class="translucent rounded-card mt-2">
+                <v-card-text>
+                    <h4 class="font-weight-bold title">UNCOLLECTED</h4>
+                    <h4 class="grey--text font-italic"> (Including Job Orders created from previous days)</h4>
+                </v-card-text>
+                <v-card-text>
+                    <v-divider />
+                    <job-orders :items="result.jobOrdersOtherDays.unCollected" @openJobOrder="openTransaction" />
+                </v-card-text>
+            </v-card>
+        </template>
+
+        <!-- <template v-if="Object.keys(result?.washes).length || Object.keys(result?.dries).length">
+            <v-card class="translucent rounded-card mt-2">
+                <v-card-text>
+                    <h4 class="font-weight-bold title">PROCESSED WASH/DRY</h4>
+                    <h4 class="grey--text font-italic">(Including Job Orders created from previous days)</h4>
+                </v-card-text>
+                <v-card-text>
+                    <template v-if="Object.keys(result?.washes).length > 0">
+                        <h3 class="font-weight-bold mt-3">Washes</h3>
+                        <processed-wash-dry :items="result.washes" @openJobOrder="openTransaction" />
+                    </template>
+                    <template v-if="Object.keys(result?.dries).length > 0">
+                        <h3 class="font-weight-bold mt-3">Dries</h3>
+                        <processed-wash-dry :items="result.dries" @openJobOrder="openTransaction" />
+                    </template>
+                </v-card-text>
+            </v-card>
+        </template> -->
+        <wash-dry-wrapper :washes="result?.washes" :dries="result?.dries" @openJobOrder="openTransaction" />
+        <used-products :items="result.usedProducts" @openJobOrder="openTransaction" />
+        <lagoon-services :items="result.lagoon" @openJobOrder="openTransaction" />
+        <other-services :items="result.otherServices" @openJobOrder="openTransaction" />
+        <scarpa-services :items="result.scarpa" @openJobOrder="openTransaction" />
+
+        <template v-if="result.pendingServices != null">
+            <v-card class="translucent rounded-card mt-2">
+                <v-card-title>
+                    <h4 class="font-weight-bold title">UNPROCESSED WASH/DRY</h4>
+                </v-card-title>
+                <v-card-text>
+                    <template v-if="result.pendingServices?.today?.length > 0">
+                        <h3 class="font-weight-bold mt-3">Today</h3>
+                        <pending-services :items="result.pendingServices.today" @openJobOrder="openTransaction" />
+                    </template>
+                    <template v-if="result.pendingServices?.allTime?.length > 0">
+                        <h3 class="font-weight-bold mt-3">Other days</h3>
+                        <pending-services :items="result.pendingServices.allTime" @openJobOrder="openTransaction" />
+                    </template>
+                </v-card-text>
+            </v-card>
+        </template>
+        <template v-if="result.jobOrdersOtherDays?.canceled?.length + result.jobOrdersToday?.canceled?.length > 0">
+            <v-card class="translucent rounded-card mt-2">
+                <v-card-title>
+                    <h4 class="font-weight-bold title">CANCELED JOB ORDERS</h4>
+                </v-card-title>
+                <v-card-text>
+                    <template v-if="result.jobOrdersToday?.canceled?.length > 0">
+                        <h3 class="font-weight-bold mt-3">Today</h3>
+                        <job-orders :items="result.jobOrdersToday.canceled" @openJobOrder="openTransaction" />
+                    </template>
+                    <template v-if="result.jobOrdersOtherDays?.canceled?.length > 0">
+                        <h3 class="font-weight-bold mt-3">Other days</h3>
+                        <job-orders :items="result.jobOrdersOtherDays.canceled" @openJobOrder="openTransaction" />
+                    </template>
+                </v-card-text>
+            </v-card>
+        </template>
+        <transaction-dialog v-model="openTransactionDialog" :transactionId="transactionId"/>
     </v-container>
 </template>
 
 <script>
-import moment from 'moment';
+import TransactionDialog from '../transaction-reports/TransactionDialog.vue';
+import DateNavigator from '../shared/DateNavigator.vue';
+import JobOrders from './JobOrders.vue';
+import PendingServices from './PendingServices.vue';
+import SummaryPreview from './Summary.vue';
+import WashDryWrapper from './WashDryWrapper.vue';
+import UsedProducts from './UsedProducts.vue';
+import OtherServices from './OtherServices.vue';
+import LagoonServices from './LagoonServices.vue';
+import ScarpaServices from './ScarpaServices.vue';
 
 export default {
+    components: {
+        DateNavigator,
+        JobOrders,
+        PendingServices,
+        SummaryPreview,
+        WashDryWrapper,
+        UsedProducts,
+        OtherServices,
+        LagoonServices,
+        TransactionDialog,
+        ScarpaServices
+    },
     data() {
         return {
             date: moment().format('YYYY-MM-DD'),
             result: null,
-            loading: false
+            loading: false,
+            transactionId: null,
+            openTransactionDialog: false
         }
     },
     methods: {
@@ -45,10 +176,21 @@ export default {
             }).finally(() => {
                 this.loading = false;
             })
+        },
+        openTransaction(transactionId) {
+            this.transactionId = transactionId;
+            this.openTransactionDialog = true;
         }
     },
     created() {
         this.load();
+    },
+    watch: {
+        date(val) {
+            if(val) {
+                this.load();
+            }
+        }
     }
 }
 </script>

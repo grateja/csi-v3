@@ -143,6 +143,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
     Route::post('{userId}/assign-role', 'UsersController@assignRole');
 });
 
+// /api/daily-sales
+Route::prefix('daily-sales')->group(function () {
+    // /api/daily-sales
+    Route::get('/', 'DailyReportController@index');
+});
 
 // /api/sales-report
 Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function() {

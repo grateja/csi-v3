@@ -80,9 +80,9 @@
                             </div>
                         </td>
                         <td>{{ props.item.customer_name }}</td>
-                        <td>{{ moment(props.item.date).format('LLL') }}</td>
-                        <td>P {{ parseFloat(props.item.total_price).toFixed(2) }}</td>
-                        <td>{{ datePaidStr(props.item) }}</td>
+                        <td>{{ props.item.date | simpleDateTime }}</td>
+                        <td>{{ props.item.total_price | peso }}</td>
+                        <td>{{ props.item.date_paid | simpleDateTime }}</td>
                     </tr>
                 </template>
                 <template slot="footer">
@@ -90,7 +90,7 @@
                         <td colspan="4">
                             <div class="font-italic">Showing <span class="font-weight-bold">{{items.length}}</span> item(s) out of <span class="font-weight-bold">{{totalResult}}</span> result(s)</div>
                         </td>
-                        <td class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
+                        <td v-if="summary" class="font-weight-bold">P {{parseFloat(summary.total_price).toLocaleString()}}</td>
                         <td></td>
                     </tr>
                 </template>

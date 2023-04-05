@@ -170,12 +170,25 @@
                         </tr>
                     </table>
                     <v-divider class="my-1 transparent"></v-divider>
-                    <table class="v-table">
-                        <tr class="font-weight-bold title">
-                            <td>Grand total</td>
+                    <table class="v-table full-width">
+                        <tr class="font-weight-bold">
+                            <td>Total</td>
                             <td>&nbsp;&nbsp;&nbsp;</td>
-                            <td class="text-xs-center">{{tempTransaction.posProductSummary.total_quantity + tempTransaction.posServiceSummary.total_quantity}}</td>
+                            <td></td>
+                            <!-- <td class="text-xs-center">{{tempTransaction.posProductSummary.total_quantity + tempTransaction.posServiceSummary.total_quantity}}</td> -->
                             <td class="text-xs-center">P {{parseFloat(tempTransaction.total_price).toFixed(2)}}</td>
+                        </tr>
+                        <tr v-if="tempTransaction.payment && tempTransaction.payment.discount">
+                            <td>{{tempTransaction.payment.discount_name}} ({{ tempTransaction.payment.discount }}%)</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td class="text-xs-center">{{tempTransaction.payment.discount_in_peso | peso}}</td>
+                        </tr>
+                        <tr class="title font-weight-bold" v-if="tempTransaction.payment && tempTransaction.payment.discount">
+                            <td>Discounted amount</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td>&nbsp;&nbsp;&nbsp;</td>
+                            <td class="text-xs-center">{{tempTransaction.payment.discounted_price | peso}}</td>
                         </tr>
                     </table>
 
@@ -250,10 +263,10 @@
                                 <v-flex xs5><span class="data-term font-weight-bold">Points used:</span></v-flex>
                                 <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.points_in_peso).toFixed(2)}} ({{tempTransaction.payment.points}} points)</span></v-flex>
                             </v-layout>
-                            <v-layout v-if="tempTransaction.payment.discount">
+                            <!-- <v-layout v-if="tempTransaction.payment.discount">
                                 <v-flex xs5><span class="data-term font-weight-bold">Discount:</span></v-flex>
                                 <v-flex xs7><span class="data-value font-weight-bold">{{tempTransaction.payment.discount_name}}: P {{parseFloat(tempTransaction.payment.discount_in_peso).toFixed(2)}} ({{tempTransaction.payment.discount}}%)</span></v-flex>
-                            </v-layout>
+                            </v-layout> -->
                             <v-layout v-if="tempTransaction.payment.rfid">
                                 <v-flex xs5><span class="data-term font-weight-bold">RFID:</span></v-flex>
                                 <v-flex xs7><span class="data-value font-weight-bold">P {{parseFloat(tempTransaction.payment.card_load_used).toFixed(2)}} ({{tempTransaction.payment.rfid}})</span></v-flex>

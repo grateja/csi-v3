@@ -176,7 +176,8 @@ class TransactionsController extends Controller
 
         return response()->json([
             'result' => $result,
-            'summary' => $this->jobOrderSummary($request),
+            'summary' => (env('SHOW_JO_TOTAL', false)) ? $this->jobOrderSummary($request) : null,
+            'show_total' => env('SHOW_JO_TOTAL', false)
         ]);
     }
 

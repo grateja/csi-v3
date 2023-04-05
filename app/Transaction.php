@@ -338,7 +338,7 @@ class Transaction extends Model
         $scTotal = $this->posScarpaCleaningItems()->sum('total_price');
         $lTotal = $this->posLagoonItems()->sum('total_price');
         $lpkTotal = $this->posLagoonPerKiloItems()->sum('total_price');
-        return $pTotal + $sTotal + $scTotal + $lTotal + $lpkTotal; 
+        return $pTotal + $sTotal + $scTotal + $lTotal + $lpkTotal;
     }
 
     // public function refreshAllWithTrashed() {

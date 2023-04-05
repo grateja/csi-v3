@@ -54,6 +54,12 @@
                     <div>
                         {{sysDateTime}}
                     </div>
+                    <v-divider class="transparent my-2"></v-divider>
+                    <span class="caption">Device time</span>
+                    <v-divider></v-divider>
+                    <div>
+                        {{moment().format('dddd MMMM D, YYYY H:m A Z')}}
+                    </div>
                 </div>
                 <v-spacer></v-spacer>
             </v-card-title>
@@ -85,7 +91,7 @@ export default {
         },
         getSystemDateTime() {
             axios.get('/api/developer/system-date-time').then((res, rej) => {
-                this.sysDateTime = new Date(res.data.sysDateTime);
+                this.sysDateTime = res.data.sysDateTime;
                 this.version = res.data.version;
             });
         },

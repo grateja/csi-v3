@@ -220,7 +220,7 @@ class PosTransactionController extends Controller
         ];
 
         if($request->validate($rules)) {
-            return 
+            return
             DB::transaction(function () use ($category, $request) {
                 $transaction = Transaction::find($request->transactionId);
                 $customer = Customer::findOrFail($request->customerId);
@@ -241,7 +241,7 @@ class PosTransactionController extends Controller
                         'saved' => false,
                     ]);
                 }
-    
+
 
                 switch ($category) {
                     case 'washing':
@@ -888,6 +888,30 @@ class PosTransactionController extends Controller
         return  DB::transaction(function () use ($transactionId, $request) {
             $transaction = Transaction::find($transactionId);
             if($transaction != null) {
+                if($transaction->partialPayment != null) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Cannot cancel transaction with partial payment']
+                        ]
+                    ], 422);
+                }
+
+                $customerWashes = CustomerWash::where('job_order', $transaction->job_order)
+                    ->whereNotNull('used')->count();
+
+                $customerDries = CustomerDry::where('job_order', $transaction->job_order)
+                    ->whereNotNull('used')->count();
+
+                if($customerDries + $customerWashes > 0) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Cannot cancel transaction with used services']
+                        ]
+                    ], 422);
+                }
+
                 $transaction->update([
                     'cancelation_remarks' => $request->remarks . "(Canceled by: ".auth('api')->user()->name.")",
                 ]);
@@ -904,17 +928,18 @@ class PosTransactionController extends Controller
                     }
                     $value->delete();
                 }
-    
+
                 foreach ($transaction->productTransactionItems as $value) {
                     $value->product()->increment('current_stock');
                     $value->delete();
                     $this->dispatch($value->product->queSynch());
                 }
-    
+
+                $transaction->delete();
                 $this->dispatch((new SendTransaction($transaction->id))->delay(5));
             }
         });
-        
+
     }
 
     public function clearMonitorView() {

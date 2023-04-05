@@ -13,7 +13,9 @@ import Vuetify from 'vuetify';
 import Breadcrumbs from 'vue-2-breadcrumbs';
 import VueApexCharts from 'vue-apexcharts';
 import Vue from 'vue';
+import VuePluralize from 'vue-pluralize'
 
+Vue.use(VuePluralize)
 Vue.use(Vuetify);
 Vue.use(Breadcrumbs);
 Vue.component('main-body', require('./views/MainBody.vue').default);
@@ -28,12 +30,17 @@ Vue.filter("peso", function (value) {
 
 Vue.filter("simpleDate", function(value) {
     let _date = moment(value);
-    return _date.isValid() ? _date.format('MMM D, YYYY') : value;
+    return _date.isValid() ? _date.format('MMMD,YY') : value;
 })
 
 Vue.filter("simpleDateTime", function(value) {
     let _date = moment(value);
     return _date.isValid() ? _date.format('MMM D, YY h:m a') : value;
+})
+
+Vue.filter("simpleTime", function(value) {
+    let _date = moment(value);
+    return _date.isValid() ? _date.format('h:m a') : value;
 })
 
 Vue.filter("ago", function(value) {

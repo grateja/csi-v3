@@ -141,8 +141,8 @@ class PaymentsController extends Controller
                     //     'transaction_id' => null,
                     //     'token' => null,
                     //     'action' => 'paid',
-                    // ]);    
-    
+                    // ]);
+
                     return response()->json([
                         'transaction' => $transaction,
                         'payment' => $payment,
@@ -222,6 +222,15 @@ class PaymentsController extends Controller
                             ], 422);
                         }
                     }
+
+                    if($transaction->partialPayment != null) {
+                        return response()->json([
+                            'errors' => [
+                                'message' => ['Cannot apply discount to Job Order with Partial Payment']
+                            ]
+                        ], 422);
+                    }
+
                     $discount = Discount::findOrFail($request->discountId);
                     $discountName = $discount->name;
                     $discountInPeso = $transaction->total_price * $discount->percentage / 100;
@@ -231,7 +240,7 @@ class PaymentsController extends Controller
 
                 if($request->rfidCardId) {
                     $rfidCard = RfidCard::findOrFail($request->rfidCardId);
-                    
+
                     if($request->discountId == 'loyalty-card') {
                         $rfidCardLoad = $discountInPeso;
                     } else {
@@ -307,7 +316,7 @@ class PaymentsController extends Controller
                     'transaction_id' => null,
                     'token' => null,
                     'action' => 'idle',
-                ]);    
+                ]);
 
                 return response()->json([
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class DeveloperController extends Controller
 {
@@ -15,7 +16,7 @@ class DeveloperController extends Controller
 
     public function getSystemDateTime() {
         return response()->json([
-            'sysDateTime' => date('Y-m-d h:i:s A'),
+            'sysDateTime' => Carbon::now()->isoFormat('dddd MMMM D, G H:m A Z'),
             'version' => env('APP_VERSION', ''),
         ]);
     }
