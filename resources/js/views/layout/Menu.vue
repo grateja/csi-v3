@@ -209,12 +209,12 @@ export default {
                     color: '#a7a1e6',
                     to: '/sales-report/calendar-view'
                 },
-                // {
-                //     text: 'Daily Report',
-                //     icon: 'sales-report',
-                //     roles: ['staff'],
-                //     to: '/daily-report'
-                // },
+                {
+                    text: 'Daily Report',
+                    icon: 'sales-report',
+                    roles: ['staff'],
+                    to: '/daily-report'
+                },
                 {
                     text: 'Job Orders',
                     icon: 'job-orders',
