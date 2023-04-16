@@ -44,20 +44,20 @@ class DailyReportController extends Controller
             //     return $item->deleted_at == null && $item->payment == null && $item->partialPayment == null;
             // })->values(),
             'canceled' => $jobOrdersToday->filter(function($item) use ($request) {
-                return $item->deleted_at != null && Carbon::createFromDate($item->deleted_at)->format('Y-m-d') == $request->date;
-            })->values(),
+                return $item->deleted_at != null && ($item->deleted_at->format('Y-m-d') == $request->date);
+            })->sortBy('deleted_at')->values(),
         ];
 
         $jobOrdersOtherDays = [
             'unCollected' => Transaction::with('partialPayment', 'payment')->where(function($query) use ($request) {
                 $query//->whereDate('date', '<>', $request->date)
                     ->whereNull('date_paid')->whereNull('cancelation_remarks');
-            })->get()->values(),
+            })->orderBy('date')->get()->values(),
             'canceled' => Transaction::withTrashed()->where(function($query) use ($request) {
                 $query->where(function($query) {
                     $query->whereNotNull('deleted_at')->orWhereNotNull('cancelation_remarks');
                 });//->whereDate('date', '<>', $request->date);
-            })->get()->values(),
+            })->orderByDesc('deleted_at')->get()->values(),
         ];
 
         $collections = [

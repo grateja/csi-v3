@@ -13,7 +13,7 @@ class CustomerDry extends Model
     use SoftDeletes, UsesUuid, UsesSynch;
 
     protected $fillable = [
-        'service_name', 'customer_id', 'service_transaction_item_id', 'pulse_count', 'minutes', 'dryer_name', 'machine_type', 'used', 'staff_name', 'price', 'synched', 'job_order',
+        'service_name', 'customer_id', 'service_transaction_item_id', 'pulse_count', 'minutes', 'dryer_name', 'machine_type', 'used', 'tries', 'staff_name', 'price', 'synched', 'job_order',
     ];
 
     public function serviceTransactionItem() {

@@ -1,5 +1,5 @@
-<template v-if="Object.keys(washes).length || Object.keys(dries).length">
-    <v-card class="translucent rounded-card mt-2">
+<template>
+    <v-card v-if="Object.keys(washes).length || Object.keys(dries).length" class="translucent rounded-card mt-2">
         <v-card-title>
             <div>
                 <h4 class="font-weight-bold title">PROCESSED WASH/DRY</h4>

@@ -122,6 +122,7 @@ class RemotesController extends Controller
                 ], 200);
             });
         } else {
+            $completedServiceTransaction->increment('tries');
             return response()->json([
                 'errors' => [
                     'machineId' => ['Cannot connect to ' . $machine->name . ' (' . $machine->ip_address . ')']

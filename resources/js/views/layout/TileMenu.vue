@@ -50,7 +50,7 @@ export default {
                 {
                     text: 'Daily Report',
                     icon: 'sales-report',
-                    roles: ['staff'],
+                    roles: ['staff', 'admin'],
                     route: '/daily-report'
                 },
                 {

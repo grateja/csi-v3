@@ -13,11 +13,13 @@ class CreateRfidCheckersTable extends Migration
      */
     public function up()
     {
-        Schema::create('rfid_checkers', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('rfid')->nullable();
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('rfid_checkers')) {
+            Schema::create('rfid_checkers', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('rfid')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

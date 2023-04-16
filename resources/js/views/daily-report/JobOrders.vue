@@ -2,7 +2,7 @@
     <div>
 
         <v-layout class="font-weight-bold">
-            <v-flex xs1 class="text-xs-center">DATE</v-flex>
+            <v-flex xs1 class="text-xs-center">CREATED</v-flex>
             <v-flex xs1 class="text-xs-center">JO#</v-flex>
             <v-flex xs2 class="text-xs-center">CUSTOMER</v-flex>
             <v-flex xs1 class="text-xs-center">TOTAL</v-flex>
@@ -35,10 +35,15 @@
                 </v-flex>
                 <v-flex xs4>
                     <div class="text-xs-center" v-if="jobOrder.cancelation_remarks || jobOrder.deleted_at != null">
-                        {{ jobOrder.cancelation_remarks }}
-                        <ul>
+                        <div>
+                            {{ jobOrder.cancelation_remarks }}
+                        </div>
+                        <div>
+                            {{ jobOrder.deleted_at | simpleDateTime }}
+                        </div>
+                        <!-- <ul>
                             <li v-for="remarks in jobOrder.remarks">{{ remarks.remarks }}</li>
-                        </ul>
+                        </ul> -->
                     </div>
                     <div v-if="jobOrder.payment || jobOrder.partial_payment">
                         <div v-if="jobOrder.partial_payment">

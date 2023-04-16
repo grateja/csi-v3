@@ -48,7 +48,8 @@ class MachinesController extends Controller
 
     public function activate(Request $request) {
         // customer, machineSize, serviceType
-        $commit = DB::transaction(function () use ($request) {
+        $refWashDry = null;
+        $commit = DB::transaction(function () use ($request, &$refWashDry) {
             $customerWash = null;
             $customerDry = null;
             $avWash = null;
@@ -71,7 +72,7 @@ class MachinesController extends Controller
                     'machine_type' => $request->machineSize,
                     'used' => null,
                     'customer_id' => $request->customerId,
-                ])->first();
+                ])->orderByDesc('tries')->first();
                 $totalMinutes = $customerWash->minutes;
                 $pulse = $customerWash->pulse_count;
 
@@ -82,6 +83,7 @@ class MachinesController extends Controller
                 ]);
 
                 $avWash = $customerWash;
+                $refWashDry = $customerWash;
 
             } else if($request->serviceType == 'drying') {
                 if($machine->is_running && $customer->name != $machine->user_name) {
@@ -97,7 +99,7 @@ class MachinesController extends Controller
                     'machine_type' => $request->machineSize,
                     'used' => null,
                     'customer_id' => $request->customerId,
-                ])->first();
+                ])->orderByDesc('tries')->first();
                 $totalMinutes = $customerDry->minutes;
                 $pulse = $customerDry->pulse_count;
 
@@ -108,6 +110,7 @@ class MachinesController extends Controller
                 ]);
 
                 $avWash = $customerDry;
+                $refWashDry = $customerDry;
 
             } else {
                 return response()->json([
@@ -193,8 +196,11 @@ class MachinesController extends Controller
             }
         });
 
-
         if(array_key_exists('errors', $commit)) {
+            if($refWashDry != null) {
+                $refWashDry->increment('tries');
+            }
+
             MachineRemarks::create([
                 'title' => 'Connection failed',
                 'remarks' => $commit['errors']['message'][0],
