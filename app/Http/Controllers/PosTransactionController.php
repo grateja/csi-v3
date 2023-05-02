@@ -917,20 +917,20 @@ class PosTransactionController extends Controller
                 ]);
 
                 foreach ($transaction->serviceTransactionItems as $value) {
-                    if($value->category == 'full') {
-                        $productItems = $value->fullService->fullServiceProducts;
-                        foreach($productItems as $productItem) {
-                            $product = Product::find($productItem->product_id);
-                            if($product) {
-                                $product->increment('current_stock', $productItem->quantity);
-                            }
-                        }
-                    }
+                    // if($value->category == 'full') {
+                    //     $productItems = $value->fullService->fullServiceProducts;
+                    //     foreach($productItems as $productItem) {
+                    //         $product = Product::find($productItem->product_id);
+                    //         if($product) {
+                    //             $product->increment('current_stock', $productItem->quantity);
+                    //         }
+                    //     }
+                    // }
                     $value->delete();
                 }
 
                 foreach ($transaction->productTransactionItems as $value) {
-                    $value->product()->increment('current_stock');
+                    // $value->product()->increment('current_stock');
                     $value->delete();
                     $this->dispatch($value->product->queSynch());
                 }
