@@ -109,6 +109,13 @@ class UsersController extends Controller
 
     public function deleteUser($userId) {
         $user = User::findOrfail($userId);
+        if($user->hasAnyRole(['developer'])) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Developer cannot be deleted']
+                ]
+            ], 422);
+        }
         if($user->delete()) {
             return response()->json([
                 'user' => $user,

@@ -7,6 +7,7 @@ use App\Customer;
 use App\Transaction;
 use App\CustomerWash;
 use App\CustomerDry;
+use App\Rework;
 use Carbon\Carbon;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
@@ -113,6 +114,27 @@ class DailyReportController extends Controller
         $customerDries = collect(CustomerDry::with(['customer', 'serviceTransactionItem'])->whereNotNull('used')->where(function($query) use ($request) {
             $query->whereDate('created_at', $request->date)->orWhereDate('used', $request->date);
         })->orderBy(DB::raw('dryer_name, used'))->get())->groupBy('dryer_name');
+
+
+        $rewash = collect(Rework::where(function($query) use ($request) {
+            $query->whereDate('reworks.created_at', $request->date)
+                ->whereHas('machine', function($query) {
+                    $query->where('machine_type', 'rw')->orWhere('machine_type', 'tw');
+                });
+        })->join('machines', 'machines.id', '=', 'reworks.machine_id')
+            ->selectRaw('machine_name as washer_name, machines.id, machine_id, reworks.remarks as service_name, reworks.created_at as used, account_name as staff_name, customer_name')
+            ->orderBy(DB::raw('washer_name, used'))->get())
+            ->groupBy('washer_name');
+
+        $redry = collect(Rework::where(function($query) use ($request) {
+            $query->whereDate('reworks.created_at', $request->date)
+                ->whereHas('machine', function($query) {
+                    $query->where('machine_type', 'rd')->orWhere('machine_type', 'td');
+                });
+        })->join('machines', 'machines.id', '=', 'reworks.machine_id')
+            ->selectRaw('machine_name as dryer_name, machines.id, machine_id, reworks.remarks as service_name, reworks.created_at as used, account_name as staff_name, customer_name')
+            ->orderBy(DB::raw('dryer_name, used'))->get())
+            ->groupBy('dryer_name');
 
 
         // $usedProducts = collect(ProductTransactionItem::with(['transaction' => function($query) {
@@ -311,6 +333,8 @@ class DailyReportController extends Controller
                 'allTime' => $pendingAllTime,
                 'today' => $pendingToday,
             ],
+            'rewash' => $rewash,
+            'redry' => $redry,
             'washes' => $customerWashes,
             'dries' => $customerDries,
             'usedProducts' => $usedProducts,

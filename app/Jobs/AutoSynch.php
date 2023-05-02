@@ -53,8 +53,9 @@ class AutoSynch implements ShouldQueue
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
+        $cloudEndpoint = env('CLOUD_ENDPOINT', 'localhost:8000');
         // $response = $clientRequest->post('http://localhost:8000/api/live/v3/update/' . $shopId . '/' . $this->baseTable . '/auto-synch', [
-        $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId . '/' . $this->baseTable . '/auto-synch', [
+        $response = $clientRequest->post("http://$cloudEndPoint/api/live/v3/update/$shopId/{$this->baseTable}/auto-synch", [
         // $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId . '/' . $this->baseTable . '/auto-synch', [
                 'json' => $data,
             'headers' => [

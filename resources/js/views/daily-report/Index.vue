@@ -86,7 +86,8 @@
                 </v-card-text>
             </v-card>
         </template> -->
-        <wash-dry-wrapper :washes="result?.washes" :dries="result?.dries" @openJobOrder="openTransaction" />
+        <wash-dry-wrapper :washes="result?.washes" :dries="result?.dries" @openJobOrder="openTransaction" title="PROCESSED WASH/DRY" />
+        <wash-dry-wrapper :washes="result?.rewash" :dries="result?.redry" @openJobOrder="openTransaction" title="REWORKS AND TRANSFERS" />
         <used-products :items="result.usedProducts" @openJobOrder="openTransaction" />
         <lagoon-services :items="result.lagoon" @openJobOrder="openTransaction" />
         <other-services :items="result.otherServices" @openJobOrder="openTransaction" />
@@ -109,7 +110,7 @@
                 </v-card-text>
             </v-card>
         </template>
-        <template v-if="result.jobOrdersOtherDays?.canceled?.length + result.jobOrdersToday?.canceled?.length > 0">
+        <template v-if="isOwner && result.jobOrdersOtherDays?.canceled?.length + result.jobOrdersToday?.canceled?.length > 0">
             <v-card class="translucent rounded-card mt-2">
                 <v-card-title>
                     <h4 class="font-weight-bold title">CANCELED JOB ORDERS</h4>
@@ -191,6 +192,15 @@ export default {
                 this.load();
             }
         }
+    },
+    computed: {
+        isOwner() {
+            let user = this.$store.getters.getCurrentUser;
+            console.log('admin', user);
+            if(user) {
+                return user.roles.some(r => r == 'admin');
+            }
+        },
     }
 }
 </script>

@@ -24,8 +24,8 @@
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn @click="$emit('rework', machine)" round>Rework</v-btn>
-                <v-btn round @click="openTransferDialog = true">Transfer</v-btn>
+                <v-btn v-if="allowRework" @click="$emit('rework', machine)" round>Rework</v-btn>
+                <v-btn v-if="allowTransfer" round @click="openTransferDialog = true">Transfer</v-btn>
                 <v-btn round @click="forceStop">
                     <v-icon small left>warning</v-icon>
                     End time
@@ -89,6 +89,12 @@ export default {
             if(user) {
                 return user.roles.some(r => r == 'admin');
             }
+        },
+        allowRework() {
+            return this.$store.getters.isReworkAllowed;
+        },
+        allowTransfer() {
+            return this.$store.getters.isTransferAllowed;
         },
         remainingTime() {
             if(!!this.machine) {

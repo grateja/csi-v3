@@ -31,6 +31,10 @@ class Rework extends Model
         return $filter->first() ?? $keys['default'];
     }
 
+    public function machine() {
+        return $this->belongsTo('App\Machine');
+    }
+
     public function queSynch() {
         return (new AutoSynch('reworks', $this->id))->delay(5);
     }

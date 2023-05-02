@@ -55,6 +55,8 @@ export default new  Vuex.Store({
         machineActivationMethod: null,
         dopuSetup: null,
         dopuIncludeServices: false,
+        allowRework: false,
+        allowTransfer: false,
     },
     getters: {
         getCurrentUser(state) {
@@ -83,6 +85,12 @@ export default new  Vuex.Store({
         },
         getShopId(state) {
             return state.shopId;
+        },
+        isTransferAllowed(state) {
+            return state.allowTransfer;
+        },
+        isReworkAllowed(state) {
+            return state.allowRework;
         }
     },
     actions: {
@@ -104,6 +112,8 @@ export default new  Vuex.Store({
             state.dopuIncludeServices = data.dopuIncludeServices;
             state.canDownloadCustomers = data.canDownloadCustomers;
             state.shopId = data.shopId;
+            state.allowRework = data.allowRework;
+            state.allowTransfer = data.allowTransfer;
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${data.token.accessToken}`;
         },
         updateEmail(state, data) {

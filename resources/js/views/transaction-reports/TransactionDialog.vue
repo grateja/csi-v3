@@ -318,7 +318,7 @@
             </div>
             <v-card-actions>
                 <v-btn @click="close" round>close</v-btn>
-                <template v-if="!!tempTransaction">
+                <template v-if="!!tempTransaction && tempTransaction.deleted_at == null">
                     <v-tooltip top v-if="isOwner">
                         <v-btn slot="activator" icon @click="deleteTransaction(!!tempTransaction.deleted_at)" :loading="isDeleting">
                             <v-icon>delete</v-icon>

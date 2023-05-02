@@ -498,11 +498,8 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             Route::post('{id}/delete-service', 'LagoonPerKiloController@deleteService');
         });
     });
-    
-    
 
     // /api/services/per-kilo
-    
     Route::group(['prefix' => 'per-kilo'], function() {
         // /api/services/per-kilo
         Route::get('/', 'PerKiloServicesController@index');
@@ -524,7 +521,7 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
             Route::post('{id}/delete-service', 'PerKiloServicesController@deleteService');
         });
     });
-    
+
 });
 
 // /apo/pos-transactions

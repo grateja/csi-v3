@@ -58,7 +58,10 @@ class SendShopPreferences implements ShouldQueue
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
-        $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId . '/shop-preferences', [
+
+        $cloudEndpoint = env('CLOUD_ENDPOINT', 'localhost:8000');
+
+        $response = $clientRequest->post("http://$cloudEndpoint/api/live/v3/update/$shopId/shop-preferences", [
             'json' => $data,
             'headers' => [
                 'Content-Type' => 'application/json',

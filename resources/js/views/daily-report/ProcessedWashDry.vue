@@ -21,11 +21,14 @@
                     <div v-for="item in list" :key="item.id">
                         <v-layout @click="$emit('openJobOrder', item.service_transaction_item.transaction_id)">
                             <v-flex xs1>{{item.job_order}}</v-flex>
-                            <v-flex xs3>{{item.customer.name}}</v-flex>
+                            <v-flex xs3>
+                                <span v-if="item.customer_name">{{ item.customer_name }}</span>
+                                <span v-else>{{item.customer?.name}}</span>
+                            </v-flex>
                             <v-flex xs3>
                                 <v-layout>
                                     <v-flex>{{item.service_name}}</v-flex>
-                                    <v-flex class="text-xs-right">{{item.minutes}} min</v-flex>
+                                    <v-flex class="text-xs-right" v-if="item.minutes">{{item.minutes}} min</v-flex>
                                 </v-layout>
                             </v-flex>
                             <v-flex xs2 class="text-xs-center">{{item.used | simpleTime}}</v-flex>

@@ -78,6 +78,8 @@ class OAuthController extends Controller
                 'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
                 'dopuSetup' => env('DOPU_SETUP', 'basic'), // basic, slave, master
                 'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
+                'allowTransfer' => env('ALLOW_TRANSFER', false),
+                'allowRework' => env('ALLOW_REWORK', false),
             ]);
         }
         return response()->json([
@@ -103,6 +105,8 @@ class OAuthController extends Controller
             'machineActivationMethod' => env('MACHINE_ACTIVATION_METHOD', 'nsoft'),
             'dopuSetup' => env('DOPU_SETUP', 'basic'), // basic, slave, master
             'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
+            'allowTransfer' => env('ALLOW_TRANSFER', false),
+            'allowRework' => env('ALLOW_REWORK', false),
         ], 200);
     }
 }

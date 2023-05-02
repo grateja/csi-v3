@@ -111,8 +111,11 @@ class LiveHostController extends Controller
 
     private function createRequest($data, $shopId) {
         $clientRequest = new GuzzleHttpClient();
+
+        $cloudEndpoint = env('CLOUD_ENDPOINT', 'localhost:8000');
+
         // $response = $clientRequest->post('http://localhost:8000/api/live/v3/update/' . $shopId, [
-        $response = $clientRequest->post('http://139.162.73.87/api/live/v3/update/' . $shopId, [
+        $response = $clientRequest->post("http://$cloudEndpoint/api/live/v3/update/$shopId", [
         // $response = $clientRequest->post('http://csi-v3-live/api/live/v3/update/' . $shopId, [
             'json' => $data,
             'headers' => [

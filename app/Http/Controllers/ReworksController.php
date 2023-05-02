@@ -36,6 +36,13 @@ class ReworksController extends Controller
     }
 
     public function rework($machineId, Request $request) {
+        if(!env('ALLOW_REWORK', false)) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Rework is disabled by the admin']
+                ]
+            ], 422);
+        }
         $rules = [
             'remarks' => 'required',
         ];
@@ -235,6 +242,14 @@ class ReworksController extends Controller
     }
 
     public function transfer(Request $request, $from, $to) {
+        if(!env('ALLOW_TRANSFER', false)) {
+            return response()->json([
+                'errors' => [
+                    'message' => ['Transfer is disabled by the admin']
+                ]
+            ], 422);
+        }
+
         $rules = [
             'remarks' => 'required',
         ];
