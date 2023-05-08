@@ -13,6 +13,7 @@ use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
 use App\TransactionPayment;
 use App\Transaction;
+use App\OtherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -193,8 +194,11 @@ class ExcelController extends Controller
             ->selectRaw('scarpa_variations.id as id, name as category, action as name, selling_price as price')
             ->get();
 
-        $services = $scarpa->merge($lagoon)->merge($lagoonPerKilo);
-        
+        $others = OtherService::orderBy('name')
+            ->selectRaw('id, "other" as category, name, price')->get();
+
+        $services = $scarpa->merge($lagoon)->merge($lagoonPerKilo)->merge($others);
+
         return Excel::download(new ReportTemplate($services, [
             'ID', 'CATEGORY', 'NAME', 'PRICE'
         ]), 'keme.csv');
