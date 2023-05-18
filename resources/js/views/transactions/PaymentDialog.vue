@@ -1,6 +1,6 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
-        <pre>{{ cashLess }}</pre>
+        <!-- <pre>{{ cashLess }}</pre> -->
         <form @submit.prevent="submit">
             <v-card v-if="transaction" class="rounded-card">
                 <v-card-title>
