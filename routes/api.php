@@ -13,6 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('activate', function() {
+    sleep(10);
+    return 1;
+});
+
 // /api/developer
 Route::group(['prefix' => 'developer'], function () {
     // /api/developer/system-date-time

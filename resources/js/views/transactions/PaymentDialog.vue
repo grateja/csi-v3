@@ -1,5 +1,6 @@
 <template>
     <v-dialog :value="value" max-width="480" persistent>
+        <pre>{{ cashLess }}</pre>
         <form @submit.prevent="submit">
             <v-card v-if="transaction" class="rounded-card">
                 <v-card-title>
@@ -215,6 +216,10 @@ export default {
                 this.formData.cashlessAmount = this.cashLess.amount
                 this.formData.cashlessProvider = this.cashLess.provider
                 this.formData.cashlessReferenceNumber = this.cashLess.referenceNumber
+            } else {
+                this.formData.cashlessAmount = 0
+                this.formData.cashlessProvider = null
+                this.formData.cashlessReferenceNumber = null
             }
             this.$store.dispatch('payment/proceedToPayment', {
                 transactionId: this.transaction.id,
@@ -322,6 +327,9 @@ export default {
         value(val) {
             if(val && this.transaction) {
                 this.formData.cash = this.amountToPay;
+                // this.cashLess = null;
+                console.log("payment dialog opened")
+                console.log(this.cashLess)
                 setTimeout(() => {
                     this.$refs.cash.$el.querySelector('input').select();
                 }, 500);
