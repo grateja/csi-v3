@@ -51,10 +51,10 @@ class SalesReportController extends Controller
             ->selectRaw('DATE(created_at) as day, SUM(amount) as total_price, SUM(amount) as collection')
             ->get();
 
-        $newCustomers = Customer::whereMonth('first_visit', $monthIndex)
-            ->whereYear('first_visit', $year)
+        $newCustomers = Customer::whereMonth('created_at', $monthIndex)
+            ->whereYear('created_at', $year)
             ->groupBy(DB::raw('day'))
-            ->selectRaw('DATE(first_visit) as day, COUNT(id) as total_count')
+            ->selectRaw('DATE(created_at) as day, COUNT(id) as total_count')
             ->get();
 
         $expenses = Expense::whereMonth('date', $monthIndex)
@@ -140,13 +140,15 @@ class SalesReportController extends Controller
         $partialPayments = PartialPayment::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date', '>=', $request->date)
                 ->whereDate('date', '<=', $request->until)
-                ->whereNull('date_paid');
+                ->whereNull('date_paid')
+                ->whereNull('cancelation_remarks');
         })->selectRaw('COUNT(id) as total_jo, SUM(cash) as total_sales, SUM(balance) as total_balance')
             ->first();
 
         $fullyPaid = TransactionPayment::whereHas('transaction', function($query) use ($request) {
             $query->whereDate('date','>=', $request->date)
-                ->whereDate('date', '<=', $request->until);
+                ->whereDate('date', '<=', $request->until)
+                ->whereNull('cancelation_remarks');
         })->selectRaw('COUNT(id) as total_jo, SUM(total_amount) as total_sales, SUM(balance) as total_balance')
             ->first();
 
@@ -181,7 +183,8 @@ class SalesReportController extends Controller
             $query->whereDate('date','>=', $request->date)
                 ->whereDate('date', '<=', $request->until);
         })->whereHas('transaction', function($query) {
-                $query->whereDoesntHave('payment');
+                $query->whereDoesntHave('payment')
+                    ->whereNull('cancelation_remarks');
             })
             ->sum('cash');
 
@@ -189,7 +192,8 @@ class SalesReportController extends Controller
             $query->whereDate('date','>=', $request->date)
                 ->whereDate('date', '<=', $request->until);
         })->whereHas('transaction', function($query) {
-                $query->whereHas('payment');
+                $query->whereHas('payment')
+                    ->whereNull('cancelation_remarks');
             })->sum('cash');
 
         $collFullyPaid = TransactionPayment::whereDate('date', '>=', $request->date)
@@ -661,6 +665,7 @@ class SalesReportController extends Controller
     // $request->dateFrom
     // $request->dateTo
     public function customRange(Request $request, $print = false) {
+        return null;
         $rules = [
             'dateFrom' => 'required|date',
             'dateTo' => 'required|date',

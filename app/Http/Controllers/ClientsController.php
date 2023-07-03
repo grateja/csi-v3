@@ -27,6 +27,7 @@ use App\RfidCardTransaction;
 use App\RfidLoadTransaction;
 use App\ServiceTransactionItem;
 use App\ThermalPrinter;
+use App\TiTo;
 use App\Transaction;
 use App\TransactionPayment;
 use App\TransactionRemarks;
@@ -129,6 +130,7 @@ class ClientsController extends Controller
             Transaction::where(function($query){})->forceDelete();
             Machine::where(function($query){})->forceDelete();
             Customer::where(function($query){})->forceDelete();
+            TiTo::where(function($query){})->forceDelete();
 
             ProductPurchase::where(function($query){})->forceDelete();
             Product::where(function($query){})->forceDelete();

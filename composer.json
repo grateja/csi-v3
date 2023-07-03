@@ -20,7 +20,7 @@
         "laravel/tinker": "^1.0",
         "lcobucci/jwt": "3.3.3",
         "maatwebsite/excel": "^3.1",
-        "mike42/escpos-php": "^3.0"
+        "mike42/escpos-php": "^2.2"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

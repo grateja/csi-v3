@@ -310,7 +310,7 @@ class ThermalPrinter extends Model
         // Full Payment
         $this->printSubtitle("FULL PAYMENT");
         $this->printer->initialize();
-        
+
         if($transaction->payment) {
 
             $this->printItem("Date paid", Carbon::createFromDate($transaction->date_paid)->format('m/d/Y h:iA'));
@@ -321,6 +321,7 @@ class ThermalPrinter extends Model
             $this->printItem("Cash", $transaction->payment->cash);
             if($transaction->payment->cash_less_amount) {
                 $this->printItem($transaction->payment->cash_less_provider, $transaction->payment->cash_less_amount);
+                $this->printItem("Ref. #:", "[{$transaction->payment->cash_less_reference_number}]");
             }
             $this->printItem("Change", $transaction->payment->change);
             $this->printItem("Balance", 0);
