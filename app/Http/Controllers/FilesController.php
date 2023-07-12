@@ -148,8 +148,10 @@ class FilesController extends Controller
             ];
 
             return DB::transaction(function () use ($eventId, $source, $event) {
-                $oldSource = $event->audio->source;
-                $audio = $event->audio;
+                if($audio = $event->audio) {
+                    $oldSource = $event->audio->source;
+                    File::delete(public_path() . $oldSource);
+                }
 
                 if($audio == null) {
                     $audio = Audio::create([
@@ -163,7 +165,6 @@ class FilesController extends Controller
                     ]);
                 }
 
-                File::delete(public_path() . $oldSource);
 
                 $event->update([
                     'updated_at' => Carbon::now(),
