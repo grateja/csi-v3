@@ -56,6 +56,7 @@
                 </div> -->
             </div>
         </div>
+        <div id="audioWrapper"></div>
         <div class="jo-wrapper">
             <div>
                 <fieldset class="customer-name">
@@ -112,6 +113,11 @@
     <script id="videoTemplate" type="text/template">
         <video id="videoFile" muted="muted" controls type="video/mp4" src="@{{source}}" style="width: 100%" autoplay="true" loop></video>
     </script>
+    <script id="audioTemplate" type="text/template">
+        <audio id="audio" autoplay controls loop>
+            <source src="@{{source}}" />
+        </audio>
+    </script>
     <script id="itemTemplate" type="text/template">
         <tr>
             <td class="item-name">
@@ -136,6 +142,7 @@
             <span>@{{announcementContent}}</span>
         </div>
     </script>
+
     <!-- <v-app id="app">
         <news />
     </v-app> -->

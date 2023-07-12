@@ -35,6 +35,8 @@ export default {
             this.openBrowseVideo = true;
         },
         saveVideo(formData) {
+            console.log("file")
+            console.log(formData.file)
             this.$store.dispatch('file/uploadVideo', {
                 formData,
                 eventId: this.event.id

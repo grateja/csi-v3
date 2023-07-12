@@ -25,7 +25,7 @@ class EventsController extends Controller
     }
 
     public function show($id) {
-        $event = Event::with('eventType','slides', 'video')->findorFail($id);
+        $event = Event::with('eventType','slides', 'video', 'audio')->findorFail($id);
         return response()->json([
             'event' => $event
         ], 200);

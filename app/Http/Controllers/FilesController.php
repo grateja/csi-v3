@@ -9,6 +9,7 @@ use App\Slide;
 use App\Event;
 use App\MonitorChecker;
 use App\Video;
+use App\Audio;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -127,5 +128,57 @@ class FilesController extends Controller
         return response()->json([
             'message' => 'No file'
         ], 422);
+    }
+
+    public function uploadAudio(Request $request, $eventId) {
+        if($request->hasFile('file')) {
+            $event = Event::with('audio')->findorFail($eventId);
+            $extension = $request->file('file')->getClientOriginalExtension();
+            $name = str_random() . '.' . $extension;
+
+            $path = '/audio/' . date('Y-m-d') . '/';
+            $source = $path . $name;
+
+            $request->file('file')->move(public_path() . $path, $name);
+
+            $data = [
+                'name' => $name,
+                'path' => $path,
+                'source' => $source
+            ];
+
+            return DB::transaction(function () use ($eventId, $source, $event) {
+                $oldSource = $event->audio->source;
+                $audio = $event->audio;
+
+                if($audio == null) {
+                    $audio = Audio::create([
+                        'event_id' => $eventId,
+                        'source' => $source
+                    ]);
+                } else {
+                    $audio = $event->audio->update([
+                        'event_id' => $eventId,
+                        'source' => $source
+                    ]);
+                }
+
+                File::delete(public_path() . $oldSource);
+
+                $event->update([
+                    'updated_at' => Carbon::now(),
+                ]);
+
+                MonitorChecker::idle();
+
+                return response()->json([
+                    'audio' => $audio
+                ], 200);
+            });
+        } else {
+            return response()->json([
+                'message' => 'No file'
+            ], 422);
+        }
     }
 }

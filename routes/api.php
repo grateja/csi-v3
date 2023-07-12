@@ -1166,6 +1166,9 @@ Route::group(['prefix' => 'files', 'middleware' => 'auth:api'], function() {
     // /api/files/upload-video/{eventId}
     Route::post('upload-video/{eventId}', 'FilesController@uploadVideo');
 
+    // /api/files/upload-audio/{eventId}
+    Route::post('upload-audio/{eventId}', 'FilesController@uploadAudio');
+
     // /api/files/change-picture/{slideId}
     Route::post('change-picture/{slideId}', 'FilesController@changePicture');
 });

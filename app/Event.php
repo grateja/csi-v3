@@ -29,6 +29,10 @@ class Event extends Model
         return $this->hasOne('App\Video');
     }
 
+    public function audio() {
+        return $this->hasOne('App\Audio');
+    }
+
     public function getIsDefaultAttribute() {
         return $this->sysDefault != null;
     }

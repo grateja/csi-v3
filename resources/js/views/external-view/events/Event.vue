@@ -14,7 +14,7 @@
             <v-tabs v-model="activeTab" color="blue" active-class="white">
                 <v-tab><v-icon left>perm_media</v-icon> Slide show</v-tab>
                 <v-tab><v-icon left>video_library</v-icon> Video</v-tab>
-                <!-- <v-tab><v-icon left>title</v-icon> Text</v-tab> -->
+                <v-tab><v-icon left>volume_mute</v-icon> Audio</v-tab>
                 <!-- <v-tab><v-icon left>subscriptions</v-icon> Youtube link</v-tab> -->
 
                 <v-tab-item>
@@ -74,7 +74,19 @@
                     <video-panel :event="event" @updateVideo="updateVideo"></video-panel>
                 </v-tab-item>
                 <v-tab-item>
-                    <h3>For text</h3>
+                    <v-card>
+                        <h3>For Audio</h3>
+                        <v-card-text>
+
+                            <template v-if="event.audio">
+                                <audio ref="audio" controls>
+                                    <source :src="event.audio.source" />
+                                </audio>
+                            </template>
+
+                            <v-btn @click="openAudioDialog = true">Select audio</v-btn>
+                        </v-card-text>
+                    </v-card>
                 </v-tab-item>
                 <v-tab-item>
                     <h3>For youtube</h3>
@@ -88,6 +100,7 @@
     <!-- <change-picture-dialog v-model="openChangePicture" :slide="activeSlide" @ok="changePictureContinue" /> -->
     <slide-dialog v-model="openSlideDialog" :slide="activeSlide" @ok="selectPictures" />
     <picture-browser v-if="activeSlide" v-model="openChangePicture" :url="activeSlide.source" @ok="changePictureContinue" />
+    <audio-dialog v-model="openAudioDialog" :eventId="event.id" />
 </div>
 
         <!-- <v-flex sm12 md2 lg3>
@@ -135,6 +148,7 @@ import EventDialog from './EventDialog.vue';
 import ChangeOrderDialog from './slides/ChangeOrderDialog.vue';
 import ChangePictureDialog from './slides/ChangePictureDialog.vue';
 import SlideDialog from './slides/SlideDialog.vue';
+import AudioDialog from './audio/AudioDialog.vue';
 import VideoPanel from './videos/VideoPanel.vue';
 import PictureBrowser from '../../shared/PictureBrowser.vue';
 
@@ -146,6 +160,7 @@ export default {
         ChangeOrderDialog,
         ChangePictureDialog,
         SlideDialog,
+        AudioDialog,
         VideoPanel,
         PictureBrowser
     },
@@ -159,6 +174,7 @@ export default {
             openChangeOrder: false,
             openSlideDialog: false,
             openChangePicture: false,
+            openAudioDialog: false,
             activeSlide: null
         }
     },

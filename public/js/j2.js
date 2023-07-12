@@ -9,6 +9,7 @@ $('document').ready(function() {
     var sliderTemplate = $('#sliderTemplate').html();
     var slideTemplate = $('#slideTemplate').html();
     var videoTemplate = $('#videoTemplate').html();
+    var audioTemplate = $('#audioTemplate').html();
     var itemTemplate = $('#itemTemplate').html();
     var announcementMarqueeOnTemplate = $('#announcementMarqueeOnTemplate').html();
     var announcementMarqueeOffTemplate = $('#announcementMarqueeOffTemplate').html();
@@ -69,11 +70,28 @@ $('document').ready(function() {
                 try {
                     if(res.event.event_type_id == 1) {
                         var slides = res.event.slides;
-            
+
+                        if(res.event.audio != null) {
+                            var audio = audioTemplate.replace(/{{source}}/, res.event.audio.source);
+                            $('#audioWrapper').html(audio);
+
+                            console.log($("#buttonPlay"))
+
+                            // $('#buttonPlay').on('click', function() {
+                            //     console.log('fuck you')
+                            //     $("#audio").get(0).play();
+                            // })
+
+                            setTimeout(function(){
+                                console.log("audio", $("#audio").get(0))
+                                $("#audio").get(0).play()
+                            }, 3000);
+                        }
+
                         var slider = sliderTemplate.replace(/{{slides}}/, toHtmlSlider(slides));
-            
+
                         $('#boardContent').html(slider);
-            
+
                         $('.slider_circle_10').EasySlides({
                             autoplay: true,
                             'timeout': 8000,
@@ -89,6 +107,7 @@ $('document').ready(function() {
                             // 'beforeshow': function () {},
                             // 'aftershow': function () {},
                         })
+
                     } else if(res.event.event_type_id == 2) {
                         if(res.event.video) {
                             var video = videoTemplate.replace(/{{source}}/, res.event.video.source);
@@ -190,7 +209,7 @@ $('document').ready(function() {
             var service = transaction.posServiceItems[index];
             services += toHtmlItem(service)
         }
-        
+
         for (var index = 0; index < transaction.posLagoonItems.length; index++) {
             var service = transaction.posLagoonItems[index];
             services += toHtmlItem(service)
