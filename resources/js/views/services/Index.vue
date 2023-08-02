@@ -35,18 +35,18 @@ export default {
         scarpaOnly() {
             return this.$store.getters.getScarpaOnly;
         }
-    // },
-    // watch: {
-    //     scarpaOnly: {
-    //         handler(val) {
-    //             console.log(val)
-    //             if(val) {
-    //                 this.$router.push('/services/scarpa-cleaning')
-    //             }
-    //         },
-    //         deep: true,
-    //         immediate: true
-    //     }
+    },
+    watch: {
+        scarpaOnly: {
+            handler(val) {
+                console.log(val)
+                if(val) {
+                    this.$router.push('/services/scarpa-cleaning')
+                }
+            },
+            deep: true,
+            immediate: true
+        }
     }
 }
 </script>
