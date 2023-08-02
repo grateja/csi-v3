@@ -10,7 +10,7 @@
                 <v-btn to="/new-transaction/scarpa-cleanings" class="translucent" active-class="primary" round>Scarpa</v-btn>
                 <v-btn to="/new-transaction/lagoon" class="translucent" active-class="primary" round v-if="!scarpaOnly">Lagoon</v-btn>
                 <v-btn to="/scanner" class="translucent" active-class="primary" round v-if="canScanQRCode && !scarpaOnly">Scan QR Code</v-btn>
-                <router-view></router-view>
+                <router-view> </router-view>
             </v-flex>
             <v-flex xs5 lg4>
                 <customer-panel @selectCustomer="selectCustomer" />

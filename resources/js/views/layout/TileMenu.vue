@@ -203,7 +203,7 @@ export default {
                         return link;
                     });
 
-                if(this.scarpaOnly) {
+                if(this.scarpaOnly)  {
                     return links.filter (link => link.scarpa)
                 } else {
                     return links;

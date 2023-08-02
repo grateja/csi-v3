@@ -57,7 +57,7 @@ export default new  Vuex.Store({
         dopuIncludeServices: false,
         allowRework: false,
         allowTransfer: false,
-        scarpaOnly: false
+        scarpaOnly:  false
     },
     getters: {
         getCurrentUser(state) {

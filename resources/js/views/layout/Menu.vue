@@ -194,7 +194,7 @@ export default {
                     roles: ['admin', 'staff'],
                     color: '#a7a1e6',
                     to: '/new-transaction/services',
-                    scarpa: true
+                    scarpa:  true
                 },
                 {
                     text: 'Remote panel',
