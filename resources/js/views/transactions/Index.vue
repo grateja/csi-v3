@@ -5,11 +5,11 @@
         <v-divider class="my-3"></v-divider>
         <v-layout>
             <v-flex xs7 lg8>
-                <v-btn to="/new-transaction/services" class="ml-0 translucent" active-class="primary" round>Services</v-btn>
+                <v-btn to="/new-transaction/services" class="ml-0 translucent" active-class="primary" round v-if="!scarpaOnly">Services</v-btn>
                 <v-btn to="/new-transaction/products" class="translucent" active-class="primary" round>Products</v-btn>
                 <v-btn to="/new-transaction/scarpa-cleanings" class="translucent" active-class="primary" round>Scarpa</v-btn>
-                <v-btn to="/new-transaction/lagoon" class="translucent" active-class="primary" round>Lagoon</v-btn>
-                <v-btn to="/scanner" class="translucent" active-class="primary" round v-if="canScanQRCode">Scan QR Code</v-btn>
+                <v-btn to="/new-transaction/lagoon" class="translucent" active-class="primary" round v-if="!scarpaOnly">Lagoon</v-btn>
+                <v-btn to="/scanner" class="translucent" active-class="primary" round v-if="canScanQRCode && !scarpaOnly">Scan QR Code</v-btn>
                 <router-view></router-view>
             </v-flex>
             <v-flex xs5 lg4>
@@ -44,11 +44,26 @@ export default {
         },
         canScanQRCode() {
             return this.$store.getters.getDopuSetup == 'master'
+        },
+        scarpaOnly() {
+            return this.$store.getters.getScarpaOnly;
         }
     },
     beforeDestroy() {
         this.$store.commit('postransaction/clearTransaction');
         this.$store.commit('postransaction/removeCustomer');
+    },
+    watch: {
+        scarpaOnly: {
+            handler(val) {
+                console.log(val)
+                if(val) {
+                    this.$router.push('/new-transaction/scarpa-cleanings')
+                }
+            },
+            deep: true,
+            immediate: true
+        }
     }
 }
 </script>

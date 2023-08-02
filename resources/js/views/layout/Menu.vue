@@ -132,7 +132,7 @@
                 </span>
             </v-btn>
         </div>
-        <div v-if="dopuSetup == 'master' && isOwner" class="pl-4 ml-4">
+        <div v-if="dopuSetup == 'master' && isOwner && !scarpaOnly" class="pl-4 ml-4">
             <v-btn round class="menu-iddle" to="/lagoon-partners" active-class="menu-active" flat>
                 <!-- <v-responsive> -->
                     <!-- <v-avatar size="20" class="transparent mx-2"> -->
@@ -193,7 +193,8 @@ export default {
                     icon: 'new-transaction',
                     roles: ['admin', 'staff'],
                     color: '#a7a1e6',
-                    to: '/new-transaction/services'
+                    to: '/new-transaction/services',
+                    scarpa: true
                 },
                 {
                     text: 'Remote panel',
@@ -207,7 +208,8 @@ export default {
                     icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    to: '/sales-report/calendar-view'
+                    to: '/sales-report/calendar-view',
+                    scarpa: true
                 },
                 {
                     text: 'Daily Report',
@@ -220,14 +222,16 @@ export default {
                     icon: 'job-orders',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
-                    to: '/transaction-reports/by-job-orders'
+                    to: '/transaction-reports/by-job-orders',
+                    scarpa: true
                 },
                 {
                     text: 'Unpaid',
                     icon: 'unpaid-transactions',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',
-                    to: '/unpaid-transactions'
+                    to: '/unpaid-transactions',
+                    scarpa: true
                 },
                 {
                     text: 'Pending services',
@@ -241,42 +245,48 @@ export default {
                     icon: 'customers',
                     roles: ['staff', 'admin'],
                     color: '#a1e6d9',
-                    to: '/customers'
+                    to: '/customers',
+                    scarpa: true
                 },
                 {
                     text: 'Users',
                     icon: 'users',
                     roles: ['admin', 'developer'],
                     color: '#a1e6d9',
-                    to: '/users'
+                    to: '/users',
+                    scarpa: true
                 },
                 {
                     text: 'Services',
                     icon: 'services',
                     roles: ['admin'],
                     color: '#95b9fb',
-                    to: '/services/washing-services'
+                    to: '/services/washing-services',
+                    scarpa: true
                 },
                 {
                     text: 'Products',
                     icon: 'products',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
-                    to: '/products'
+                    to: '/products',
+                    scarpa: true
                 },
                 {
                     text: 'Inventory Log',
                     icon: 'product-purchases',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
-                    to: '/product-purchases'
+                    to: '/product-purchases',
+                    scarpa: true
                 },
                 {
                     text: 'Expenses',
                     icon: 'expenses',
                     roles: ['staff', 'admin'],
                     color: '#95b9fb',
-                    to: '/expenses'
+                    to: '/expenses',
+                    scarpa: true
                 },
                 {
                     text: 'RFID',
@@ -304,14 +314,16 @@ export default {
                     icon: 'loyalty-points',
                     roles: ['admin'],
                     color: '#e4dfdd',
-                    to: '/loyalty-points'
+                    to: '/loyalty-points',
+                    scarpa: true
                 },
                 {
                     text: 'Discounts',
                     icon: 'discounts',
                     roles: ['admin'],
                     color: '#e4dfdd',
-                    to: '/discounts'
+                    to: '/discounts',
+                    scarpa: true
                 },
                 {
                     text: 'Time Keeping',
@@ -354,7 +366,12 @@ export default {
                         }
                         return link;
                     });
-                return links;
+
+                    if(this.scarpaOnly) {
+                        return links.filter (link => link.scarpa)
+                    } else {
+                        return links;
+                    }
             }
             return [];
         },
@@ -383,6 +400,9 @@ export default {
             if(user) {
                 return user.roles.some(r => r == 'admin');
             }
+        },
+        scarpaOnly() {
+            return this.$store.getters.getScarpaOnly;
         }
     },
     methods: {

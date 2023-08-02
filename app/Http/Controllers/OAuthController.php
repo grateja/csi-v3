@@ -80,6 +80,7 @@ class OAuthController extends Controller
                 'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
                 'allowTransfer' => env('ALLOW_TRANSFER', false),
                 'allowRework' => env('ALLOW_REWORK', false),
+                'scarpaOnly' => env('SCARPA_ONLY', false),
             ]);
         }
         return response()->json([
@@ -107,6 +108,7 @@ class OAuthController extends Controller
             'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
             'allowTransfer' => env('ALLOW_TRANSFER', false),
             'allowRework' => env('ALLOW_REWORK', false),
+            'scarpaOnly' => env('SCARPA_ONLY', false),
         ], 200);
     }
 }

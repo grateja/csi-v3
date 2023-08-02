@@ -31,7 +31,8 @@ export default {
                     icon: 'new-transaction',
                     roles: ['staff', 'admin'],
                     color: '#33cbff',
-                    route: '/new-transaction/services'
+                    route: '/new-transaction/services',
+                    scarpa: true
                 },
                 {
                     text: 'Remote panel',
@@ -45,7 +46,8 @@ export default {
                     icon: 'sales-report',
                     roles: ['admin'],
                     color: '#a7a1e6',
-                    route: '/sales-report/calendar-view'
+                    route: '/sales-report/calendar-view',
+                    scarpa: true
                 },
                 {
                     text: 'Daily Report',
@@ -58,14 +60,16 @@ export default {
                     icon: 'job-orders',
                     roles: ['staff', 'admin'],
                     color: '#cfe6a1',
-                    route: '/transaction-reports/by-job-orders'
+                    route: '/transaction-reports/by-job-orders',
+                    scarpa: true
                 },
                 {
                     text: 'Unpaid',
                     icon: 'unpaid-transactions',
                     roles: ['staff', 'admin'],
                     color: '#ace6a1',
-                    route: '/unpaid-transactions'
+                    route: '/unpaid-transactions',
+                    scarpa: true
                 },
                 {
                     text: 'Pending services',
@@ -79,42 +83,48 @@ export default {
                     icon: 'customers',
                     roles: ['staff', 'admin'],
                     color: '#a1e6d9',
-                    route: '/customers'
+                    route: '/customers',
+                    scarpa: true
                 },
                 {
                     text: 'Users',
                     icon: 'users',
                     roles: ['admin', 'developer'],
                     color: '#bcefe5',
-                    route: '/users'
+                    route: '/users',
+                    scarpa: true
                 },
                 {
                     text: 'Inventory Log',
                     icon: 'product-purchases',
                     roles: ['staff', 'admin'],
                     color: '#83adfb',
-                    route: '/product-purchases'
+                    route: '/product-purchases',
+                    scarpa: true
                 },
                 {
                     text: 'Expenses',
                     icon: 'expenses',
                     roles: ['staff', 'admin'],
                     color: '#95b9fb',
-                    route: '/expenses'
+                    route: '/expenses',
+                    scarpa: true
                 },
                 {
                     text: 'Services',
                     icon: 'services',
                     roles: ['admin'],
                     color: '#fbf783',
-                    route: '/services/washing-services'
+                    route: '/services/washing-services',
+                    scarpa: true
                 },
                 {
                     text: 'Products',
                     icon: 'products',
                     roles: ['admin', 'staff'],
                     color: '#f6f783',
-                    route: '/products'
+                    route: '/products',
+                    scarpa: true
                 },
                 {
                     text: 'RFID',
@@ -142,14 +152,16 @@ export default {
                     icon: 'loyalty-points',
                     roles: ['admin'],
                     color: '#def794',
-                    route: '/loyalty-points'
+                    route: '/loyalty-points',
+                    scarpa: true
                 },
                 {
                     text: 'Discounts',
                     icon: 'discounts',
                     roles: ['admin'],
                     color: '#ddfb83',
-                    route: '/discounts'
+                    route: '/discounts',
+                    scarpa: true
                 },
                 {
                     text: 'Time Keeping',
@@ -191,12 +203,19 @@ export default {
                         return link;
                     });
 
-                return links;
+                if(this.scarpaOnly) {
+                    return links.filter (link => link.scarpa)
+                } else {
+                    return links;
+                }
             }
             return [];
         },
         user() {
             return this.$store.getters.getCurrentUser;
+        },
+        scarpaOnly() {
+            return this.$store.getters.getScarpaOnly;
         }
     }
 }
