@@ -897,6 +897,15 @@ class PosTransactionController extends Controller
                     ], 422);
                 }
 
+                if(!$transaction->saved && $transaction->job_order != null) {
+                    DB::rollback();
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Cannot cancel unsaved transaction']
+                        ]
+                    ], 422);
+                }
+
                 $customerWashes = CustomerWash::where('job_order', $transaction->job_order)
                     ->whereNotNull('used')->count();
 
