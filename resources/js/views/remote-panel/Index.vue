@@ -4,8 +4,9 @@
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
         <v-divider v-else class="my-3"></v-divider>
 
-        <v-btn to="/remote-panel" exact active-class="primary" round>8 Kilo Capacity</v-btn>
-        <v-btn to="/remote-panel/titan" active-class="primary" round exact>12 Kilo Capacity</v-btn>
+        <v-btn to="/remote-panel" exact active-class="primary" round>Giant</v-btn>
+        <v-btn to="/remote-panel/titan" active-class="primary" round exact>Titan</v-btn>
+        <v-btn to="/remote-panel/electrolux" exact active-class="primary" round exact>Electrolux</v-btn>
         <template v-if="isDeveloper">
             <v-divider></v-divider>
             <v-btn @click="stopAll" round :loading="resetting">stop all</v-btn>

@@ -28,6 +28,10 @@ Vue.filter("peso", function (value) {
     return 'P' + parseFloat(value || 0).toLocaleString('en-US', {maximumFractionDigits:2});
 });
 
+Vue.filter("dec", function (value) {
+    return parseFloat(value || 0).toLocaleString('en-US', {maximumFractionDigits:2});
+});
+
 Vue.filter("simpleDate", function(value) {
     let _date = moment(value);
     return _date.isValid() ? _date.format('MMMD,YY') : value;

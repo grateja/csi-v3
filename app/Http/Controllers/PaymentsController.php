@@ -223,13 +223,13 @@ class PaymentsController extends Controller
                         }
                     }
 
-                    if($transaction->partialPayment != null) {
-                        return response()->json([
-                            'errors' => [
-                                'message' => ['Cannot apply discount to Job Order with Partial Payment']
-                            ]
-                        ], 422);
-                    }
+                    // if($transaction->partialPayment != null) {
+                    //     return response()->json([
+                    //         'errors' => [
+                    //             'message' => ['Cannot apply discount to Job Order with Partial Payment']
+                    //         ]
+                    //     ], 422);
+                    // }
 
                     $discount = Discount::findOrFail($request->discountId);
                     $discountName = $discount->name;

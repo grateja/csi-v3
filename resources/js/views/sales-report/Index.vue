@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <h3 class="title white--text">Sales report</h3>
+        <h3 class="title white--text">Sales reports</h3>
         <v-divider class="my-3"></v-divider>
         <!-- <v-btn to="/sales-report/yearly-view" class="ml-0" active-class="primary" round>{{yearsFrom}} - {{yearsUntil}}</v-btn> -->
         <!-- <v-btn to="/sales-report/monthly-view" class="ml-0" active-class="primary" round>{{year}}</v-btn> -->

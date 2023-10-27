@@ -5,7 +5,7 @@
                 <h3 class="title gray--text">LAGOON Per Kilo</h3>
             </v-flex>
             <template v-if="simplified">
-                <v-flex xs1 class="text-xs-right title">{{summary.kg}}</v-flex>
+                <v-flex xs1 class="text-xs-right title">{{summary.kg | dec}}</v-flex>
                 <v-flex xs4 class="text-xs-right title">{{summary.total_price | peso}}</v-flex>
             </template>
         </v-layout>
@@ -15,7 +15,7 @@
                 <div class="px-2 mx-2" v-if="usedLagoonPerKilo && usedLagoonPerKilo.length">
                     <template v-for="(service, i) in usedLagoonPerKilo">
                         <v-layout :key="i" class="ma-2">
-                            <v-flex xs1 class="text-xs-center">{{service.kg}}Kg</v-flex>
+                            <v-flex xs1 class="text-xs-center">{{service.kg | dec}}Kg</v-flex>
                             <v-flex xs9>
                                 <span>{{service.name}}</span>
                             </v-flex>
@@ -25,7 +25,7 @@
                     </template>
                     <v-divider></v-divider>
                     <v-layout class="font-weight-bold">
-                        <v-flex xs1 class="text-xs-center">{{summary.kg}}</v-flex>
+                        <v-flex xs1 class="text-xs-center">{{summary.kg | dec}}</v-flex>
                         <v-flex xs9>
                             <span>Total</span>
                         </v-flex>

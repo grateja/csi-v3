@@ -9,8 +9,7 @@ use Carbon\Carbon;
 class DeveloperController extends Controller
 {
     public function setSystemDateTime(Request $request) {
-        exec("sudo date -s $request->date");
-        exec("sudo hwclock -w");
+        shell_exec("sudo /bin/date -s $request->date");
         return $request->date;
     }
 

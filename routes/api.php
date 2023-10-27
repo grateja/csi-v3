@@ -26,7 +26,7 @@ Route::group(['prefix' => 'developer'], function () {
     // });
     Route::get('system-date-time', 'DeveloperController@getSystemDateTime');
 
-    Route::post('set-system-date-time', 'DeveloperController@setSystemDateTime');
+    Route::get('set-system-date-time', 'DeveloperController@setSystemDateTime');
 
     // /api/developer/client
     Route::get('client', 'ClientsController@index');
@@ -159,8 +159,8 @@ Route::group(['prefix' => 'sales-report', 'middleware' => 'auth:api'], function(
     // /api/sales-report/summary/{print}
     Route::post('summary/{print?}', 'SalesReportController@summary');
 
-    // /api/sales-report/{monthIndex}/{year}/all
-    Route::get('{monthIndex}/{year}/all', 'SalesReportController@index');
+    // /api/sales-report/{monthIndex}/{year}/all/{excel?}
+    Route::get('{monthIndex}/{year}/all/{excel?}', 'SalesReportController@index');
 
     // /api/sales-report/{monthIndex}/{year}/week-view
     Route::get('{monthIndex}/{year}/week-view', 'SalesReportController@weekly');

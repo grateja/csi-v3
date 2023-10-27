@@ -2,6 +2,7 @@
     <div>
         <v-progress-linear indeterminate v-if="loading" height="1" class="ma-0"></v-progress-linear>
         <v-divider v-else></v-divider>
+        <v-btn>testing</v-btn>
         <calendar :results="results" :year="year" @month-changed="monthChanged" @input="preview" :summary="monthlySummary" :date-context="dateContext" />
         <!-- <daily-summary v-model="openDailySummary" :date="date" /> -->
     </div>
@@ -26,15 +27,21 @@ export default {
         }
     },
     methods: {
-        load() {
+        load(excel) {
             this.loading = true;
             this.results = [];
-            axios.get(`/api/sales-report/${this.monthIndex}/${this.year}/all`).then((res, rej) => {
-                this.results = res.data.result;
-                this.monthlySummary = res.data.summary;
-            }).finally(() => {
-                this.loading = false;
-            })
+            if(excel) {
+                this.$store.dispatch('exportdownload/download', {
+                    fullUrl: `/api/sales-report/${this.monthIndex}/${this.year}/all/excel`
+                });
+            } else {
+                axios.get(`/api/sales-report/${this.monthIndex}/${this.year}/all`).then((res, rej) => {
+                    this.results = res.data.result;
+                    this.monthlySummary = res.data.summary;
+                }).finally(() => {
+                    this.loading = false;
+                })
+            }
         },
         monthChanged(dateContext) {
             this.monthIndex = moment(dateContext).format('M');
