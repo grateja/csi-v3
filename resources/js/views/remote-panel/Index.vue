@@ -6,7 +6,6 @@
 
         <v-btn to="/remote-panel" exact active-class="primary" round>Giant</v-btn>
         <v-btn to="/remote-panel/titan" active-class="primary" round exact>Titan</v-btn>
-        <v-btn to="/remote-panel/electrolux" exact active-class="primary" round exact>Electrolux</v-btn>
         <template v-if="isDeveloper">
             <v-divider></v-divider>
             <v-btn @click="stopAll" round :loading="resetting">stop all</v-btn>

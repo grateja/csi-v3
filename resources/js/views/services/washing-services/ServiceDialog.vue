@@ -20,10 +20,10 @@
                     <v-combobox :items="['REGULAR', 'TITAN']" label="Machine type" :error-messages="errors.get('machineType')" v-model="formData.machineType" outline></v-combobox>
                     <template>
                         <v-radio-group v-model="formData.serviceType">
-                            <v-radio label="Quick Wash" value="quick" v-if="method == 'nsoft'"></v-radio>
-                            <v-radio label="Regular Wash" value="regular"></v-radio>
-                            <v-radio label="More Rinse" value="more_rinse" v-if="method == 'nsoft'"></v-radio>
-                            <v-radio label="Premium Wash" value="premium" v-if="method == 'nsoft'"></v-radio>
+                            <v-radio label="Delicate Wash" value="quick" v-if="method == 'nsoft'"></v-radio>
+                            <v-radio label="Warm Wash" value="regular"></v-radio>
+                            <v-radio label="Cold Wash" value="more_rinse" v-if="method == 'nsoft'"></v-radio>
+                            <v-radio label="Hot Wash" value="premium" v-if="method == 'nsoft'"></v-radio>
                             <v-radio label="Super Wash" value="additional"></v-radio>
                         </v-radio-group>
                     </template>
@@ -109,26 +109,26 @@ export default {
             switch(serviceType) {
                 case 'quick':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Quick Wash';
+                        this.formData.name = 'Delicate wash';
                     }
                     console.log(this.formData.name);
                     this.formData.regularMinutes = 24;
                     break;
                 case 'regular':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Regular Wash';
+                        this.formData.name = 'Warm Wash';
                     }
                     this.formData.regularMinutes = 38;
                     break;
                 case 'more_rinse':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'More Rinse';
+                        this.formData.name = 'Cold Wash';
                     }
                     this.formData.regularMinutes = 40;
                     break;
                 case 'premium':
                     if(!this.nameDirty || this.formData.name == null) {
-                        this.formData.name = 'Premium Wash';
+                        this.formData.name = 'Hot Wash';
                     }
                     this.formData.regularMinutes = 46;
                     break;
