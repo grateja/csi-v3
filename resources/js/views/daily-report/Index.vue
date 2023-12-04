@@ -1,6 +1,19 @@
 <template>
     <v-container v-if="result">
-        <h3 class="title white--text my-3">Daily Report</h3>
+        <v-card class="transparent" flat>
+            <v-card-title>
+            <h3 class="title white--text">Daily Report</h3>
+            <v-spacer></v-spacer>
+            <!-- <v-btn round>Import</v-btn> -->
+            <v-btn @click="print" round>Print</v-btn>
+            </v-card-title>
+        </v-card>
+
+        <!-- <v-card>
+            <span class="title white--text my-3">Daily Report</span>
+            <v-spacer />
+            <v-btn>keme</v-btn>
+        </v-card> -->
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
         <v-divider v-else class="my-3"></v-divider>
         <date-navigator v-model="date" class="my-2" />
@@ -181,6 +194,14 @@ export default {
         openTransaction(transactionId) {
             this.transactionId = transactionId;
             this.openTransactionDialog = true;
+        },
+        print() {
+            this.$store.dispatch('printer/printDailySale', {
+                date: this.date,
+                until: this.date
+            }).then((res, rej) => {
+                console.log(res.data);
+            })
         }
     },
     created() {
