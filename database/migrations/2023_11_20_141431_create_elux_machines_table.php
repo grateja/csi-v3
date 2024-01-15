@@ -17,13 +17,12 @@ class CreateEluxMachinesTable extends Migration
             Schema::create('elux_machines', function (Blueprint $table) {
                 $table->uuid('id')->primary();
 
+                $table->string('machine_name')->nullable();
                 $table->string('machine_type')->nullable()->comment('washer/dryer');
-                $table->string('model');
-                $table->string('capacity');
-                $table->string('ip_address');
-                $table->string('stack_order');
-                $table->string('user_name');
-                $table->string('customer_name');
+                $table->string('model')->nullable();
+                $table->string('ip_address')->nullable();
+                $table->string('stack_order')->default(0)->nullable();
+                $table->string('customer_name')->nullable();
 
                 $table->timestamp('time_activated')->nullable();
                 $table->integer('total_minutes')->default(0);

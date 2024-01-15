@@ -128,7 +128,7 @@ export default {
                     icon: 'machines',
                     roles: ['admin', 'staff', 'developer'],
                     color: '#e4dfdd',
-                    route: '/machines'
+                    route: '/machines/lg'
                 },
                 {
                     text: 'Reworks',

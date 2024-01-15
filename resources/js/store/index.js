@@ -26,6 +26,7 @@ import printer from './modules/printer.js';
 import serviceprice from './modules/serviceprice.js';
 import washingservice from './modules/washingservice.js';
 import dryingservice from './modules/dryingservice.js';
+import eluxservice from './modules/eluxservice.js';
 import perkiloservices from './modules/perkiloservices.js';
 import otherservice from './modules/otherservice.js';
 import scarpacleaning from './modules/scarpacleaning.js';
@@ -37,6 +38,7 @@ import fullserviceitem from './modules/fullserviceitem.js';
 import fullserviceproduct from './modules/fullserviceproduct.js';
 import productpurchase from './modules/productpurchase.js';
 import machine from './modules/machine.js';
+import eluxmachine from './modules/eluxmachine.js';
 import transactionreport from './modules/transactionreport.js';
 import lagoonpartner from './modules/lagoonpartner.js';
 
@@ -158,6 +160,7 @@ export default new  Vuex.Store({
         serviceprice,
         washingservice,
         dryingservice,
+        eluxservice,
         perkiloservices,
         otherservice,
         scarpacleaning,
@@ -169,6 +172,7 @@ export default new  Vuex.Store({
         fullserviceproduct,
         productpurchase,
         machine,
+        eluxmachine,
         storehour,
         transactionreport,
         lagoonpartner,

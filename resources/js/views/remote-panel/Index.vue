@@ -4,15 +4,16 @@
         <v-progress-linear v-if="loading" indeterminate class="my-3"></v-progress-linear>
         <v-divider v-else class="my-3"></v-divider>
 
-        <v-btn to="/remote-panel" exact active-class="primary" round>Giant</v-btn>
+        <v-btn to="/remote-panel/giant" exact active-class="primary" round>Giant</v-btn>
         <v-btn to="/remote-panel/titan" active-class="primary" round exact>Titan</v-btn>
+        <v-btn to="/remote-panel/elux" active-class="primary" round exact>Elux</v-btn>
         <template v-if="isDeveloper">
             <v-divider></v-divider>
             <v-btn @click="stopAll" round :loading="resetting">stop all</v-btn>
         </template>
 
         <template>
-            <div v-if="machines.dryers && !loading && !titan">
+            <div v-if="machines.dryers && !loading && machineType == 'giant'">
                 <h4 class="white--text mt-4">Dryers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout class="panel" row wrap justify-start>
@@ -22,7 +23,7 @@
         </template>
 
         <template>
-            <div v-if="machines.washers && !loading && !titan">
+            <div v-if="machines.washers && !loading && machineType == 'giant'">
                 <h4 class="white--text mt-4">Washers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout class="panel" row wrap justify-start>
@@ -32,7 +33,7 @@
         </template>
 
         <template>
-            <div v-if="machines.titan_dryers && !loading && titan">
+            <div v-if="machines.titan_dryers && !loading && machineType == 'titan'">
                 <h4 class="white--text mt-4">Dryers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout class="panel" row wrap justify-start>
@@ -41,12 +42,27 @@
             </div>
         </template>
         <template>
-            <div v-if="machines.titan_washers && !loading && titan">
+            <div v-if="machines.titan_washers && !loading && machineType == 'titan'">
                 <h4 class="white--text mt-4">Washers</h4>
                 <v-divider class="my-2"></v-divider>
                 <v-layout  class="panel" row wrap>
                     <machine-tile v-for="(machine, i) in machines.titan_washers" :key="machine.id" :machine="machine" @open="open" :index="i" />
                 </v-layout>
+            </div>
+        </template>
+        <template>
+            <div v-if="machines.elux && !loading && machineType == 'elux'">
+                <h4 class="white--text mt-4">Elux</h4>
+                <v-divider class="my-2"></v-divider>
+                <template v-for="(elux, eluxModel) in machines.elux">
+                    <div :key="eluxModel">
+                        <h4 class="white--text mt-4">{{eluxModel}}</h4>
+                        <v-divider class="my-2"></v-divider>
+                        <v-layout>
+                            <machine-tile v-for="(machine, i) in elux" :key="machine.id" :machine="machine" @open="open" :index="i" />
+                        </v-layout>
+                    </div>
+                </template>
             </div>
         </template>
 
@@ -187,8 +203,8 @@ export default {
         }
     },
     computed: {
-        titan() {
-            return !!this.$route.params.mt;
+        machineType() {
+            return this.$route.params.mt;
         },
         isDeveloper() {
             return this.$store.getters.isDeveloper;

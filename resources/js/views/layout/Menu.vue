@@ -290,7 +290,7 @@ export default {
                     icon: 'machines',
                     roles: ['admin', 'staff', 'developer'],
                     color: '#e4dfdd',
-                    to: '/machines'
+                    to: '/machines/lg'
                 },
                 {
                     text: 'Reworks',

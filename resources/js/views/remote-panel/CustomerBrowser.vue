@@ -35,6 +35,7 @@
                             <v-list-tile-title>{{customer.name}}</v-list-tile-title>
                             <v-list-tile-sub-title v-if="customer.customer_washes_count">{{customer.customer_washes_count}} available wash</v-list-tile-sub-title>
                             <v-list-tile-sub-title v-if="customer.customer_dries_count">{{customer.customer_dries_count}} available dry</v-list-tile-sub-title>
+                            <v-list-tile-sub-title v-if="customer.elux_tokens_count">{{customer.elux_tokens_count}} available</v-list-tile-sub-title>
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list>
@@ -85,7 +86,8 @@ export default {
             axios.get('/api/pending-services/customers', {
                 params: {
                     keyword: this.keyword,
-                    machineType: this.machine.machine_type
+                    machineType: this.machine.machine_type,
+                    model: this.machine.model
                 }
             }).then((res, rej) => {
                 this.customers = res.data.result;

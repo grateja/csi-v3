@@ -56,6 +56,10 @@ class Customer extends Model
         return $this->hasMany('App\CustomerWash');
     }
 
+    public function eluxTokens() {
+        return $this->hasMany('App\EluxToken');
+    }
+
     public function lastTransaction() {
         return $this->hasOne('App\Transaction')->latest();
     }

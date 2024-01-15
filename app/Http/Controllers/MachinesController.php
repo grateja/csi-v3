@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\CustomerDry;
 use App\CustomerWash;
+use App\EluxMachine;
 use Illuminate\Http\Request;
 use App\Machine;
 use App\MachineRemarks;
@@ -27,11 +28,14 @@ class MachinesController extends Controller
             $order = 'stack_order';
         }
 
+        $elux = EluxMachine::orderBy('stack_order')->get()->groupBy('model');
+
         $result = [
             'washers' => Machine::with('customer')->where(['machine_type' => 'rw'])->orderBy($order)->get(),
             'dryers' => Machine::with('customer')->where(['machine_type' => 'rd'])->orderBy($order)->get(),
             'titan_washers' => Machine::with('customer')->where(['machine_type' => 'tw'])->orderBy($order)->get(),
             'titan_dryers' => Machine::with('customer')->where(['machine_type' => 'td'])->orderBy($order)->get(),
+            'elux' => $elux,
         ];
 
         return response()->json([

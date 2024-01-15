@@ -60,7 +60,8 @@ export default {
             axios.get(`/api/pending-services/${this.serviceType}-services`, {
                 params: {
                     customerId: this.customer.id,
-                    machineSize: this.machineSize
+                    machineSize: this.machineSize,
+                    model: this.machine.model
                 }
             }).then((res, rej) => {
                 this.services = res.data.result;

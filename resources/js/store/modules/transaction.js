@@ -26,6 +26,14 @@ const actions = {
             return Promise.reject(err);
         });
     },
+    deleteEluxServiceItem(context, eluxServiceTransactionItemId) {
+        return axios.post(`/api/transactions/elux-service-items/${eluxServiceTransactionItemId}/delete`).then((res, rej) => {
+            context.dispatch('postransaction/refreshTransaction', null, {root: true});
+            return res;
+        }).catch(err => {
+            return Promise.reject(err);
+        });
+    },
     disposeService(context, data) {
         return axios.post(`/api/pending-services/${data.serviceType}/${data.serviceId}/dispose-service`);
     },

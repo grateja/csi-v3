@@ -14,11 +14,19 @@ class PendingServicesController extends Controller
         $machineSize = $request->machineType[0] == 't' ? 'TITAN' : 'REGULAR';
         $machineType = $request->machineType[1] == 'w' ? 'customerWashes' : 'customerDries';
 
-        $result = Customer::withCount([$machineType => function($query) use ($machineSize) {
-            $query->whereNull('used')->where('machine_type', $machineSize);
-        }])->whereHas($machineType, function($query) use ($machineSize) {
-            $query->where('machine_type', $machineSize)->whereNull('used');
-        })->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
+        if($model = $request->model) {
+            $result = Customer::withCount(['eluxTokens' => function($query) use ($model, $request) {
+                $query->whereNull('used')->where('model', $model);
+            }])->whereHas('eluxTokens', function($query) use ($model) {
+                $query->where('model', $model);
+            })->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
+        } else {
+            $result = Customer::withCount([$machineType => function($query) use ($machineSize) {
+                $query->whereNull('used')->where('machine_type', $machineSize);
+            }])->whereHas($machineType, function($query) use ($machineSize) {
+                $query->where('machine_type', $machineSize)->whereNull('used');
+            })->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
+        }
 
         return response()->json([
             'result' => $result,

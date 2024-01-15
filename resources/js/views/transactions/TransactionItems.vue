@@ -42,6 +42,66 @@
             </v-layout>
         </v-card-text>
 
+        <!-- ELUX SERVICES -->
+
+            <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posEluxItems.length" flat>
+                <v-card-title class="pa-0 teal white--text">
+                    <VSpacer/>
+                    <h4>ELUX SERVICES</h4>
+                    <VSpacer/>
+                </v-card-title>
+                <v-layout>
+                    <v-flex xs4>
+                        <div class="pa-1 caption grey--text font-weight-bold">Name</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Unit Price</div>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-center">QTY</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="pa-1 caption grey--text font-weight-bold text-xs-right">Total Price</div>
+                    </v-flex>
+                </v-layout>
+                <v-divider></v-divider>
+                <template v-for="(item, i) in currentTransaction.posEluxItems">
+                    <template>
+                        <v-divider :key="i + '-div-services'"></v-divider>
+                        <v-layout class="pa-1 pointer transaction-item" :key="i + 'services'" @click="viewEluxItems(item)">
+                            <v-flex xs4>
+                                <div>{{item.name}}</div>
+                            </v-flex>
+                            <v-flex xs3>
+                                <div class="text-xs-right">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</div>
+                            </v-flex>
+                            <v-flex xs2>
+                                <div class="text-xs-center">{{item.quantity}}</div>
+                            </v-flex>
+                            <v-flex xs3>
+                                <div class="text-xs-right">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</div>
+                            </v-flex>
+                        </v-layout>
+                    </template>
+                </template>
+                <v-divider class="black"></v-divider>
+                <v-layout class="pa-1 font-weight-bold">
+                    <v-flex xs4>
+                        <div>Total</div>
+                    </v-flex>
+                    <v-flex xs3>
+                    </v-flex>
+                    <v-flex xs2>
+                        <div class="text-xs-center">{{currentTransaction.posEluxSummary.total_quantity}}</div>
+                    </v-flex>
+                    <v-flex xs3>
+                        <div class="text-xs-right">P {{parseFloat(currentTransaction.posEluxSummary.total_price).toFixed(2)}}</div>
+                    </v-flex>
+                </v-layout>
+            </v-card>
+
+            <!-- WASH AND DRY SERVICES -->
+
             <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posServiceItems.length" flat>
                 <v-card-title class="pa-0 teal white--text">
                     <VSpacer/>
@@ -546,6 +606,7 @@
             </v-card>
         <transaction-remarks-dialog v-model="openRemarksDialog" :transaction="currentTransaction" />
         <service-item-dialog v-if="currentTransaction" v-model="openServiceItemDialog" :serviceName="activeServiceItemName" :transactionId="currentTransaction.id"></service-item-dialog>
+        <elux-service-item-dialog v-if="currentTransaction" v-model="openEluxServiceItemDialog" :eluxServiceId="activeEluxServiceId" :transactionId="currentTransaction.id"/>
         <payment-dialog :transaction="currentTransaction" v-model="openPaymentDialog" @save="save" />
         <printer-dialog v-model="openPrinterDialog" :transaction="currentTransaction" @close="clear" />
         <cancel-job-order-dialog v-model="openCancelJobOrderDialog" @confirm="voidTransaction" />
@@ -553,6 +614,7 @@
 </template>
 <script>
 import ServiceItemDialog from './ServiceItemDialog.vue';
+import EluxServiceItemDialog from './EluxServiceItemDialog.vue';
 import PaymentDialog from './PaymentDialog.vue';
 import PrinterDialog from '../transaction-reports/PrinterDialog.vue';
 import TransactionRemarksDialog from '../transactions/TransactionRemarksDialog.vue'
@@ -561,6 +623,7 @@ import CancelJobOrderDialog from './CancelJobOrderDialog.vue'
 export default {
     components: {
         ServiceItemDialog,
+        EluxServiceItemDialog,
         PaymentDialog,
         PrinterDialog,
         TransactionRemarksDialog,
@@ -571,10 +634,12 @@ export default {
             paid: false,
             openPaymentDialog: false,
             openServiceItemDialog: false,
+            openEluxServiceItemDialog: false,
             openPrinterDialog: false,
             openRemarksDialog: false,
             openCancelJobOrderDialog: false,
             activeServiceItemName: null,
+            activeEluxServiceId: null,
             canceling: false
         }
     },
@@ -597,11 +662,12 @@ export default {
             return this.$store.getters['postransaction/getCurrentCustomer'];
         },
         hasItems() {
-            return this.currentTransaction.posLagoonItems.length > 0 
+            return this.currentTransaction.posLagoonItems.length > 0
                 || this.currentTransaction.posLagoonPerKiloItems.length > 0
                 || this.currentTransaction.posProductItems.length > 0
                 || this.currentTransaction.posScarpaCleaningItems.length > 0
                 || this.currentTransaction.posServiceItems.length > 0
+                || this.currentTransaction.posEluxItems.length > 0
         }
     },
     methods: {
@@ -643,6 +709,10 @@ export default {
         viewServiceItems(item) {
             this.activeServiceItemName = item.name;
             this.openServiceItemDialog = true;
+        },
+        viewEluxItems(item) {
+            this.activeEluxServiceId = item.elux_service_id;
+            this.openEluxServiceItemDialog = true;
         },
         reduceItems(item) {
             Vue.set(item, 'reducing', true);
