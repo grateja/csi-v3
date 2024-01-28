@@ -200,7 +200,7 @@ export default {
                     icon: 'remote-panel',
                     roles: ['admin', 'staff', 'developer'],
                     color: '#a7a1e6',
-                    to: '/remote-panel'
+                    to: '/remote-panel/giant'
                 },
                 {
                     text: 'Transaction report',

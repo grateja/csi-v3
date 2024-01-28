@@ -876,6 +876,9 @@ Route::group(['prefix' => 'pending-services', 'middleware' => 'auth:api'], funct
 
     // /api/pending-services/drying-services
     Route::get('drying-services', 'PendingServicesController@dryingServices');
+
+    // /api/pending-services/elux-services
+    Route::get('elux-services', 'PendingServicesController@eluxServices');
 });
 
 // /api/product-purchases

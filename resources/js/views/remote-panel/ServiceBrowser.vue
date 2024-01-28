@@ -81,7 +81,8 @@ export default {
                     machineSize: this.machineSize,
                     serviceType: this.serviceType,
                     serviceName: service.service_name,
-                    additional: this.additional
+                    additional: this.additional,
+                    model: this.machine.model
                 }
             }).then((res, rej) => {
                 this.$emit('activated', res.data);
@@ -103,7 +104,9 @@ export default {
         },
         serviceType() {
             if(!!this.machine) {
-                console.log(this.machine);
+                if(this.machine.model != null) {
+                    return 'elux';
+                }
                 return this.machine.machine_type[1] == 'w' ? 'washing' : 'drying';
             }
             return null;

@@ -17,7 +17,7 @@
                     <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" @keydown.native="clear('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" @keydown.native="clear('price')" outline></v-text-field>
                     <v-combobox :items="['washer', 'dryer']" label="Service type" :error-messages="errors.get('serviceType')" v-model="formData.serviceType" outline></v-combobox>
-                    <v-combobox :items="models" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
+                    <v-combobox :items="availableModels" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
                     <v-text-field label="Pulse count" v-model="formData.pulseCount" :error-messages="errors.get('pulseCount')" @keydown.native="clear('pulseCount')" outline></v-text-field>
                     <v-text-field type="number" label="Minutes" v-model="formData.minutes" :error-messages="errors.get('minutes')" outline hint="Must be divisible by 10."></v-text-field>
                 </v-card-text>
@@ -73,7 +73,16 @@ export default {
                 'WN6-28 - 25kg',
                 'WS6-28 - 25kg',
                 'WN6-35 - 33kg',
-                'WS6-35 - 33kg'
+                'WS6-35 - 33kg',
+
+                'TD6-6 - 6kg',
+                'TD6-7 - 7kg',
+                'TD6-8 - 8kg',
+                'TD6-11 - 10.5kg',
+                'TD6-14 - 13kg',
+                'TD6-20 - 20KG',
+                'TD6-27 - 27kg',
+                'TD6-33 - 33kg',
             ]
         }
     },
@@ -119,6 +128,17 @@ export default {
         },
         saving() {
             return this.$store.getters['dryingservice/isSaving'];
+        },
+        availableModels() {
+            if(this.serviceType == 'washer') {
+                return this.models.filter(function(item) {
+                    return item[0] == 'W';
+                });
+            } else if(this.serviceType == 'dryer') {
+                return this.models.filter(function(item) {
+                    return item[0] == 'T';
+                });
+            }
         }
     },
     watch: {
