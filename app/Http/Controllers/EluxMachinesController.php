@@ -32,6 +32,8 @@ class EluxMachinesController extends Controller
                     'stack_order' => $request->stackOrder,
                 ]);
 
+                $this->dispatch($machine->queSynch());
+
                 return response()->json([
                     'result' => $machine,
                 ]);
@@ -60,6 +62,8 @@ class EluxMachinesController extends Controller
                     'stack_order' => $request->stackOrder,
                 ]);
 
+                $this->dispatch($machine->queSynch());
+
                 return response()->json([
                     'result' => $machine,
                 ]);
@@ -70,6 +74,7 @@ class EluxMachinesController extends Controller
     public function destroy($machineId) {
         $machine = EluxMachine::findOrFail($machineId);
         if($machine->delete()) {
+            $this->dispatch($machine->queSynch());
             return response()->json([
                 'success_message' => 'Machine Deleted'
             ]);

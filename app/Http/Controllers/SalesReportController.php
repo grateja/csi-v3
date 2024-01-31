@@ -6,6 +6,7 @@ use App\Customer;
 use App\Expense;
 use App\LagoonPerKiloTransactionItem;
 use App\LagoonTransactionItem;
+use App\EluxServiceTransactionItem;
 use App\Machine;
 use App\MonthlyTarget;
 use App\PartialPayment;
@@ -285,6 +286,13 @@ class SalesReportController extends Controller
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('SUM(kilos) as kg, name, SUM(total_price) as total_price')->get();
 
+        $eluxServices = EluxServiceTransactionItem::whereHas('transaction', function($query) use ($request) {
+            $query->whereDate('date', '>=', $request->date)
+                ->whereNull('cancelation_remarks')
+                ->whereDate('date', '<=', $request->until)
+                ->where('saved', true);
+        })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
+
         $data = [
             'newCustomers' => $newCustomers,
             'posSummary' => $posSummary,
@@ -297,6 +305,7 @@ class SalesReportController extends Controller
             'usedScarpa' => $usedScarpa,
             'usedLagoon' => $usedLagoon,
             'usedLagoonPerKilo' => $usedLagoonPerKilo,
+            'eluxServices' => $eluxServices,
             'totalSales' => $totalSales,
             'totalDeposit' => $collections['total'] - $expenses['total'],
             'cashless' => $cashless,

@@ -22,9 +22,10 @@ class CreateEluxMachineUsagesTable extends Migration
                 $table->double('minutes');
                 $table->float('price')->default(0);
                 $table->text('remarks')->nullable();
-                $table->timestamp('synched')->nullable();
 
+                $table->timestamp('synched')->nullable();
                 $table->timestamps();
+                $table->softDeletes();
                 $table->foreign('elux_machine_id')->references('id')->on('elux_machines')->onDelete('CASCADE')->onUpdate('CASCADE');
             });
         }

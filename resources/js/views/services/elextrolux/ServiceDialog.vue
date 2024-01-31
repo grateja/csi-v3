@@ -19,7 +19,7 @@
                     <v-combobox :items="['washer', 'dryer']" label="Service type" :error-messages="errors.get('serviceType')" v-model="formData.serviceType" outline></v-combobox>
                     <v-combobox :items="availableModels" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
                     <v-text-field label="Pulse count" v-model="formData.pulseCount" :error-messages="errors.get('pulseCount')" @keydown.native="clear('pulseCount')" outline></v-text-field>
-                    <v-text-field type="number" label="Minutes" v-model="formData.minutes" :error-messages="errors.get('minutes')" outline hint="Must be divisible by 10."></v-text-field>
+                    <v-text-field type="number" label="Minutes" v-model="formData.minutes" :error-messages="errors.get('minutes')" outline></v-text-field>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn class="primary" round :loading="saving" type="submit">save</v-btn>

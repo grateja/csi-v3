@@ -2,11 +2,11 @@
 
 namespace App;
 
-use App\Jobs\AutoSynch;
 use App\Traits\UsesSynch;
-use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\UsesUuid;
+use App\Jobs\AutoSynch;
 
 class EluxService extends Model
 {

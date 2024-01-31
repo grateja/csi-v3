@@ -31,6 +31,7 @@
                 <scarpa-cleanings :usedScarpa="usedScarpa" :view="view" />
                 <lagoon :usedLagoon="usedLagoon" :view="view" />
                 <lagoon-per-kilo :usedLagoonPerKilo="usedLagoonPerKilo" :view="view" />
+                <elux-services :eluxServices="eluxServices" :view="view" />
                 <rfid-transactions :rfidCard="rfidCard" :view="view" />
                 <rfid-load :rfidLoad="rfidLoad" :view="view" />
                 <total-sales :totalSales="totalSales" :view="view" />
@@ -555,6 +556,7 @@ import UsedServices from './dailysummary/UsedServices.vue';
 import ScarpaCleanings from './dailysummary/ScarpaCleanings.vue';
 import Lagoon from './dailysummary/Lagoon.vue';
 import LagoonPerKilo from './dailysummary/LagoonPerKilo.vue';
+import EluxServices from './dailysummary/EluxServices.vue';
 import JobOrders from './dailysummary/JobOrders.vue';
 import RfidTransactions from './dailysummary/RfidTransactions.vue';
 import RfidLoad from './dailysummary/RfidLoad.vue';
@@ -573,6 +575,7 @@ export default {
         ScarpaCleanings,
         Lagoon,
         LagoonPerKilo,
+        EluxServices,
         JobOrders,
         RfidTransactions,
         RfidLoad,
@@ -609,6 +612,7 @@ export default {
             usedScarpa: null,
             usedLagoon: null,
             usedLagoonPerKilo: null,
+            eluxServices: null,
             newCustomers: 0,
             totalSales: null,
             deposit: 0
@@ -636,6 +640,7 @@ export default {
                 this.usedScarpa = res.data.usedScarpa;
                 this.usedLagoon = res.data.usedLagoon;
                 this.usedLagoonPerKilo = res.data.usedLagoonPerKilo;
+                this.eluxServices = res.data.eluxServices;
                 this.newCustomers = res.data.newCustomers;
                 this.totalSales = res.data.totalSales;
                 this.deposit = res.data.totalDeposit;
@@ -704,7 +709,7 @@ export default {
             } else {
                 return moment(this.date).format('MMM DD') + ' to ' + moment(this.until).format('MMM DD, YYYY')
             }
-            
+
         }
     },
     watch:{

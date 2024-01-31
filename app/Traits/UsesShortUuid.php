@@ -8,7 +8,7 @@ trait UsesShortUuid {
     protected static function bootUsesUuid() {
         static::creating(function($model) {
             if(!$model->getKey()) {
-                $model->{$model->getKeyName()} = Str::random(5);
+                $model->{$model->getKeyName()} = Str::random(10);
             }
         });
     }
