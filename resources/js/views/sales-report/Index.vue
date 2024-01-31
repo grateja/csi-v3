@@ -91,7 +91,7 @@ export default {
         }
     },
     created() {
-        this.$store.commit('transactionreport/initMonths');
+        // this.$store.commit('transactionreport/initMonths');
         // this.dateContext = moment();
         // this.emitMonth();
     },

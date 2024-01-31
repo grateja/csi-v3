@@ -1,26 +1,75 @@
 var d = new Date();
 const state = {
-    months: [],
+    months: [
+        {
+            text: "January",
+            monthIndex: 1
+        },
+        {
+            text: "February",
+            monthIndex: 2
+        },
+        {
+            text: "March",
+            monthIndex: 3
+        },
+        {
+            text: "April",
+            monthIndex: 4
+        },
+        {
+            text: "May",
+            monthIndex: 5
+        },
+        {
+            text: "June",
+            monthIndex: 6
+        },
+        {
+            text: "July",
+            monthIndex: 7
+        },
+        {
+            text: "August",
+            monthIndex: 8
+        },
+        {
+            text: "September",
+            monthIndex: 9
+        },
+        {
+            text: "October",
+            monthIndex: 10
+        },
+        {
+            text: "November",
+            monthIndex: 11
+        },
+        {
+            text: "December",
+            monthIndex: 12
+        },
+    ],
     year: d.getFullYear(),
     monthIndex:  d.getMonth() + 1,
     day:  d.getDate()
 };
 
 const mutations = {
-    initMonths(state) {
-        if(state.months.length == 0) {
-            for(var i = 0; i < 12; i++) {
-                var date = moment(new Date().setMonth(i));
-                state.months.push({
-                    // date: date,
-                    text: date.format('MMMM'),
-                    monthIndex: i + 1,
-                    // current: date.format('LLLL') == moment().format('LLLL'),
-                    // active: date.format('LLLL') == moment().format('LLLL')
-                });
-            }
-        }
-    },
+    // initMonths(state) {
+    //     if(state.months.length == 0) {
+    //         for(var i = 0; i < 12; i++) {
+    //             var date = moment(new Date().setMonth(i));
+    //             state.months.push({
+    //                 // date: date,
+    //                 text: date.format('MMMM'),
+    //                 monthIndex: i + 1,
+    //                 // current: date.format('LLLL') == moment().format('LLLL'),
+    //                 // active: date.format('LLLL') == moment().format('LLLL')
+    //             });
+    //         }
+    //     }
+    // },
     setActiveMonth(state, data) {
         var d = new Date(state.year, data - 1);
         // d.setMonth(state.monthIndex)
@@ -92,9 +141,8 @@ const getters = {
     //     return 'balie';
     // },
     getDaysInMonth(state) {
-        var _daysInMonth = ('0' + state.monthIndex).slice(-2)
-        var d = moment(state.year + '-' + _daysInMonth + '-' + state.day);
-        console.log('days in month', d)
+        var _monthIndex = ('0' + state.monthIndex).slice(-2)
+        var d = moment(state.year + '-' + _monthIndex + '-01');
         return d.daysInMonth() | 0;
     },
     getFirstDayOfMonth() {
