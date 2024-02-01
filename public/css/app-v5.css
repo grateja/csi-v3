@@ -1,0 +1,152 @@
+a {
+  text-decoration: none;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.table-compressed td,
+.table-compressed th {
+  padding: 0px;
+}
+
+.rounded-card {
+  border-radius: 20px !important;
+}
+
+.flex.col5-custom {
+  width: 20%;
+  max-width: 20%;
+  flex-basis: 20%;
+}
+
+.flex.col7-custom {
+  width: 14.2857142857%;
+  max-width: 14.2857142857%;
+  flex-basis: 14.2857142857%;
+}
+
+body {
+  background: url("/img/background-main.jpg");
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.transparent > .v-table,
+.transparent > .v-table__overflow > .v-table,
+.transparent > .-vtable > .v-datatable__actions {
+  background-color: transparent;
+}
+
+.translucent {
+  background-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.translucent-table {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.705);
+}
+
+.translucent.primary {
+  background-color: rgba(17, 131, 238, 0.493) !important;
+}
+
+.v-table tr:hover:not(.v-table__expanded__content) {
+  background: rgba(102, 191, 226, 0.431) !important;
+}
+
+.round-input .v-input__control > div.v-input__slot {
+  border-radius: 100px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.round-input .v-input__control > div.v-input__slot input {
+  text-transform: uppercase;
+}
+
+.translucent-input .v-icon {
+  color: white !important;
+}
+
+.translucent-input .v-input__slot {
+  padding-left: 25px !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+.translucent-input .v-text-field__slot label.v-label.theme--light {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.panel-title {
+  color: white;
+}
+
+.menu-iddle {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.0784313725);
+}
+
+.menu-active {
+  background-color: #9fd38b !important;
+  color: white !important;
+  padding-top: 22px !important;
+  padding-bottom: 22px !important;
+  transition-delay: 1s !important;
+}
+
+.v-navigation-drawer__border {
+  opacity: 0 !important;
+}
+
+.data-term {
+  padding: 8px;
+  text-align: right;
+  display: block;
+  color: rgb(168, 168, 168);
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.data-value {
+  background: white;
+  border: 1px solid #f0f0f0;
+  display: block;
+  padding: 7px;
+  border-radius: 25px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.machine-tile__flex {
+  width: 120px;
+  max-width: 120px !important;
+}
+
+.machine-tile__card.selected {
+  border: 3px solid blue !important;
+}
+
+.machine-tile__card.running {
+  color: white !important;
+  background: rgba(0, 68, 255, 0.4) !important;
+}
+
+.machine-tile-name {
+  text-shadow: 1px 1px 1px white;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.2s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
