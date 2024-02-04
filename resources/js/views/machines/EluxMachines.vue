@@ -34,15 +34,18 @@
                 </template>
             </v-data-table>
         </v-card>
-        <pre>{{machines }}</pre>
+        <machine-usages :machine="activeMachine" v-model="openMachineDialog" :activeDate="date" />
         <elux-machine-settings :machine="activeMachine" v-model="openMachineSettings" @save="updateMachines" :machineType="machineType" @machineDeleted="machineDeleted"/>
+
     </div>
 </template>
 <script>
+import MachineUsages from './MachineUsages.vue';
 import DateNavigator from '../shared/DateNavigator.vue';
 import EluxMachineSettings from './EluxMachineSettings.vue';
 export default {
     components: {
+        MachineUsages,
         DateNavigator,
         EluxMachineSettings
     },
@@ -52,6 +55,7 @@ export default {
             date: moment().format('YYYY-MM-DD'),
             activeMachine: null,
             openMachineSettings: false,
+            openMachineDialog: false,
             loading: false,
             machines : [],
             dryers: [],
@@ -95,6 +99,10 @@ export default {
         add() {
             this.activeMachine = null;
             this.openMachineSettings = true;
+        },
+        view(machine) {
+            this.activeMachine = machine;
+            this.openMachineDialog = true;
         },
         edit(item, event) {
             event.stopPropagation();

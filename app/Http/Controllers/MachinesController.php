@@ -424,8 +424,15 @@ class MachinesController extends Controller
     }
 
     public function history($machineId, Request $request) {
-        $result = MachineUsage::where('machine_id', $machineId)
-            ->whereDate('created_at', $request->date)
+        $result = null;
+        if($request->model != null) {
+            $result = DB::table('elux_machine_usages')
+                ->where('elux_machine_id', $machineId);
+        } else {
+            $result = DB::table('machine_usages')
+            ->where('machine_id', $machineId);
+        }
+        $result = $result->whereDate('created_at', $request->date)
             ->orderByDesc('created_at')
             ->get();
         return response()->json([
