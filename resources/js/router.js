@@ -113,6 +113,10 @@ const routes = [
             {
                 path: 'lagoon',
                 component: require('./views/transactions/Lagoon.vue').default
+            },
+            {
+                path: 'elux',
+                component: require('./views/transactions/EluxServices.vue').default
             }
         ]
     },
@@ -194,6 +198,10 @@ const routes = [
             {
                 path: 'per-kilo',
                 component: require('./views/services/per-kilo-services/Index.vue').default
+            },
+            {
+                path: 'elux',
+                component: require('./views/services/elextrolux/Index.vue').default
             }
         ]
     },
@@ -207,7 +215,17 @@ const routes = [
     },
     {
         path: '/machines',
-        component: require('./views/machines/Index.vue').default
+        component: require('./views/machines/Index.vue').default,
+        children: [
+            {
+                path: 'lg',
+                component: require('./views/machines/LG.vue').default
+            },
+            {
+                path: 'elux',
+                component: require('./views/machines/EluxMachines.vue').default
+            }
+        ]
     },
     {
         path: '/reworks',

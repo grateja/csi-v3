@@ -185,6 +185,26 @@ const actions = {
             return Promise.reject(err);
         });
     },
+    addEluxService(context, data) {
+        if(context.getters.isBusy) {
+            alert('Please wait...');
+            return;
+        }
+        context.commit('setAddingItemStatus', true);
+        return axios.post(`/api/pos-transactions/add-elux-service`, {
+            customerId: data.customerId,
+            transactionId: data.transactionId,
+            itemId: data.itemId,
+        }).then((res, rej) => {
+            context.commit('setCurrentTransaction', res.data.transaction);
+            context.commit('setAddingItemStatus', false);
+            return res;
+        }).catch(err => {
+            context.commit('setAddingItemStatus', false);
+            return Promise.reject(err);
+        });
+    },
+
     saveTransaction(context, transactionId) {
         context.commit('clearErrors');
         context.commit('setSavingStatus', true);

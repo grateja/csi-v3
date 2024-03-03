@@ -38,7 +38,7 @@ export default {
                     icon: 'remote-panel',
                     roles: ['staff', 'admin', 'developer'],
                     color: '#fbf9e9',
-                    route: '/remote-panel'
+                    route: '/remote-panel/giant'
                 },
                 {
                     text: 'Transaction report',
@@ -128,7 +128,7 @@ export default {
                     icon: 'machines',
                     roles: ['admin', 'staff', 'developer'],
                     color: '#e4dfdd',
-                    route: '/machines'
+                    route: '/machines/lg'
                 },
                 {
                     text: 'Reworks',

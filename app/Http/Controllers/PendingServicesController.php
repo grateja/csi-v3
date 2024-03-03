@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\CustomerDry;
 use App\CustomerWash;
+use App\EluxToken;
 use App\Transaction;
 use Illuminate\Http\Request;
 
@@ -14,11 +15,19 @@ class PendingServicesController extends Controller
         $machineSize = $request->machineType[0] == 't' ? 'TITAN' : 'REGULAR';
         $machineType = $request->machineType[1] == 'w' ? 'customerWashes' : 'customerDries';
 
-        $result = Customer::withCount([$machineType => function($query) use ($machineSize) {
-            $query->whereNull('used')->where('machine_type', $machineSize);
-        }])->whereHas($machineType, function($query) use ($machineSize) {
-            $query->where('machine_type', $machineSize)->whereNull('used');
-        })->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
+        if($model = $request->model) {
+            $result = Customer::withCount(['eluxTokens' => function($query) use ($model, $request) {
+                $query->whereNull('used')->where('model', $model);
+            }])->whereHas('eluxTokens', function($query) use ($model) {
+                $query->where('model', $model)->where('used', null);
+            })->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
+        } else {
+            $result = Customer::withCount([$machineType => function($query) use ($machineSize) {
+                $query->whereNull('used')->where('machine_type', $machineSize);
+            }])->whereHas($machineType, function($query) use ($machineSize) {
+                $query->where('machine_type', $machineSize)->whereNull('used');
+            })->where('name', 'like', "%$request->keyword%")->orderBy('name')->get();
+        }
 
         return response()->json([
             'result' => $result,
@@ -39,6 +48,20 @@ class PendingServicesController extends Controller
         $result = CustomerDry::where(function($query) use ($request) {
             $query->where('customer_id', $request->customerId)->where('machine_type', $request->machineSize)->whereNull('used');
         })->groupBy('service_name', 'customer_id', 'machine_type', 'minutes')->selectRaw('COUNT(service_name) as total_available, minutes, service_name, customer_id, machine_type')->get();
+
+        return response()->json([
+            'result' => $result,
+        ]);
+    }
+
+    public function eluxServices(Request $request) {
+        $result = EluxToken::where(function($query) use ($request) {
+            $query->where([
+                'customer_id' => $request->customerId,
+                'used' => null,
+                'model' => $request->model,
+            ]);
+        })->groupBy('name', 'customer_id', 'minutes')->selectRaw('name as service_name, COUNT(*) as total_available, minutes, customer_id')->get();
 
         return response()->json([
             'result' => $result,

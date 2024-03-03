@@ -6,6 +6,7 @@ use App\Client;
 use App\Customer;
 use App\LagoonPerKiloTransactionItem;
 use App\LagoonTransactionItem;
+use App\EluxServiceTransactionItem;
 use App\PartialPayment;
 use App\ProductTransactionItem;
 use App\ScarpaCleaningTransactionItem;
@@ -55,6 +56,7 @@ class SendTransaction implements ShouldQueue
             'customer' => $customer,
             'service_transaction_items' => ServiceTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'product_transaction_items' => ProductTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
+            'elux_service_transaction_items' => EluxServiceTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'lagoon_transaction_items' => LagoonTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'lagoon_per_kilo_transaction_items' => LagoonPerKiloTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),
             'scarpa_cleaning_transaction_items' => ScarpaCleaningTransactionItem::withTrashed()->where('transaction_id', $transaction->id)->get(),

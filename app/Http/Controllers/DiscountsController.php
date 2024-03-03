@@ -75,6 +75,8 @@ class DiscountsController extends Controller
                     'percentage' => $request->percentage,
                 ]);
 
+                $this->dispatch($discount->queSynch(5));
+
                 return response()->json([
                     'discount' => $discount,
                 ], 200);
@@ -127,6 +129,8 @@ class DiscountsController extends Controller
                     'percentage' => $request->percentage,
                 ]);
 
+                $this->dispatch($discount->queSynch(5));
+
                 return response()->json([
                     'discount' => $discount,
                 ], 200);
@@ -144,6 +148,7 @@ class DiscountsController extends Controller
     {
         $discount = Discount::findOrFail($id);
         if($discount->delete()) {
+            $this->dispatch($discount->queSynch(5));
             return response()->json([
                 'message' => 'Discount deleted successfully',
                 'id' => $id,

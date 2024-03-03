@@ -17,7 +17,7 @@
                                 <li v-for="(blank, i) in firstDayOfMonth" :key="i + 'd'" class="blank">&nbsp;</li>
                             </template>
                             <template v-for="draft in drafts">
-                                <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == 'dateContext' &amp;&amp; month == initialMonth && year == initialYear}">
+                                <li v-if="draft" :key="draft.date" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'current-day green': draft.date == 'dateContext' && month == initialMonth && year == initialYear}">
                                     <template v-if="draft.active">
                                         <v-hover v-slot:default="{ hover }" v-if="draft.active">
                                             <v-card class="ma-0 pointer translucent day" :elevation="hover ? 6 : 0" flat @click="preview(draft.date)" height="131px">

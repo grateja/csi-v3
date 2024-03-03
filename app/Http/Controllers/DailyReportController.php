@@ -14,6 +14,8 @@ use App\ServiceTransactionItem;
 use App\LagoonTransactionItem;
 use App\LagoonPerKiloTransactionItem;
 use App\ScarpaCleaningTransactionItem;
+use App\EluxServiceTransactionItem;
+use App\Expense;
 use Illuminate\Support\Facades\DB;
 
 class DailyReportController extends Controller
@@ -180,16 +182,24 @@ class DailyReportController extends Controller
             ->get())->groupBy('name');
 
         $scarpa = collect(ScarpaCleaningTransactionItem::with(['transaction' => function($query) {
-                $query->select('id', 'job_order', 'customer_name');
-            }])->where('saved', true)->where(function($query) use ($request) {
-                $query->whereDate('created_at', $request->date);
-            })->selectRaw('transaction_id, name, count(*) as quantity, price, sum(price) as total')
-                ->groupBy('transaction_id', 'name', 'price')
-                ->orderBy('name')
-                ->get())->groupBy('name');
+            $query->select('id', 'job_order', 'customer_name');
+        }])->where('saved', true)->where(function($query) use ($request) {
+            $query->whereDate('created_at', $request->date);
+        })->selectRaw('transaction_id, name, count(*) as quantity, price, sum(price) as total')
+            ->groupBy('transaction_id', 'name', 'price')
+            ->orderBy('name')
+            ->get())->groupBy('name');
 
+        $eluxServices = collect(EluxServiceTransactionItem::with(['transaction' => function($query) {
+            $query->select('id', 'job_order', 'customer_name');
+        }])->where('saved', true)->where(function($query) use ($request) {
+            $query->whereDate('created_at', $request->date);
+        })->selectRaw('transaction_id, name, count(*) as quantity, price, sum(price) as total')
+            ->groupBy('transaction_id', 'name', 'price')
+            ->orderBy('name')
+            ->get())->groupBy('name');
 
-
+        $expenses = Expense::whereDate('date', $request->date)->get();
 
 
         $summary = [
@@ -341,6 +351,8 @@ class DailyReportController extends Controller
             'otherServices' => $otherServices,
             'lagoon' => $lagoon->merge($lagoonPerKilo),
             'scarpa' => $scarpa,
+            'eluxServices' => $eluxServices,
+            'expenses' => $expenses,
             // 'lagoonPerKilo' => $lagoonPerKilo,
             'summary' => $summary,
         ]);

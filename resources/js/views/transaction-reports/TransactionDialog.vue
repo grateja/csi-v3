@@ -145,6 +145,31 @@
                         </tr>
                     </table>
 
+                    <table class="v-table" v-if="tempTransaction.posEluxItems.length">
+                        <tr>
+                            <th colspan="4">Elux Services</th>
+                        </tr>
+                        <tr>
+                            <th class="name">NAME</th>
+                            <th class="unit-price">UNIT PRICE</th>
+                            <th class="quantity">QUANTITY</th>
+                            <th class="total">TOTAL</th>
+                        </tr>
+                        <tr v-for="item in tempTransaction.posEluxItems" :key="item.id">
+                            <td class="pl-1">{{item.name}}</td>
+                            <td class="text-xs-center">{{item.unit_price ? 'P ' + parseFloat(item.unit_price).toFixed(2) : 'FREE'}}</td>
+                            <td class="text-xs-center">
+                                {{item.quantity}}
+                            </td>
+                            <td class="text-xs-center">{{item.total_price ? 'P ' + parseFloat(item.total_price).toFixed(2) : 'FREE'}}</td>
+                        </tr>
+                        <tr class=" font-weight-bold">
+                            <td colspan="2" class="pl-1">Total</td>
+                            <td class="text-xs-center">{{tempTransaction.posEluxSummary.total_quantity}}</td>
+                            <td class="text-xs-center">P {{parseFloat(tempTransaction.posEluxSummary.total_price).toFixed(2)}}</td>
+                        </tr>
+                    </table>
+
                     <table class="v-table" v-if="tempTransaction.posProductItems.length">
                         <tr>
                             <th colspan="4">Products</th>

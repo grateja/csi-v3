@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\CustomerDry;
 use App\CustomerWash;
+use App\EluxServiceTransactionItem;
 use App\Jobs\SendTransaction;
 use App\ServiceTransactionItem;
 use App\TransactionRemarks;
@@ -93,6 +94,48 @@ class ServiceTransactionsController extends Controller
                 return response()->json([
                     'message' => 'Item deleted successfully',
                     'serviceTransactionItem' => $serviceTransactionItem,
+                ]);
+            }
+        });
+    }
+
+    function deleteEluxItem($eluxServiceTransactionItemId) {
+        return DB::transaction(function () use ($eluxServiceTransactionItemId) {
+            $eluxServiceTransactionItem = EluxServiceTransactionItem::with('eluxToken')->find($eluxServiceTransactionItemId);
+            // $usedToken = $eluxServiceTransactionItem->eluxToken()->whereNotNull('used')->exists();
+
+            if($eluxServiceTransactionItem->used()) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot remove item. Service is already used']
+                    ]
+                ], 422);
+            } else if(!$eluxServiceTransactionItem->created_at->isToday()) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot remove item. Transaction is from previous day']
+                    ]
+                ], 422);
+            }
+
+            if($eluxServiceTransactionItem->delete()) {
+                $eluxServiceTransactionItem->transaction()->update([
+                    'saved' => false,
+                ]);
+
+                $eluxServiceTransactionItem->eluxToken()->delete();
+
+                TransactionRemarks::create([
+                    'transaction_id' => $eluxServiceTransactionItem->transaction_id,
+                    'remarks' => 'Item removed(' . $eluxServiceTransactionItem->name . ')',
+                    'added_by' => auth('api')->user()->name,
+                ]);
+
+                $this->dispatch((new SendTransaction($eluxServiceTransactionItem->transaction_id))->delay(5));
+
+                return response()->json([
+                    'message' => 'Item deleted successfully',
+                    'eluxServiceTransactionItem' => $eluxServiceTransactionItem,
                 ]);
             }
         });

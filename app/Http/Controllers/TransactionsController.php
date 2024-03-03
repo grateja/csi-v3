@@ -9,6 +9,7 @@ use App\OtherService;
 use App\Product;
 use App\ProductTransactionItem;
 use App\ServiceTransactionItem;
+use App\EluxServiceTransactionItem;
 use App\Transaction;
 use App\TransactionRemarks;
 use App\WashingService;
@@ -22,6 +23,29 @@ class TransactionsController extends Controller
         $result = ServiceTransactionItem::with('customerWash')->where([
             'transaction_id' => $transactionId,
             'name' => $request->serviceName,
+        ])->orderBy('created_at')->get();
+
+        $result = $result->transform(function($item) {
+            return [
+                'service_transaction_item_id' => $item->id,
+                'name' => $item->name,
+                'saved' => $item->saved,
+                'added' => $item->created_at,
+                'machine_name' => $item->machineName(),
+                'used' => $item->used(),
+                'created_at' => $item->created_at,
+            ];
+        });
+
+        return response()->json([
+            'result' => $result,
+        ]);
+    }
+
+    public function viewEluxServiceItems($transactionId, Request $request) {
+        $result = EluxServiceTransactionItem::with('eluxToken.eluxMachine')->where([
+            'transaction_id' => $transactionId,
+            'elux_service_id' => $request->eluxServiceId,
         ])->orderBy('created_at')->get();
 
         $result = $result->transform(function($item) {

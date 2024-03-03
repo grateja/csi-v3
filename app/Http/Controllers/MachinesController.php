@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\CustomerDry;
 use App\CustomerWash;
+use App\EluxMachine;
+use App\EluxMachineUsage;
+use App\EluxToken;
 use Illuminate\Http\Request;
 use App\Machine;
 use App\MachineRemarks;
@@ -27,11 +30,14 @@ class MachinesController extends Controller
             $order = 'stack_order';
         }
 
+        $elux = EluxMachine::orderBy('stack_order')->get()->groupBy('model');
+
         $result = [
             'washers' => Machine::with('customer')->where(['machine_type' => 'rw'])->orderBy($order)->get(),
             'dryers' => Machine::with('customer')->where(['machine_type' => 'rd'])->orderBy($order)->get(),
             'titan_washers' => Machine::with('customer')->where(['machine_type' => 'tw'])->orderBy($order)->get(),
             'titan_dryers' => Machine::with('customer')->where(['machine_type' => 'td'])->orderBy($order)->get(),
+            'elux' => $elux,
         ];
 
         return response()->json([
@@ -46,16 +52,39 @@ class MachinesController extends Controller
         ], 200);
     }
 
+    private function activateElux($request) {
+        $commit = DB::transaction(function () use ($request) {
+            $machine = EluxMachine::findOrFail($request->machineId);
+
+            return $machine;
+        });
+
+        if(array_key_exists('errors', $commit)) {
+            return response()->json($commit, 422);
+        }
+        return response()->json($commit);
+    }
+
     public function activate(Request $request) {
+        // if($request->serviceType == 'elux') {
+        //     return $this->activateElux($request);
+        // }
         // customer, machineSize, serviceType
         $refWashDry = null;
         $commit = DB::transaction(function () use ($request, &$refWashDry) {
             $customerWash = null;
             $customerDry = null;
+            $machineUsage = null;
+            $eluxMachineUsage = null;
             $avWash = null;
             $totalMinutes = 0;
             $customer = Customer::findOrFail($request->customerId);
-            $machine = Machine::findOrFail($request->machineId);
+            if($request->serviceType == 'elux') {
+                $machine = EluxMachine::findOrFail($request->machineId);
+            } else {
+                $machine = Machine::findOrFail($request->machineId);
+            }
+
             $pulse = 0;
 
             if($request->serviceType == 'washing') {
@@ -112,6 +141,43 @@ class MachinesController extends Controller
                 $avWash = $customerDry;
                 $refWashDry = $customerDry;
 
+            } else if($request->serviceType == 'elux') {
+                if($machine->is_running && $customer->name != $machine->customer_name) {
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Machine is already running']
+                        ]
+                    ], 422);
+                }
+
+                $eluxToken = EluxToken::where([
+                    'customer_id' => $request->customerId,
+                    'used' => null,
+                    'model' => $request->model,
+                ])->orderByDesc('created_at')->first();
+
+                $pulse = $eluxToken->pulse_count;
+                $avWash = $eluxToken;
+
+                $machine->update([
+                    'total_minutes' => DB::raw('total_minutes+'. $eluxToken->minutes),
+                    'customer_name' => $customer->name,
+                    'customer_id' => $customer->id,
+                    'time_activated' => Carbon::now(),
+                ]);
+
+                $eluxMachineUsage = EluxMachineUsage::create([
+                    'elux_machine_id' => $machine->id,
+                    'customer_name' => $customer->name,
+                    'minutes' => $eluxToken->minutes,
+                    'price' => $eluxToken->price,
+                ]);
+
+                $eluxToken->update([
+                    'elux_machine_id' => $machine->id,
+                    'used' => Carbon::now(),
+                ]);
+
             } else {
                 return response()->json([
                     'errors' => [
@@ -120,41 +186,46 @@ class MachinesController extends Controller
                 ], 422);
             }
 
-            if($request->additional && $machine->is_running) {
-                $machine->update([
-                    'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
-                    'remarks' => 'Additional ' . $totalMinutes,
-                    'user_name' => $customer->name,
-                    'customer_id' => $customer->id,
-                    'customer_wash_id' => $customerWash ? $customerWash->id : null,
-                    'customer_dry_id' => $customerDry ? $customerDry->id : null,
-                ]);
-
-                $machineUsage = MachineUsage::where('machine_id', $machine->id)->orderByDesc('updated_at')->first();
-                $machineUsage->update([
-                    'total_minutes' => DB::raw('total_minutes+', $totalMinutes),
-                    'price' => DB::raw('price+' . $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price),
-                ]);
+            if($request->serviceType == 'elux') {
 
             } else {
-                $machine->update([
-                    'time_activated' => Carbon::now(),
-                    'total_minutes' => $totalMinutes,
-                    'remarks' => 'Remotely activated',
-                    'user_name' => $customer->name,
-                    'customer_id' => $customer->id,
-                    'customer_wash_id' => $customerWash ? $customerWash->id : null,
-                    'customer_dry_id' => $customerDry ? $customerDry->id : null,
-                ]);
+                if($request->additional && $machine->is_running) {
+                    $machine->update([
+                        'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
+                        'remarks' => 'Additional ' . $totalMinutes,
+                        'user_name' => $customer->name,
+                        'customer_id' => $customer->id,
+                        'customer_wash_id' => $customerWash ? $customerWash->id : null,
+                        'customer_dry_id' => $customerDry ? $customerDry->id : null,
+                    ]);
 
-                $machineUsage = MachineUsage::create([
-                    'machine_id' => $machine->id,
-                    'customer_name' => $customer->name,
-                    'minutes' => $totalMinutes,
-                    'activation_type' => 'remote',
-                    'price' => $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price,
-                ]);
+                    $machineUsage = MachineUsage::where('machine_id', $machine->id)->orderByDesc('updated_at')->first();
+                    $machineUsage->update([
+                        'total_minutes' => DB::raw('total_minutes+', $totalMinutes),
+                        'price' => DB::raw('price+' . $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price),
+                    ]);
+
+                } else {
+                    $machine->update([
+                        'time_activated' => Carbon::now(),
+                        'total_minutes' => $totalMinutes,
+                        'remarks' => 'Remotely activated',
+                        'user_name' => $customer->name,
+                        'customer_id' => $customer->id,
+                        'customer_wash_id' => $customerWash ? $customerWash->id : null,
+                        'customer_dry_id' => $customerDry ? $customerDry->id : null,
+                    ]);
+
+                    $machineUsage = MachineUsage::create([
+                        'machine_id' => $machine->id,
+                        'customer_name' => $customer->name,
+                        'minutes' => $totalMinutes,
+                        'activation_type' => 'remote',
+                        'price' => $request->serviceType == 'washing' ? $customerWash->price : $customerDry->price,
+                    ]);
+                }
             }
+
 
             // $output = $machine->remoteActivate($pulse);
             $url = "$machine->ip_address/activate?pulse=$pulse&token=$avWash->id";
@@ -169,9 +240,18 @@ class MachinesController extends Controller
             if(!$curl_error) {
                 // DB::rollBack();
 
-                $this->dispatch($machine->queSynch());
-                $this->dispatch($machineUsage->queSynch());
-                $this->dispatch($avWash->queSynch());
+                if($machine != null) {
+                    $this->dispatch($machine->queSynch());
+                }
+                if($machineUsage != null) {
+                    $this->dispatch($machineUsage->queSynch());
+                }
+                if($eluxMachineUsage != null) {
+                    $this->dispatch($eluxMachineUsage->queSynch());
+                }
+                if($avWash != null) {
+                    $this->dispatch($avWash->queSynch());
+                }
 
 
                 return [
@@ -201,13 +281,18 @@ class MachinesController extends Controller
                 $refWashDry->increment('tries');
             }
 
-            MachineRemarks::create([
-                'title' => 'Connection failed',
-                'remarks' => $commit['errors']['message'][0],
-                'user_id' => auth('api')->user()->id,
-                'machine_id' => $commit['machine']['id'],
-                'remaining_time' => 0,
-            ]);
+            if($request->serviceType == 'elux') {
+
+            } else {
+                MachineRemarks::create([
+                    'title' => 'Connection failed',
+                    'remarks' => $commit['errors']['message'][0],
+                    'user_id' => auth('api')->user()->id,
+                    'machine_id' => $commit['machine']['id'],
+                    'remaining_time' => 0,
+                ]);
+            }
+
             return response()->json($commit, 422);
         }
         return response()->json($commit);
@@ -281,14 +366,24 @@ class MachinesController extends Controller
 
         if($request->validate($rules)) {
             return DB::transaction(function () use ($request) {
-                $machine = Machine::findOrFail($request->machineId);
-                $machineRemarks = MachineRemarks::create([
-                    'title' => 'Force stopped',
-                    'remarks' => $request->remarks,
-                    'user_id' => auth('api')->id(),
-                    'remaining_time' => $machine->remainingTime(),
-                    'machine_id' => $machine->id,
-                ]);
+                $machine = Machine::find($request->machineId);
+                $machineRemarks = null;
+                if($machine = Machine::find($request->machineId)) {
+                    $machineRemarks = MachineRemarks::create([
+                        'title' => 'Force stopped',
+                        'remarks' => $request->remarks,
+                        'user_id' => auth('api')->id(),
+                        'remaining_time' => $machine->remainingTime(),
+                        'machine_id' => $machine->id,
+                    ]);
+                } else if($machine = EluxMachine::find($request->machineId)) {
+                } else {
+                    return response()->json([
+                        'errors' => [
+                            'message' => ['Machine does not exists']
+                        ]
+                    ], 422);
+                }
 
                 $machine->update([
                     'total_minutes' => 0,
@@ -296,8 +391,12 @@ class MachinesController extends Controller
                     'customer_id' => null,
                 ]);
 
-                $this->dispatch($machine->queSynch());
-                $this->dispatch($machineRemarks->queSynch());
+                if($machine != null) {
+                    $this->dispatch($machine->queSynch());
+                }
+                if($machineRemarks != null) {
+                    $this->dispatch($machineRemarks->queSynch());
+                }
 
                 return response()->json([
                     'machine' => $machine,
@@ -325,8 +424,15 @@ class MachinesController extends Controller
     }
 
     public function history($machineId, Request $request) {
-        $result = MachineUsage::where('machine_id', $machineId)
-            ->whereDate('created_at', $request->date)
+        $result = null;
+        if($request->model != null) {
+            $result = DB::table('elux_machine_usages')
+                ->where('elux_machine_id', $machineId);
+        } else {
+            $result = DB::table('machine_usages')
+            ->where('machine_id', $machineId);
+        }
+        $result = $result->whereDate('created_at', $request->date)
             ->orderByDesc('created_at')
             ->get();
         return response()->json([

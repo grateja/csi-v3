@@ -9,6 +9,7 @@
                 <v-btn to="/new-transaction/products" class="translucent" active-class="primary" round>Products</v-btn>
                 <v-btn to="/new-transaction/scarpa-cleanings" class="translucent" active-class="primary" round>Scarpa</v-btn>
                 <v-btn to="/new-transaction/lagoon" class="translucent" active-class="primary" round>Lagoon</v-btn>
+                <v-btn to="/new-transaction/elux" class="translucent" active-class="primary" round>E-Lux</v-btn>
                 <v-btn to="/scanner" class="translucent" active-class="primary" round v-if="canScanQRCode">Scan QR Code</v-btn>
                 <router-view></router-view>
             </v-flex>

@@ -80,7 +80,8 @@ export default {
             this.loading = true;
             axios.get(`/api/machines/${this.machine.id}/history`, {
                 params: {
-                    date: this.date
+                    date: this.date,
+                    model: this.machine.model
                 }
             }).then((res, rej) => {
                 this.items = res.data.result;

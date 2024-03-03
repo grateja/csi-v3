@@ -44,7 +44,11 @@ class LiveHostController extends Controller
             'scarpa_cleaning_transaction_items',
             'lagoon_transaction_items',
             'lagoon_per_kilo_transaction_items',
-        ];
+            'elux_machines',
+            'elux_services',
+            'elux_tokens',
+            'elux_service_transaction_items',
+    ];
 
         $collections = [];
 

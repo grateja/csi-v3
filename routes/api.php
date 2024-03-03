@@ -46,8 +46,8 @@ Route::group(['prefix' => 'developer'], function () {
     // /api/developer/reset
     Route::post('reset', 'ClientsController@reset');
 
-    // /api/developer/unsynch
-    Route::get('unsynch', 'ClientsController@unsynch');
+    // /api/developer/unsynch/{date?}
+    Route::get('unsynch/{date?}', 'ClientsController@unsynch');
 
 
     Route::group(['middleware' => ['auth:api', 'role:developer']], function() {
@@ -527,6 +527,29 @@ Route::group(['prefix' => 'services', 'middleware' => 'auth:api'], function() {
         });
     });
 
+    // /api/services/elux
+    Route::group(['prefix' => 'elux'], function() {
+        // /api/services/elux
+        Route::get('/{serviceType}', 'EluxController@index');
+
+        Route::group(['middleware' => 'role:admin'], function() {
+            // /api/services/elux/create
+            Route::post('create', 'EluxController@store');
+
+            // /api/services/elux/{id}/update
+            Route::post('{id}/update', 'EluxController@update');
+
+            // /api/services/elux/{id}/set-picture
+            Route::post('{id}/set-picture', 'EluxController@setPicture');
+
+            // /api/services/elux/{id}/remove-picture
+            Route::post('{id}/remove-picture', 'EluxController@removePicture');
+
+            // /api/services/elux/{id}/delete-service
+            Route::post('{id}/delete-service', 'EluxController@deleteService');
+        });
+    });
+
 });
 
 // /apo/pos-transactions
@@ -539,6 +562,9 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
 
     // /api/pos-transactions/services
     Route::get('services', 'PosTransactionController@services');
+
+    // /api/pos-transactions/elux-services
+    Route::get('elux-services', 'PosTransactionController@eluxServices');
 
     // /api/pos-transactions/lagoon
     Route::get('lagoon', 'LagoonController@index');
@@ -578,6 +604,9 @@ Route::group(['prefix' => 'pos-transactions', 'middleware' => 'auth:api'], funct
 
     // /api/pos-transactions/reduce-per-kilo
     Route::post('add-per-kilo', 'PosTransactionController@removePerKilo');
+
+    // /api/pos-transactions/add-elux-service
+    Route::post('add-elux-service', 'PosTransactionController@addEluxService');
 
     // /api/pos-transactions/{transactionId}/cancel-transaction
     Route::post('{id}/cancel-transaction', 'PosTransactionController@cancelTransaction');
@@ -630,6 +659,9 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
     // /api/transactions/{transactionId}/view-service-items
     Route::get('{transactionId}/view-service-items', 'TransactionsController@viewServiceItems');
 
+    // /api/transactions/{transactionId}/view-elux-service-items
+    Route::get('{transactionId}/view-elux-service-items', 'TransactionsController@viewEluxServiceItems');
+
     // /api/transactions/{transactionId}/print
     Route::post('{transactionId}/print', 'PrinterController@print');
 
@@ -651,6 +683,11 @@ Route::group(['prefix' => 'transactions', 'middleware' => 'auth:api'], function(
         Route::post('{serviceTransactionItemId}/delete', 'ServiceTransactionsController@deleteItem');
     });
 
+    // /api/transaction/elux-service-items
+    Route::group(['prefix' => 'elux-service-items'], function() {
+        // /api/transaction/elux-service-items/{eluxServiceTransactionItemId}/delete
+        Route::post('{eluxServiceTransactionItemId}/delete', 'ServiceTransactionsController@deleteEluxItem');
+    });
 });
 
 // /api/transaction-remarks
@@ -725,6 +762,25 @@ Route::group(['prefix' => 'payments', 'middleware' => 'auth:api'], function() {
 Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() {
     // /api/machines
     Route::get('/', 'MachinesController@index');
+
+    // /api/machines/elux
+    Route::group(['prefix' => 'elux'], function() {
+        // /api/machines/elux/{machineId}/delete
+        Route::post('{machineId}/delete', 'EluxMachinesController@destroy');
+
+        // /api/machines/elux/{machineType}
+        Route::get('{machineType}', 'EluxMachinesController@index');
+
+        // /api/machines/elux/{machineType}/create
+        Route::post('{machineType}/create', 'EluxMachinesController@store');
+
+        // /api/machines/elux/next-stack-order/{machineType}
+        Route::get('next-stack-order/{machineType}', 'EluxMachinesController@nextStackOrder');
+
+        // /api/machines/{machineId}/update-settings
+        Route::post('{machineId}/update-settings', 'EluxMachinesController@updateSettings');
+    });
+
 
     // /api/machines/next-stack-order/{machineType}
     Route::get('next-stack-order/{machineType}', 'MachinesController@nextStackOrder');
@@ -820,6 +876,9 @@ Route::group(['prefix' => 'pending-services', 'middleware' => 'auth:api'], funct
 
     // /api/pending-services/drying-services
     Route::get('drying-services', 'PendingServicesController@dryingServices');
+
+    // /api/pending-services/elux-services
+    Route::get('elux-services', 'PendingServicesController@eluxServices');
 });
 
 // /api/product-purchases

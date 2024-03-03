@@ -31,8 +31,10 @@ class ThermalPrinter extends Model
     }
     public function __construct()
     {
-        if(file_exists("/dev/usb/lp0")) {
-            $connector = new FilePrintConnector("/dev/usb/lp0");
+        // $file = "usb://OLIVETTI/PRT80?location=14123000";
+        $file = "/dev/usb/lp0";
+        if(file_exists($file)) {
+            $connector = new FilePrintConnector($file);
             $this->printer = new Printer($connector);
         }
     }
@@ -679,7 +681,7 @@ class ThermalPrinter extends Model
         $this->printDetail("ID", $client['user_id']);
         $this->printDetail("Shop Name", $client['shop_name']);
         $this->printDetail("Address", $client['address']);
-        $this->printDetail("Contact#", $client['contact_number']);
+        $this->printDetail("Contact#", $client['shop_number']);
         $this->cut();
     }
 

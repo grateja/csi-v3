@@ -19,12 +19,13 @@
                     <v-btn round @click="test(3)" :loading="activating">hot</v-btn>
                     <v-btn round @click="test(4)" :loading="activating">super wash</v-btn>
                 </template>
-                <template v-else>
+                <template v-else-if="!!machine && machine.machine_type[1] == 'd'">
                     <v-btn round @click="test(1)" :loading="activating">10 min</v-btn>
                     <v-btn round @click="test(2)" :loading="activating">20 min</v-btn>
                     <v-btn round @click="test(3)" :loading="activating">30 min</v-btn>
                     <v-btn round @click="test(4)" :loading="activating">40 min</v-btn>
                 </template>
+                <v-btn v-else round @click="test(1)" :loading="activating">Test</v-btn>
             </v-card-actions>
             <v-card-text>
                 <!-- <pre>{{machine}}</pre> -->

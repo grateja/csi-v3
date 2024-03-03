@@ -389,7 +389,6 @@ export default {
         }
     },
     created() {
-        // console.log(this.numberOfDaysInMonth);
         if(!this.monthIndex) {
             // this.$store.commit('transactionreport/disolve');
             this.$store.commit('transactionreport/setActiveMonth', new Date().getMonth() + 1);

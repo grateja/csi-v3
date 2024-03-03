@@ -4,12 +4,11 @@
             <v-card class="rounded-card">
                 <v-card-title class="title grey--text">Machine tap card configuration</v-card-title>
                 <v-card-text>
+                    <v-text-field outline label="Machine name" v-model="formData.machineName" :error-messages="errors.get('machineName')"></v-text-field>
                     <template v-if="isDeveloper">
-                        <pre>{{mt}}</pre>
                         <v-btn v-if="action == 'update'" round class="translucent" @click="deleteMachine" :loading="isDeleting">
                             <v-icon left>delete</v-icon> Delete
                         </v-btn>
-                        <v-text-field outline label="Machine name" v-model="formData.machineName" :error-messages="errors.get('machineName')"></v-text-field>
                         <v-text-field outline label="IP address" v-model="formData.ipAddress" :error-messages="errors.get('ipAddress')"></v-text-field>
                     </template>
                     <v-text-field outline label="Initial price" v-model="formData.initialPrice" :error-messages="errors.get('initialPrice')"></v-text-field>

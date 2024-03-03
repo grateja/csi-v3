@@ -6,6 +6,10 @@ use App\Customer;
 use App\CustomerDry;
 use App\CustomerWash;
 use App\DryingService;
+use App\EluxMachine;
+use App\EluxToken;
+use App\EluxService;
+use App\EluxServiceTransactionItem;
 use App\FullService;
 use App\Jobs\SendTransaction;
 use App\Lagoon;
@@ -83,6 +87,31 @@ class PosTransactionController extends Controller
 
         return response()->json([
             'products' => $products,
+        ]);
+    }
+
+    public function eluxServices() {
+        $result = [
+            'washers' => EluxService::where('service_type', 'washer')->get(),
+            'dryers' => EluxService::where('service_type', 'dryer')->get(),
+        ];
+
+        return response()->json($result);
+    }
+
+    public function scarpaCleanings() {
+        $result = ScarpaCategory::orderBy('name')->get();
+        return response()->json([
+            'result' => $result,
+        ]);
+    }
+
+    public function scarpaVariations($serviceId, $groupBy) {
+        $variations = ScarpaVariation::where('scarpa_category_id', $serviceId)
+            ->get();
+
+        return response()->json([
+            'variations' => $variations->groupBy($groupBy),
         ]);
     }
 
@@ -365,22 +394,6 @@ class PosTransactionController extends Controller
         });
     }
 
-    public function scarpaCleanings() {
-        $result = ScarpaCategory::orderBy('name')->get();
-        return response()->json([
-            'result' => $result,
-        ]);
-    }
-
-    public function scarpaVariations($serviceId, $groupBy) {
-        $variations = ScarpaVariation::where('scarpa_category_id', $serviceId)
-            ->get();
-
-        return response()->json([
-            'variations' => $variations->groupBy($groupBy),
-        ]);
-    }
-
     public function addScarpaCleaning($variationId, Request $request) {
         return DB::transaction(function () use ($variationId, $request) {
             $transaction = Transaction::find($request->transactionId);
@@ -574,6 +587,67 @@ class PosTransactionController extends Controller
         });
     }
 
+    public function addEluxService(Request $request) {
+        return DB::transaction(function () use ($request) {
+            $eluxService = EluxService::findOrFail($request->itemId);
+            $transaction = Transaction::find($request->transactionId);
+            $customer = Customer::findOrFail($request->customerId);
+
+            if($transaction && env('RESTRICT_ADD_SERVICE_DIFF_DATE', true) && (!Carbon::createFromDate($transaction->date)->isToday() || !$transaction->created_at->isToday())) {
+                DB::rollback();
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item from other`s day transaction.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction && $transaction->partialPayment) {
+                return response()->json([
+                    'errors' => [
+                        'message' => ['Cannot add item to partially paid Job Order.'],
+                    ]
+                ], 422);
+            }
+
+            if($transaction == null) {
+                $transaction = Transaction::create([
+                    'customer_id' => $request->customerId,
+                    'user_id' => auth('api')->id(),
+                    'staff_name' => auth('api')->user()->name,
+                    'customer_name' => $customer->name,
+                ]);
+            } else {
+                $transaction->update([
+                    'saved' => false,
+                ]);
+            }
+
+            EluxServiceTransactionItem::create([
+                'transaction_id' => $transaction->id,
+                'elux_service_id' => $eluxService->id,
+                'service_type' => $eluxService->service_type,
+                'name' => $eluxService->name,
+                'price' => $eluxService->price,
+                'pulse_count' => $eluxService->pulse_count,
+                'model' => $eluxService->model,
+                'minutes' => $eluxService->minutes,
+            ]);
+
+            if($transaction) {
+                $transaction->refreshAll();
+            }
+
+            $this->dispatch((new SendTransaction($transaction->id))->delay(5));
+
+            MonitorChecker::hasQue($transaction->id);
+
+            return response()->json([
+                'transaction' => $transaction,
+            ]);
+        });
+    }
+
     public function reduceScarpaCleaning(Request $request) {
         return DB::transaction(function () use ($request) {
             $scarpaCleaningTransactionItem = ScarpaCleaningTransactionItem::with('transaction')
@@ -739,6 +813,11 @@ class PosTransactionController extends Controller
                 'saved' => false,
             ])->get();
 
+            $eluxServices = EluxServiceTransactionItem::with('eluxService')->where([
+                'transaction_id' => $transactionId,
+                'saved' => false,
+            ])->get();
+
             $fullServices = ServiceTransactionItem::with('fullService.fullServiceItems')->where([
                 'category' => 'full',
                 'transaction_id' => $transactionId,
@@ -804,6 +883,22 @@ class PosTransactionController extends Controller
                 $item->update([
                     'saved' => true,
                     'earning_points' => $item->dryingService['points'],
+                ]);
+            }
+
+            foreach($eluxServices as $item) {
+                EluxToken::create([
+                    'customer_id' => $transaction->customer_id,
+                    'elux_service_transaction_item_id' => $item->id,
+                    'service_type' => $item->service_type,
+                    'name' => $item->name,
+                    'price' => $item->price,
+                    'pulse_count' => $item->pulse_count,
+                    'model' => $item->model,
+                    'minutes' => $item->minutes,
+                ]);
+                $item->update([
+                    'saved' => true,
                 ]);
             }
 

@@ -105,6 +105,8 @@
         <lagoon-services :items="result.lagoon" @openJobOrder="openTransaction" />
         <other-services :items="result.otherServices" @openJobOrder="openTransaction" />
         <scarpa-services :items="result.scarpa" @openJobOrder="openTransaction" />
+        <elux-services :items="result.eluxServices" @openJobOrder="openTransaction" />
+        <expenses :items="result.expenses" />
 
         <template v-if="result.pendingServices != null">
             <v-card class="translucent rounded-card mt-2">
@@ -155,6 +157,8 @@ import UsedProducts from './UsedProducts.vue';
 import OtherServices from './OtherServices.vue';
 import LagoonServices from './LagoonServices.vue';
 import ScarpaServices from './ScarpaServices.vue';
+import EluxServices from './EluxServices.vue';
+import Expenses from './Expenses.vue';
 
 export default {
     components: {
@@ -167,7 +171,9 @@ export default {
         OtherServices,
         LagoonServices,
         TransactionDialog,
-        ScarpaServices
+        ScarpaServices,
+        EluxServices,
+        Expenses
     },
     data() {
         return {

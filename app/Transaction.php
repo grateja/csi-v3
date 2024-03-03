@@ -128,6 +128,10 @@ class Transaction extends Model
         return $this->hasMany('App\ServiceTransactionItem')->orderBy('name');
     }
 
+    public function eluxServiceTransactionItems() {
+        return $this->hasMany('App\EluxServiceTransactionItem')->orderBy('name');
+    }
+
     public function productTransactionItems() {
         return $this->hasMany('App\ProductTransactionItem')->orderBy('name');
     }
@@ -225,6 +229,15 @@ class Transaction extends Model
         // return $items->get();
     }
 
+    public function posEluxItems($withTrashed = false) {
+        $items = $this->eluxServiceTransactionItems()->groupBy('name', 'price', 'elux_service_id')->selectRaw('elux_service_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
+        if($withTrashed) {
+            $items = $items->withTrashed();
+        }
+
+        return $items->get();
+    }
+
     public function posProductItems($withTrashed = false) {
         $items = $this->productTransactionItems()->groupBy('name', 'price', 'product_id')->selectRaw('product_id, name, COUNT(name) as quantity, SUM(price) as total_price, price as unit_price');
 
@@ -294,6 +307,13 @@ class Transaction extends Model
         ];
     }
 
+    public function posEluxSummary($withTrashed = false) {
+        return [
+            'total_price' => $this->posEluxItems($withTrashed)->sum('total_price'),
+            'total_quantity' => $this->posEluxItems($withTrashed)->sum('quantity'),
+        ];
+    }
+
     public function posProductSummary($withTrashed = false) {
         return [
             'total_price' => $this->posProductItems($withTrashed)->sum('total_price'),
@@ -338,7 +358,8 @@ class Transaction extends Model
         $scTotal = $this->posScarpaCleaningItems()->sum('total_price');
         $lTotal = $this->posLagoonItems()->sum('total_price');
         $lpkTotal = $this->posLagoonPerKiloItems()->sum('total_price');
-        return $pTotal + $sTotal + $scTotal + $lTotal + $lpkTotal;
+        $eluxTotal = $this->posEluxItems()->sum('total_price');
+        return $pTotal + $sTotal + $scTotal + $lTotal + $lpkTotal + $eluxTotal;
     }
 
     // public function refreshAllWithTrashed() {
@@ -355,15 +376,23 @@ class Transaction extends Model
         // $this['customer_name'] = $this->customer->name;
         $this['posServiceItems'] = $this->posServiceItems($withTrashed);
         $this['posProductItems'] = $this->posProductItems($withTrashed);
+        $this['posEluxItems'] = $this->posEluxItems($withTrashed);
         $this['posScarpaCleaningItems'] = $this->posScarpaCleaningItems($withTrashed);
         $this['posLagoonItems'] = $this->posLagoonItems($withTrashed);
         $this['posLagoonPerKiloItems'] = $this->posLagoonPerKiloItems($withTrashed);
         $this['posServiceSummary'] = $this->posServiceSummary($withTrashed);
+        $this['posEluxSummary'] = $this->posEluxSummary($withTrashed);
         $this['posProductSummary'] = $this->posProductSummary($withTrashed);
         $this['posScarpaCleaningSummary'] = $this->posScarpaCleaningSummary($withTrashed);
         $this['posLagoonSummary'] = $this->posLagoonSummary($withTrashed);
         $this['posLagoonPerKiloSummary'] = $this->posLagoonPerKiloSummary($withTrashed);
-        $totalAmount = $this->posProductSummary($withTrashed)['total_price'] + $this->posServiceSummary($withTrashed)['total_price'] + $this->posScarpaCleaningSummary($withTrashed)['total_price'] + $this->posLagoonSummary($withTrashed)['total_price'] + $this->posLagoonPerKiloSummary($withTrashed)['total_price'];
+        $totalAmount =
+            $this->posProductSummary($withTrashed)['total_price'] +
+            $this->posServiceSummary($withTrashed)['total_price'] +
+            $this->posScarpaCleaningSummary($withTrashed)['total_price'] +
+            $this->posLagoonSummary($withTrashed)['total_price'] +
+            $this->posLagoonPerKiloSummary($withTrashed)['total_price'] +
+            $this->posEluxSummary($withTrashed)['total_price'];
         if($this->payment) {
             $this['paidTo'] = $this->payment->user->name;
         }
@@ -431,12 +460,14 @@ class Transaction extends Model
             unset($model['posProductItems']);
             unset($model['posScarpaCleaningItems']);
             unset($model['posServiceSummary']);
+            unset($model['posEluxItems']);
             unset($model['posLagoonItems']);
             unset($model['posLagoonSummary']);
             unset($model['posLagoonPerKiloItems']);
             unset($model['posLagoonPerKiloSummary']);
             unset($model['posScarpaCleaningSummary']);
             unset($model['posProductSummary']);
+            unset($model['posEluxSummary']);
             unset($model['customer']);
             unset($model['total_amount']);
             unset($model['paidTo']);
