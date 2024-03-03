@@ -85,46 +85,48 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function unsynch($date = '2000-01-01') {
-        return DB::transaction(function () use ($date) {
-            TransactionRemarks::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            RfidCardTransaction::whereDate('created_at', '>', $date)->update(['synched' => null]);
+    public function unsynch($from = null, $to = null) {
+        $from = $from ?: '2000-01-01';
+        $to = $to ?: date('Y-m-d');
+        return DB::transaction(function () use ($from, $to) {
+            TransactionRemarks::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            RfidCardTransaction::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
 
-            MachineRemarks::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            MachineUsage::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            MachineRemarks::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            MachineUsage::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
 
-            ProductTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            ServiceTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            CustomerDry::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            CustomerWash::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Expense::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            RfidLoadTransaction::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            RfidCard::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            TransactionPayment::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Transaction::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Machine::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Customer::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Discount::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            EluxMachine::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            EluxMachineUsage::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            EluxService::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            EluxServiceTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            EluxToken::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Expense::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Lagoon::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            LagoonPerKilo::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            LagoonPerKiloTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            LagoonTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            OtherService::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            PartialPayment::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Rework::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            ScarpaCategory::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            ScarpaCleaningTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            ScarpaVariation::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            TiTo::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            ProductTransactionItem::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            ServiceTransactionItem::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            CustomerDry::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            CustomerWash::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Expense::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            RfidLoadTransaction::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            RfidCard::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            TransactionPayment::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Transaction::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Machine::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Customer::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Discount::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            EluxMachine::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            EluxMachineUsage::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            EluxService::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            EluxServiceTransactionItem::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            EluxToken::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Expense::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Lagoon::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            LagoonPerKilo::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            LagoonPerKiloTransactionItem::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            LagoonTransactionItem::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            OtherService::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            PartialPayment::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Rework::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            ScarpaCategory::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            ScarpaCleaningTransactionItem::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            ScarpaVariation::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            TiTo::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
 
-            ProductPurchase::whereDate('created_at', '>', $date)->update(['synched' => null]);
-            Product::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            ProductPurchase::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+            Product::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
         });
     }
 
