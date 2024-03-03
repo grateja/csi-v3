@@ -75,28 +75,28 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function unsynch() {
-        return DB::transaction(function () {
-            TransactionRemarks::whereNotNull('synched')->update(['synched' => null]);
-            RfidCardTransaction::whereNotNull('synched')->update(['synched' => null]);
+    public function unsynch($date = '2000-01-01') {
+        return DB::transaction(function () use ($date) {
+            TransactionRemarks::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            RfidCardTransaction::whereDate('created_at', '>', $date)->update(['synched' => null]);
 
-            MachineRemarks::whereNotNull('synched')->update(['synched' => null]);
-            MachineUsage::whereNotNull('synched')->update(['synched' => null]);
+            MachineRemarks::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            MachineUsage::whereDate('created_at', '>', $date)->update(['synched' => null]);
 
-            ProductTransactionItem::whereNotNull('synched')->update(['synched' => null]);
-            ServiceTransactionItem::whereNotNull('synched')->update(['synched' => null]);
-            CustomerDry::whereNotNull('synched')->update(['synched' => null]);
-            CustomerWash::whereNotNull('synched')->update(['synched' => null]);
-            Expense::whereNotNull('synched')->update(['synched' => null]);
-            RfidLoadTransaction::whereNotNull('synched')->update(['synched' => null]);
-            RfidCard::whereNotNull('synched')->update(['synched' => null]);
-            TransactionPayment::whereNotNull('synched')->update(['synched' => null]);
-            Transaction::whereNotNull('synched')->update(['synched' => null]);
-            Machine::whereNotNull('synched')->update(['synched' => null]);
-            Customer::whereNotNull('synched')->update(['synched' => null]);
+            ProductTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            ServiceTransactionItem::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            CustomerDry::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            CustomerWash::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            Expense::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            RfidLoadTransaction::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            RfidCard::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            TransactionPayment::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            Transaction::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            Machine::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            Customer::whereDate('created_at', '>', $date)->update(['synched' => null]);
 
-            ProductPurchase::whereNotNull('synched')->update(['synched' => null]);
-            Product::whereNotNull('synched')->update(['synched' => null]);
+            ProductPurchase::whereDate('created_at', '>', $date)->update(['synched' => null]);
+            Product::whereDate('created_at', '>', $date)->update(['synched' => null]);
         });
     }
 

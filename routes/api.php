@@ -46,8 +46,8 @@ Route::group(['prefix' => 'developer'], function () {
     // /api/developer/reset
     Route::post('reset', 'ClientsController@reset');
 
-    // /api/developer/unsynch
-    Route::get('unsynch', 'ClientsController@unsynch');
+    // /api/developer/unsynch/{date?}
+    Route::get('unsynch/{date?}', 'ClientsController@unsynch');
 
 
     Route::group(['middleware' => ['auth:api', 'role:developer']], function() {
