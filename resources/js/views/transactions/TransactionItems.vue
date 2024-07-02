@@ -40,8 +40,13 @@
                     </span>
                 </v-flex>
             </v-layout>
+            <v-card class="rounded-card">
+                <v-card-text>
+                    <span class="font-weight-bold">Customer remarks:</span>
+                    {{ customerRemarks }}
+                </v-card-text>
+            </v-card>
         </v-card-text>
-
         <!-- ELUX SERVICES -->
 
             <v-card class="ma-1" v-if="currentTransaction && currentTransaction.posEluxItems.length" flat>
@@ -668,6 +673,9 @@ export default {
                 || this.currentTransaction.posScarpaCleaningItems.length > 0
                 || this.currentTransaction.posServiceItems.length > 0
                 || this.currentTransaction.posEluxItems.length > 0
+        },
+        customerRemarks() {
+            return this.$store.getters['postransaction/getCustomerRemarks'];
         }
     },
     methods: {

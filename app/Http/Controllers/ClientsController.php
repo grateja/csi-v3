@@ -127,6 +127,8 @@ class ClientsController extends Controller
 
             ProductPurchase::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
             Product::whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->update(['synched' => null]);
+
+            app('App\Http\Controllers\LiveHostController')->update();
         });
     }
 

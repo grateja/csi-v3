@@ -219,7 +219,7 @@ class ExcelController extends Controller
         }])->where(function($query) use ($request) {
             $query->where('customer_name', 'like', "%$request->keyword%")
                 ->orWhere('job_order', 'like', "%$request->keyword%");
-        })->where('saved', true);
+        })->where('saved', true)->whereNull('cancelation_remarks');
 
         $result = $result->orderBy($sortBy, $order);
 

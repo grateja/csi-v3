@@ -6,7 +6,8 @@ const state = {
     isLoading: false,
     isAddingItem: false,
     currentCustomer: null,
-    currentTransaction: null
+    currentTransaction: null,
+    customerRemarks: null
 };
 
 const mutations = {
@@ -37,6 +38,9 @@ const mutations = {
     },
     clearTransaction(state) {
         state.currentTransaction = null;
+    },
+    setCustomerRemarks(state, remarks) {
+        state.customerRemarks = remarks;
     }
 };
 
@@ -49,6 +53,8 @@ const actions = {
             context.commit('setCurrentCustomer', customer);
             context.commit('clearTransaction');
             context.commit('setCurrentTransaction', res.data.transaction);
+            context.commit('setCustomerRemarks', res.data.customerRemarks);
+            console.log("customer remarks", res.data.customerRemarks)
             return res;
         }).catch(err => {
             context.commit('clearTransaction');
@@ -248,6 +254,9 @@ const getters = {
     },
     isBusy(state) {
         return state.isAddingItem && state.currentTransaction == null;
+    },
+    getCustomerRemarks(state) {
+        return state.customerRemarks
     }
 };
 

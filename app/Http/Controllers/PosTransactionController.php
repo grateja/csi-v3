@@ -63,8 +63,11 @@ class PosTransactionController extends Controller
             // ]);
         }
 
+        $customerRemarks = Customer::find($customerId)->remarks;
+
         return response()->json([
             'transaction' => $transaction,
+            'customerRemarks' => $customerRemarks,
         ]);
     }
 

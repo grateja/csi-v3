@@ -107,7 +107,7 @@ class CustomersController extends Controller
         if($request->validate($rules)) {
             return DB::transaction(function () use ($request) {
                 $customer = Customer::create([
-                    'id' => $request->id ? $request->id : Str::random(6),
+                    'id' => $request->id,// ? $request->id : Str::random(6),
                     'name' => $request->name,
                     'crn' => $request->crn,
                     'remarks' => $request->remarks,
