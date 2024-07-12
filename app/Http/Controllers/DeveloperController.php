@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Artisan;
 
 class DeveloperController extends Controller
 {
     public function setSystemDateTime(Request $request) {
-        shell_exec("sudo /bin/date -s $request->date");
+        shell_exec("sudo /bin/date -s '{$request->date}'");
+        shell_exec("sudo hwclock -w");
+        Artisan::call('cache:clear');
         return $request->date;
     }
 

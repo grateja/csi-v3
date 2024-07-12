@@ -26,7 +26,7 @@ Route::group(['prefix' => 'developer'], function () {
     // });
     Route::get('system-date-time', 'DeveloperController@getSystemDateTime');
 
-    Route::get('set-system-date-time', 'DeveloperController@setSystemDateTime');
+    Route::post('set-system-date-time', 'DeveloperController@setSystemDateTime');
 
     // /api/developer/client
     Route::get('client', 'ClientsController@index');

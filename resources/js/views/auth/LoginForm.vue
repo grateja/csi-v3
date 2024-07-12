@@ -60,6 +60,7 @@
                     <div>
                         {{moment().format('dddd MMMM D, YYYY H:m A Z')}}
                     </div>
+                    <v-btn round block @click="setTime" :loading="isSettingTime">Sync server time</v-btn>
                 </div>
                 <v-spacer></v-spacer>
             </v-card-title>
@@ -75,7 +76,8 @@ export default {
             password: '',
             rememberMe: false,
             sysDateTime: null,
-            version: null
+            version: null,
+            isSettingTime: false
         }
     },
     methods: {
@@ -97,12 +99,13 @@ export default {
         },
         setTime() {
             var date = moment().format('Y-MM-D H:m:s A');
+            this.isSettingTime = true
             axios.post('/api/developer/set-system-date-time', {
                 date: date
             }).then((res, rej) => {
 
             }).finally(() => {
-
+                this.isSettingTime = false;
             })
         }
     },
