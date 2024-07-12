@@ -98,7 +98,7 @@ export default {
             });
         },
         setTime() {
-            var date = moment().format('Y-MM-D H:m:s A');
+            var date = moment().format('Y-MM-D H:m:s');
             this.isSettingTime = true
             axios.post('/api/developer/set-system-date-time', {
                 date: date
