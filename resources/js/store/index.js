@@ -59,6 +59,7 @@ export default new  Vuex.Store({
         dopuIncludeServices: false,
         allowRework: false,
         allowTransfer: false,
+        online: navigator.onLine
     },
     getters: {
         getCurrentUser(state) {
@@ -93,6 +94,9 @@ export default new  Vuex.Store({
         },
         isReworkAllowed(state) {
             return state.allowRework;
+        },
+        isOnline(state) {
+            return state.online;
         }
     },
     actions: {
@@ -133,6 +137,9 @@ export default new  Vuex.Store({
         },
         setFlash(state, config) {
             state.flashMessage = config;
+        },
+        setOnlineStatus(state, status) {
+            state.online = status;
         }
     },
     modules: {

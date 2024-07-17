@@ -103,7 +103,9 @@ export default {
             axios.post('/api/developer/set-system-date-time', {
                 date: date
             }).then((res, rej) => {
-
+                location.reload();
+            }).catch(e => {
+                // alert(e.message);
             }).finally(() => {
                 this.isSettingTime = false;
             })
@@ -115,6 +117,9 @@ export default {
         },
         errors() {
             return this.$store.getters['auth/getErrors'];
+        },
+        isOnline() {
+            return this.$store.getters.isOnline;
         }
     },
     created() {

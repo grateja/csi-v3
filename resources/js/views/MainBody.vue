@@ -8,14 +8,14 @@
         </v-content>
     </div> -->
     <div>
-        <div v-if="!onLine" class="you-are-offline">You are offline! You are not connected to ELS-CSI ECCMS WiFi</div>
+        <div v-if="!isOnline" class="you-are-offline">You are offline! You are not connected to ELS-CSI ECCMS WiFi</div>
         <menus />
         <v-content>
             <!-- <breadcrumbs></breadcrumbs> -->
             <v-progress-linear v-if="isCheckingUser" indeterminate></v-progress-linear>
             <router-view v-else />
         </v-content>
-        <v-dialog :value="!onLine" width="520">
+        <v-dialog :value="!isOnline" width="520">
             <v-card>
                 <v-card-title>
                     <span class="title">You are offline!</span>
@@ -39,20 +39,43 @@ export default {
     },
     data() {
         return {
-            onLine: navigator.onLine
+            // isOnline: navigator.onLine
         }
     },
     computed: {
         isCheckingUser() {
             return this.$store.getters['auth/isLoading'];
-        }
+        },
+        isOnline() {
+            return this.$store.getters.isOnline;
+        },
+        // checkInternetConnection() {
+        //     console.log("testing")
+        //     axios.get("https://www.google.com", {
+        //         method: "HEAD",
+        //         mode: "no-cors"
+        //     }).then((res, rej) => {
+        //         this.$store.commit('setOnlineStatus', true);
+        //     }).catch(e => {
+        //         this.$store.commit('setOnlineStatus', false);
+        //     });
+        // }
     },
     mounted() {
         console.log('ekeme')
         try {
-            window.addEventListener('offline', (e) => { this.onLine = false; });
-    
-            window.addEventListener('online', (e) => { this.onLine = true; });
+            window.addEventListener('offline', (e) => {
+                this.$store.commit('setOnlineStatus', false);
+                console.log("offlkine")
+                // this.onLine = false;
+            });
+
+            window.addEventListener('online', (e) => {
+                console.log("online")
+                // this.checkInternetConnection();
+                this.$store.commit('setOnlineStatus', true);
+              // this.onLine = true;
+            });
 
         } catch(e) {
             console.log(e)

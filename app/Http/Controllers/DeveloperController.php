@@ -13,7 +13,15 @@ class DeveloperController extends Controller
         exec("sudo date -s '{$request->date}'");
         exec("sudo hwclock -w");
         Artisan::call('cache:clear');
-        return $request->date;
+        if(!$this->checkInternetConnection()) {
+            return $request->date;
+        } else {
+            return response()->json([
+                'errors' => [
+                    'message' => ['If you are connected to internet, this function may not work. Please reload manually!']
+                ]
+            ], 422);
+        }
     }
 
     public function getSystemDateTime() {
@@ -37,5 +45,16 @@ class DeveloperController extends Controller
             'dopuSetup' => env('DOPU_SETUP', 'basic'), // basic, slave, master
             'dopuIncludeServices' => env('DOPU_INCLUDE_SERVICES', false),
         ], 200);
+    }
+
+    private function checkInternetConnection($host = 'www.google.com', $port = 80, $timeout = 10) {
+        $connected = @fsockopen($host, $port, $errno, $errstr, $timeout);
+
+        if ($connected) {
+            fclose($connected);
+            return true;
+        } else {
+            return false;
+        }
     }
 }
