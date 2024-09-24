@@ -130,4 +130,28 @@ class LiveHostController extends Controller
         ]);
         return $response;
     }
+
+    public function forceUnSync() {
+        $tables = [
+            'customer_dries',
+            'customer_washes',
+            'machines',
+            'machine_remarks',
+            'machine_usages',
+            'products',
+            'product_purchases',
+            'product_transaction_items',
+            'service_transaction_items',
+            'transaction_payments',
+            'transaction_remarks',
+            'partial_payments',
+        ];
+
+        foreach($tables as $table) {
+            $entities = DB::table($table)->whereDate('updated_at', Carbon::today());
+            $entities->update([
+                'synched' => null,
+            ]);
+        }
+    }
 }

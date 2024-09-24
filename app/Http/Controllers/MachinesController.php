@@ -187,8 +187,9 @@ class MachinesController extends Controller
             }
 
             if($request->serviceType == 'elux') {
-
+                $pushDelay = 500;
             } else {
+                $pushDelay = 60;
                 if($request->additional && $machine->is_running) {
                     $machine->update([
                         'total_minutes' => DB::raw('total_minutes+'. $totalMinutes),
@@ -228,7 +229,8 @@ class MachinesController extends Controller
 
 
             // $output = $machine->remoteActivate($pulse);
-            $url = "$machine->ip_address/activate?pulse=$pulse&token=$avWash->id";
+            $url = "$machine->ip_address/activate?pulse=$pulse&token=$avWash->id&pushDelay=$pushDelay";
+            \Log::debug($url);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_TIMEOUT, 30);

@@ -125,8 +125,8 @@ class QRTransactionController extends Controller
                 'total_price' => $transaction->totalPrice(),
             ]);
 
-            $partner->customers()->sync($customer->id);
-            $partner->transactions()->sync($transaction->id);
+            // $partner->customers()->sync($customer->id);
+            // $partner->transactions()->sync($transaction->id);
 
             // DB::table('lagoon_partner_customers')->insert([
             //     'customer_id' => $customer->id,
