@@ -10,7 +10,7 @@
                             <v-icon left>delete</v-icon> Delete
                         </v-btn>
                         <v-combobox :items="['washer', 'dryer']" label="Service type" :error-messages="errors.get('machineType')" v-model="formData.machineType" outline></v-combobox>
-                        <v-combobox :items="availableModels" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
+                        <v-combobox :items="models" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
                         <v-text-field outline label="IP address" v-model="formData.ipAddress" :error-messages="errors.get('ipAddress')"></v-text-field>
                     </template>
                     <v-text-field outline label="Stack Order" v-model="formData.stackOrder" :error-messages="errors.get('stackOrder')" :disabled="retreivingStackOrder" :loading="retreivingStackOrder"></v-text-field>
@@ -42,39 +42,7 @@ export default {
             action: null,
             isDeleting: false,
             retreivingStackOrder: false,
-            models: [
-                'WH6-6 - 6kg',
-                'WH6-7 - 7kg',
-                'WH6-8 - 8kg',
-                'WH6-11 - 10.5kg',
-                'WH6-14 - 13kg',
-                'WH6-20 - 20KG',
-                'WH6-27 - 27kg',
-                'WH6-33 - 33kg',
-                'WN6-8 - 8kg',
-                'WS6-8 - 8kg',
-                'WN6-9 - 9kg',
-                'WS6-9 - 9kg',
-                'WN6-11 - 10.5kg',
-                'WS6-11 - 10.5kg',
-                'WN6-14 - 13kg',
-                'WS6-14 - 13kg',
-                'WN6-20 - 20kg',
-                'WS6-20 - 20kg',
-                'WN6-28 - 25kg',
-                'WS6-28 - 25kg',
-                'WN6-35 - 33kg',
-                'WS6-35 - 33kg',
-
-                'TD6-6 - 6kg',
-                'TD6-7 - 7kg',
-                'TD6-8 - 8kg',
-                'TD6-11 - 10.5kg',
-                'TD6-14 - 13kg',
-                'TD6-20 - 20KG',
-                'TD6-27 - 27kg',
-                'TD6-33 - 33kg',
-            ]
+            models: []
         }
     },
     methods: {
@@ -107,6 +75,11 @@ export default {
                     this.isDeleting = false;
                 });
             }
+        },
+        loadModels() {
+            axios.get(`/api/machines/elux/models/${this.machineType}`).then((res) => {
+                this.models = res.data;
+            });
         }
     },
     computed: {
@@ -123,17 +96,6 @@ export default {
         // },
         isDeveloper() {
             return this.$store.getters.isDeveloper;
-        },
-        availableModels() {
-            if(this.machineType == 'washer') {
-                return this.models.filter(function(item) {
-                    return item[0] == 'W';
-                });
-            } else if(this.machineType == 'dryer') {
-                return this.models.filter(function(item) {
-                    return item[0] == 'T';
-                });
-            }
         }
     },
     watch: {
@@ -160,7 +122,11 @@ export default {
                     this.retreivingStackOrder = false
                 });
             }
+            this.loadModels()
         }
+    },
+    created() {
+        this.loadModels()
     }
 }
 </script>

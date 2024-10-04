@@ -54,8 +54,11 @@ export default {
                 console.log('testing');
                 this.activating = true;
                 this.cancelSource = axios.CancelToken.source();
+                let pushDelay = this.machine.model ? 500 : 60
 
-                axios.get(`http://${this.machine.ip_address}/activate?pulse=${pulse}&token=${Math.random().toString(36).substring(7)}`, {
+                console.log(this.machine.service_type)
+
+                axios.get(`http://${this.machine.ip_address}/activate?pulse=${pulse}&pushDelay=${pushDelay}&token=${Math.random().toString(36).substring(7)}`, {
                     params: {},
                     cancelToken: this.cancelSource.token
                 }).then((res, rej) => {

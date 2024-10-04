@@ -16,6 +16,6 @@ class MachineUsage extends Model
     ];
 
     public function queSynch() {
-        return (new AutoSynch('machine_usages', $this->id))->delay(5);
+        return (new AutoSynch('machine_usages', $this->id))->delay(0);
     }
 }

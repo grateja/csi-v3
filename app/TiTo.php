@@ -30,6 +30,6 @@ class TiTo extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('ti_tos', $this->id))->delay(5);
+        return (new AutoSynch('ti_tos', $this->id))->delay(0);
     }
 }

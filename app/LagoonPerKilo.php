@@ -20,6 +20,6 @@ class LagoonPerKilo extends Model
     ];
 
     public function queSynch() {
-        return (new AutoSynch('lagoon_per_kilos', $this->id))->delay(5);
+        return (new AutoSynch('lagoon_per_kilos', $this->id))->delay(0);
     }
 }

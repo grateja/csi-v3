@@ -25,6 +25,6 @@ class CustomerDry extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('customer_dries', $this->id))->delay(5);
+        return (new AutoSynch('customer_dries', $this->id))->delay(0);
     }
 }

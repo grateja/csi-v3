@@ -44,6 +44,6 @@ class EluxServiceTransactionItem extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('elux_service_transaction_items', $this->id))->delay(5);
+        return (new AutoSynch('elux_service_transaction_items', $this->id))->delay(0);
     }
 }

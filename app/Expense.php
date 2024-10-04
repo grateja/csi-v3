@@ -37,6 +37,6 @@ class Expense extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('expenses', $this->id))->delay(5);
+        return (new AutoSynch('expenses', $this->id))->delay(0);
     }
 }

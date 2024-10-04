@@ -489,6 +489,6 @@ class Transaction extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('transactions', $this->id))->delay(5);
+        return (new AutoSynch('transactions', $this->id))->delay(0);
     }
 }

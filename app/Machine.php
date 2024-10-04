@@ -184,6 +184,6 @@ class Machine extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('machines', $this->id))->delay(5);
+        return (new AutoSynch('machines', $this->id))->delay(0);
     }
 }

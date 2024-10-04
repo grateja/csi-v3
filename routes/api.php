@@ -765,6 +765,9 @@ Route::group(['prefix' => 'machines', 'middleware' => ['auth:api']], function() 
 
     // /api/machines/elux
     Route::group(['prefix' => 'elux'], function() {
+        // /api/machines/elux/models/{machineType}
+        Route::get('models/{machineType}', 'EluxMachinesController@eluxModels');
+
         // /api/machines/elux/{machineId}/delete
         Route::post('{machineId}/delete', 'EluxMachinesController@destroy');
 

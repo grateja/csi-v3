@@ -37,6 +37,6 @@ class RfidCardTransaction extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('rfid_card_transactions', $this->id))->delay(5);
+        return (new AutoSynch('rfid_card_transactions', $this->id))->delay(0);
     }
 }

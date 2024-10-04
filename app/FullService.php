@@ -48,6 +48,6 @@ class FullService extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('full_services', $this->id))->delay(5);
+        return (new AutoSynch('full_services', $this->id))->delay(0);
     }
 }

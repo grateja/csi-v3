@@ -32,6 +32,6 @@ class EluxToken extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('elux_tokens', $this->id))->delay(5);
+        return (new AutoSynch('elux_tokens', $this->id))->delay(0);
     }
 }

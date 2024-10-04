@@ -78,6 +78,7 @@ class MachinesController extends Controller
             $eluxMachineUsage = null;
             $avWash = null;
             $totalMinutes = 0;
+            $pushDelay = 60;
             $customer = Customer::findOrFail($request->customerId);
             if($request->serviceType == 'elux') {
                 $machine = EluxMachine::findOrFail($request->machineId);
@@ -409,6 +410,7 @@ class MachinesController extends Controller
 
     public function reset() {
         Machine::where('total_minutes', '>', 0)->update([
+            'time_activated' => Carbon::now(),
             'total_minutes' => 0,
         ]);
     }

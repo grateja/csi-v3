@@ -17,7 +17,7 @@ class MachineRemarks extends Model
     ];
 
     public function queSynch() {
-        return (new AutoSynch('machine_remarks', $this->id))->delay(5);
+        return (new AutoSynch('machine_remarks', $this->id))->delay(0);
     }
 
     public function machine() {

@@ -83,6 +83,6 @@ class ServiceTransactionItem extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('service_transaction_items', $this->id))->delay(5);
+        return (new AutoSynch('service_transaction_items', $this->id))->delay(0);
     }
 }

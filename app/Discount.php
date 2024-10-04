@@ -17,6 +17,6 @@ class Discount extends Model
     ];
 
     public function queSynch() {
-        return (new AutoSynch('discounts', $this->id))->delay(5);
+        return (new AutoSynch('discounts', $this->id))->delay(0);
     }
 }

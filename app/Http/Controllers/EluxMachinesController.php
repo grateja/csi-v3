@@ -89,4 +89,11 @@ class EluxMachinesController extends Controller
         }
         return $stackOrder;
     }
+
+    public function eluxModels($machineType) {
+        $models = EluxMachine::where('machine_type', $machineType)->get();
+        return response()->json(
+            $models->pluck('model')
+        );
+    }
 }

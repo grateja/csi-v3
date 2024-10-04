@@ -15,20 +15,20 @@ class PartialPayment extends Model
 
     protected $fillable = [
         'id',
-        'transaction_id', 
+        'transaction_id',
         'cash',
-        'or_number', 
-        'points', 
-        'discount', 
-        'total_amount', 
-        'change', 
-        'user_id', 
-        'paid_to', 
-        'points_in_peso', 
-        'balance', 
-        'total_cash', 
-        'card_load_used', 
-        'rfid', 
+        'or_number',
+        'points',
+        'discount',
+        'total_amount',
+        'change',
+        'user_id',
+        'paid_to',
+        'points_in_peso',
+        'balance',
+        'total_cash',
+        'card_load_used',
+        'rfid',
         'synched',
     ];
 
@@ -50,6 +50,6 @@ class PartialPayment extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('transaction_payments', $this->id))->delay(5);
+        return (new AutoSynch('transaction_payments', $this->id))->delay(0);
     }
 }

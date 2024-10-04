@@ -27,6 +27,6 @@ class ScarpaCategory extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('scarpa_categories', $this->id))->delay(5);
+        return (new AutoSynch('scarpa_categories', $this->id))->delay(0);
     }
 }

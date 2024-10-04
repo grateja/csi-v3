@@ -21,6 +21,6 @@ class PerKiloWashDry extends Model
     ];
 
     public function queSynch() {
-        return (new AutoSynch('other_services', $this->id))->delay(5);
+        return (new AutoSynch('other_services', $this->id))->delay(0);
     }
 }

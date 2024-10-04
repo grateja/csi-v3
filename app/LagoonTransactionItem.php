@@ -25,7 +25,7 @@ class LagoonTransactionItem extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('lagoon_transaction_items', $this->id))->delay(5);
+        return (new AutoSynch('lagoon_transaction_items', $this->id))->delay(0);
     }
 
     protected static function boot() {

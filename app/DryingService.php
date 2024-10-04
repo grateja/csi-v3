@@ -33,6 +33,6 @@ class DryingService extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('drying_services', $this->id))->delay(5);
+        return (new AutoSynch('drying_services', $this->id))->delay(0);
     }
 }

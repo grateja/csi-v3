@@ -36,6 +36,6 @@ class Rework extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('reworks', $this->id))->delay(5);
+        return (new AutoSynch('reworks', $this->id))->delay(0);
     }
 }

@@ -21,7 +21,7 @@ class ScarpaCleaningTransactionItem extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('scarpa_cleaning_transaction_items', $this->id))->delay(5);
+        return (new AutoSynch('scarpa_cleaning_transaction_items', $this->id))->delay(0);
     }
 
     protected static function boot() {

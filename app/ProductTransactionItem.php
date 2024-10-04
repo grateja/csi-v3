@@ -45,6 +45,6 @@ class ProductTransactionItem extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('product_transaction_items', $this->id))->delay(5);
+        return (new AutoSynch('product_transaction_items', $this->id))->delay(0);
     }
 }

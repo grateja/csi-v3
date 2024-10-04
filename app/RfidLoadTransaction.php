@@ -44,6 +44,6 @@ class RfidLoadTransaction extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('rfid_load_transactions', $this->id))->delay(5);
+        return (new AutoSynch('rfid_load_transactions', $this->id))->delay(0);
     }
 }

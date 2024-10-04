@@ -21,6 +21,6 @@ class ScarpaVariation extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('scarpa_variations', $this->id))->delay(5);
+        return (new AutoSynch('scarpa_variations', $this->id))->delay(0);
     }
 }

@@ -21,6 +21,6 @@ class FullServiceProduct extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('full_service_products', $this->id))->delay(5);
+        return (new AutoSynch('full_service_products', $this->id))->delay(0);
     }
 }

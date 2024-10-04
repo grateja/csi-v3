@@ -47,6 +47,6 @@ class FullServiceItem extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('full_service_items', $this->id))->delay(5);
+        return (new AutoSynch('full_service_items', $this->id))->delay(0);
     }
 }

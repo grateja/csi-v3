@@ -80,6 +80,6 @@ class Customer extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('customers', $this->id))->delay(5);
+        return (new AutoSynch('customers', $this->id))->delay(0);
     }
 }

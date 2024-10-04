@@ -16,6 +16,6 @@ class EluxMachineUsage extends Model
     ];
 
     public function queSynch() {
-        return (new AutoSynch('elux_machine_usages', $this->id))->delay(5);
+        return (new AutoSynch('elux_machine_usages', $this->id))->delay(0);
     }
 }

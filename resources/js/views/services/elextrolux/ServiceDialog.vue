@@ -17,7 +17,7 @@
                     <v-text-field label="Name" v-model="formData.name" :error-messages="errors.get('name')" @keydown.native="clear('name')" outline ref="name"></v-text-field>
                     <v-text-field label="Price" v-model="formData.price" :error-messages="errors.get('price')" @keydown.native="clear('price')" outline></v-text-field>
                     <v-combobox :items="['washer', 'dryer']" label="Service type" :error-messages="errors.get('serviceType')" v-model="formData.serviceType" outline></v-combobox>
-                    <v-combobox :items="availableModels" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
+                    <v-combobox :items="models" label="Model" :error-messages="errors.get('model')" v-model="formData.model" outline></v-combobox>
                     <v-text-field label="Pulse count" v-model="formData.pulseCount" :error-messages="errors.get('pulseCount')" @keydown.native="clear('pulseCount')" outline></v-text-field>
                     <v-text-field type="number" label="Minutes" v-model="formData.minutes" :error-messages="errors.get('minutes')" outline></v-text-field>
                 </v-card-text>
@@ -51,39 +51,7 @@ export default {
                 minutes: 0,
                 pulseCount: 0
             },
-            models: [
-                'WH6-6 - 6kg',
-                'WH6-7 - 7kg',
-                'WH6-8 - 8kg',
-                'WH6-11 - 10.5kg',
-                'WH6-14 - 13kg',
-                'WH6-20 - 20KG',
-                'WH6-27 - 27kg',
-                'WH6-33 - 33kg',
-                'WN6-8 - 8kg',
-                'WS6-8 - 8kg',
-                'WN6-9 - 9kg',
-                'WS6-9 - 9kg',
-                'WN6-11 - 10.5kg',
-                'WS6-11 - 10.5kg',
-                'WN6-14 - 13kg',
-                'WS6-14 - 13kg',
-                'WN6-20 - 20kg',
-                'WS6-20 - 20kg',
-                'WN6-28 - 25kg',
-                'WS6-28 - 25kg',
-                'WN6-35 - 33kg',
-                'WS6-35 - 33kg',
-
-                'TD6-6 - 6kg',
-                'TD6-7 - 7kg',
-                'TD6-8 - 8kg',
-                'TD6-11 - 10.5kg',
-                'TD6-14 - 13kg',
-                'TD6-20 - 20KG',
-                'TD6-27 - 27kg',
-                'TD6-33 - 33kg',
-            ]
+            models: []
         }
     },
     methods: {
@@ -120,6 +88,11 @@ export default {
         },
         clear(key) {
             this.$store.commit('dryingservice/clearErrors', key);
+        },
+        loadModels() {
+            axios.get(`/api/machines/elux/models/${this.serviceType}`).then((res) => {
+                this.models = res.data;
+            });
         }
     },
     computed: {
@@ -128,17 +101,6 @@ export default {
         },
         saving() {
             return this.$store.getters['dryingservice/isSaving'];
-        },
-        availableModels() {
-            if(this.serviceType == 'washer') {
-                return this.models.filter(function(item) {
-                    return item[0] == 'W';
-                });
-            } else if(this.serviceType == 'dryer') {
-                return this.models.filter(function(item) {
-                    return item[0] == 'T';
-                });
-            }
         }
     },
     watch: {
@@ -163,6 +125,7 @@ export default {
             setTimeout(() => {
                 this.$refs.name.$el.querySelector('input').select();
             }, 500);
+            this.loadModels()
         },
         service(val) {
             if(!!val) {

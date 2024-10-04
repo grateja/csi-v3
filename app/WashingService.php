@@ -66,6 +66,6 @@ class WashingService extends Model
     }
 
     public function queSynch() {
-        return (new AutoSynch('washing_services', $this->id))->delay(5);
+        return (new AutoSynch('washing_services', $this->id))->delay(0);
     }
 }

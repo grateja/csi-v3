@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Http\Controllers\LiveHostController;
+use App\Product;
 
 class UnSynchCommand extends Command
 {
@@ -38,7 +39,11 @@ class UnSynchCommand extends Command
      */
     public function handle()
     {
+        Product::where(function(){})->update([
+            'synched' => null
+        ]);
+
         $ctrl = new LiveHostController();
-        $ctrl->forceUnSync();
+        $ctrl->update();
     }
 }
