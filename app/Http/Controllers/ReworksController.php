@@ -21,8 +21,8 @@ class ReworksController extends Controller
         $reworks = Rework::where(function($query) use ($request) {
             $query->where(DB::raw('reworks.job_order'), 'like', "%$request->keyword%");
         })->join('machines', 'machines.id', '=', 'reworks.machine_id')
-            ->join('transactions', 'transactions.job_order', '=', 'reworks.job_order')
-            ->selectRaw('transactions.id as transaction_id, reworks.id, reworks.remarks, reworks.customer_name, tag, reworks.job_order, account_name, reworks.created_at, machine_name');
+            //->join('transactions', 'transactions.job_order', '=', 'reworks.job_order')
+            ->selectRaw('reworks.id, reworks.remarks, reworks.customer_name, tag, reworks.job_order, account_name, reworks.created_at, machine_name');
 
         if($request->date) {
             $reworks = $reworks->whereDate('reworks.created_at', $request->date);

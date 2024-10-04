@@ -269,6 +269,25 @@ class ExcelController extends Controller
                 'balance' => $item->payment ? '0' : ($item->partialPayment ? $item->partialPayment->balance : $item->total_price),
             ];
             if($request->option == 'simplified') continue;
+            foreach($item->posEluxItems() as $eluxItem) {
+                $cols[] = [
+                    'date_created' => '',
+                    'job_order' => '',
+                    'customer' => '',
+                    'service_quantity' => $eluxItem['quantity'],
+                    'service_name' => $eluxItem['name'],
+                    'service_amount' => $eluxItem['total_price'],
+                    'amount' => '',
+                    'discount_name' => '',
+                    'discount' => '',
+                    'discounted_amount' => '',
+                    'cash' => '',
+                    'date_paid' => '',
+                    'payment_method' => '',
+                    'partial_payment' => '',
+                    'balance' => '',
+                ];
+            }
             foreach($item->posServiceItems() as $serviceItem) {
                 $cols[] = [
                     'date_created' => '',
