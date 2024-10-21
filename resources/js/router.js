@@ -314,6 +314,34 @@ const routes = [
         ]
     },
     {
+        path: '/out-source',
+        component: require('./views/outsource/Index.vue').default
+    },
+    {
+        path: '/out-source/services',
+        component: require('./views/outsource/services/Index.vue').default
+    },
+    {
+        path: '/out-source/:outSourceId/linens',
+        component: require('./views/outsource/linens/Index.vue').default
+    },
+    {
+        path: '/out-source/:outSourceId/job-orders',
+        component: require('./views/outsource/joborders/Index.vue').default
+    },
+    {
+        path: '/out-source/:outSourceId/soa',
+        component: require('./views/outsource/soa/Index.vue').default
+    },
+    {
+        path: '/out-source/soa/:outSourceId/:soaId',
+        component: require('./views/outsource/soa/AddEditSOA.vue').default
+    },
+    {
+        path: '/out-source/job-orders/:outSourceId/:jobOrderId',
+        component: require('./views/outsource/joborders/JobOrder.vue').default
+    },
+    {
         path: '/scanner',
         component: require('./views/qrscanner/Index.vue').default
     },

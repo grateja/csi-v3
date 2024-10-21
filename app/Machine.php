@@ -51,6 +51,10 @@ class Machine extends Model
         return $this->hasMany('App\MachineUsage');
     }
 
+    public function outSourceMachineUsage() {
+        return $this->hasMany('App\OutSourceMachineUsage');
+    }
+
     public function totalUsage() {
         return $this->machineUsages();
     }

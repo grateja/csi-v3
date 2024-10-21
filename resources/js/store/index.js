@@ -41,6 +41,11 @@ import machine from './modules/machine.js';
 import eluxmachine from './modules/eluxmachine.js';
 import transactionreport from './modules/transactionreport.js';
 import lagoonpartner from './modules/lagoonpartner.js';
+import outsource from './modules/outsource.js';
+import outsourcelinen from './modules/outsourcelinen.js';
+import outsourcejoborder from './modules/outsourcejoborder.js';
+import outsourceservice from './modules/outsourceservice.js';
+import outsourcesoa from './modules/outsourcesoa.js';
 
 import storehour from './modules/storehour.js';
 import event from './modules/event.js';
@@ -188,6 +193,11 @@ export default new  Vuex.Store({
         video,
         file,
         qrscanner,
-        qrtransaction
+        qrtransaction,
+        outsource,
+        outsourcelinen,
+        outsourcejoborder,
+        outsourceservice,
+        outsourcesoa
     }
 });

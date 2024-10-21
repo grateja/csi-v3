@@ -40,6 +40,10 @@ class EluxMachine extends Model
         return $this->belongsTo('App\Customer');
     }
 
+    public function outSourceMachineUsages() {
+        return $this->hasMany('App\OutSourceMachineUsage');
+    }
+
     public function queSynch() {
         return (new AutoSynch('elux_machines', $this->id))->delay(0);
     }

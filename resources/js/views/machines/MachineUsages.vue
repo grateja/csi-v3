@@ -5,22 +5,44 @@
             <date-navigator v-model="date" />
             <v-divider></v-divider>
 
-            <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
-                <template v-slot:items="props">
-                    <tr>
-                        <td>{{ moment(props.item.created_at).format('hh:mm:ss A') }}</td>
-                        <td>{{ props.item.customer_name }}</td>
-                        <td>{{ props.item.minutes }}</td>
-                        <td>{{ parseFloat(props.item.price).toFixed(2) }}</td>
-                        <td>{{ props.item.activation_type }}</td>
-                        <td>
-                            <v-btn icon small @click="deleteUsage(props.item)" :loading="props.item.isDeleting" v-if="isOwner">
-                                <v-icon small>delete</v-icon>
-                            </v-btn>
-                        </td>
-                    </tr>
-                </template>
-            </v-data-table>
+            <v-tabs v-model="tabIndex">
+                <v-tab>Community</v-tab>
+                <v-tab>Out source</v-tab>
+                <v-tab-item>
+                    <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions>
+                        <template v-slot:items="props">
+                            <tr>
+                                <td>{{ moment(props.item.created_at).format('hh:mm:ss A') }}</td>
+                                <td>{{ props.item.customer_name }}</td>
+                                <td>{{ props.item.minutes }}</td>
+                                <td>{{ parseFloat(props.item.price).toFixed(2) }}</td>
+                                <td>{{ props.item.activation_type }}</td>
+                                <td>
+                                    <v-btn icon small @click="deleteUsage(props.item)" :loading="props.item.isDeleting" v-if="isOwner">
+                                        <v-icon small>delete</v-icon>
+                                    </v-btn>
+                                </td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-data-table :headers="headers" :items="outSource" :loading="loading" hide-actions>
+                        <template v-slot:items="props">
+                            <tr>
+                                <td>{{ moment(props.item.created_at).format('hh:mm:ss A') }}</td>
+                                <td>{{ props.item.out_source.company_name }}</td>
+                                <td>{{ props.item.minutes }}</td>
+                                <td>
+                                    <v-btn icon small @click="deleteUsage(props.item)" :loading="props.item.isDeleting" v-if="isOwner">
+                                        <v-icon small>delete</v-icon>
+                                    </v-btn>
+                                </td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                </v-tab-item>
+            </v-tabs>
 
             <v-card-actions>
                 <v-btn round @click="close">close</v-btn>
@@ -40,9 +62,11 @@ export default {
     ],
     data() {
         return {
+            tabIndex: 0,
             date: null,
             loading: false,
             items: [],
+            outSource: [],
             headers: [
                 {
                     text: 'Time',
@@ -85,6 +109,7 @@ export default {
                 }
             }).then((res, rej) => {
                 this.items = res.data.result;
+                this.outSource = res.data.outSource;
             }).finally(() => {
                 this.loading = false;
             });

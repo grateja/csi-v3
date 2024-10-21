@@ -28,7 +28,7 @@
                 <div v-else-if="customers.length == 0">
                     No customer with services
                 </div>
-
+                <v-btn class="primary" @click="openOSLDialog = true">OSL</v-btn>
                 <v-list v-if="customers.length" style="max-height: 60vh; overflow-y: auto">
                     <v-list-tile v-for="customer in customers" :key="customer.id" @click="selectCustomer(customer)">
                         <v-list-tile-content>
@@ -46,21 +46,25 @@
             </v-card-actions>
         </v-card>
         <service-browser v-model="openServiceBrowser" :customer="activeCustomer" :machine="machine" @activated="machineActivated" />
+        <o-s-l-dialog v-model="openOSLDialog" :machine="machine" @activated="machineActivated" />
     </v-dialog>
 </template>
 
 <script>
 import ServiceBrowser from './ServiceBrowser.vue';
+import OSLDialog from './OSLDialog.vue';
 
 export default {
     components: {
-        ServiceBrowser
+        ServiceBrowser,
+        OSLDialog
     },
     props: [
         'value', 'machine'
     ],
     data() {
         return {
+            openOSLDialog: false,
             customers: [],
             cancelSource: null,
             keyword: null,

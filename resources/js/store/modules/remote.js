@@ -43,6 +43,15 @@ const actions = {
             return Promise.reject(err);
         });
     },
+    activateOsl(context, data) {
+        context.commit('clearErrors');
+        return axios.post(`/api/out-source/remote/activate`, data.formData).then((res, rej) => {
+            return res;
+        }).catch(err => {
+            context.commit('setErrors', err.response.data.errors);
+            return Promise.reject(err);
+        });
+    },
     forceStop(context, data) {
         context.commit('setSavingStatus', true);
         context.commit('clearErrors');

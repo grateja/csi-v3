@@ -26,9 +26,9 @@
                 <template v-slot:items="props">
                     <tr>
                         <td>
-                            {{ props.item.job_order }}
-                            <!-- <v-btn round small class="font-weight-bold" @click="previewTransaction(props.item.transaction_id)">
-                            </v-btn> -->
+                            <v-btn round small class="font-weight-bold" @click="previewTransaction(props.item.transaction_id)">
+                                {{ props.item.job_order }}
+                            </v-btn>
                         </td>
                         <td>{{ props.item.machine_name }}</td>
                         <td>{{ props.item.customer_name }}</td>

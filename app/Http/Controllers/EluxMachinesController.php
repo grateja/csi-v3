@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class EluxMachinesController extends Controller
 {
     public function index($machineType) {
-        $result = EluxMachine::where('machine_type', $machineType)->get();
+        $result = EluxMachine::withCount('outSourceMachineUsages')->where('machine_type', $machineType)->get();
         return response()->json($result);
     }
 

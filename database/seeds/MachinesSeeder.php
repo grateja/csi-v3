@@ -1,6 +1,7 @@
 <?php
 
 use App\Machine;
+use App\EluxMachine;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -17,6 +18,28 @@ class MachinesSeeder extends Seeder
         if(Machine::count() == 0) {
             DB::transaction(function () {
                 $machines = [];
+                $luxMachines = [];
+                for($a = 1; $a <= 2; $a++) {
+                    $eluxMachines[] = [
+                        'id' => 'lms-demo-ew-' . $a,
+                        'stack_order' => $a,
+                        'ip_address' => '192.168.210.' . ($a + 10),
+                        'machine_type' => 'washer',
+                        'model' => 'W130H',
+                        'machine_name' => 'Elux Washer ' . $a,
+                    ];
+                    $eluxMachines[] = [
+                        'id' => 'lms-demo-ed-' . $a,
+                        'stack_order' => $a,
+                        'ip_address' => '192.168.210.' . ($a + 10),
+                        'machine_type' => 'dryer',
+                        'model' => 'TD130',
+                        'machine_name' => 'Elux dryer ' . $a,
+                    ];
+                }
+
+                EluxMachine::insert($eluxMachines);
+
                 for($i = 1; $i <= 10; $i++) {
                     $machines[] = [
                         'id' => 'lms-demo-rw-' . $i,

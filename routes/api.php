@@ -1220,6 +1220,70 @@ Route::group(['prefix' => 'events'], function() {
     });
 });
 
+// /api/out-source
+Route::group(['prefix' => 'out-source'], function() {
+    Route::group(['prefix' => 'remote', 'middleware' => 'auth:api'], function() {
+        // /api/out-source/remote/activate
+        Route::post('activate', 'OutSourceRemoteController@activate');
+    });
+
+    // /api/out-source/linens
+    Route::group(['prefix' => 'linens'], function() {
+        // /api/out-source/linens/categories
+        Route::get('categories', 'OutSourceLinenController@categories');
+
+        // /api/out-source/linens/{outSourceId}
+        Route::get('{outSourceId}', 'OutSourceLinenController@index');
+
+        // /api/out-source/linen/create
+        Route::post('create', 'OutSourceLinenController@store');
+
+        // /api/out-source/linen/{linenId}/update
+        Route::post('{linenId}/update', 'OutSourceLinenController@update');
+
+        // /api/out-source/linen/{linenId}/delete
+        Route::post('{linenId}/delete', 'OutSourceLinenController@delete');
+    });
+
+    // /api/out-source/job-orders
+    Route::group(['prefix' => 'job-orders'], function() {
+        Route::post('{outSourceId}/create', 'OutSourceJobOrderController@create');
+        Route::post('{jobOrderId}/add-item', 'OutSourceJobOrderController@addItem');
+        Route::post('{jobOrderId}/delete', 'OutSourceJobOrderController@delete');
+        Route::post('{jobOrderLinenId}/update-item', 'OutSourceJobOrderController@updateItem');
+        Route::post('{jobOrderLinenId}/remove-item', 'OutSourceJobOrderController@removeItem');
+        Route::get('{outSourceId}', 'OutSourceJobOrderController@index');
+        Route::get('{outSourceId}/{jobOrderId}/show', 'OutSourceJobOrderController@show');
+    });
+
+    // /api/out-source
+    Route::get('/', 'OutSourceController@index');
+
+    Route::group(['middleware' => ['auth:api', 'role:admin,developer']], function() {
+        // /api/out-source/create
+        Route::post('create', 'OutSourceController@store');
+
+        // /api/out-source/{outSourceId}/update
+        Route::post('{outSourceId}/update', 'OutSourceController@update');
+
+        // /api/out-source/{outSourceId}/delete
+        Route::post('{outSourceId}/delete', 'OutSourceController@delete');
+
+        Route::group(['prefix' => 'services'], function() {
+            Route::get('/', 'OutSourceServicesController@index');
+            Route::post('create', 'OutSourceServicesController@create');
+            Route::post('{serviceId}/update', 'OutSourceServicesController@update');
+            Route::post('{serviceId}/delete', 'OutSourceServicesController@delete');
+        });
+    });
+
+    Route::group(['prefix' => 'soa'], function() {
+        Route::get('prepare-or-edit/{soaId}/{outSourceId}', 'OutSourceSOAController@prepareOrEdit');
+        Route::get('{outSourceId}', 'OutSourceSOAController@index');
+        Route::post('create', 'OutSourceSOAController@insert');
+    });
+});
+
 // /api/files
 Route::group(['prefix' => 'files', 'middleware' => 'auth:api'], function() {
     // /api/files/upload-slides/{eventId}

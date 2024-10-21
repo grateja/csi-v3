@@ -8,6 +8,7 @@ use App\CustomerWash;
 use App\EluxMachine;
 use App\EluxMachineUsage;
 use App\EluxToken;
+use App\OutSourceMachineUsage;
 use Illuminate\Http\Request;
 use App\Machine;
 use App\MachineRemarks;
@@ -420,6 +421,9 @@ class MachinesController extends Controller
             'machineUsages as usage_today' => function($query) use ($request) {
                 $query->whereDate('created_at', $request->date);
             },
+            'outSourceMachineUsage as out_source' => function($query) use ($request) {
+                $query->whereDate('created_at', $request->date);
+            },
             'totalUsage as total_usage'
         ])->where('machine_type', $machineType)->orderBy('stack_order')->get();
         return response()->json([
@@ -439,8 +443,18 @@ class MachinesController extends Controller
         $result = $result->whereDate('created_at', $request->date)
             ->orderByDesc('created_at')
             ->get();
+
+        $outSourceMachineUsage = OutSourceMachineUsage::with('machine', 'eluxMachine', 'outSource')
+            ->whereDate('created_at', $request->date)
+            ->where(function($query) use ($machineId) {
+                $query->where('machine_id', $machineId)
+                ->orWhere('elux_machine_id', $machineId);
+            })
+            ->get();
+
         return response()->json([
             'result' => $result,
+            'outSource' => $outSourceMachineUsage,
         ]);
     }
 
