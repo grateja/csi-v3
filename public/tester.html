@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX GET Request</title>
+</head>
+<body>
+
+<form id="getRequestForm" onsubmit="sendGetRequest(event)">
+    <input type="text" id="ipAddressInput" placeholder="Enter IP address" value="192.168.210.">
+    <input type="submit" value="Send GET Request">
+</form>
+
+<button onclick="cancelRequest()">Cancel</button>
+<div id="loadingStatus" style="display: none;">Loading...</div>
+<div id="errorStatus" style="color: red;"></div>
+
+<script>
+    var xhr; // Variable to store XMLHttpRequest object
+
+    function sendGetRequest(event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Reset error status
+        document.getElementById('errorStatus').innerText = '';
+
+        // Get the input value (IP address)
+        var ipAddress = document.getElementById('ipAddressInput').value;
+
+        // Generate a random token
+        var randomToken = Math.random().toString(36).substring(7);
+
+        // Create a new XMLHttpRequest object
+        xhr = new XMLHttpRequest();
+
+        // Configure it: GET-request for the URL /activate
+        xhr.open('GET', 'http://' + ipAddress + '/activate?pulse=10&token=' + randomToken, true);
+
+        // Show loading status
+        document.getElementById('loadingStatus').style.display = 'block';
+
+        // Setup a callback function to handle the response
+        xhr.onload = function() {
+            // Hide loading status
+            document.getElementById('loadingStatus').style.display = 'none';
+
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Success! The response is in xhr.responseText
+                console.log('Response:', xhr.responseText);
+            } else {
+                // Check if the error is not CORS-related
+                if (xhr.status !== 0 && xhr.status !== 200) {
+                    // Display the error message
+                    var errorMessage = 'Request failed with status: ' + xhr.status + ' ' + xhr.statusText;
+                    document.getElementById('errorStatus').innerText = errorMessage;
+                    console.error(errorMessage);
+                } else {
+                    // Display a more user-friendly message for CORS-related errors
+                    document.getElementById('errorStatus').innerText = 'Unable to make the request due to CORS restrictions. Check server configuration or use a CORS proxy.';
+                    console.error('CORS error');
+                }
+            }
+        };
+
+        // Setup a callback for network errors
+        xhr.onerror = function() {
+            // Hide loading status
+            document.getElementById('loadingStatus').style.display = 'none';
+
+            // Display network error message
+            var errorMessage = 'Network request failed';
+            document.getElementById('errorStatus').innerText = errorMessage;
+            console.error(errorMessage);
+        };
+
+        // Send the request
+        xhr.send();
+    }
+
+    function cancelRequest() {
+        // Check if an XMLHttpRequest is in progress
+        if (xhr && xhr.readyState !== 4) {
+            // Abort the ongoing request
+            xhr.abort();
+
+            // Hide loading status
+            document.getElementById('loadingStatus').style.display = 'none';
+
+            // Display cancellation message
+            document.getElementById('errorStatus').innerText = 'Request cancelled';
+        }
+    }
+</script>
+
+</body>
+</html>
