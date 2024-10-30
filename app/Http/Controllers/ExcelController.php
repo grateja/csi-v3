@@ -253,6 +253,8 @@ class ExcelController extends Controller
             $cols[] = [
                 'date_created' => $item->date,
                 'job_order' => $item->job_order,
+                'or_number' => $item->payment ? $item->payment->or_number : '',
+                'ref_number' => $item->payment ? $item->payment->cash_less_reference_number ?? '' : '',
                 'customer' => $item->customer_name,
                 'service_quantity' => $request->option == 'simplified' ? '' : 'QUANTITY',
                 'service_name' =>  $request->option == 'simplified' ? '' : 'SERVICE NAME',
@@ -273,6 +275,8 @@ class ExcelController extends Controller
                 $cols[] = [
                     'date_created' => '',
                     'job_order' => '',
+                    'or_number' => '',
+                    'ref_number' => '',
                     'customer' => '',
                     'service_quantity' => $eluxItem['quantity'],
                     'service_name' => $eluxItem['name'],
@@ -292,6 +296,8 @@ class ExcelController extends Controller
                 $cols[] = [
                     'date_created' => '',
                     'job_order' => '',
+                    'or_number' => '',
+                    'ref_number' => '',
                     'customer' => '',
                     'service_quantity' => $serviceItem['quantity'],
                     'service_name' => $serviceItem['name'],
@@ -311,6 +317,8 @@ class ExcelController extends Controller
                 $cols[] = [
                     'date_created' => '',
                     'job_order' => '',
+                    'or_number' => '',
+                    'ref_number' => '',
                     'customer' => '',
                     'service_quantity' => $productItem['quantity'],
                     'service_name' => $productItem['name'],
@@ -330,6 +338,8 @@ class ExcelController extends Controller
                 $cols[] = [
                     'date_created' => '',
                     'job_order' => '',
+                    'or_number' => '',
+                    'ref_number' => '',
                     'customer' => '',
                     'service_quantity' => $productItem['quantity'],
                     'service_name' => $productItem['name'],
@@ -349,6 +359,8 @@ class ExcelController extends Controller
                 $cols[] = [
                     'date_created' => '',
                     'job_order' => '',
+                    'or_number' => '',
+                    'ref_number' => '',
                     'customer' => '',
                     'service_quantity' => $productItem['kilos'],
                     'service_name' => $productItem['name'],
@@ -368,6 +380,8 @@ class ExcelController extends Controller
                 $cols[] = [
                     'date_created' => '',
                     'job_order' => '',
+                    'or_number' => '',
+                    'ref_number' => '',
                     'customer' => '',
                     'service_quantity' => $productItem['quantity'],
                     'service_name' => $productItem['name'],
@@ -386,7 +400,7 @@ class ExcelController extends Controller
         }
 
         return Excel::download(new ReportTemplate(collect($cols), [
-            'DATE CREATED', 'JO#', 'CUSTOMER', $request->option == 'simplified' ? '' : 'SERVICES', '', '', 'TOTAL AMOUNT', 'DISCOUNT NAME', 'DISCOUNT', 'DISCOUNTED AMOUNT','POINTS USED', 'COLLECTION', 'DATE PAID', 'PAYMENT METHOD', 'PARTIAL PAYMENT', 'BALANCE',
+            'DATE CREATED', 'JO#', 'OR#', 'REF#', 'CUSTOMER', $request->option == 'simplified' ? '' : 'SERVICES', '', '', 'TOTAL AMOUNT', 'DISCOUNT NAME', 'DISCOUNT', 'DISCOUNTED AMOUNT','POINTS USED', 'COLLECTION', 'DATE PAID', 'PAYMENT METHOD', 'PARTIAL PAYMENT', 'BALANCE',
         ]), 'job-orders.csv');
     }
 }
