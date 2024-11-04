@@ -1,5 +1,5 @@
 <template>
-    <div v-if="rfidLoad" class="px-4">
+    <div v-if="rfidLoad && rfidLoad.total_count" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">LOAD TOP UP</h3>

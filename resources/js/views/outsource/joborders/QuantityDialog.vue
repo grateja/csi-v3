@@ -16,10 +16,10 @@
                                 <v-btn :class="{primary: degree_of_soil == 'with_stain_light'}" block @click="degree_of_soil = 'with_stain_light'">light: P {{ parseFloat(linen.with_stain_light).toFixed(2) }}</v-btn>
                             </v-flex>
                             <v-flex xs4>
-                                <v-btn :class="{primary: degree_of_soil == 'with_stain_medium'}" block @click="degree_of_soil = 'with_stain_medium'">light: P {{ parseFloat(linen.with_stain_medium).toFixed(2) }}</v-btn>
+                                <v-btn :class="{primary: degree_of_soil == 'with_stain_medium'}" block @click="degree_of_soil = 'with_stain_medium'">medium: P {{ parseFloat(linen.with_stain_medium).toFixed(2) }}</v-btn>
                             </v-flex>
                             <v-flex xs4>
-                                <v-btn :class="{primary: degree_of_soil == 'with_stain_heavy'}" block @click="degree_of_soil = 'with_stain_heavy'">light: P {{ parseFloat(linen.with_stain_heavy).toFixed(2) }}</v-btn>
+                                <v-btn :class="{primary: degree_of_soil == 'with_stain_heavy'}" block @click="degree_of_soil = 'with_stain_heavy'">heavy: P {{ parseFloat(linen.with_stain_heavy).toFixed(2) }}</v-btn>
                             </v-flex>
                         </v-layout>
                     </v-expand-transition>

@@ -1254,6 +1254,7 @@ Route::group(['prefix' => 'out-source'], function() {
         Route::post('{jobOrderLinenId}/remove-item', 'OutSourceJobOrderController@removeItem');
         Route::get('{outSourceId}', 'OutSourceJobOrderController@index');
         Route::get('{outSourceId}/{jobOrderId}/show', 'OutSourceJobOrderController@show');
+        Route::post('{jobOrderId}/detach', 'OutSourceJobOrderController@detach');
     });
 
     // /api/out-source
@@ -1281,6 +1282,9 @@ Route::group(['prefix' => 'out-source'], function() {
         Route::get('prepare-or-edit/{soaId}/{outSourceId}', 'OutSourceSOAController@prepareOrEdit');
         Route::get('{outSourceId}', 'OutSourceSOAController@index');
         Route::post('create', 'OutSourceSOAController@insert');
+        Route::post('{soaId}/update', 'OutSourceSOAController@update');
+        Route::post('{soaId}/delete', 'OutSourceSOAController@delete');
+        Route::post('{jobOrderId}/detach', 'OutSourceSOAController@detach');
     });
 });
 

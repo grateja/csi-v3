@@ -1,5 +1,5 @@
 <template>
-    <div v-if="rfidCard" class="px-4">
+    <div v-if="rfidCard && rfidCard.cycle_count" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">TAP CARD</h3>

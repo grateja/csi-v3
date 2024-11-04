@@ -24,6 +24,7 @@
                 <!-- <h3 class="title gray--text ml-3">{{newCustomers}} New customer(s)</h3> -->
 
                 <v-divider class="mb-4"></v-divider>
+                <o-s-l-job-orders :osl="osl" :osl-job-orders="oslJobOrders" :view="view" />
                 <customers :newCustomers="newCustomers" :date="date" :until="until" />
                 <job-orders :posSummary="posSummary" :date="date" :until="until" :view="view" />
                 <used-services :usedServices="usedServices" :view="view" />
@@ -567,6 +568,7 @@ import Discounts from './dailysummary/Discounts.vue';
 import TotalSales from './dailysummary/TotalSales.vue';
 import Deposit from './dailysummary/Deposit.vue';
 import Customers from './dailysummary/Customers.vue';
+import OSLJobOrders from './dailysummary/OSLJobOrders.vue'
 
 export default {
     components: {
@@ -585,7 +587,8 @@ export default {
         Discounts,
         TotalSales,
         Deposit,
-        Customers
+        Customers,
+        OSLJobOrders
     },
     props: [
         'value', 'date', 'until'
@@ -615,7 +618,9 @@ export default {
             eluxServices: null,
             newCustomers: 0,
             totalSales: null,
-            deposit: 0
+            deposit: 0,
+            osl: null,
+            oslJobOrders: null
         }
     },
     methods: {
@@ -644,6 +649,8 @@ export default {
                 this.newCustomers = res.data.newCustomers;
                 this.totalSales = res.data.totalSales;
                 this.deposit = res.data.totalDeposit;
+                this.osl = res.data.osl;
+                this.oslJobOrders = res.data.oslJobOrders;
             }).finally(() => {
                 this.loading = false;
             });

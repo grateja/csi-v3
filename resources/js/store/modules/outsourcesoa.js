@@ -43,7 +43,7 @@ const actions = {
         });
     },
     deleteSoa(context, soaId) {
-        return axios.post(`/api/out-source/services/${soaId}/delete`).then((res, rej) => {
+        return axios.post(`/api/out-source/soa/${soaId}/delete`).then((res, rej) => {
             return res;
         }).catch(err => {
             return Promise.reject(err);

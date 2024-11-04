@@ -10,9 +10,16 @@ use App\OutSourceJobOrderLinen;
 
 class OutSourceJobOrderController extends Controller
 {
+    public function expoort() {
+
+    }
+
     public function index(Request $request, $outSourceId) {
         $result = OutSourceJobOrder::resultWithTotal($outSourceId)
-            ->orderByDesc('created_at');
+            ->where(function($query) use ($request) {
+                $query->where('job_order_number', 'like', "%$request->keyword%")
+                ->orderByDesc('created_at');
+            });
 
         return response()->json([
             'result' => $result->paginate(10),

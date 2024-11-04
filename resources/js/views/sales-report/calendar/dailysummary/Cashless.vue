@@ -1,5 +1,5 @@
 <template>
-    <div v-if="cashless" class="px-4">
+    <div v-if="cashless && cashless.length" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">CASHLESS PAYMENT</h3>

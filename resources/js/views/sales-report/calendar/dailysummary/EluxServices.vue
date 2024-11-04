@@ -1,5 +1,5 @@
 <template>
-    <div v-if="eluxServices" class="px-4">
+    <div v-if="eluxServices && eluxServices.length" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">ELUX SERVICES</h3>

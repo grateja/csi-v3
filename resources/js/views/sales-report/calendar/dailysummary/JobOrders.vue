@@ -1,5 +1,5 @@
 <template>
-    <div v-if="posSummary" class="px-4">
+    <div v-if="posSummary && posSummary.pos_transactions && posSummary.pos_transactions.total_jo" class="px-4">
         <v-hover v-slot:default="{ hover }">
             <v-card :elevation="hover ? 3 : 0" class="pointer" @click="openDialog = true">
                 <v-layout class="mt-2">

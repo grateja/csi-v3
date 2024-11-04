@@ -19,6 +19,8 @@ use App\ScarpaCleaningTransactionItem;
 use App\ThermalPrinter;
 use App\Transaction;
 use App\TransactionPayment;
+use App\OutSourceJobOrder;
+use App\OutSourceJobOrderLinen;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,13 @@ class SalesReportController extends Controller
 {
     public function index($monthIndex, $year, Request $request) {
         $result = [];
+
+        $oslJobOrders = OutSourceJobOrder::whereMonth('created_at', $monthIndex)
+            ->whereYear('created_at', $year)
+            ->groupBy(DB::raw('day'))
+            ->selectRaw('DATE(created_at) as day, SUM(total_amount) as total_price')
+            ->get();
+
         $posTransactions = DB::table('transactions')
             ->where('saved', true)
             ->whereNull('cancelation_remarks')
@@ -91,7 +100,8 @@ class SalesReportController extends Controller
             $productPurchases->toArray(),
             $newCustomers->toArray(),
             $transactionPayment->toArray(),
-            $partialPayments->toArray()
+            $partialPayments->toArray(),
+            $oslJobOrders->toArray()
         );
         $result = collect($result)->groupBy('day');
         $result = $result->map(function($item, $key) {
@@ -293,6 +303,18 @@ class SalesReportController extends Controller
                 ->where('saved', true);
         })->where('saved', true)->groupBy('name')->selectRaw('COUNT(*) as quantity, name, SUM(price) as total_price')->get();
 
+        $oslTotalSales = OutSourceJobOrder::whereDate('created_at', '>=', $request->date)
+            ->whereDate('created_at', '<=', $request->until)
+            ->sum('total_amount');
+
+        $oslJobOrders = OutSourceJobOrderLinen::join('out_source_job_orders','out_source_job_order_id', '=', 'out_source_job_orders.id')
+            ->join('out_sources', 'out_source_id', '=', 'out_sources.id')
+            ->whereDate(DB::raw('out_source_job_order_linens.created_at'), '>=', $request->date)
+            ->whereDate(DB::raw('out_source_job_order_linens.created_at'), '<=', $request->until)
+            ->groupBy(DB::raw('name,company_name,out_source_id,degree_of_soil'))
+            ->selectRaw('name,company_name,out_source_id,degree_of_soil, SUM(quantity) as total_quantity, SUM(unit_price * quantity) as amount')
+            ->get();
+
         $data = [
             'newCustomers' => $newCustomers,
             'posSummary' => $posSummary,
@@ -306,10 +328,18 @@ class SalesReportController extends Controller
             'usedLagoon' => $usedLagoon,
             'usedLagoonPerKilo' => $usedLagoonPerKilo,
             'eluxServices' => $eluxServices,
-            'totalSales' => $totalSales,
+            'totalSales' => $totalSales + $oslTotalSales,
             'totalDeposit' => $collections['total'] - $expenses['total'],
             'cashless' => $cashless,
             'discounts' => $discounts,
+            'osl' => $oslTotalSales,
+            'oslJobOrders' => $oslJobOrders->groupBy('company_name')->map(function ($items, $companyName) {
+                return [
+                    'company_name' => $companyName,
+                    'job_orders' => $items->toArray(),
+                    'total' => $items->sum('amount')
+                ];
+            })->values()->toArray(),
         ];
 
         if($print) {

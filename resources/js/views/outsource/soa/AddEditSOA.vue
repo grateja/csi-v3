@@ -2,7 +2,7 @@
     <div>
         <v-card>
             <form @submit.prevent="save">
-                <v-card-actions>{{ action }}</v-card-actions>
+                <v-card-actions>{{ action }} SOA</v-card-actions>
                 <v-card-text>
                     <v-text-field dense outline label="SOA#" v-model="formData.soa_number" :error-messages="errors.get('soa_number')"></v-text-field>
                     <v-layout>
@@ -31,8 +31,13 @@
                                 {{ props.item.job_order_number }}
                             </v-btn>
                         </td>
-                        <td v-if="props.item.total_amount == null">(No items)</td>
-                        <td v-else>P {{ parseFloat(props.item.total_amount).toFixed(2) }}</td>
+                        <td v-if="props.item.total == null">(No items)</td>
+                        <td v-else>P {{ parseFloat(props.item.total).toFixed(2) }}</td>
+                        <td>
+                            <v-btn  @click="detachJobOrder(props.item.id)" round>
+                                Detach
+                            </v-btn>
+                        </td>
                     </tr>
                 </template>
             </v-data-table>
@@ -82,6 +87,7 @@ export default {
                 this.formData.start_date = res.data.start_date
                 this.formData.end_date = res.data.end_date
                 this.formData.remarks = res.data.soa.remarks
+                this.action = res.data.action;
             }).catch(err => {
                 this.formData.soa_number = null
             })
@@ -96,13 +102,20 @@ export default {
                 soaId: this.soa ? this.soa.id : null,
                 formData: this.formData
             }).then((res, rej) => {
+                console.log(res.data);
                 // this.close();
                 this.$emit('save', {
                     mode: this.mode,
                     soa: res.data.soa
                 });
-                this.close();
+                this.$router.push(`/out-source/soa/${this.route.outSourceId}/${res.data.soa.id}`);
+                // this.close();
             });
+        },
+        detachJobOrder(jobOrderId) {
+            if(confirm("Detach this job order from SOA? This cannot be undone! Do you want to continue?")) {
+                axios.post(`/api/out-source/soa/${jobOrderId}/detach`)
+            }
         }
     },
     computed: {

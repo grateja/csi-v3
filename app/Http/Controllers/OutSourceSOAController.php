@@ -11,7 +11,9 @@ use App\OutSourceStatementOfAccount;
 class OutSourceSOAController extends Controller
 {
     public function index(Request $request, $outSourceId) {
-        $result = OutSourceStatementOfAccount::where('out_source_id', $outSourceId)->paginate(10);
+        $result = OutSourceStatementOfAccount::where('out_source_id', $outSourceId)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return response()->json([
             'result' => $result
@@ -91,8 +93,63 @@ class OutSourceSOAController extends Controller
             $jobOrders->update([
                 'out_source_statement_of_account_id' => $soa->id,
             ]);
+
+            $soa->refresh('outSourceJobOrders');
+
+            return response()->json([
+                'soa' => $soa,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'action' => 'update',
+            ]);
         });
 
+    }
+
+    public function update(Request $request, $soaId) {
+        $soa = OutSourceStatementOfAccount::findOrFail($soaId);
+
+        $rules = [
+            'soa_number' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ];
+
+        $request->validate($rules);
+
+        $soa->update($request->only([
+            'out_source_id',
+            'soa_number',
+            'remarks',
+            'vat',
+        ]));
+        $soa->load('outSourceJobOrders');
+
+        return response()->json([
+            'soa' => $soa,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'action' => 'update',
+        ]);
+    }
+
+    public function delete($outSourceId) {
+        $outSource = OutSourceStatementOfAccount::findOrFail($outSourceId);
+
+        return DB::transaction(function () use ($outSource) {
+            $outSource->outSourceJobOrders()->update([
+                'out_source_statement_of_account_id' => null
+            ]);
+            $outSource->delete();
+        });
+    }
+
+    public function detach($jobOrderId) {
+        $jobOrder = OutSourceJobOrder::findOrFail($jobOrderId);
+        $jobOrder->update([
+            'out_source_statement_of_account_id' => null
+        ]);
+        return response()->json($jobOrder);
     }
 
     private function generateSOANumber() {

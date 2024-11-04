@@ -1,5 +1,5 @@
 <template>
-    <div v-if="collections" class="px-4">
+    <div v-if="collections && collections.total" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">COLLECTIONS

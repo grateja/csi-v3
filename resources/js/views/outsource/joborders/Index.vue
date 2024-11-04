@@ -5,7 +5,7 @@
 
         <v-layout justify-center>
             <v-flex style="max-width: 500px">
-                <v-text-field class="ml-1 translucent-input round-input" label="Search expenses" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
+                <v-text-field class="ml-1 translucent-input round-input" label="Search job order number" v-model="keyword" append-icon="search" @keyup="filter" outline></v-text-field>
             </v-flex>
         </v-layout>
         <!-- <v-layout justify-center>

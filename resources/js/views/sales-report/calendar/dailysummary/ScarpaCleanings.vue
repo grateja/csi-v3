@@ -1,5 +1,5 @@
 <template>
-    <div v-if="usedScarpa" class="px-4">
+    <div v-if="usedScarpa && usedScarpa.length" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">SCARPA VAPOR</h3>

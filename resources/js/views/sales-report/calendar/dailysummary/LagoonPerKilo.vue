@@ -1,5 +1,5 @@
 <template>
-    <div v-if="usedLagoonPerKilo" class="px-4">
+    <div v-if="usedLagoonPerKilo && usedLagoonPerKilo.length" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">LAGOON Per Kilo</h3>

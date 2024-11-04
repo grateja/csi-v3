@@ -1,5 +1,5 @@
 <template>
-    <div v-if="usedServices" class="px-4">
+    <div v-if="usedServices && usedServices.length" class="px-4">
         <v-layout class="mt-2">
             <v-flex>
                 <h3 class="title gray--text">SERVICES</h3>

@@ -145,10 +145,10 @@ export default {
         //         this.activeJobOrder.staff_name = data.soa.staff_name;
         //     }
         // },
-        deleteSOA($event, item) {
+        deleteSOA(item) {
             if(confirm('Delete this SOA?')) {
                 Vue.set(item, 'isDeleting', true);
-                this.$store.dispatch('outsourcesoa/deleteSOA', item.id).then((res, rej) => {
+                this.$store.dispatch('outsourcesoa/deleteSoa', item.id).then((res, rej) => {
                     this.items = this.items.filter(i => i.id != item.id);
                 }).finally(() => {
                     Vue.set(item, 'isDeleting', false);

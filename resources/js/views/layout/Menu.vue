@@ -331,6 +331,12 @@ export default {
                     roles: ['admin'],
                     to: '/external-view/events'
                 },
+                {
+                    text: 'Outsource',
+                    icon: '',
+                    roles: ['admin', 'staff'],
+                    to: '/out-source'
+                },
             ]
         }
     },

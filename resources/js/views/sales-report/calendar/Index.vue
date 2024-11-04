@@ -114,7 +114,7 @@
                             </div>
                         </v-flex>
                         <v-flex v-else :key="draft.date" class="col7-custom inactive" :class="{'sunday' : draft.dayOfWeek == 'Sunday', 'today': draft.today }">
-                            <div class="day">
+                            <div @click="preview(draft.date)"  class="day">
                                 <div class="ma-0  px-3 date">{{draft.date}}</div>
                             </div>
                         </v-flex>
