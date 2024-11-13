@@ -170,9 +170,10 @@ export default {
         //         this.activeJobOrder.staff_name = data.jobOrder.staff_name;
         //     }
         // },
-        deleteJobOrder($event, item) {
+        deleteJobOrder(item) {
             if(confirm('Delete this job order?')) {
-                Vue.set(item, 'isDeleting', true);
+                console.log(item)
+                // Vue.set(item, 'isDeleting', true);
                 this.$store.dispatch('outsourcejoborder/deleteJobOrder', item.id).then((res, rej) => {
                     this.items = this.items.filter(i => i.id != item.id);
                 }).finally(() => {

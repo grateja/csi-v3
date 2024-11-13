@@ -17,5 +17,6 @@ class OutSourceService extends Model
         'description',
         'pulse_count',
         'minutes',
+        'service_type',
     ];
 }

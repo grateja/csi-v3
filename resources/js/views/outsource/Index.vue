@@ -5,6 +5,9 @@
         <v-btn class="ml-0 primary" @click="addOutSource" round v-if="isOwner">
             <v-icon left>add</v-icon> add account
         </v-btn>
+        <v-btn class="ml-0" to="out-source/services" round v-if="isOwner">
+            Services
+        </v-btn>
 
         <v-card class="rounded-card translucent-table">
             <v-data-table :headers="headers" :items="items" :loading="loading" hide-actions class="transparent">

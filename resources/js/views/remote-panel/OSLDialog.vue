@@ -29,7 +29,6 @@
                         </v-list-tile>
                     </v-list>
                     <v-card-text v-else>
-                        baduy
                         <p>Select linen</p>
                     </v-card-text>
                     <v-card-text>
@@ -87,8 +86,10 @@ export default {
         }
     },
     methods: {
-        getServices() {
-            axios.get('/api/out-source/services').then((res, rej) => {
+        getServices(serviceType) {
+            axios.get('/api/out-source/services', {
+                params: {serviceType}
+            }).then((res, rej) => {
                 this.availableServices = res.data.result;
             }).finally(() => {
                 this.loading = false;
@@ -158,7 +159,6 @@ export default {
     },
     mounted() {
         this.getAccounts();
-        this.getServices();
     },
     watch: {
         value(val) {
@@ -170,7 +170,9 @@ export default {
                 this.selectedLinens = []
                 this.availableLinens = []
                 this.activeService = null;
+
             }
+            this.getServices(this.serviceType)
         }
     },
     computed: {

@@ -7237,9 +7237,7 @@ __webpack_require__.r(__webpack_exports__);
       mode: 'insert',
       quantity: 1,
       with_stain: false,
-      degree_of_soil: 'regular_price',
-      remarks: null,
-      custom_price: 0
+      degree_of_soil: 'regular_price'
     };
   },
   methods: {
@@ -7254,9 +7252,7 @@ __webpack_require__.r(__webpack_exports__);
         quantity: parseInt(this.quantity),
         linenId: this.linen.id,
         with_stain: this.with_stain,
-        degree_of_soil: this.degree_of_soil,
-        custom_price: this.custom_price,
-        remarks: this.remarks
+        degree_of_soil: this.degree_of_soil
       };
       this.$store.dispatch("outsourcejoborder/".concat(this.mode, "Linen"), {
         jobOrderId: this.jobOrderId,
@@ -7285,9 +7281,7 @@ __webpack_require__.r(__webpack_exports__);
     price: function price() {
       var price = 0;
 
-      if (this.custom_price > 0) {
-        price = this.custom_price;
-      } else if (this.with_stain) {
+      if (this.with_stain) {
         price = this.linen[this.degree_of_soil];
       } else {
         price = this.linen.regular_price;
@@ -7302,13 +7296,10 @@ __webpack_require__.r(__webpack_exports__);
         this.mode = 'update';
         this.quantity = this.jobOrderLinen.quantity;
         this.with_stain = this.jobOrderLinen.with_stain;
-        this.remarks = this.jobOrderLinen.remarks;
       } else {
         this.mode = 'insert';
         this.quantity = 1;
         this.with_stain = false;
-        this.remarks = null;
-        this.custom_price = 0;
       }
     },
     with_stain: function with_stain(val) {
@@ -7654,7 +7645,6 @@ __webpack_require__.r(__webpack_exports__);
     return {
       mode: 'insert',
       formData: {
-        service_type: '',
         name: null,
         description: null,
         pulse_count: 0,
@@ -7702,14 +7692,12 @@ __webpack_require__.r(__webpack_exports__);
         this.formData.description = this.service.description;
         this.formData.pulse_count = this.service.pulse_count;
         this.formData.minutes = this.service.minutes;
-        this.formData.service_type = this.service.service_type;
       } else {
         this.mode = 'insert';
         this.formData.name = null;
         this.formData.pulse_count = null;
         this.formData.description = null;
         this.formData.minutes = 0;
-        this.formData.service_type = null;
       }
 
       setTimeout(function () {
@@ -9900,14 +9888,10 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    getServices: function getServices(serviceType) {
+    getServices: function getServices() {
       var _this = this;
 
-      axios.get('/api/out-source/services', {
-        params: {
-          serviceType: serviceType
-        }
-      }).then(function (res, rej) {
+      axios.get('/api/out-source/services').then(function (res, rej) {
         _this.availableServices = res.data.result;
       })["finally"](function () {
         _this.loading = false;
@@ -9990,6 +9974,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     this.getAccounts();
+    this.getServices();
   },
   watch: {
     value: function value(val) {
@@ -10002,8 +9987,6 @@ __webpack_require__.r(__webpack_exports__);
         this.availableLinens = [];
         this.activeService = null;
       }
-
-      this.getServices(this.serviceType);
     }
   },
   computed: {
@@ -26287,13 +26270,7 @@ var render = function render() {
     attrs: {
       left: ""
     }
-  }, [_vm._v("add")]), _vm._v(" add account\n    ")], 1) : _vm._e(), _vm._v(" "), _vm.isOwner ? _c("v-btn", {
-    staticClass: "ml-0",
-    attrs: {
-      to: "out-source/services",
-      round: ""
-    }
-  }, [_vm._v("\n        Services\n    ")]) : _vm._e(), _vm._v(" "), _c("v-card", {
+  }, [_vm._v("add")]), _vm._v(" add account\n    ")], 1) : _vm._e(), _vm._v(" "), _c("v-card", {
     staticClass: "rounded-card translucent-table"
   }, [_c("v-data-table", {
     staticClass: "transparent",
@@ -26964,7 +26941,7 @@ var render = function render() {
   return _c("v-dialog", {
     attrs: {
       value: _vm.value,
-      "max-width": "580",
+      "max-width": "480",
       persistent: ""
     }
   }, [_c("form", {
@@ -26978,7 +26955,7 @@ var render = function render() {
     staticClass: "rounded-card"
   }, [_c("v-card-title", {
     staticClass: "title grey--text"
-  }, [_vm._v(_vm._s(_vm.mode) + " item")]), _vm._v(" "), _c("v-divider"), _vm._v(" "), _c("v-card-text", [_c("pre", [_vm._v(_vm._s(_vm.custom_price))]), _vm._v(" "), _c("v-text-field", {
+  }, [_vm._v(_vm._s(_vm.mode) + " item")]), _vm._v(" "), _c("v-divider"), _vm._v(" "), _c("v-card-text", [_c("v-text-field", {
     attrs: {
       dense: "",
       outline: "",
@@ -27009,19 +26986,6 @@ var render = function render() {
       type: "text",
       readonly: "",
       value: _vm.price
-    }
-  }), _vm._v(" "), _c("v-text-field", {
-    attrs: {
-      dense: "",
-      outline: "",
-      label: "Remarks"
-    },
-    model: {
-      value: _vm.remarks,
-      callback: function callback($$v) {
-        _vm.remarks = $$v;
-      },
-      expression: "remarks"
     }
   }), _vm._v(" "), _c("v-checkbox", {
     attrs: {
@@ -27082,37 +27046,7 @@ var render = function render() {
         _vm.degree_of_soil = "with_stain_heavy";
       }
     }
-  }, [_vm._v("heavy: P " + _vm._s(parseFloat(_vm.linen.with_stain_heavy).toFixed(2)))])], 1), _vm._v(" "), _c("v-flex", {
-    attrs: {
-      xs4: ""
-    }
-  }, [_c("v-btn", {
-    "class": {
-      primary: _vm.degree_of_soil == "with_stain_custom"
-    },
-    attrs: {
-      block: ""
-    },
-    on: {
-      click: function click($event) {
-        _vm.degree_of_soil = "with_stain_custom";
-      }
-    }
-  }, [_vm._v("Custom: P " + _vm._s(parseFloat(_vm.custom_price).toFixed(2)))])], 1)], 1) : _vm._e()], 1), _vm._v(" "), _c("v-expand-transition", [_vm.degree_of_soil == "with_stain_custom" ? _c("v-text-field", {
-    attrs: {
-      dense: "",
-      outline: "",
-      label: "Custom price",
-      type: "text"
-    },
-    model: {
-      value: _vm.custom_price,
-      callback: function callback($$v) {
-        _vm.custom_price = $$v;
-      },
-      expression: "custom_price"
-    }
-  }) : _vm._e()], 1)], 1), _vm._v(" "), _c("v-card-actions", [_c("v-btn", {
+  }, [_vm._v("heavy: P " + _vm._s(parseFloat(_vm.linen.with_stain_heavy).toFixed(2)))])], 1)], 1) : _vm._e()], 1)], 1), _vm._v(" "), _c("v-card-actions", [_c("v-btn", {
     staticClass: "primary",
     attrs: {
       type: "submit",
@@ -27580,21 +27514,7 @@ var render = function render() {
     staticClass: "rounded-card"
   }, [_c("v-card-title", {
     staticClass: "title grey--text"
-  }, [_vm._v("Service details")]), _vm._v(" "), _c("v-divider"), _vm._v(" "), _c("v-card-text", [_c("v-combobox", {
-    attrs: {
-      items: ["washing", "drying"],
-      label: "Service type",
-      "error-messages": _vm.errors.get("service_type"),
-      outline: ""
-    },
-    model: {
-      value: _vm.formData.service_type,
-      callback: function callback($$v) {
-        _vm.$set(_vm.formData, "service_type", $$v);
-      },
-      expression: "formData.service_type"
-    }
-  }), _vm._v(" "), _c("v-text-field", {
+  }, [_vm._v("Service details")]), _vm._v(" "), _c("v-divider"), _vm._v(" "), _c("v-card-text", [_c("v-text-field", {
     ref: "name",
     attrs: {
       dense: "",
@@ -30511,7 +30431,7 @@ var render = function render() {
         }
       }
     }, [_c("v-icon", [_vm._v("close")])], 1)], 1), _vm._v(" "), _c("v-list-tile-content", [_c("v-list-tile-title", [_vm._v(_vm._s(item.name))]), _vm._v(" "), _c("v-list-tile-sub-title", [_vm._v(_vm._s(item.quantity))])], 1)], 1);
-  }), 1) : _c("v-card-text", [_c("p", [_vm._v("Select linen")])]), _vm._v(" "), _c("v-card-text", [_c("form", {
+  }), 1) : _c("v-card-text", [_vm._v("\n                    baduy\n                    "), _c("p", [_vm._v("Select linen")])]), _vm._v(" "), _c("v-card-text", [_c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();

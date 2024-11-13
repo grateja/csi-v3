@@ -232,7 +232,7 @@ class MachinesController extends Controller
 
             // $output = $machine->remoteActivate($pulse);
             $url = "$machine->ip_address/activate?pulse=$pulse&token=$avWash->id&pushDelay=$pushDelay";
-            \Log::debug($url);
+            // \Log::debug($url);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_TIMEOUT, 30);

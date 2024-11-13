@@ -1255,12 +1255,13 @@ Route::group(['prefix' => 'out-source'], function() {
         Route::get('{outSourceId}', 'OutSourceJobOrderController@index');
         Route::get('{outSourceId}/{jobOrderId}/show', 'OutSourceJobOrderController@show');
         Route::post('{jobOrderId}/detach', 'OutSourceJobOrderController@detach');
+        Route::post('{jobOrderId}/delete', 'OutSourceJobOrderController@delete');
     });
 
     // /api/out-source
     Route::get('/', 'OutSourceController@index');
 
-    Route::group(['middleware' => ['auth:api', 'role:admin,developer']], function() {
+    Route::group(['middleware' => ['auth:api']], function() {
         // /api/out-source/create
         Route::post('create', 'OutSourceController@store');
 

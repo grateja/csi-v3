@@ -24,6 +24,7 @@ class CreateOutSourceJobOrderLinensTable extends Migration
             $table->string('degree_of_soil')->remarks('regular_price,with_stain_light,with_stain_medium,with_stain_heavy');
             $table->double('unit_price')->default(0);
             $table->double('quantity')->default(0);
+            $table->string('remarks')->nullable();
 
             $table->timestamp('synched');
             $table->timestamps();

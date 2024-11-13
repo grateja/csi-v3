@@ -20,6 +20,7 @@ class CreateOutSourceServicesTable extends Migration
             $table->string('description')->nullable();
             $table->integer('pulse_count');
             $table->integer('minutes');
+            $table->string('service_type')->default('washer');
 
             $table->timestamp('synched');
             $table->timestamps();

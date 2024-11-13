@@ -74,8 +74,9 @@ class OutSourceJobOrderController extends Controller
                 'quantity' => $request->quantity,
                 'name' => $linen->name,
                 'category' => $linen->category,
-                'unit_price' => $linen[$request->degree_of_soil],
+                'unit_price' => $request->custom_price > 0 ? $request->custom_price : $linen[$request->degree_of_soil],
                 'degree_of_soil' => $request->degree_of_soil,
+                'remarks' => $request->remarks,
             ]);
         }
 

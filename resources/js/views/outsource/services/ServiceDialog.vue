@@ -5,6 +5,7 @@
                 <v-card-title class="title grey--text">Service details</v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
+                    <v-combobox :items="['washing', 'drying']" label="Service type" :error-messages="errors.get('service_type')" v-model="formData.service_type" outline></v-combobox>
                     <v-text-field dense outline label="Name" v-model="formData.name" :error-messages="errors.get('name')" ref="name"></v-text-field>
                     <v-text-field dense outline label="Description" v-model="formData.description"></v-text-field>
                     <v-text-field dense outline label="Pulse count" v-model="formData.pulse_count" type="number" :error-messages="errors.get('pulse_count')"></v-text-field>
@@ -29,6 +30,7 @@ export default {
         return {
             mode: 'insert',
             formData: {
+                service_type: '',
                 name: null,
                 description: null,
                 pulse_count: 0,
@@ -71,12 +73,14 @@ export default {
                 this.formData.description = this.service.description;
                 this.formData.pulse_count = this.service.pulse_count;
                 this.formData.minutes = this.service.minutes;
+                this.formData.service_type = this.service.service_type
             } else {
                 this.mode = 'insert';
                 this.formData.name = null;
                 this.formData.pulse_count = null;
                 this.formData.description = null;
                 this.formData.minutes = 0;
+                this.formData.service_type = null;
             }
             setTimeout(() => {
                 this.$refs.name.$el.querySelector('input').select();

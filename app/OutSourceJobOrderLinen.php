@@ -19,7 +19,8 @@ class OutSourceJobOrderLinen extends Model
         'name',
         'degree_of_soil',
         'unit_price',
-        'quantity'
+        'quantity',
+        'remarks',
     ];
 
     public function getNameAttribute() {
@@ -34,7 +35,8 @@ class OutSourceJobOrderLinen extends Model
             'regular_price' => 'Normal',
             'with_stain_light' => 'Lightly soiled',
             'with_stain_medium' => 'Medium soiled',
-            'with_stain_heavy' => 'Heavily soiled'
+            'with_stain_heavy' => 'Heavily soiled',
+            'with_stain_custom' => 'Custom'
         ][$this->attributes['degree_of_soil']];
     }
 }
