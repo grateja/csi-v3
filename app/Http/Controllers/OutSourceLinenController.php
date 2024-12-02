@@ -9,7 +9,8 @@ class OutSourceLinenController extends Controller
 {
     public function index(Request $request, $outSourceId) {
         $result = OutSourceLinen::where('out_source_id', $outSourceId)
-            ->where('name', 'like', "%$request->name%");
+            ->where('name', 'like', "%$request->name%")
+            ->orderBy('name', 'asc');
 
         return response()->json([
             'result' => $result->get(),
@@ -18,7 +19,7 @@ class OutSourceLinenController extends Controller
 
     public function store(Request $request) {
         $rules = [
-            'name' => 'required',
+            'name' => 'required|alpha',
             'out_source_id' => 'required',
             'regular_price' => 'required',
             'with_stain_light' => 'required|numeric',

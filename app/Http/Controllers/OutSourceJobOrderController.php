@@ -19,6 +19,7 @@ class OutSourceJobOrderController extends Controller
             ->where(function($query) use ($request) {
                 $query->where('job_order_number', 'like', "%$request->keyword%")
                 ->orderByDesc('created_at');
+        
             });
 
         return response()->json([
