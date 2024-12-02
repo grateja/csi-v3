@@ -19,7 +19,7 @@ class OutSourceLinenController extends Controller
 
     public function store(Request $request) {
         $rules = [
-            'name' => 'required|alpha',
+            'name' => 'required',
             'out_source_id' => 'required',
             'regular_price' => 'required',
             'with_stain_light' => 'required|numeric',
